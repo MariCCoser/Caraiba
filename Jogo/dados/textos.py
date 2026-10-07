@@ -10,6 +10,8 @@
 MENU = {
     "titulo": "CARAÍBA",
     "subtitulo": "Dez Dias, Dez Fogueiras",
+    # Frase do título da Proposta, menor, embaixo do subtítulo.
+    "chamada": "A entrada da aldeia, a febre e quem decide quem entra.",
     "comecar": "Começar",
     "opcoes": "Opções",
     "sair": "Sair",
@@ -34,51 +36,80 @@ OPCOES = {
 INTRODUCAO = {
     "pular": "Pular",
     "continuar": "Clique ou aperte Espaço para continuar",
-    # O texto vem da Proposta do grupo (seção "História / introdução"),
-    # só com a ortografia e a pontuação corrigidas.
+    # A ordem segue a Proposta (seção "O jogo abre com..."): aviso de conteúdo,
+    # a explicação do nome Caraíba, onde o jogador está e, por último, as regras.
+    #
+    # Campos de cada cartão:
+    #   "texto"   obrigatório. "\n" força uma quebra de linha.
+    #   "fundo"   apelido do cenário. Sem "fundo": tela preta, sem filtros.
+    #   "filtro"  "noite" ou "dia" (padrão: "noite").
+    #   "titulo"  opcional. Cartão com título fica no meio da tela, com o título em cima.
+    #   "largura", "tamanho", "max_linhas", "alinhamento": opcionais, para cartões maiores.
     "cartoes": [
         {
-            "texto": "Litoral do Brasil, por volta de 1562.",
+            "titulo": "Aviso de conteúdo",
+            "texto": "Este jogo fala de epidemias, doença e morte entre os povos indígenas "
+                     "do litoral do Brasil no século XVI. "
+                     "Os povos citados existiram e [têm descendentes vivos].",
+            "largura": 1300,
+            "alinhamento": "centro",
+        },
+        {
+            "texto": "Em tupi, [caraíba] era o nome dos grandes pajés e profetas, "
+                     "os que andavam de aldeia em aldeia.",
+            "fundo": "fogueira_perto",
+            "filtro": "noite",
+        },
+        {
+            "texto": "Os missionários usaram a mesma palavra para dizer “santo”. "
+                     "Depois, ela passou a nomear o [homem branco].",
+            "fundo": "fogueira_perto",
+            "filtro": "noite",
+        },
+        {
+            "texto": "A mesma palavra servia para o [profeta] e para o [invasor].",
+            "fundo": "fogueira_perto",
+            "filtro": "noite",
+        },
+        {
+            "texto": "Litoral do Brasil, 1562.",
             "fundo": "aldeia",
             "filtro": "dia",
         },
         {
-            "texto": "Um dia, no horizonte, você vê eles vindo junto ao [deus sol].",
+            "texto": "Uma [febre] que veio com os estrangeiros está esvaziando as aldeias da costa.",
             "fundo": "aldeia",
             "filtro": "dia",
         },
         {
-            "texto": "Depois de chegarem, uma [maldição] se iniciou.",
+            "texto": "A sua aldeia, entre a mata e o rio, tinha cerca de quarenta pessoas. "
+                     "[Restam doze].",
+            "fundo": "aldeia",
+            "filtro": "dia",
+        },
+        {
+            "texto": "O cacique saiu para a mata. O [pajé] ficou, e é a única autoridade que resta.",
             "fundo": "fogueira_perto",
             "filtro": "noite",
         },
         {
-            "texto": "Alguns de nós, que não gostaram muito dos novos escolhidos, "
-                     "começaram a [apodrecer de dentro para fora], igual às lendas…",
-            "fundo": "fogueira_perto",
-            "filtro": "noite",
-        },
-        {
-            "texto": "Vi muitos amigos serem expulsos por pensarem como os [amaldiçoados], "
-                     "restando o cacique, o pajé e eu.",
-            "fundo": "fogueira_perto",
-            "filtro": "noite",
-        },
-        {
-            "texto": "Mas o cacique está certo de tudo. Afinal, ele é o mais próximo dos deuses; "
-                     "não devemos questioná-lo.",
-            "fundo": "fogueira_perto",
-            "filtro": "noite",
-        },
-        {
-            "texto": "Ele precisou ir à mata e deixou sob meu comando a [entrada da aldeia].",
+            "texto": "A [entrada da aldeia] ficou sob a sua guarda. "
+                     "A cada dia, alguém vai chegar.",
             "fundo": "aldeia",
             "filtro": "noite",
         },
         {
-            "texto": "Assim, ele foi, e eu fiquei com meu arco e flecha, guardando quem entraria…",
-            "fundo": "aldeia",
+            "titulo": "Como se joga",
+            "texto": "• [De dia], alguém chega à entrada. Converse e decida se a pessoa entra.\n"
+                     "• Antes da noite, o [pajé] diz qual é o sinal da doença. Ele pode errar.\n"
+                     "• [À noite], na fogueira, examine quem está dentro. Cada olhar gasta energia.\n"
+                     "• Depois: deixar na [oca], levar ao [tapiri] ou [matar] (exige dois sinais).\n"
+                     "• A doença só passa dentro da oca, nas redes. Na fogueira, ninguém pega nada.",
+            "fundo": "fogueira_longe",
             "filtro": "noite",
+            "largura": 1300,
+            "tamanho": 30,
+            "max_linhas": 12,
         },
     ],
 }
@@ -86,7 +117,7 @@ INTRODUCAO = {
 # Cena provisória: aparece no fim da introdução até o Dia 1 ficar pronto.
 EM_CONSTRUCAO = {
     "titulo": "Dia 1",
-    "texto": "Em construção. Aqui começa a manhã na oca.",
+    "texto": "Em construção. Aqui alguém chega à entrada da aldeia.",
     "voltar": "Voltar ao menu",
     "fundo": "aldeia",
 }

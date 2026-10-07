@@ -59,6 +59,9 @@ Regras para não quebrar nada:
   `"[de dentro para fora]"`. Na tela, a palavra fica âmbar **e sublinhada**.
 - Cada cartão da introdução deve caber em **3 linhas**. Se passar, o terminal mostra um
   "Aviso: texto com N linhas". Nas falas do jogo (próximas etapas) o máximo será 2 linhas.
+  Exceções: um cartão pode ter `"titulo"` (fica no meio da tela, como o aviso de conteúdo e
+  as regras) e `"max_linhas"` maior. Cartão sem `"fundo"` aparece numa tela preta, sem filtros.
+  Para quebrar a linha à força, use `\n` dentro do texto.
 - Depois de editar, rode o teste (seção 5) para ver se está tudo certo.
 
 ## 4. Colocar arte nova

@@ -66,6 +66,13 @@ class Menu(Cena):
         tela.blit(sombra_sub, (X_COLUNA + 8 + 3, y_sub + 3))
         tela.blit(subtitulo, (X_COLUNA + 8, y_sub))
 
+        fonte_chamada = fontes.fonte_escalada("serif_italico", config.TAMANHO_PEQUENO)
+        y_chamada = y_sub + subtitulo.get_height() + 14
+        sombra_chamada = fonte_chamada.render(MENU["chamada"], True, config.PRETO)
+        chamada = fonte_chamada.render(MENU["chamada"], True, config.TABATINGA)
+        tela.blit(sombra_chamada, (X_COLUNA + 8 + 2, y_chamada + 2))
+        tela.blit(chamada, (X_COLUNA + 8, y_chamada))
+
         for botao in self.botoes:
             botao.desenhar(tela)
 

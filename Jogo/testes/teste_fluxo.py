@@ -97,6 +97,15 @@ def testar_estado_inicial():
     print("ok Estado com os valores iniciais do documento")
 
 
+def testar_cartoes_introducao():
+    # A Proposta pede: aviso de conteúdo primeiro (tela preta) e as regras por último.
+    cartoes = INTRODUCAO["cartoes"]
+    assert all(cartao.get("texto") for cartao in cartoes), "cartão sem texto"
+    assert cartoes[0].get("titulo") and not cartoes[0].get("fundo"), "o 1º cartão deve ser o aviso"
+    assert cartoes[-1].get("titulo") and cartoes[-1].get("fundo"), "o último cartão deve ser as regras"
+    print("ok ordem dos cartões da introdução (aviso ... regras)")
+
+
 def testar_escala(jogo):
     # Janela 1280x720: a tela 1600x900 é reduzida a 80%, sem barras.
     area = jogo._calcular_area()
@@ -219,6 +228,7 @@ def testar_desempenho():
 if __name__ == "__main__":
     testar_marcacao()
     testar_estado_inicial()
+    testar_cartoes_introducao()
     testar_fluxo()
     testar_desempenho()
     print("TUDO CERTO")
