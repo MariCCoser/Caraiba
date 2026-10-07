@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Ambiente virtual
+.venv/
+venv/
+env/
+
+# Builds (PyInstaller e pygbag)
+build/
+dist/
+*.spec
+Jogo/build/
+
+# Saves e configurações locais do jogo
+*.sav
+saves/
+
+# Claude Code: compartilha os agentes, ignora configurações pessoais
+.claude/settings.local.json
+
+# Arquivos temporários do Word/LibreOffice
+~$*
+.~lock.*#
+
+# Sistema operacional e editores
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+*.tmp
