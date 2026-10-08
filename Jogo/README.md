@@ -73,8 +73,9 @@ menores em `Jogo/assets/`, com nomes sem acento e sem espaço (acento quebra no 
 1. Coloque a arte nova em `Caraiba/Arte/`.
 2. Abra `ferramentas/converter_arte.py` e acrescente uma linha na lista `CENARIOS`, por exemplo:
    `("Oca.png", "cenarios/cenario-oca.jpg"),`
-   Para uma pessoa, use a lista `PERSONAGENS`, com o giro no fim:
-   `("PP/Mbaé.png", "personagens/mbae.png", 90),`
+   Para uma pessoa, use a lista `PERSONAGENS`, com o giro e a altura do meio da coxa no fim:
+   `("PP/Potira.png", "personagens/potira.png", 90, 900),`
+   Toda pessoa sai com o mesmo corte: do topo da cabeça até o meio das coxas, 860 de altura.
    As artes de `Arte/PP/` vieram deitadas (cabeça para a direita): `90` deixa a pessoa de pé.
    O fundo branco que encosta na borda vira transparente sozinho.
 3. Instale a ferramenta de imagens (só na primeira vez): `pip install -r requirements-ferramentas.txt`

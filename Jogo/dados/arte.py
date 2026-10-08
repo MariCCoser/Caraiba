@@ -10,9 +10,16 @@ CENARIOS = {
     "fogueira_perto": "cenarios/cenario-fogueira-perto.jpg",
 }
 
-# Personagens (860 de altura, PNG com fundo transparente), gerados por ferramentas/converter_arte.py.
+# Personagens gerados por ferramentas/converter_arte.py: PNG com fundo transparente,
+# todos com o mesmo corte (do topo da cabeça ao meio das coxas, 860 de altura).
 PERSONAGENS = {
     "yara": "personagens/yara.png",
+    "mbae": "personagens/mbae.png",
+    "tamandare": "personagens/tamandare.png",
+    "iande": "personagens/iande.png",
+    "krenan": "personagens/krenan.png",
+    "araci": "personagens/araci.png",
+    "aleixo": "personagens/aleixo.png",
 }
 
 # Onde fica o fogo em cada cenário (x, y na tela 1600x900).
