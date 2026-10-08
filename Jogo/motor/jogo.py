@@ -13,12 +13,14 @@ from motor.cena import GerenciadorCenas
 from cenas.menu import Menu
 from cenas.opcoes import Opcoes
 from cenas.introducao import Introducao
+from cenas.dia import Dia
 from cenas.em_construcao import EmConstrucao
 
 CENAS = {
     "menu": Menu,
     "opcoes": Opcoes,
     "introducao": Introducao,
+    "dia": Dia,
     "em_construcao": EmConstrucao,
 }
 

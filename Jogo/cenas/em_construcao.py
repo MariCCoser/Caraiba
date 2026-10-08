@@ -1,4 +1,4 @@
-# Cena provisória do fim da introdução. A próxima etapa troca esta cena pela Manhã do Dia 1.
+# Cena provisória do fim do Dia 1. A próxima etapa troca esta cena pela Noite 1, na fogueira.
 
 import pygame
 
@@ -28,8 +28,7 @@ class EmConstrucao(Cena):
         self.botao_voltar.atualizar(self.jogo.mouse)
 
     def desenhar_cena(self, tela):
-        # O dia usa o filtro frio e dessaturado.
-        desenhar_cenario(tela, EM_CONSTRUCAO["fundo"], "dia", self.tempo)
+        desenhar_cenario(tela, EM_CONSTRUCAO["fundo"], "noite", self.tempo)
         efeitos.escurecer(tela, 60)
 
     def desenhar_interface(self, tela):
@@ -39,7 +38,8 @@ class EmConstrucao(Cena):
                          nome_fonte="serif")
         # Mostra que a partida já tem um Estado novo, pronto para o Dia 1.
         estado = self.jogo.estado
-        resumo = "dia %d · vivos %d · sanidade %d" % (estado.dia, estado.vivos, estado.sanidade)
+        resumo = "vivos %d · dentro: %s · memória %d · proximidade da vila %d" % (
+            estado.vivos, ", ".join(estado.dentro) or "ninguém", estado.memoria, estado.proximidade_vila)
         ui.texto_simples(tela, resumo, (800, 540), config.TAMANHO_PEQUENO, nome_fonte="mono",
                          cor=config.BARRO)
         self.botao_voltar.desenhar(tela)

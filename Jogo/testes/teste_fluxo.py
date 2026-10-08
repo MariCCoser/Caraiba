@@ -1,4 +1,4 @@
-# Teste de fumaça: joga sozinho, sem janela, menu -> opções -> introdução inteira -> cena provisória -> menu.
+# Teste de fumaça: joga sozinho, sem janela, menu -> opções -> introdução inteira -> Dia 1 -> cena provisória -> menu.
 #
 # Como rodar (de dentro da pasta Jogo, com o ambiente ativado):
 #     python -m testes.teste_fluxo
@@ -90,9 +90,9 @@ def testar_marcacao():
 
 def testar_estado_inicial():
     estado = Estado()
-    esperado = {"dia": 1, "vivos": 7, "mortos": 0, "mortos_por_sua_mao": 0, "entregues": 0,
+    esperado = {"dia": 1, "vivos": 12, "mortos": 0, "mortos_por_sua_mao": 0, "entregues": 0,
                 "proximidade_vila": 0, "rio_acima": 0, "memoria": 0, "recusas_aleixo": 0,
-                "pistas": 0, "sanidade": 10}
+                "pistas": 0, "sanidade": 10, "dentro": [], "caderno": []}
     assert estado.para_dicionario() == esperado, estado.para_dicionario()
     print("ok Estado com os valores iniciais do documento")
 
@@ -104,6 +104,87 @@ def testar_cartoes_introducao():
     assert cartoes[0].get("titulo") and not cartoes[0].get("fundo"), "o 1º cartão deve ser o aviso"
     assert cartoes[-1].get("titulo") and cartoes[-1].get("fundo"), "o último cartão deve ser as regras"
     print("ok ordem dos cartões da introdução (aviso ... regras)")
+
+
+def passar_falas(jogo):
+    """No Dia: clica nas falas (completar e seguir) até aparecerem botões ou a cena acabar."""
+    for _ in range(100):
+        if nome_cena(jogo) != "Dia" or jogo.cenas.em_transicao() or jogo.cenas.atual.modo != "fala":
+            return
+        rodar(jogo, 5)
+        clicar(jogo, (800, 300))   # completa o texto
+        clicar(jogo, (800, 300))   # segue o roteiro
+    raise AssertionError("as falas do Dia nunca terminaram")
+
+
+def clicar_opcao(jogo, texto):
+    """Clica no botão do Dia que tem esse texto."""
+    for botao, _ in jogo.cenas.atual.botoes:
+        if botao.texto == texto:
+            clicar_botao(jogo, botao)
+            return
+    raise AssertionError("botão não encontrado: %s (há: %s)" % (
+        texto, [b.texto for b, _ in jogo.cenas.atual.botoes]))
+
+
+def testar_dia1(jogo):
+    """Joga o Dia 1 duas vezes: deixando Yara entrar (com perguntas e machado) e sem deixar."""
+    from dados.dias import DIAS
+    perguntas = next(p for p in DIAS[1]["passos"] if p["tipo"] == "perguntas")["perguntas"]
+
+    # 1ª vez: pergunta tudo, deixa entrar, aceita o machado.
+    jogo.nova_partida()
+    jogo.ir_para("dia")
+    esperar_transicao(jogo)
+    assert nome_cena(jogo) == "Dia"
+    rodar(jogo, 20)
+    capturar(jogo, "07-dia1-paje")
+    passar_falas(jogo)
+    dia = jogo.cenas.atual
+    assert dia.modo == "perguntas" and dia.visitante == "yara", (dia.modo, dia.visitante)
+    rodar(jogo, 60)  # Yara termina de aparecer
+    capturar(jogo, "08-dia1-yara-perguntas")
+    for item in perguntas:
+        clicar_opcao(jogo, item["pergunta"])
+        if item is perguntas[1]:
+            dia.caixa.completar()
+            rodar(jogo, 2)
+            capturar(jogo, "09-dia1-yara-resposta")
+        passar_falas(jogo)
+    assert [b.texto for b, _ in dia.botoes] == ["Decidir"], "as perguntas feitas deviam sumir"
+    clicar_opcao(jogo, "Decidir")
+    assert dia.modo == "escolha"
+    clicar_opcao(jogo, "Deixar entrar")
+    passar_falas(jogo)
+    capturar(jogo, "10-dia1-machado")
+    clicar_opcao(jogo, "Aceitar o machado")
+    passar_falas(jogo)
+    esperar_transicao(jogo)
+    assert nome_cena(jogo) == "EmConstrucao", nome_cena(jogo)
+    estado = jogo.estado
+    assert estado.vivos == 13 and estado.dentro == ["Yara"], (estado.vivos, estado.dentro)
+    assert estado.memoria == 1 and estado.proximidade_vila == 1, (estado.memoria, estado.proximidade_vila)
+    assert estado.caderno == ["Olho vermelho, com o branco raiado."], estado.caderno
+    rodar(jogo, 5)
+    capturar(jogo, "11-noite1-em-construcao")
+    print("ok Dia 1 deixando Yara entrar (perguntas, machado, sinal no caderno)")
+
+    # 2ª vez: decide direto, sem perguntar, e não deixa entrar.
+    jogo.nova_partida()
+    jogo.ir_para("dia")
+    esperar_transicao(jogo)
+    passar_falas(jogo)
+    clicar_opcao(jogo, "Decidir")
+    clicar_opcao(jogo, "Não deixar entrar")
+    passar_falas(jogo)
+    esperar_transicao(jogo)
+    assert nome_cena(jogo) == "EmConstrucao", nome_cena(jogo)
+    estado = jogo.estado
+    assert estado.vivos == 12 and estado.dentro == [] and estado.memoria == 0, estado.para_dicionario()
+    assert len(estado.caderno) == 1
+    print("ok Dia 1 sem deixar Yara entrar")
+    jogo.ir_para("menu")
+    esperar_transicao(jogo)
 
 
 def testar_escala(jogo):
@@ -168,13 +249,11 @@ def testar_fluxo():
             clicar(jogo, (800, 300))        # ...ou com clique
     esperar_transicao(jogo)
     assert vistos == set(range(total)), vistos
-    assert nome_cena(jogo) == "EmConstrucao", nome_cena(jogo)
-    rodar(jogo, 5)
-    capturar(jogo, "05-em-construcao")
-    print("ok introdução inteira (%d cartões) -> cena provisória" % total)
+    assert nome_cena(jogo) == "Dia", nome_cena(jogo)
+    print("ok introdução inteira (%d cartões) -> Dia 1" % total)
 
-    # 4. Voltar ao menu
-    clicar_botao(jogo, jogo.cenas.atual.botao_voltar)
+    # 4. Botão Menu do Dia volta ao menu
+    clicar_botao(jogo, jogo.cenas.atual.botao_menu)
     esperar_transicao(jogo)
     assert nome_cena(jogo) == "Menu"
     print("ok voltar ao menu")
@@ -185,8 +264,11 @@ def testar_fluxo():
     assert nome_cena(jogo) == "Introducao"
     clicar_botao(jogo, jogo.cenas.atual.botao_pular)
     esperar_transicao(jogo)
-    assert nome_cena(jogo) == "EmConstrucao"
+    assert nome_cena(jogo) == "Dia"
     print("ok botão Pular")
+
+    # 5b. O Dia 1 inteiro, pelos dois caminhos
+    testar_dia1(jogo)
 
     # 6. Texto grande não quebra a introdução
     jogo.preferencias.tamanho_texto = "grande"

@@ -114,10 +114,18 @@ INTRODUCAO = {
     ],
 }
 
-# Cena provisória: aparece no fim da introdução até o Dia 1 ficar pronto.
+# Textos fixos da cena do Dia (as falas de cada dia ficam em dados/dias.py).
+DIA = {
+    "menu": "Menu",
+    "decidir": "Decidir",
+    "caderno": "Caderno",
+    "anotado": "Anotado:",
+}
+
+# Cena provisória: aparece no fim do Dia 1 até a Noite 1 ficar pronta.
 EM_CONSTRUCAO = {
-    "titulo": "Dia 1",
-    "texto": "Em construção. Aqui alguém chega à entrada da aldeia.",
+    "titulo": "Noite 1",
+    "texto": "Em construção. Aqui começa a noite na fogueira.",
     "voltar": "Voltar ao menu",
-    "fundo": "aldeia",
+    "fundo": "fogueira_perto",
 }

@@ -64,6 +64,46 @@ def cenario(apelido, filtro=None):
     return imagem
 
 
+def personagem(apelido, filtro=None):
+    """Devolve a pessoa `apelido` (veja dados/arte.py) com o filtro pedido, como em cenario()."""
+    chave = ("personagem", apelido, filtro)
+    if chave in _cache:
+        return _cache[chave]
+
+    if apelido in arte.PERSONAGENS:
+        caminho = arte.PERSONAGENS[apelido]
+        if os.path.exists(os.path.join(config.PASTA_ASSETS, caminho)):
+            imagem = carregar(caminho, transparente=True)
+        else:
+            print("Aviso: arte não encontrada, usando provisório:", caminho)
+            imagem = provisorio(apelido, (600, 860), silhueta=True)
+    else:
+        print("Aviso: personagem sem entrada em dados/arte.py:", apelido)
+        imagem = provisorio(apelido, (600, 860), silhueta=True)
+
+    if filtro in ("noite", "dia"):
+        imagem = _filtrar_mantendo_transparencia(imagem, filtro)
+
+    _cache[chave] = imagem
+    return imagem
+
+
+def _filtrar_mantendo_transparencia(imagem, filtro):
+    """Os filtros perdem a transparência (o fundo vira preto). Aqui o filtro é aplicado
+    numa cópia opaca e depois a transparência original é devolvida."""
+    opaca = imagem.convert()
+    if filtro == "noite":
+        filtrada = efeitos.filtro_noite(opaca)
+    else:
+        filtrada = efeitos.filtro_dia(opaca)
+    resultado = filtrada.convert_alpha()
+    # Máscara: a mesma imagem toda branca, só com a transparência original.
+    mascara = imagem.copy()
+    mascara.fill((255, 255, 255, 0), special_flags=pygame.BLEND_RGBA_MAX)
+    resultado.blit(mascara, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
+    return resultado
+
+
 def provisorio(nome, tamanho, silhueta=False):
     """Desenha uma imagem provisória com o nome escrito, para o jogo nunca travar esperando arte.
 

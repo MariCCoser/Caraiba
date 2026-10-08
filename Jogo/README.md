@@ -48,6 +48,7 @@ Todo o texto do jogo fica na pasta **`dados/`**. Abra com qualquer editor de tex
 |---|---|
 | Título, botões do menu, textos das Opções | `dados/textos.py` |
 | Os cartões da introdução (e o cenário de cada um) | `dados/textos.py`, parte `INTRODUCAO` |
+| O que acontece em cada dia: falas do pajé, visitante, perguntas, escolhas, sinal | `dados/dias.py` (as instruções estão no topo do arquivo) |
 | Qual arquivo de imagem é cada cenário | `dados/arte.py` |
 | Cores, tamanhos de letra, velocidade do texto | `config.py` |
 
@@ -72,6 +73,10 @@ menores em `Jogo/assets/`, com nomes sem acento e sem espaço (acento quebra no 
 1. Coloque a arte nova em `Caraiba/Arte/`.
 2. Abra `ferramentas/converter_arte.py` e acrescente uma linha na lista `CENARIOS`, por exemplo:
    `("Oca.png", "cenarios/cenario-oca.jpg"),`
+   Para uma pessoa, use a lista `PERSONAGENS`, com o giro no fim:
+   `("PP/Mbaé.png", "personagens/mbae.png", 90),`
+   As artes de `Arte/PP/` vieram deitadas (cabeça para a direita): `90` deixa a pessoa de pé.
+   O fundo branco que encosta na borda vira transparente sozinho.
 3. Instale a ferramenta de imagens (só na primeira vez): `pip install -r requirements-ferramentas.txt`
 4. Rode: `python ferramentas/converter_arte.py`
 5. Em `dados/arte.py`, dê um apelido para o arquivo: `"oca": "cenarios/cenario-oca.jpg",`
@@ -79,7 +84,7 @@ menores em `Jogo/assets/`, com nomes sem acento e sem espaço (acento quebra no 
 Se um arquivo de arte não existir, o jogo **não trava**: desenha um retângulo provisório
 com o nome e continua.
 
-Tamanhos: cenários 1600 × 900 (JPG), pessoas 700 × 1500 (PNG com fundo **transparente**).
+Tamanhos: cenários 1600 × 900 (JPG), pessoas com 860 de altura (PNG com fundo **transparente**).
 
 ## 5. Rodar os testes
 
@@ -87,8 +92,8 @@ Com o ambiente ativado, dentro da pasta `Jogo`:
 ```
 python -m testes.teste_fluxo
 ```
-O teste joga sozinho, sem abrir janela: menu → opções → introdução inteira → tela do Dia 1 →
-menu. Se terminar com **TUDO CERTO**, está funcionando. Se der erro, a última linha diz o problema.
+O teste joga sozinho, sem abrir janela: menu → opções → introdução inteira → Dia 1 (duas
+vezes: deixando Yara entrar e não deixando) → tela provisória da Noite 1 → menu. Se terminar com **TUDO CERTO**, está funcionando. Se der erro, a última linha diz o problema.
 
 Para salvar imagens das telas durante o teste:
 ```
@@ -104,7 +109,7 @@ Jogo/
 ├── config.py          Paleta, tamanhos, pastas
 ├── estado.py          As variáveis da partida (vivos, mortos, sanidade...)
 ├── dados/             CONTEÚDO: textos e lista de imagens (edite aqui)
-├── cenas/             Cada tela do jogo: menu, opções, introdução, em_construcao
+├── cenas/             Cada tela do jogo: menu, opções, introdução, dia, em_construcao
 ├── motor/             Peças reutilizáveis:
 │   ├── jogo.py          janela, escala para qualquer monitor, troca de cenas
 │   ├── cena.py          o modelo de toda cena + fade entre cenas

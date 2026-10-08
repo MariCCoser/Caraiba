@@ -8,10 +8,10 @@
 # Como rodar (de dentro da pasta Jogo, com o ambiente ativado):
 #     python ferramentas/converter_arte.py
 #
-# Chegou arte nova? Acrescente uma linha na lista CENARIOS abaixo e rode de novo.
+# Chegou arte nova? Acrescente uma linha na lista CENARIOS (ou PERSONAGENS) abaixo e rode de novo.
 
 import os
-from PIL import Image
+from PIL import Image, ImageChops, ImageDraw, ImageFilter
 
 # Pasta Jogo/ (este arquivo está em Jogo/ferramentas/)
 PASTA_JOGO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -29,6 +29,19 @@ CENARIOS = [
     ("Aldeia.png", "cenarios/cenario-aldeia.jpg"),
     ("FogueiraLonge.png", "cenarios/cenario-fogueira-longe.jpg"),
     ("FogueiraPerto.png", "cenarios/cenario-fogueira-perto.jpg"),
+]
+
+# Altura de todo personagem dentro do jogo (a largura acompanha a proporção da arte).
+ALTURA_PERSONAGEM = 860
+
+# Quão claro um pixel precisa ser (0-255, no canal mais escuro) para contar como fundo branco.
+LIMIAR_FUNDO_BRANCO = 228
+
+# Lista de personagens: (original dentro de Arte/, destino dentro de assets/, giro em graus).
+# As artes de Arte/PP/ vieram desenhadas deitadas, com a cabeça para a direita:
+# 90 gira no sentido anti-horário e deixa a pessoa de pé. Use 0 se a arte já estiver de pé.
+PERSONAGENS = [
+    ("PP/Yara.png", "personagens/yara.png", 90),
 ]
 
 
@@ -63,10 +76,55 @@ def converter_cenario(origem, destino):
     print("  ok  %-22s -> %-36s %4d KB" % (origem, destino, tamanho_kb))
 
 
+def tirar_fundo_branco(imagem):
+    """Deixa transparente o branco que encosta na borda da imagem (o fundo).
+
+    Só some o branco ligado à borda: o branco da pintura do corpo, dos olhos e
+    dos dentes fica, porque está cercado pela pessoa.
+    """
+    r, g, b, _ = imagem.split()
+    mais_escuro = ImageChops.darker(ImageChops.darker(r, g), b)
+    claro = mais_escuro.point(lambda v: 255 if v >= LIMIAR_FUNDO_BRANCO else 0)
+    # "Balde de tinta" a partir de cada ponto claro da borda: marca o fundo com 128.
+    largura, altura = claro.size
+    borda = ([(x, 0) for x in range(largura)] + [(x, altura - 1) for x in range(largura)]
+             + [(0, y) for y in range(altura)] + [(largura - 1, y) for y in range(altura)])
+    for ponto in borda:
+        if claro.getpixel(ponto) == 255:
+            ImageDraw.floodfill(claro, ponto, 128)
+    alfa = claro.point(lambda v: 0 if v == 128 else 255)
+    # Come 1 pixel da borda (tira o contorno claro) e suaviza o recorte.
+    alfa = alfa.filter(ImageFilter.MinFilter(3)).filter(ImageFilter.GaussianBlur(0.8))
+    imagem.putalpha(alfa)
+    return imagem
+
+
+def converter_personagem(origem, destino, giro):
+    caminho_origem = os.path.join(PASTA_ARTE, origem)
+    caminho_destino = os.path.join(PASTA_ASSETS, destino)
+    if not os.path.exists(caminho_origem):
+        print("  FALTA o original:", caminho_origem)
+        return
+    os.makedirs(os.path.dirname(caminho_destino), exist_ok=True)
+    imagem = Image.open(caminho_origem).convert("RGBA")
+    if giro:
+        imagem = imagem.rotate(giro, expand=True, fillcolor=(255, 255, 255, 255))
+    imagem = tirar_fundo_branco(imagem)
+    imagem = imagem.crop(imagem.getbbox())  # corta a sobra transparente em volta
+    escala = ALTURA_PERSONAGEM / imagem.height
+    imagem = imagem.resize((round(imagem.width * escala), ALTURA_PERSONAGEM), Image.LANCZOS)
+    imagem.save(caminho_destino, optimize=True)
+    tamanho_kb = os.path.getsize(caminho_destino) // 1024
+    print("  ok  %-22s -> %-36s %4d KB" % (origem, destino, tamanho_kb))
+
+
 def main():
     print("Convertendo cenários de", PASTA_ARTE)
     for origem, destino in CENARIOS:
         converter_cenario(origem, destino)
+    print("Convertendo personagens")
+    for origem, destino, giro in PERSONAGENS:
+        converter_personagem(origem, destino, giro)
     print("Pronto.")
 
 

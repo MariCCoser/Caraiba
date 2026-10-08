@@ -70,7 +70,7 @@ class Introducao(Cena):
         self._mostrar_cartao()
 
     def terminar(self):
-        self.jogo.ir_para("em_construcao")
+        self.jogo.ir_para("dia")
 
     def tratar_evento(self, evento):
         if self.botao_pular.clicado(evento):
