@@ -35,7 +35,8 @@ DIAS = {
             {"tipo": "fala", "quem": "Pajé",
              "texto": "Quando o dia acabar, eu conto o que vi no sono. O mal sempre deixa [um sinal]."},
 
-            # A chegada de Yara. Ninguém comenta nem descreve: o jogador só vê e ouve.
+            # A chegada de Yara, pela trilha na mata. Ninguém comenta nem descreve: o jogador só vê e ouve.
+            {"tipo": "fundo", "fundo": "floresta", "filtro": "dia"},
             {"tipo": "visitante", "visitante": "yara"},
             {"tipo": "fala", "quem": "Yara",
              "texto": "Dormi três noites na beira do fogo. Só preciso de teto até a [chuva passar]."},

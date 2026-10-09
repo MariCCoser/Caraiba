@@ -29,6 +29,7 @@ CENARIOS = [
     ("Aldeia.png", "cenarios/cenario-aldeia.jpg"),
     ("FogueiraLonge.png", "cenarios/cenario-fogueira-longe.jpg"),
     ("FogueiraPerto.png", "cenarios/cenario-fogueira-perto.jpg"),
+    ("floresta_atras_personag.png", "cenarios/cenario-floresta.jpg"),
 ]
 
 # CORTE PADRÃO DAS PESSOAS: do topo da cabeça até o meio das coxas, sempre com esta
@@ -48,7 +49,8 @@ LIMIAR_BRANCO_CERCADO = 240
 AREA_MINIMA_BRANCO_CERCADO = 1500   # pixels da arte original
 
 # Lista de personagens: (original dentro de Arte/, destino dentro de assets/, giro, meio da coxa).
-# - giro: as artes de Arte/PP/ vieram deitadas, com a cabeça para a direita; 90 gira no
+# As artes vêm da pasta Arte/PP/.
+# - giro: as artes vieram deitadas, com a cabeça para a direita; 90 gira no
 #   sentido anti-horário e deixa a pessoa de pé. Use 0 se a arte já estiver de pé.
 # - meio da coxa: a altura (em pixels da arte JÁ DE PÉ, contando de cima) onde fica o meio
 #   das coxas. O topo da cabeça é achado sozinho. Se a arte acaba antes do meio da coxa
@@ -57,6 +59,7 @@ AREA_MINIMA_BRANCO_CERCADO = 1500   # pixels da arte original
 PERSONAGENS = [
     ("PP/Yara.png", "personagens/yara.png", 90, 830),
     ("PP/Mbaé.png", "personagens/mbae.png", 90, 1020),
+    ("PP/Potira.png", "personagens/potira.png", 90, 1040),
     ("PP/Tama.png", "personagens/tamandare.png", 90, 965),
     ("PP/Iandé.png", "personagens/iande.png", 90, 880),
     ("PP/Krenan.png", "personagens/krenan.png", 90, 950),

@@ -8,6 +8,7 @@ CENARIOS = {
     "aldeia": "cenarios/cenario-aldeia.jpg",
     "fogueira_longe": "cenarios/cenario-fogueira-longe.jpg",
     "fogueira_perto": "cenarios/cenario-fogueira-perto.jpg",
+    "floresta": "cenarios/cenario-floresta.jpg",   # a trilha na mata, atrás de quem chega
 }
 
 # Personagens gerados por ferramentas/converter_arte.py: PNG com fundo transparente,
@@ -15,6 +16,7 @@ CENARIOS = {
 PERSONAGENS = {
     "yara": "personagens/yara.png",
     "mbae": "personagens/mbae.png",
+    "potira": "personagens/potira.png",
     "tamandare": "personagens/tamandare.png",
     "iande": "personagens/iande.png",
     "krenan": "personagens/krenan.png",
