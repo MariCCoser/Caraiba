@@ -65,8 +65,7 @@ CLARO_DESCASCAR = 140        # canal mais escuro acima disto = claro
 NEUTRO_DESCASCAR = 30        # diferença entre o canal mais claro e o mais escuro abaixo disto = sem cor
 
 # Lista de personagens: (original dentro de Arte/, destino dentro de assets/, giro, meio da coxa).
-# As artes vêm de Arte/personagens_png/personagens_em_png/ (com fundo transparente). Potira e
-# Pajé ainda não têm versão transparente: vêm de Arte/PP/ (fundo branco).
+# Todas as artes vêm de Arte/personagens_png/personagens_em_png/, com fundo transparente.
 # - giro: as artes vieram deitadas, com a cabeça para a direita; 90 gira no
 #   sentido anti-horário e deixa a pessoa de pé. Use 0 se a arte já estiver de pé.
 # - meio da coxa: a altura (em pixels da arte JÁ DE PÉ, contando de cima) onde fica o meio
@@ -77,14 +76,14 @@ PNG = "personagens_png/personagens_em_png/"
 PERSONAGENS = [
     (PNG + "Yara.png", "personagens/yara.png", 90, 1675, True),
     (PNG + "Mbaé.png", "personagens/mbae.png", 90, 1920),
-    ("PP/Potira.png", "personagens/potira.png", 90, 1040),
+    (PNG + "Potira.png", "personagens/potira.png", 90, 1040),
     (PNG + "Tama.png", "personagens/tamandare.png", 90, 1950),
     (PNG + "Iandé.png", "personagens/iande.png", 90, 1785),
     (PNG + "Krenan.png", "personagens/krenan.png", 90, 1590),
     (PNG + "Araci.png", "personagens/araci.png", 90, 1550),
     (PNG + "Irmão Aleixo.png", "personagens/aleixo.png", 0, 1520),
     # O pajé já veio de pé. O topo é o do cocar de penas, então a cabeça fica um pouco menor.
-    ("PP/Pajé.png", "personagens/paje.png", 0, 920),
+    (PNG + "Pajé.png", "personagens/paje.png", 0, 920),
 ]
 
 
