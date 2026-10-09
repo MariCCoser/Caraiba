@@ -85,6 +85,10 @@ menores em `Jogo/assets/`, com nomes sem acento e sem espaço (acento quebra no 
    Toda pessoa sai com o mesmo corte: do topo da cabeça até o meio das coxas, 860 de altura.
    As artes de `Arte/PP/` vieram deitadas (cabeça para a direita): `90` deixa a pessoa de pé.
    O fundo branco que encosta na borda vira transparente sozinho.
+   **Melhor ainda:** exporte a pessoa em PNG com fundo transparente (esconda a camada de
+   fundo antes de exportar). Aí o conversor usa o recorte de vocês como está, sem sobrar
+   branco nenhum. Cuidado com o "quadriculado" cinza e branco: ele precisa ser transparência
+   de verdade, não desenhado na imagem.
 3. Instale a ferramenta de imagens (só na primeira vez): `pip install -r requirements-ferramentas.txt`
 4. Rode: `python ferramentas/converter_arte.py`
 5. Em `dados/arte.py`, dê um apelido para o arquivo: `"oca": "cenarios/cenario-oca.jpg",`

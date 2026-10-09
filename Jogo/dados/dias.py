@@ -8,7 +8,8 @@
 #   "fundo"      troca o cenário: {"tipo": "fundo", "fundo": "aldeia", "filtro": "dia"}
 #   "fala"       alguém fala:     {"tipo": "fala", "quem": "Pajé", "texto": "..."}
 #                (no máximo 2 linhas na tela; palavras entre [colchetes] ficam em âmbar)
-#   "visitante"  mostra a pessoa na entrada (apelido de dados/arte.py) ou None para tirar
+#   "visitante"  mostra uma pessoa à esquerda (apelido de dados/arte.py: quem chega, ou o
+#                pajé quando ele fala) ou None para tirar
 #   "perguntas"  o jogador escolhe o que perguntar, quantas quiser, e depois clica em "Decidir".
 #                Cada pergunta: "pergunta", "resposta" e, se quiser, "efeitos".
 #   "escolha"    botões; cada opção tem "texto" e, se quiser, "efeitos", "entra" (o nome de
@@ -26,6 +27,7 @@ DIAS = {
             {"tipo": "fundo", "fundo": "aldeia", "filtro": "dia"},
 
             # A fala inicial do pajé: apresenta o papel do jogador. Ninguém examina ninguém de dia.
+            {"tipo": "visitante", "visitante": "paje"},
             {"tipo": "fala", "quem": "Pajé",
              "texto": "O cacique foi para a mata. Enquanto ele não volta, a entrada é sua."},
             {"tipo": "fala", "quem": "Pajé",
@@ -72,6 +74,7 @@ DIAS = {
             # Entre o dia e a noite: o sinal do pajé. Hoje ele acusa uma inocente
             # (o olho de Yara é de fumaça), e o jogo não diz isso.
             {"tipo": "fundo", "fundo": "fogueira_longe", "filtro": "noite"},
+            {"tipo": "visitante", "visitante": "paje"},
             {"tipo": "fala", "quem": "Pajé",
              "texto": "Sonhei com olho vermelho. O mal deixa o branco do olho raiado."},
             {"tipo": "sinal", "texto": "Olho vermelho, com o branco raiado."},

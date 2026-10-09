@@ -65,6 +65,8 @@ PERSONAGENS = [
     ("PP/Krenan.png", "personagens/krenan.png", 90, 950),
     ("PP/Araci.png", "personagens/araci.png", 90, 960),
     ("PP/Irmão Aleixo.png", "personagens/aleixo.png", 0, 920),
+    # O pajé já veio de pé. O topo é o do cocar de penas, então a cabeça fica um pouco menor.
+    ("PP/Pajé.png", "personagens/paje.png", 0, 920),
 ]
 
 
@@ -159,9 +161,14 @@ def converter_personagem(origem, destino, giro, meio_da_coxa):
         return
     os.makedirs(os.path.dirname(caminho_destino), exist_ok=True)
     imagem = Image.open(caminho_origem).convert("RGBA")
+    # Arte que já vem com fundo transparente (PNG exportado sem a camada de fundo):
+    # o recorte de quem desenhou é usado como está, sem adivinhar o que é branco.
+    ja_transparente = imagem.getchannel("A").getextrema()[0] < 255
     if giro:
-        imagem = imagem.rotate(giro, expand=True, fillcolor=(255, 255, 255, 255))
-    imagem = tirar_fundo_branco(imagem)
+        fundo_do_giro = (0, 0, 0, 0) if ja_transparente else (255, 255, 255, 255)
+        imagem = imagem.rotate(giro, expand=True, fillcolor=fundo_do_giro)
+    if not ja_transparente:
+        imagem = tirar_fundo_branco(imagem)
     # Corte padrão: do topo da cabeça até o meio da coxa. Se a arte acabar antes,
     # crop() completa com transparente embaixo.
     esquerda, topo, direita, _ = imagem.getbbox()

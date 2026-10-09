@@ -22,6 +22,7 @@ PERSONAGENS = {
     "krenan": "personagens/krenan.png",
     "araci": "personagens/araci.png",
     "aleixo": "personagens/aleixo.png",
+    "paje": "personagens/paje.png",
 }
 
 # Onde fica o fogo em cada cenário (x, y na tela 1600x900).
