@@ -1,14 +1,17 @@
-# Menu inicial: a fogueira ao fundo (luz pulsando), o título e os botões Começar, Opções e Sair.
+# Menu inicial: a fogueira ao fundo (luz pulsando), o título e os botões Continuar, Começar,
+# Como se joga, Opções e Sair. "Continuar" só aparece se houver uma partida guardada.
 
 import pygame
 
 import config
 from dados.textos import MENU
-from motor import efeitos, fontes, ui
+from motor import efeitos, fontes, progresso, ui
 from motor.cena import Cena, desenhar_cenario
 
 # Coluna da esquerda, onde ficam título e botões (o fogo fica no meio da imagem).
 X_COLUNA = 120
+Y_PRIMEIRO_BOTAO = 530
+ESPACO_ENTRE_BOTOES = 72
 
 
 class Menu(Cena):
@@ -17,22 +20,37 @@ class Menu(Cena):
         self.tratamento = efeitos.Tratamento()
         self.tempo = 0.0
 
-        self.botao_comecar = ui.Botao(MENU["comecar"], (X_COLUNA, 560), largura_minima=320,
-                                      alinhamento="esquerda")
-        self.botao_opcoes = ui.Botao(MENU["opcoes"], (X_COLUNA, 650), largura_minima=320,
-                                     alinhamento="esquerda")
-        self.botao_sair = ui.Botao(MENU["sair"], (X_COLUNA, 740), largura_minima=320,
-                                   alinhamento="esquerda")
+        def botao(texto):
+            return ui.Botao(texto, (X_COLUNA, 0), largura_minima=320, alinhamento="esquerda")
+
+        self.botao_continuar = botao(MENU["continuar"])
+        self.botao_comecar = botao(MENU["comecar"])
+        self.botao_tutorial = botao(MENU["tutorial"])
+        self.botao_opcoes = botao(MENU["opcoes"])
+        self.botao_sair = botao(MENU["sair"])
+        # "Continuar" só aparece se houver partida guardada.
+        self.botao_continuar.visivel = progresso.existe()
         # No navegador não dá para "fechar o jogo": o botão Sair some.
         self.botao_sair.visivel = not config.NO_NAVEGADOR
-        self.botoes = [self.botao_comecar, self.botao_opcoes, self.botao_sair]
+        self.botoes = [self.botao_continuar, self.botao_comecar, self.botao_tutorial,
+                       self.botao_opcoes, self.botao_sair]
+        # Empilha só os visíveis, sem deixar buraco.
+        y = Y_PRIMEIRO_BOTAO
+        for b in self.botoes:
+            if b.visivel:
+                b.centro = (X_COLUNA, y)
+                y += ESPACO_ENTRE_BOTOES
 
     def tratar_evento(self, evento):
         # Atalho: Enter começa o jogo.
         if evento.type == pygame.KEYDOWN and evento.key in (pygame.K_RETURN, pygame.K_KP_ENTER):
             self.comecar()
+        elif self.botao_continuar.clicado(evento):
+            self.jogo.continuar()
         elif self.botao_comecar.clicado(evento):
             self.comecar()
+        elif self.botao_tutorial.clicado(evento):
+            self.jogo.ir_para("tutorial")
         elif self.botao_opcoes.clicado(evento):
             self.jogo.ir_para("opcoes")
         elif self.botao_sair.clicado(evento):

@@ -186,7 +186,7 @@ class CaixaTexto:
 
     def __init__(self, texto, largura, posicao, ancora="centro", tamanho=config.TAMANHO_FALA,
                  nome_fonte="serif", cor=config.TABATINGA, alinhamento="esquerda",
-                 fundo=True, max_linhas=None):
+                 fundo=True, max_linhas=None, margem=None):
         self.largura = largura
         self.posicao = posicao
         self.ancora = ancora
@@ -196,6 +196,7 @@ class CaixaTexto:
         self.alinhamento = alinhamento   # "esquerda" ou "centro"
         self.fundo = fundo
         self.max_linhas = max_linhas
+        self.margem = self.MARGEM if margem is None else margem   # espaço entre a borda e o texto
         self.letras_visiveis = None      # None = texto inteiro
         self._tempo_digitacao = 0.0
         self._escala_usada = None
@@ -238,7 +239,7 @@ class CaixaTexto:
         escala = preferencias.atual.escala_texto()
         self._escala_usada = escala
         self.fonte = fontes.fonte_escalada(self.nome_fonte, self.tamanho)
-        largura_util = self.largura - 2 * self.MARGEM
+        largura_util = self.largura - 2 * self.margem
         espaco = self.fonte.size(" ")[0]
 
         linhas = [[]]          # cada linha: lista de palavras (listas de pedaços)
@@ -270,7 +271,7 @@ class CaixaTexto:
             print("Aviso: texto com %d linhas (máximo %d): %s"
                   % (len(linhas), self.max_linhas, self.texto[:60]))
 
-        altura = len(linhas) * self.fonte.get_linesize() + 2 * self.MARGEM
+        altura = len(linhas) * self.fonte.get_linesize() + 2 * self.margem
         self.rect = pygame.Rect(0, 0, self.largura, altura)
         if self.ancora == "baixo":
             self.rect.midbottom = self.posicao
@@ -297,12 +298,12 @@ class CaixaTexto:
 
         altura_linha = self.fonte.get_linesize()
         restantes = self.total_letras if self.letras_visiveis is None else self.letras_visiveis
-        y = self.rect.top + self.MARGEM
+        y = self.rect.top + self.margem
         for linha, largura_linha in zip(self.linhas, self.larguras_linhas):
             if self.alinhamento == "centro":
                 x = self.rect.centerx - largura_linha // 2
             else:
-                x = self.rect.left + self.MARGEM
+                x = self.rect.left + self.margem
             for palavra in linha:
                 for trecho, marcado in palavra:
                     if restantes <= 0:
@@ -341,3 +342,76 @@ def texto_simples(tela, texto, posicao, tamanho, nome_fonte="sans", cor=config.T
         rect = imagem.get_rect(center=posicao)
     tela.blit(imagem, rect)
     return rect
+
+
+# ---------------------------------------------------------------------------
+# Painéis de bordas arredondadas (falas e respostas, como no exemplo em Arte/Exemplo/)
+# ---------------------------------------------------------------------------
+
+RAIO_PAINEL = 18
+
+
+def painel_arredondado(tela, rect, cor, raio=RAIO_PAINEL, contorno=None, espessura=2):
+    """Desenha um retângulo de cantos arredondados. `cor` pode ter transparência: (r, g, b, a)."""
+    painel = pygame.Surface(rect.size, pygame.SRCALPHA)
+    pygame.draw.rect(painel, cor, painel.get_rect(), border_radius=raio)
+    if contorno:
+        pygame.draw.rect(painel, contorno, painel.get_rect(), espessura, border_radius=raio)
+    tela.blit(painel, rect.topleft)
+
+
+class BlocoOpcao:
+    """Resposta do jogador num bloco de cantos arredondados, com texto que quebra linha.
+
+    Funciona como o Botao (texto, visivel, habilitado, atualizar, clicado, desenhar),
+    mas quem usa decide onde ele fica, mudando `rect` (a cena faz o layout).
+    """
+
+    MARGEM = 14
+
+    def __init__(self, texto, largura, tamanho=config.TAMANHO_PEQUENO):
+        self.texto = texto
+        self.largura = largura
+        self.visivel = True
+        self.habilitado = True
+        self.mouse_em_cima = False
+        self.caixa = CaixaTexto(texto, largura, (0, 0), ancora="topo", tamanho=tamanho,
+                                nome_fonte="sans", alinhamento="centro", fundo=False,
+                                margem=self.MARGEM)
+        self.rect = pygame.Rect(0, 0, largura, self.altura())
+
+    def altura(self):
+        return self.caixa.numero_de_linhas() * self.caixa.fonte.get_linesize() + 2 * self.MARGEM
+
+    def posicionar(self, topo_esquerda, altura=None):
+        """Coloca o bloco com o canto de cima à esquerda nesse ponto (altura opcional, para igualar a linha)."""
+        self.rect = pygame.Rect(topo_esquerda, (self.largura, altura or self.altura()))
+
+    def retangulo(self):
+        return self.rect
+
+    def atualizar(self, posicao_mouse):
+        global mouse_sobre_botao
+        self.mouse_em_cima = self.visivel and self.rect.collidepoint(posicao_mouse)
+        if self.mouse_em_cima and self.habilitado:
+            mouse_sobre_botao = True
+
+    def clicado(self, evento):
+        if not self.visivel or not self.habilitado:
+            return False
+        if evento.type == pygame.MOUSEBUTTONUP and evento.button == 1:
+            return self.rect.collidepoint(evento.pos)
+        return False
+
+    def desenhar(self, tela):
+        if not self.visivel:
+            return
+        if self.mouse_em_cima and self.habilitado:
+            painel_arredondado(tela, self.rect, config.TERRA + (240,), contorno=config.URUCUM, espessura=3)
+        else:
+            painel_arredondado(tela, self.rect, config.PRETO + (190,), contorno=config.FUMACA)
+        # O texto fica centralizado na altura do bloco.
+        altura_texto = self.caixa.numero_de_linhas() * self.caixa.fonte.get_linesize() + 2 * self.MARGEM
+        self.caixa.posicao = (self.rect.centerx, self.rect.top + (self.rect.height - altura_texto) // 2)
+        self.caixa.rect.midtop = self.caixa.posicao
+        self.caixa.desenhar(tela)

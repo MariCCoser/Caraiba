@@ -2,7 +2,7 @@
 #
 # Fonte: Proposta.docx. Um dia segue sempre a mesma ordem: alguém chega à entrada,
 # o jogador conversa e decide se a pessoa entra, e, entre o dia e a noite, o pajé
-# conta o sinal da doença, que vai para o caderno.
+# conta o sinal da doença, que fica riscado na tábua de barro.
 #
 # Cada passo é um dicionário com "tipo":
 #   "fundo"      troca o cenário: {"tipo": "fundo", "fundo": "aldeia", "filtro": "dia"}
@@ -13,7 +13,7 @@
 #                Cada pergunta: "pergunta", "resposta" e, se quiser, "efeitos".
 #   "escolha"    botões; cada opção tem "texto" e, se quiser, "efeitos", "entra" (o nome de
 #                quem passa a estar dentro da aldeia) e "passos" (o que acontece depois)
-#   "sinal"      o pajé anota um sinal no caderno: {"tipo": "sinal", "texto": "..."}
+#   "sinal"      o sinal do pajé fica riscado na tábua de barro: {"tipo": "sinal", "texto": "..."}
 #
 # "efeitos" soma valores às variáveis do estado.py: {"memoria": 1, "vivos": 1}.
 #

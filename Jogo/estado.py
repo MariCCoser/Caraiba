@@ -19,12 +19,12 @@ class Estado:
         self.memoria = 0               # histórias ouvidas
         self.recusas_aleixo = 0        # vezes que você recusou uma oferta
         self.pistas = 0                # caderno de Aleixo, colar, notícia (máximo 3)
-        self.sanidade = 10             # não decide final; muda a tela (tremor, grão, caderno)
+        self.sanidade = 10             # não decide final; muda a tela (tremor, grão, tábua)
 
         # Quem de fora entrou na aldeia (nomes), para a noite saber quem examinar
         self.dentro = []
-        # Os sinais que o pajé contou, um por noite (o caderno do jogador)
-        self.caderno = []
+        # Os sinais que o pajé contou, um por noite (a tábua de barro do jogador)
+        self.tabua = []
 
     def para_dicionario(self):
         """Copia as variáveis num dicionário simples (para salvar a partida)."""

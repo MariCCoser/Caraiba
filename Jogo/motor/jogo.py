@@ -4,7 +4,7 @@ import pygame
 
 import config
 from estado import Estado
-from motor import efeitos, fontes, imagens, preferencias, ui
+from motor import efeitos, fontes, imagens, preferencias, progresso, ui
 from motor.cena import GerenciadorCenas
 
 # Todas as cenas do jogo, pelo nome. Para criar uma cena nova:
@@ -14,6 +14,7 @@ from cenas.menu import Menu
 from cenas.opcoes import Opcoes
 from cenas.introducao import Introducao
 from cenas.dia import Dia
+from cenas.tutorial import Tutorial
 from cenas.em_construcao import EmConstrucao
 
 CENAS = {
@@ -21,6 +22,7 @@ CENAS = {
     "opcoes": Opcoes,
     "introducao": Introducao,
     "dia": Dia,
+    "tutorial": Tutorial,
     "em_construcao": EmConstrucao,
 }
 
@@ -46,6 +48,8 @@ class Jogo:
         self._area = pygame.Rect(0, 0, *config.TAMANHO_LOGICO)  # onde a tela lógica cai na janela
 
         self.estado = Estado()
+        # Ações guardadas para a cena refazer ao "Continuar" (veja motor/progresso.py).
+        self.acoes_para_refazer = None
         self.relogio = pygame.time.Clock()
         self.mouse = (0, 0)       # posição do mouse já em coordenadas 1600x900
         self.rodando = True
@@ -115,8 +119,20 @@ class Jogo:
         self.cenas.trocar(nova, com_fade)
 
     def nova_partida(self):
-        """Zera todas as variáveis para começar do Dia 1."""
+        """Zera todas as variáveis para começar do Dia 1 (e esquece a partida guardada)."""
         self.estado = Estado()
+        self.acoes_para_refazer = None
+        progresso.apagar()
+
+    def continuar(self):
+        """Volta à partida guardada, exatamente no ponto em que o jogador parou."""
+        dados = progresso.carregar()
+        if not dados:
+            return
+        self.estado = Estado()
+        self.estado.carregar_dicionario(dados["estado"])
+        self.acoes_para_refazer = dados["acoes"]
+        self.ir_para(dados["cena"])
 
     def sair(self):
         self.rodando = False

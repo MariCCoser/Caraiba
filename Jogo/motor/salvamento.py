@@ -47,3 +47,17 @@ def carregar(nome):
     except Exception as erro:
         print("Aviso: não consegui ler", nome, "-", erro)
         return None
+
+
+def apagar(nome):
+    """Apaga o que foi salvo com esse nome (se existir)."""
+    try:
+        if config.NO_NAVEGADOR:
+            import platform
+            platform.window.localStorage.removeItem("caraiba-" + nome)
+        else:
+            caminho = os.path.join(config.PASTA_SAVES, nome + ".json")
+            if os.path.exists(caminho):
+                os.remove(caminho)
+    except Exception as erro:
+        print("Aviso: não consegui apagar", nome, "-", erro)

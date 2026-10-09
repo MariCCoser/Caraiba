@@ -37,7 +37,12 @@ python main.py
 ```
 
 Controles: tudo funciona **só com o mouse**. Atalhos: **Enter** começa,
-**Espaço/Enter** avança o texto, **Esc** volta ou pula, **F11** liga/desliga a tela cheia.
+**Espaço/Enter** avança o texto, **Esc** volta ou pula, **T** abre/fecha a tábua de barro,
+**F11** liga/desliga a tela cheia.
+
+O jogo guarda a partida sozinho a cada escolha. No menu, **Continuar** volta exatamente
+ao ponto em que você parou (a partida fica em `saves/progresso.json`). **Começar** apaga
+a partida guardada e começa do zero.
 
 ## 3. Editar o conteúdo (sem mexer na lógica)
 
@@ -47,6 +52,8 @@ Todo o texto do jogo fica na pasta **`dados/`**. Abra com qualquer editor de tex
 | Quero mudar... | Arquivo |
 |---|---|
 | Título, botões do menu, textos das Opções | `dados/textos.py` |
+| As regras ("Como se joga" do menu e último cartão da introdução) | `dados/textos.py`, parte `REGRAS` |
+| Os textos da tábua de barro | `dados/textos.py`, parte `TABUA` |
 | Os cartões da introdução (e o cenário de cada um) | `dados/textos.py`, parte `INTRODUCAO` |
 | O que acontece em cada dia: falas do pajé, visitante, perguntas, escolhas, sinal | `dados/dias.py` (as instruções estão no topo do arquivo) |
 | Qual arquivo de imagem é cada cenário | `dados/arte.py` |
@@ -110,11 +117,13 @@ Jogo/
 ├── config.py          Paleta, tamanhos, pastas
 ├── estado.py          As variáveis da partida (vivos, mortos, sanidade...)
 ├── dados/             CONTEÚDO: textos e lista de imagens (edite aqui)
-├── cenas/             Cada tela do jogo: menu, opções, introdução, dia, em_construcao
+├── cenas/             Cada tela do jogo: menu, opções, tutorial, introdução, dia, em_construcao
 ├── motor/             Peças reutilizáveis:
 │   ├── jogo.py          janela, escala para qualquer monitor, troca de cenas
 │   ├── cena.py          o modelo de toda cena + fade entre cenas
-│   ├── ui.py            Botao e CaixaTexto (palavras marcadas, texto letra a letra)
+│   ├── ui.py            Botao, CaixaTexto (palavras marcadas, letra a letra), painéis arredondados
+│   ├── tabua.py         a tábua de barro (ícone no canto e sinais do pajé)
+│   ├── progresso.py     guarda a partida para o botão "Continuar"
 │   ├── efeitos.py       filtro da noite/dia, linhas, grão, vinheta, luz do fogo
 │   ├── imagens.py       carrega cada imagem uma vez só (e faz provisórios)
 │   ├── fontes.py        carrega as fontes

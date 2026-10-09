@@ -7,12 +7,23 @@
 # - "fundo" é o apelido de um cenário (veja dados/arte.py).
 # - "filtro" é "noite" (âmbar, luz de fogo) ou "dia" (frio e sem cor).
 
+# As regras do jogo, em poucas frases. Aparecem no último cartão da introdução e no
+# botão "Como se joga" do menu (o mesmo texto nos dois lugares).
+REGRAS = ("• [De dia], alguém chega à entrada. Converse e decida se a pessoa entra.\n"
+          "• Antes da noite, o [pajé] diz qual é o sinal da doença. Ele pode errar.\n"
+          "• Os sinais ficam riscados na [tábua de barro], no canto de cima da tela.\n"
+          "• [À noite], na fogueira, examine quem está dentro. Cada olhar gasta energia.\n"
+          "• Depois: deixar na [oca], levar ao [tapiri] ou [matar] (exige dois sinais).\n"
+          "• A doença só passa dentro da oca, nas redes. Na fogueira, ninguém pega nada.")
+
 MENU = {
     "titulo": "CARAÍBA",
     "subtitulo": "Dez Dias, Dez Fogueiras",
     # Frase do título da Proposta, menor, embaixo do subtítulo.
     "chamada": "A entrada da aldeia, a febre e quem decide quem entra.",
+    "continuar": "Continuar",
     "comecar": "Começar",
+    "tutorial": "Como se joga",
     "opcoes": "Opções",
     "sair": "Sair",
     "rodape": "Projeto de História · 2º DSN",
@@ -100,11 +111,7 @@ INTRODUCAO = {
         },
         {
             "titulo": "Como se joga",
-            "texto": "• [De dia], alguém chega à entrada. Converse e decida se a pessoa entra.\n"
-                     "• Antes da noite, o [pajé] diz qual é o sinal da doença. Ele pode errar.\n"
-                     "• [À noite], na fogueira, examine quem está dentro. Cada olhar gasta energia.\n"
-                     "• Depois: deixar na [oca], levar ao [tapiri] ou [matar] (exige dois sinais).\n"
-                     "• A doença só passa dentro da oca, nas redes. Na fogueira, ninguém pega nada.",
+            "texto": REGRAS,
             "fundo": "fogueira_longe",
             "filtro": "noite",
             "largura": 1300,
@@ -118,8 +125,26 @@ INTRODUCAO = {
 DIA = {
     "menu": "Menu",
     "decidir": "Decidir",
-    "caderno": "Caderno",
-    "anotado": "Anotado:",
+    "tabua": "Tábua de barro",
+    "anotado": "Riscado na tábua:",
+}
+
+# A tábua de barro: onde ficam riscados os sinais que o pajé contou (ícone no canto de cima).
+TABUA = {
+    "titulo": "Tábua de barro",
+    "subtitulo": "Os sinais que o pajé sonhou",
+    "noite": "Noite %d",
+    "vazia": "Nada riscado ainda. O pajé conta um sinal ao fim de cada dia.",
+    "fechar": "Fechar",
+    "dica": "Tábua de barro",
+}
+
+# Tela "Como se joga", aberta pelo menu a qualquer momento.
+TUTORIAL = {
+    "titulo": "Como se joga",
+    "texto": REGRAS,
+    "fundo": "fogueira_longe",
+    "voltar": "Voltar",
 }
 
 # Cena provisória: aparece no fim do Dia 1 até a Noite 1 ficar pronta.
