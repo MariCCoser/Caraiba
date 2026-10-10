@@ -15,6 +15,8 @@
 #   "escolha"    botões; cada opção tem "texto" e, se quiser, "efeitos", "entra" (o nome de
 #                quem passa a estar dentro da aldeia) e "passos" (o que acontece depois)
 #   "sinal"      o sinal do pajé fica riscado na tábua de barro: {"tipo": "sinal", "texto": "..."}
+#   "aldeia"     o jogador anda pela aldeia de dia (clica nas ocas) e volta pela seta da
+#                entrada da aldeia, onde o roteiro continua
 #
 # "efeitos" soma valores às variáveis do estado.py: {"memoria": 1, "vivos": 1}.
 #
@@ -36,6 +38,12 @@ DIAS = {
              "texto": "Quem chegar pela trilha, escute. Depois decida se entra ou se segue caminho."},
             {"tipo": "fala", "quem": "Pajé",
              "texto": "Quando o dia acabar, eu conto o que vi no sono. O mal sempre deixa [um sinal]."},
+            {"tipo": "fala", "quem": "Pajé",
+             "texto": "Ande pela aldeia. Quando estiver pronto, vá até a entrada."},
+
+            # O corte entre o pajé e a Yara: o jogador anda pela aldeia e vai até a entrada.
+            {"tipo": "visitante", "visitante": None},
+            {"tipo": "aldeia"},
 
             # A chegada de Yara, pela trilha na mata. Ninguém comenta nem descreve: o jogador só vê e ouve.
             {"tipo": "fundo", "fundo": "floresta", "filtro": "dia"},

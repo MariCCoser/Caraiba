@@ -104,6 +104,8 @@ class Dia(Cena):
         elif tipo == "perguntar" and self.modo == "perguntas":
             indice = acao[1]
             self._perguntar(self.passo_atual, indice, self.passo_atual["perguntas"][indice])
+        elif tipo == "entrada" and self.modo == "aldeia":
+            self.voltar_da_aldeia()
         elif tipo == "decidir" and self.modo == "perguntas":
             self._decidir()
         elif tipo == "escolher" and self.modo == "escolha":
@@ -136,6 +138,9 @@ class Dia(Cena):
                 self.tabua.marcar_nova()
                 self._mostrar_fala(DIA["tabua"], DIA["anotado"] + " " + passo["texto"])
                 return
+            elif tipo == "aldeia":
+                self._ir_para_aldeia()
+                return
             elif tipo == "perguntas":
                 self._mostrar_perguntas(passo)
                 return
@@ -145,6 +150,26 @@ class Dia(Cena):
             else:
                 raise ValueError("Tipo de passo desconhecido em dados/dias.py: %r" % tipo)
         self.terminar()
+
+    def _ir_para_aldeia(self):
+        """O jogador anda pela aldeia; esta cena fica guardada e volta pela seta da entrada."""
+        self.modo = "aldeia"
+        self.caixa = None
+        self.botoes = []
+        if not self.refazendo:
+            self.jogo.dia_pausado = self
+            self.jogo.ir_para("aldeia")
+
+    def voltar_da_aldeia(self):
+        """Chamado pela aldeia (seta da entrada): o roteiro continua na entrada."""
+        self._registrar(["entrada"])
+        self._proximo()
+
+    def ao_entrar(self):
+        # "Continuar" parado na aldeia de dia: refeito o roteiro, volta direto para a aldeia.
+        if self.modo == "aldeia" and self.jogo.dia_pausado is None:
+            self.jogo.dia_pausado = self
+            self.jogo.ir_para("aldeia")
 
     def _mostrar_fala(self, quem, texto, pergunta=""):
         self.modo = "fala"

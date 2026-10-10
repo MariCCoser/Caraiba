@@ -107,14 +107,71 @@ def testar_cartoes_introducao():
 
 
 def passar_falas(jogo):
-    """No Dia: clica nas falas (completar e seguir) até aparecerem botões ou a cena acabar."""
+    """No Dia: clica nas falas (completar e seguir) até aparecerem botões ou a cena acabar.
+
+    Se o roteiro levar à aldeia de dia, segue a seta até a entrada e continua.
+    """
     for _ in range(100):
-        if nome_cena(jogo) != "Dia" or jogo.cenas.em_transicao() or jogo.cenas.atual.modo != "fala":
+        esperar_transicao(jogo)
+        cena = jogo.cenas.atual
+        if nome_cena(jogo) == "Aldeia" and cena.de_dia:
+            clicar(jogo, cena.rect_seta.center)
+            continue
+        if nome_cena(jogo) != "Dia" or cena.modo != "fala":
             return
         rodar(jogo, 5)
         clicar(jogo, (800, 300))   # completa o texto
         clicar(jogo, (800, 300))   # segue o roteiro
     raise AssertionError("as falas do Dia nunca terminaram")
+
+
+def ate_a_aldeia_de_dia(jogo):
+    """Passa as falas do pajé até a aldeia de dia aparecer (sem seguir a seta)."""
+    for _ in range(100):
+        esperar_transicao(jogo)
+        if nome_cena(jogo) == "Aldeia":
+            return jogo.cenas.atual
+        rodar(jogo, 5)
+        clicar(jogo, (800, 300))
+        clicar(jogo, (800, 300))
+    raise AssertionError("a aldeia de dia nunca apareceu")
+
+
+def testar_aldeia_de_dia(jogo):
+    """Depois do pajé: a aldeia de dia, a oca 1 vazia, e a seta leva à entrada (Yara)."""
+    jogo.nova_partida()
+    jogo.ir_para("dia")
+    aldeia = ate_a_aldeia_de_dia(jogo)
+    assert aldeia.de_dia and aldeia.abertas == ["oca1"]
+    assert jogo.cenas.atual.filtro == "dia"
+    rodar(jogo, 20)
+    capturar(jogo, "07b-dia1-aldeia")
+
+    clicar(jogo, centro_da_oca("oca1"))
+    esperar_transicao(jogo)
+    assert nome_cena(jogo) == "Oca" and jogo.cenas.atual.de_dia and jogo.cenas.atual.pessoas == []
+    rodar(jogo, 5)
+    capturar(jogo, "07c-dia1-oca1")
+    clicar_botao(jogo, jogo.cenas.atual.botao_sair)
+    esperar_transicao(jogo)
+    assert nome_cena(jogo) == "Aldeia" and jogo.cenas.atual.de_dia, "sair da oca de dia volta à aldeia de dia"
+
+    # Menu e Continuar no meio da aldeia de dia: volta para a aldeia de dia.
+    clicar_botao(jogo, jogo.cenas.atual.botao_menu)
+    esperar_transicao(jogo)
+    clicar_botao(jogo, jogo.cenas.atual.botao_continuar)
+    esperar_transicao(jogo)
+    esperar_transicao(jogo)
+    assert nome_cena(jogo) == "Aldeia" and jogo.cenas.atual.de_dia, nome_cena(jogo)
+
+    # Seta: a entrada da aldeia, onde Yara chega.
+    clicar(jogo, jogo.cenas.atual.rect_seta.center)
+    esperar_transicao(jogo)
+    dia = jogo.cenas.atual
+    assert nome_cena(jogo) == "Dia" and dia.visitante == "yara", (nome_cena(jogo), getattr(dia, "visitante", None))
+    print("ok aldeia de dia: oca 1 vazia, Continuar e seta para a entrada")
+    jogo.ir_para("menu")
+    esperar_transicao(jogo)
 
 
 def clicar_opcao(jogo, texto):
@@ -382,8 +439,9 @@ def testar_fluxo():
     assert nome_cena(jogo) == "Dia"
     print("ok botão Pular")
 
-    # 5b. O Dia 1 inteiro, pelos dois caminhos
+    # 5b. O Dia 1 inteiro, pelos dois caminhos, e a aldeia de dia
     testar_dia1(jogo)
+    testar_aldeia_de_dia(jogo)
 
     # 5c. Continuar de onde parou, a tábua de barro e o "Como se joga" do menu
     testar_continuar_tabua_tutorial(jogo)

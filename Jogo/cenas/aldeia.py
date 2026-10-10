@@ -1,7 +1,10 @@
-# A aldeia vista de fora, de noite: o jogador "anda" clicando nas ocas, como no Purble Place.
+# A aldeia vista de fora: o jogador "anda" clicando nas ocas, como no Purble Place.
 #
 # Passar o mouse numa oca acende o contorno dela. Clicar numa oca aberta entra nela (cena Oca).
 # Quais ocas abrem em cada noite, e onde fica cada uma na imagem: dados/aldeia.py.
+#
+# De dia (depois da fala do pajé) há uma seta embaixo, para a entrada da aldeia: ela devolve
+# o jogador ao Dia, onde chega o visitante. De noite (depois do sinal do pajé) não há seta.
 
 import pygame
 
@@ -13,6 +16,7 @@ from motor.cena import Cena, desenhar_cenario
 from motor.tabua import Tabua
 
 POSICAO_BOTAO_MENU = (1420, 60)
+CENTRO_SETA = (800, 830)
 
 
 class Aldeia(Cena):
@@ -21,8 +25,13 @@ class Aldeia(Cena):
         self.tratamento = efeitos.Tratamento()
         self.tempo = 0.0
         self.noite = jogo.estado.dia
+        self.de_dia = jogo.dia_pausado is not None
+        self.filtro = "dia" if self.de_dia else "noite"
         self.abertas = ocas_abertas(self.noite)
         self.sobre = None          # a oca embaixo do mouse (ou None)
+        self.sobre_seta = False
+        self.rect_seta = pygame.Rect(0, 0, 330, 104)
+        self.rect_seta.center = CENTRO_SETA
 
         # Uma "máscara" por oca: diz, pixel a pixel, se o mouse está dentro do contorno.
         self.mascaras = {}
@@ -33,7 +42,9 @@ class Aldeia(Cena):
 
         self.botao_menu = ui.Botao(DIA["menu"], POSICAO_BOTAO_MENU, tamanho=config.TAMANHO_PEQUENO)
         self.tabua = Tabua(jogo)
-        progresso.salvar("aldeia", jogo.estado.para_dicionario())
+        if not self.de_dia:
+            # De dia o progresso é o do Dia (que refaz o caminho até aqui).
+            progresso.salvar("aldeia", jogo.estado.para_dicionario())
 
     def _oca_no_ponto(self, ponto):
         x, y = ponto
@@ -54,6 +65,9 @@ class Aldeia(Cena):
         if self.botao_menu.clicado(evento):
             self.jogo.ir_para("menu")
         elif evento.type == pygame.MOUSEBUTTONUP and evento.button == 1:
+            if self.de_dia and self.rect_seta.collidepoint(evento.pos):
+                self.jogo.voltar_ao_dia()
+                return
             nome = self._oca_no_ponto(evento.pos)
             if nome in self.abertas:
                 self.entrar(nome)
@@ -67,11 +81,12 @@ class Aldeia(Cena):
             return
         self.botao_menu.atualizar(self.jogo.mouse)
         self.sobre = self._oca_no_ponto(self.jogo.mouse)
-        if self.sobre in self.abertas:
+        self.sobre_seta = self.de_dia and self.rect_seta.collidepoint(self.jogo.mouse)
+        if self.sobre in self.abertas or self.sobre_seta:
             ui.mouse_sobre_botao = True   # cursor de "mãozinha"
 
     def desenhar_cena(self, tela):
-        desenhar_cenario(tela, ALDEIA["fundo"], "noite", self.tempo)
+        desenhar_cenario(tela, ALDEIA["fundo"], self.filtro, self.tempo)
 
     def _rotulo(self, tela, nome, texto, cor_borda):
         """Etiqueta arredondada acima do telhado."""
@@ -89,7 +104,8 @@ class Aldeia(Cena):
         tela.blit(imagem, rect)
 
     def desenhar_interface(self, tela):
-        ui.texto_simples(tela, ALDEIA["titulo"] % self.noite, (40, 60), config.TAMANHO_PEQUENO,
+        titulo = ALDEIA["titulo_dia"] if self.de_dia else ALDEIA["titulo"]
+        ui.texto_simples(tela, titulo % self.noite, (40, 60), config.TAMANHO_PEQUENO,
                          nome_fonte="mono", cor=config.BARRO, ancora="esquerda")
         self.botao_menu.desenhar(tela)
 
@@ -110,13 +126,32 @@ class Aldeia(Cena):
                 self._rotulo(tela, nome, OCAS[nome]["nome"],
                              config.URUCUM if nome == self.sobre else config.FUMACA)
             elif nome == self.sobre:
-                self._rotulo(tela, nome, ALDEIA["fechada"] % OCAS[nome]["nome"], config.FUMACA)
+                fechada = ALDEIA["fechada_dia"] if self.de_dia else ALDEIA["fechada"]
+                self._rotulo(tela, nome, fechada % OCAS[nome]["nome"], config.FUMACA)
 
-        # A dica embaixo, sobre um fundo escuro arredondado (lê bem sobre a mata).
+        # A dica, sobre um fundo escuro arredondado (lê bem sobre a mata).
+        # De dia ela sobe, para dar lugar à seta.
+        dica = ALDEIA["dica_dia"] if self.de_dia else ALDEIA["dica"]
         fonte = fontes.fonte_escalada("sans", config.TAMANHO_PEQUENO + 2)
-        rect_dica = pygame.Rect((0, 0), fonte.size(ALDEIA["dica"]))
-        rect_dica.center = (800, 850)
+        rect_dica = pygame.Rect((0, 0), fonte.size(dica))
+        rect_dica.center = (800, 730 if self.de_dia else 850)
         ui.painel_arredondado(tela, rect_dica.inflate(36, 18), config.PRETO + (190,), raio=14)
-        ui.texto_simples(tela, ALDEIA["dica"], rect_dica.center, config.TAMANHO_PEQUENO + 2)
+        ui.texto_simples(tela, dica, rect_dica.center, config.TAMANHO_PEQUENO + 2)
+
+        if self.de_dia:
+            self._desenhar_seta(tela)
 
         self.tabua.desenhar(tela)
+
+    def _desenhar_seta(self, tela):
+        """Seta para baixo, com o nome do lugar: leva à entrada da aldeia."""
+        cor = config.URUCUM if self.sobre_seta else config.FUMACA
+        fundo = config.TERRA + (235,) if self.sobre_seta else config.PRETO + (190,)
+        ui.painel_arredondado(tela, self.rect_seta, fundo, raio=18, contorno=cor,
+                              espessura=3 if self.sobre_seta else 2)
+        ui.texto_simples(tela, ALDEIA["seta"], (self.rect_seta.centerx, self.rect_seta.top + 30),
+                         config.TAMANHO_PEQUENO + 2)
+        # A seta balança um pouco para baixo, chamando o olhar.
+        desce = int(4 * abs(((self.tempo * 1.4) % 2) - 1))
+        x, y = self.rect_seta.centerx, self.rect_seta.top + 56 + desce
+        pygame.draw.polygon(tela, config.TABATINGA, [(x - 26, y), (x + 26, y), (x, y + 28)])

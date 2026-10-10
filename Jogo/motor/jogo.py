@@ -54,6 +54,8 @@ class Jogo:
         self.acoes_para_refazer = None
         # Em que oca o jogador está entrando (a aldeia escolhe, a cena Oca lê).
         self.oca_atual = None
+        # O Dia que está esperando o jogador andar pela aldeia (None = aldeia de noite).
+        self.dia_pausado = None
         self.relogio = pygame.time.Clock()
         self.mouse = (0, 0)       # posição do mouse já em coordenadas 1600x900
         self.rodando = True
@@ -126,6 +128,7 @@ class Jogo:
         """Zera todas as variáveis para começar do Dia 1 (e esquece a partida guardada)."""
         self.estado = Estado()
         self.acoes_para_refazer = None
+        self.dia_pausado = None
         progresso.apagar()
 
     def continuar(self):
@@ -136,7 +139,15 @@ class Jogo:
         self.estado = Estado()
         self.estado.carregar_dicionario(dados["estado"])
         self.acoes_para_refazer = dados["acoes"]
+        self.dia_pausado = None
         self.ir_para(dados["cena"])
+
+    def voltar_ao_dia(self):
+        """Da aldeia de dia para a entrada da aldeia: o Dia guardado continua de onde parou."""
+        dia = self.dia_pausado
+        self.dia_pausado = None
+        dia.voltar_da_aldeia()
+        self.cenas.trocar(dia)
 
     def sair(self):
         self.rodando = False
