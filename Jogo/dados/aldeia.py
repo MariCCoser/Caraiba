@@ -57,7 +57,6 @@ OCA = {
     "dorme": "%s dorme aqui esta noite.",
     "vazia": "Ninguém de fora dorme aqui esta noite.",
     "vazia_dia": "Por enquanto, ninguém de fora dorme aqui.",
-    "em_breve": "O exame do rosto, na fogueira, chega na próxima etapa do jogo.",
 }
 
 

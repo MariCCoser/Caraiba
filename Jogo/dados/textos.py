@@ -125,6 +125,8 @@ INTRODUCAO = {
 DIA = {
     "menu": "Menu",
     "decidir": "Decidir",
+    "terminar_exame": "Terminar o exame",
+    "energia": "Energia",
     "tabua": "Tábua de barro",
     "anotado": "Riscado na tábua:",
 }

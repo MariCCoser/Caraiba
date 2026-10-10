@@ -1,7 +1,7 @@
 # Por dentro de uma oca: mostra quem de fora dorme nela esta noite. "Sair da oca" volta à aldeia.
 #
 # A oca é a de jogo.oca_atual (a aldeia escolhe antes de entrar). Quem dorme em cada oca:
-# dados/aldeia.py, ONDE_DORME. O exame do rosto, na fogueira, entra na próxima etapa.
+# dados/aldeia.py, ONDE_DORME. Quem o jogador levou ao tapiri, na fogueira, não dorme na oca.
 
 import pygame
 
@@ -30,17 +30,17 @@ class Oca(Cena):
         self.de_dia = jogo.dia_pausado is not None
         self.filtro = "dia" if self.de_dia else "noite"
 
-        # Quem de fora dorme nesta oca (na ordem em que entrou na aldeia).
+        # Quem de fora dorme nesta oca (na ordem em que entrou na aldeia), menos quem está no tapiri.
         self.pessoas = [(quem, ONDE_DORME[quem]["imagem"]) for quem in estado.dentro
-                        if ONDE_DORME.get(quem, {}).get("oca") == self.nome]
+                        if ONDE_DORME.get(quem, {}).get("oca") == self.nome and quem not in estado.tapiri]
 
         if self.de_dia:
             texto = OCA["vazia_dia"]
             self.pessoas = []
         elif self.pessoas:
-            texto = OCA["dorme"] % " e ".join(quem for quem, _ in self.pessoas) + "\n" + OCA["em_breve"]
+            texto = OCA["dorme"] % " e ".join(quem for quem, _ in self.pessoas)
         else:
-            texto = OCA["vazia"] + "\n" + OCA["em_breve"]
+            texto = OCA["vazia"]
         self.titulo = ui.CaixaTexto(self.oca["nome"], LARGURA_PAINEL, CENTRO_PAINEL, ancora="topo",
                                     tamanho=config.TAMANHO_SUBTITULO, nome_fonte="serif_negrito",
                                     alinhamento="centro", fundo=False, margem=20)

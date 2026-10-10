@@ -23,6 +23,10 @@ class Estado:
 
         # Quem de fora entrou na aldeia (nomes), para a noite saber quem examinar
         self.dentro = []
+        # Quem o jogador levou ao tapiri (o abrigo isolado): está na aldeia, mas fora da oca
+        self.tapiri = []
+        # Quem morreu pela mão do jogador (o corpo aparece com o nome no dia seguinte)
+        self.mortos_nomes = []
         # Os sinais que o pajé contou, um por noite (a tábua de barro do jogador)
         self.tabua = []
 

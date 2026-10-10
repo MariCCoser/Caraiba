@@ -56,6 +56,7 @@ Todo o texto do jogo fica na pasta **`dados/`**. Abra com qualquer editor de tex
 | Os textos da tábua de barro | `dados/textos.py`, parte `TABUA` |
 | Os cartões da introdução (e o cenário de cada um) | `dados/textos.py`, parte `INTRODUCAO` |
 | O que acontece em cada dia: falas do pajé, visitante, perguntas, escolhas, sinal | `dados/dias.py` (as instruções estão no topo do arquivo) |
+| O que acontece em cada noite, na fogueira: conversa, zonas do exame, energia, decisão | `dados/noites.py` (as instruções estão no topo do arquivo) |
 | Qual arquivo de imagem é cada cenário | `dados/arte.py` |
 | Cores, tamanhos de letra, velocidade do texto | `config.py` |
 
@@ -106,7 +107,7 @@ Com o ambiente ativado, dentro da pasta `Jogo`:
 python -m testes.teste_fluxo
 ```
 O teste joga sozinho, sem abrir janela: menu → opções → introdução inteira → Dia 1 (duas
-vezes: deixando Yara entrar e não deixando) → tela provisória da Noite 1 → menu. Se terminar com **TUDO CERTO**, está funcionando. Se der erro, a última linha diz o problema.
+vezes: deixando Yara entrar e não deixando) → Noite 1 na fogueira (conversa, exame e decisão) → aldeia e oca → menu. Se terminar com **TUDO CERTO**, está funcionando. Se der erro, a última linha diz o problema.
 
 Para salvar imagens das telas durante o teste:
 ```

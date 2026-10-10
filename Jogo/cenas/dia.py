@@ -1,7 +1,8 @@
-# O Dia: a fala do pajé, a chegada do visitante na entrada, a conversa, a decisão e o sinal da noite.
+# O Dia: a fala do pajé, a chegada do visitante na entrada, a conversa, a decisão, o sinal
+# do pajé e, depois dele, a noite na fogueira (conversa, exame do rosto e decisão).
 #
-# A cena só "toca" o roteiro de dados/dias.py, passo a passo. Para mudar o que acontece
-# num dia, edite lá; aqui fica só o jeito de mostrar cada tipo de passo.
+# A cena só "toca" o roteiro de dados/dias.py (e o da noite, em dados/noites.py), passo a
+# passo. Para mudar o que acontece, edite lá; aqui fica só o jeito de mostrar cada tipo de passo.
 #
 # Como a tela é montada (modelo: Arte/Exemplo/): a pessoa à esquerda; a fala num painel
 # escuro de cantos arredondados ao lado dela; as respostas do jogador em blocos menores,
@@ -15,6 +16,7 @@ import pygame
 
 import config
 from dados.dias import DIAS
+from dados.noites import NOITES
 from dados.textos import DIA
 from motor import efeitos, fontes, imagens, progresso, ui
 from motor.cena import Cena, desenhar_cenario
@@ -45,7 +47,10 @@ class Dia(Cena):
         self.estado = jogo.estado
         self.roteiro = DIAS[self.estado.dia]
         self.fila = list(self.roteiro["passos"])   # passos que ainda vão acontecer
+        self.titulo = self.roteiro["titulo"]
         self.tempo = 0.0
+        self.energia = None       # olhares que sobram na noite (None durante o dia)
+        self.sinais = {}          # quantos sinais o exame achou em cada pessoa, nesta noite
 
         self.fundo = ("aldeia", "dia")
         self.fundo_anterior = None
@@ -53,13 +58,14 @@ class Dia(Cena):
         self.visitante = None
         self.tempo_chegada = DURACAO_CHEGADA
 
-        self.modo = None          # "fala", "perguntas" ou "escolha"
-        self.passo_atual = None   # o passo de perguntas ou de escolha que está na tela
+        self.modo = None          # "fala", "perguntas" (também o exame) ou "escolha"
+        self.passo_atual = None   # o passo de perguntas, exame ou escolha que está na tela
         self.caixa = None         # a fala que está na tela
         self.quem = ""            # quem está falando
         self.pergunta = ""        # a pergunta que o jogador fez (aparece em cima da resposta)
         self.botoes = []          # [(BlocoOpcao, o que fazer ao clicar)]
         self.perguntas_feitas = set()
+        self.apresentados = set()  # exames e escolhas que já mostraram o "texto" de abertura
         self.painel = pygame.Rect(0, 0, 0, 0)
 
         self.botao_menu = ui.Botao(DIA["menu"], POSICAO_BOTAO_MENU, tamanho=config.TAMANHO_PEQUENO)
@@ -103,7 +109,7 @@ class Dia(Cena):
             self._proximo()
         elif tipo == "perguntar" and self.modo == "perguntas":
             indice = acao[1]
-            self._perguntar(self.passo_atual, indice, self.passo_atual["perguntas"][indice])
+            self._perguntar(self.passo_atual, indice, _itens(self.passo_atual)[indice])
         elif tipo == "entrada" and self.modo == "aldeia":
             self.voltar_da_aldeia()
         elif tipo == "decidir" and self.modo == "perguntas":
@@ -141,7 +147,9 @@ class Dia(Cena):
             elif tipo == "aldeia":
                 self._ir_para_aldeia()
                 return
-            elif tipo == "perguntas":
+            elif tipo == "noite":
+                self._comecar_noite()
+            elif tipo in ("perguntas", "exame"):
                 self._mostrar_perguntas(passo)
                 return
             elif tipo == "escolha":
@@ -150,6 +158,18 @@ class Dia(Cena):
             else:
                 raise ValueError("Tipo de passo desconhecido em dados/dias.py: %r" % tipo)
         self.terminar()
+
+    def _comecar_noite(self):
+        """Põe na fila a noite de dados/noites.py: cada pessoa de fora que entrou, depois o fim."""
+        noite = NOITES[self.estado.dia]
+        self.titulo = noite["titulo"]
+        self.energia = noite["energia"]
+        passos = []
+        for quem in self.estado.dentro:
+            passos += noite["pessoas"].get(quem, [])
+        if not passos:
+            passos = list(noite["ninguem"])
+        self.fila[0:0] = passos + noite.get("fim", [])
 
     def _ir_para_aldeia(self):
         """O jogador anda pela aldeia; esta cena fica guardada e volta pela seta da entrada."""
@@ -191,33 +211,65 @@ class Dia(Cena):
         self._posicionar()
 
     def _mostrar_perguntas(self, passo):
+        """Perguntas da conversa ou zonas do exame: cada uma uma vez, e um botão para seguir."""
         self.modo = "perguntas"
         self.passo_atual = passo
+        exame = passo["tipo"] == "exame"
+        self._apresentar(passo)
         opcoes = []
-        for i, item in enumerate(passo["perguntas"]):
+        for i, item in enumerate(_itens(passo)):
             if (id(passo), i) not in self.perguntas_feitas:
                 opcoes.append((item["pergunta"], lambda i=i, item=item: self._perguntar(passo, i, item)))
-        opcoes.append((DIA["decidir"], self._decidir))
+        botao = passo.get("botao", DIA["terminar_exame"] if exame else DIA["decidir"])
+        opcoes.append((botao, self._decidir))
         self._criar_blocos(opcoes)
+        if exame and not self.energia:
+            # Sem energia, as zonas ficam apagadas: só dá para terminar o exame.
+            for bloco, _ in self.botoes[:-1]:
+                bloco.habilitado = False
+
+    def _apresentar(self, passo):
+        """Exame ou escolha com "texto": na primeira vez, ele aparece no painel (sem nome em cima)."""
+        if passo.get("texto") and id(passo) not in self.apresentados:
+            self.apresentados.add(id(passo))
+            modo = self.modo
+            self._mostrar_fala("", passo["texto"])
+            self.modo = modo
 
     def _perguntar(self, passo, indice, item):
         self._registrar(["perguntar", indice])
         self.perguntas_feitas.add((id(passo), indice))
         self._aplicar(item.get("efeitos"))
+        if passo["tipo"] == "exame":
+            self.energia -= 1
+            if item.get("sinal"):
+                self.sinais[passo["quem"]] = self.sinais.get(passo["quem"], 0) + 1
+        # Uma resposta pode ter várias frases: a primeira aparece agora, as outras em seguida.
         # Depois da resposta, volta para as perguntas que sobraram.
-        self.fila.insert(0, passo)
+        resposta = item["resposta"]
+        frases = [resposta] if isinstance(resposta, str) else list(resposta)
+        quem = passo.get("quem", self.quem)
+        self.fila[0:0] = [{"tipo": "fala", "quem": quem, "texto": frase} for frase in frases[1:]] + [passo]
         self.botoes = []
-        self._mostrar_fala(self.quem, item["resposta"], pergunta=item["pergunta"])
+        self._mostrar_fala(quem, frases[0], pergunta=item["pergunta"])
 
     def _decidir(self):
         self._registrar(["decidir"])
         self._proximo()
 
     def _mostrar_escolha(self, passo):
-        self.modo = "escolha"
         self.passo_atual = passo
+        self._apresentar(passo)
+        self.modo = "escolha"
         self._criar_blocos([(opcao["texto"], lambda i=i: self._escolher(i))
                             for i, opcao in enumerate(passo["opcoes"])])
+        # Opção que exige sinais (matar): fica apagada até o exame achar o bastante.
+        achados = self.sinais.get(passo.get("quem"), 0)
+        for (bloco, _), opcao in zip(self.botoes, passo["opcoes"]):
+            if achados < opcao.get("requer_sinais", 0):
+                bloco.habilitado = False
+                bloco.definir_texto(opcao.get("texto_bloqueado", opcao["texto"]))
+        self._posicionar()
 
     def _escolher(self, indice):
         self._registrar(["escolher", indice])
@@ -225,6 +277,11 @@ class Dia(Cena):
         self._aplicar(opcao.get("efeitos"))
         if opcao.get("entra"):
             self.estado.dentro.append(opcao["entra"])
+        if opcao.get("tapiri"):
+            self.estado.tapiri.append(opcao["tapiri"])
+        if opcao.get("morre"):
+            self.estado.dentro.remove(opcao["morre"])
+            self.estado.mortos_nomes.append(opcao["morre"])
         self.fila[0:0] = opcao.get("passos", [])
         self._proximo()
 
@@ -256,7 +313,9 @@ class Dia(Cena):
         if not self.caixa:
             return
         centro_x = CENTRO_PAINEL_COM_VISITANTE if self.visitante else CENTRO_PAINEL_SOZINHO
-        y = TOPO_PAINEL + 16 + fontes.fonte_escalada("serif_negrito", config.TAMANHO_PEQUENO + 2).get_linesize()
+        y = TOPO_PAINEL + 16
+        if self.quem:   # narração (sem nome) não guarda lugar para o nome
+            y += fontes.fonte_escalada("serif_negrito", config.TAMANHO_PEQUENO + 2).get_linesize()
         if self.pergunta:
             y += fontes.fonte_escalada("serif_italico", config.TAMANHO_PEQUENO).get_linesize()
         self.caixa.posicao = (centro_x, y - 10)
@@ -334,8 +393,13 @@ class Dia(Cena):
                 tela.blit(pessoa, rect)
 
     def desenhar_interface(self, tela):
-        ui.texto_simples(tela, self.roteiro["titulo"], (40, 60), config.TAMANHO_PEQUENO,
+        ui.texto_simples(tela, self.titulo, (40, 60), config.TAMANHO_PEQUENO,
                          nome_fonte="mono", cor=config.BARRO, ancora="esquerda")
+        if self.energia is not None:
+            # A energia da noite, logo abaixo do título: um ponto por olhar.
+            pontos = "●" * self.energia + "○" * (NOITES[self.estado.dia]["energia"] - self.energia)
+            ui.texto_simples(tela, DIA["energia"] + " " + pontos, (40, 100), config.TAMANHO_PEQUENO,
+                             nome_fonte="mono", cor=config.TABATINGA, ancora="esquerda")
         self.botao_menu.desenhar(tela)
 
         if self.caixa:
@@ -361,3 +425,8 @@ class Dia(Cena):
 
         # A tábua por último: aberta, ela fica por cima de tudo.
         self.tabua.desenhar(tela)
+
+
+def _itens(passo):
+    """As perguntas de uma conversa ou as zonas de um exame."""
+    return passo["zonas"] if passo["tipo"] == "exame" else passo["perguntas"]

@@ -380,6 +380,10 @@ class BlocoOpcao:
                                 margem=self.MARGEM)
         self.rect = pygame.Rect(0, 0, largura, self.altura())
 
+    def definir_texto(self, texto):
+        self.texto = texto
+        self.caixa.definir_texto(texto)
+
     def altura(self):
         return self.caixa.numero_de_linhas() * self.caixa.fonte.get_linesize() + 2 * self.MARGEM
 
@@ -415,3 +419,6 @@ class BlocoOpcao:
         self.caixa.posicao = (self.rect.centerx, self.rect.top + (self.rect.height - altura_texto) // 2)
         self.caixa.rect.midtop = self.caixa.posicao
         self.caixa.desenhar(tela)
+        if not self.habilitado:
+            # Fechado (ex.: matar sem dois sinais): o bloco fica apagado, mas dá para ler.
+            painel_arredondado(tela, self.rect, config.PRETO + (130,))

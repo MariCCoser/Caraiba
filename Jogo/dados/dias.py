@@ -17,6 +17,7 @@
 #   "sinal"      o sinal do pajé fica riscado na tábua de barro: {"tipo": "sinal", "texto": "..."}
 #   "aldeia"     o jogador anda pela aldeia de dia (clica nas ocas) e volta pela seta da
 #                entrada da aldeia, onde o roteiro continua
+#   "noite"      começa a noite na fogueira: o roteiro dela fica em dados/noites.py
 #
 # "efeitos" soma valores às variáveis do estado.py: {"memoria": 1, "vivos": 1}.
 #
@@ -46,18 +47,16 @@ DIAS = {
             {"tipo": "aldeia"},
 
             # A chegada de Yara, pela trilha na mata. Ninguém comenta nem descreve: o jogador só vê e ouve.
+            # De dia a conversa é curta; a história da aldeia dela fica para a fogueira (dados/noites.py).
             {"tipo": "fundo", "fundo": "floresta", "filtro": "dia"},
             {"tipo": "visitante", "visitante": "yara"},
             {"tipo": "fala", "quem": "Yara",
              "texto": "Dormi três noites na beira do fogo. Só preciso de teto até a [chuva passar]."},
             {"tipo": "perguntas", "perguntas": [
                 {"pergunta": "De onde você vem?",
-                 "resposta": "Da costa. Lá a gente troca farinha por ferro com os homens dos barcos."},
+                 "resposta": "Da costa, três dias para o norte."},
                 {"pergunta": "Por que seus olhos estão assim?",
-                 "resposta": "[Fumaça]. A lenha estava verde, e eu dormi perto demais do fogo."},
-                {"pergunta": "Conte da sua aldeia.",
-                 "resposta": "Antes a gente cortava árvore com pedra. Levava o dia. Agora leva um pouco.",
-                 "efeitos": {"memoria": 1}},
+                 "resposta": "[Fumaça]. A lenha estava verde."},
             ]},
             {"tipo": "escolha", "opcoes": [
                 {"texto": "Deixar entrar", "efeitos": {"vivos": 1}, "entra": "Yara", "passos": [
@@ -65,8 +64,7 @@ DIAS = {
                      "texto": "Tenho este machado de ferro. É seu, pelo teto."},
                     {"tipo": "escolha", "opcoes": [
                         {"texto": "Aceitar o machado", "efeitos": {"proximidade_vila": 1}, "passos": [
-                            {"tipo": "fala", "quem": "Yara",
-                             "texto": "Corta em pouco tempo o que a pedra levava o dia inteiro."},
+                            {"tipo": "fala", "quem": "Yara", "texto": "Está pago, então."},
                         ]},
                         {"texto": "Recusar o machado", "passos": [
                             {"tipo": "fala", "quem": "Yara", "texto": "Então fico devendo."},
@@ -86,6 +84,9 @@ DIAS = {
             {"tipo": "fala", "quem": "Pajé",
              "texto": "Sonhei com olho vermelho. O mal deixa o branco do olho raiado."},
             {"tipo": "sinal", "texto": "Olho vermelho, com o branco raiado."},
+
+            # A noite na fogueira: conversa, exame do rosto e decisão (dados/noites.py).
+            {"tipo": "noite"},
         ],
     },
 }
