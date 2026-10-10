@@ -1,5 +1,6 @@
 # O Dia: a fala do pajé, a chegada do visitante na entrada, a conversa, a decisão, o sinal
-# do pajé e, depois dele, a noite na fogueira (conversa, exame do rosto e decisão).
+# do pajé e, depois dele, a noite na fogueira: o jogador clica em quem está sentado em volta
+# do fogo para conversar (e, com quem é de fora, examinar o rosto e decidir onde dorme).
 #
 # A cena só "toca" o roteiro de dados/dias.py (e o da noite, em dados/noites.py), passo a
 # passo. Para mudar o que acontece, edite lá; aqui fica só o jeito de mostrar cada tipo de passo.
@@ -19,6 +20,7 @@ from dados.dias import DIAS
 from dados.noites import NOITES
 from dados.textos import DIA
 from motor import efeitos, fontes, imagens, progresso, ui
+from motor.pessoas import PessoaNoCenario
 from motor.cena import Cena, desenhar_cenario
 from motor.tabua import Tabua
 
@@ -38,6 +40,9 @@ TAMANHO_FALA_DIA = 32
 ESPACO_PAINEL_OPCOES = 18      # entre a fala e os blocos de resposta
 ESPACO_ENTRE_OPCOES = 14
 POSICAO_BOTAO_MENU = (1420, 60)
+CENTRO_DICA_FOGUEIRA = (800, 770)
+TOPO_BOTAO_DORMIR = 815
+LARGURA_BOTAO_DORMIR = 520
 
 
 class Dia(Cena):
@@ -66,6 +71,12 @@ class Dia(Cena):
         self.botoes = []          # [(BlocoOpcao, o que fazer ao clicar)]
         self.perguntas_feitas = set()
         self.apresentados = set()  # exames e escolhas que já mostraram o "texto" de abertura
+        self.passo_aldeia = None   # o passo "aldeia" em que o jogador está andando
+        self.noite = None          # a noite de dados/noites.py, depois do sinal do pajé
+        self.na_fogueira = []      # [PessoaNoCenario] sentados em volta do fogo
+        self.conversados = set()   # com quem o jogador já conversou na fogueira, nesta noite
+        self.sobre = None          # a pessoa da fogueira embaixo do mouse
+        self.botao_dormir = None
         self.painel = pygame.Rect(0, 0, 0, 0)
 
         self.botao_menu = ui.Botao(DIA["menu"], POSICAO_BOTAO_MENU, tamanho=config.TAMANHO_PEQUENO)
@@ -112,6 +123,12 @@ class Dia(Cena):
             self._perguntar(self.passo_atual, indice, _itens(self.passo_atual)[indice])
         elif tipo == "entrada" and self.modo == "aldeia":
             self.voltar_da_aldeia()
+        elif tipo == "conversar" and self.modo == "aldeia":
+            self.conversar_na_aldeia(acao[1])
+        elif tipo == "pessoa" and self.modo == "fogueira":
+            self._conversar_na_fogueira(acao[1])
+        elif tipo == "dormir" and self.modo == "fogueira":
+            self._dormir()
         elif tipo == "decidir" and self.modo == "perguntas":
             self._decidir()
         elif tipo == "escolher" and self.modo == "escolha":
@@ -128,11 +145,7 @@ class Dia(Cena):
             passo = self.fila.pop(0)
             tipo = passo["tipo"]
             if tipo == "fundo":
-                novo = (passo["fundo"], passo.get("filtro", "noite"))
-                if novo != self.fundo:
-                    self.fundo_anterior = self.fundo
-                    self.fundo = novo
-                    self.tempo_troca = 0.0
+                self._trocar_fundo((passo["fundo"], passo.get("filtro", "noite")))
             elif tipo == "visitante":
                 self.visitante = passo["visitante"]
                 self.tempo_chegada = 0.0
@@ -145,10 +158,14 @@ class Dia(Cena):
                 self._mostrar_fala(DIA["tabua"], DIA["anotado"] + " " + passo["texto"])
                 return
             elif tipo == "aldeia":
-                self._ir_para_aldeia()
+                self._ir_para_aldeia(passo)
                 return
             elif tipo == "noite":
                 self._comecar_noite()
+                return
+            elif tipo == "fogueira":
+                self._mostrar_fogueira()
+                return
             elif tipo in ("perguntas", "exame"):
                 self._mostrar_perguntas(passo)
                 return
@@ -159,20 +176,65 @@ class Dia(Cena):
                 raise ValueError("Tipo de passo desconhecido em dados/dias.py: %r" % tipo)
         self.terminar()
 
-    def _comecar_noite(self):
-        """Põe na fila a noite de dados/noites.py: cada pessoa de fora que entrou, depois o fim."""
-        noite = NOITES[self.estado.dia]
-        self.titulo = noite["titulo"]
-        self.energia = noite["energia"]
-        passos = []
-        for quem in self.estado.dentro:
-            passos += noite["pessoas"].get(quem, [])
-        if not passos:
-            passos = list(noite["ninguem"])
-        self.fila[0:0] = passos + noite.get("fim", [])
+    # --- a noite na fogueira ----------------------------------------------------
 
-    def _ir_para_aldeia(self):
+    def _comecar_noite(self):
+        """A noite de dados/noites.py: todos sentam em volta do fogo e o jogador escolhe com quem falar."""
+        self.noite = NOITES[self.estado.dia]
+        self.titulo = self.noite["titulo"]
+        self.energia = self.noite["energia"]
+        self._mostrar_fogueira()
+
+    def _pessoas_da_noite(self):
+        """Quem está em volta do fogo: o pessoal da aldeia e quem de fora entrou (na ordem do dicionário)."""
+        for nome, pessoa in self.noite["pessoas"].items():
+            if not pessoa.get("de_fora") or nome in self.estado.dentro:
+                yield nome, pessoa
+
+    def _mostrar_fogueira(self):
+        self.modo = "fogueira"
+        self.caixa = None
+        self.botoes = []
+        self.visitante = None
+        self._trocar_fundo((self.noite["fundo"], "noite"))
+        self.na_fogueira = [
+            PessoaNoCenario(nome, pessoa["imagem"], pessoa["posicao"], pessoa["escala"], "noite")
+            for nome, pessoa in self._pessoas_da_noite()
+            if not (pessoa.get("uma_vez") and nome in self.conversados)]
+        # "Ir dormir" só abre depois de falar com quem é obrigatório (quem é de fora: decidir onde dorme).
+        faltam = [nome for nome, pessoa in self._pessoas_da_noite()
+                  if pessoa.get("obrigatorio") and nome not in self.conversados]
+        texto = self.noite["dormir_bloqueado"] % " e ".join(faltam) if faltam else self.noite["dormir"]
+        self.botao_dormir = ui.BlocoOpcao(texto, LARGURA_BOTAO_DORMIR)
+        self.botao_dormir.habilitado = not faltam
+        self.botao_dormir.posicionar((config.LARGURA // 2 - LARGURA_BOTAO_DORMIR // 2, TOPO_BOTAO_DORMIR))
+
+    def _conversar_na_fogueira(self, nome):
+        self._registrar(["pessoa", nome])
+        self.conversados.add(nome)
+        self.sobre = None
+        # Depois da conversa, volta para a fogueira.
+        self.fila[0:0] = self.noite["pessoas"][nome]["passos"] + [{"tipo": "fogueira"}]
+        self._proximo()
+
+    def _dormir(self):
+        self._registrar(["dormir"])
+        self.na_fogueira = []
+        self.botao_dormir = None
+        self.fila[0:0] = self.noite.get("fim", [])
+        self._proximo()
+
+    def _trocar_fundo(self, novo):
+        if novo != self.fundo:
+            self.fundo_anterior = self.fundo
+            self.fundo = novo
+            self.tempo_troca = 0.0
+
+    # --- a aldeia de dia --------------------------------------------------------
+
+    def _ir_para_aldeia(self, passo):
         """O jogador anda pela aldeia; esta cena fica guardada e volta pela seta da entrada."""
+        self.passo_aldeia = passo
         self.modo = "aldeia"
         self.caixa = None
         self.botoes = []
@@ -183,6 +245,13 @@ class Dia(Cena):
     def voltar_da_aldeia(self):
         """Chamado pela aldeia (seta da entrada): o roteiro continua na entrada."""
         self._registrar(["entrada"])
+        self._proximo()
+
+    def conversar_na_aldeia(self, nome):
+        """Chamado pela aldeia (clique numa pessoa): a conversa dela e, depois, a aldeia de novo."""
+        self._registrar(["conversar", nome])
+        pessoa = next(p for p in self.passo_aldeia["pessoas"] if p["nome"] == nome)
+        self.fila[0:0] = pessoa["passos"] + [self.passo_aldeia]
         self._proximo()
 
     def ao_entrar(self):
@@ -343,6 +412,14 @@ class Dia(Cena):
         if self.botao_menu.clicado(evento):
             self.jogo.ir_para("menu")
             return
+        if self.modo == "fogueira":
+            if self.botao_dormir.clicado(evento):
+                self._dormir()
+            elif evento.type == pygame.MOUSEBUTTONUP and evento.button == 1:
+                pessoa = self._pessoa_no_ponto(evento.pos)
+                if pessoa:
+                    self._conversar_na_fogueira(pessoa.nome)
+            return
         for bloco, acao in self.botoes:
             if bloco.clicado(evento):
                 acao()
@@ -361,10 +438,23 @@ class Dia(Cena):
             self.caixa.atualizar(dt)
         self._posicionar()
         self.tabua.atualizar(dt, self.jogo.mouse)
+        self.sobre = None
         if not self.tabua.aberta:
             self.botao_menu.atualizar(self.jogo.mouse)
             for bloco, _ in self.botoes:
                 bloco.atualizar(self.jogo.mouse)
+            if self.modo == "fogueira":
+                self.botao_dormir.atualizar(self.jogo.mouse)
+                self.sobre = self._pessoa_no_ponto(self.jogo.mouse)
+                if self.sobre:
+                    ui.mouse_sobre_botao = True   # cursor de "mãozinha"
+
+    def _pessoa_no_ponto(self, ponto):
+        # A da frente (a última desenhada) ganha.
+        for pessoa in reversed(self.na_fogueira):
+            if pessoa.contem(ponto):
+                return pessoa
+        return None
 
     # --- desenho ------------------------------------------------------------
 
@@ -378,6 +468,10 @@ class Dia(Cena):
             novo.set_alpha(None)  # devolve a imagem do cache como estava
         else:
             desenhar_cenario(tela, apelido, filtro, self.tempo)
+
+        if self.modo == "fogueira":
+            for pessoa in self.na_fogueira:
+                pessoa.desenhar(tela)
 
         if self.visitante:
             pessoa = imagens.personagem(self.visitante, filtro)
@@ -422,6 +516,17 @@ class Dia(Cena):
 
         for bloco, _ in self.botoes:
             bloco.desenhar(tela)
+
+        if self.modo == "fogueira":
+            if self.sobre:
+                self.sobre.desenhar_destaque(tela)
+            # A dica, sobre um fundo escuro arredondado, e o botão de ir dormir.
+            fonte = fontes.fonte_escalada("sans", config.TAMANHO_PEQUENO + 2)
+            rect_dica = pygame.Rect((0, 0), fonte.size(self.noite["dica"]))
+            rect_dica.center = CENTRO_DICA_FOGUEIRA
+            ui.painel_arredondado(tela, rect_dica.inflate(36, 18), config.PRETO + (190,), raio=14)
+            ui.texto_simples(tela, self.noite["dica"], rect_dica.center, config.TAMANHO_PEQUENO + 2)
+            self.botao_dormir.desenhar(tela)
 
         # A tábua por último: aberta, ela fica por cima de tudo.
         self.tabua.desenhar(tela)

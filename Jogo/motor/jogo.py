@@ -149,6 +149,13 @@ class Jogo:
         dia.voltar_da_aldeia()
         self.cenas.trocar(dia)
 
+    def conversar_no_dia(self, nome):
+        """Da aldeia de dia, clicando numa pessoa: o Dia guardado toca a conversa com ela."""
+        dia = self.dia_pausado
+        self.dia_pausado = None
+        dia.conversar_na_aldeia(nome)
+        self.cenas.trocar(dia)
+
     def sair(self):
         self.rodando = False
 

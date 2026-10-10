@@ -107,7 +107,7 @@ Com o ambiente ativado, dentro da pasta `Jogo`:
 python -m testes.teste_fluxo
 ```
 O teste joga sozinho, sem abrir janela: menu → opções → introdução inteira → Dia 1 (duas
-vezes: deixando Yara entrar e não deixando) → Noite 1 na fogueira (conversa, exame e decisão) → aldeia e oca → menu. Se terminar com **TUDO CERTO**, está funcionando. Se der erro, a última linha diz o problema.
+vezes: deixando Yara entrar e não deixando) → aldeia com Yara → Noite 1 na fogueira (pajé e Yara: conversa, exame e decisão) → aldeia e oca → menu. Se terminar com **TUDO CERTO**, está funcionando. Se der erro, a última linha diz o problema.
 
 Para salvar imagens das telas durante o teste:
 ```
@@ -129,6 +129,7 @@ Jogo/
 │   ├── cena.py          o modelo de toda cena + fade entre cenas
 │   ├── ui.py            Botao, CaixaTexto (palavras marcadas, letra a letra), painéis arredondados
 │   ├── tabua.py         a tábua de barro (ícone no canto e sinais do pajé)
+│   ├── pessoas.py       gente desenhada no cenário, clicável (aldeia de dia e fogueira)
 │   ├── progresso.py     guarda a partida para o botão "Continuar"
 │   ├── efeitos.py       filtro da noite/dia, linhas, grão, vinheta, luz do fogo
 │   ├── imagens.py       carrega cada imagem uma vez só (e faz provisórios)

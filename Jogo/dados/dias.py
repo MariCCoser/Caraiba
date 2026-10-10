@@ -16,7 +16,14 @@
 #                quem passa a estar dentro da aldeia) e "passos" (o que acontece depois)
 #   "sinal"      o sinal do pajé fica riscado na tábua de barro: {"tipo": "sinal", "texto": "..."}
 #   "aldeia"     o jogador anda pela aldeia de dia (clica nas ocas) e volta pela seta da
-#                entrada da aldeia, onde o roteiro continua
+#                entrada da aldeia, onde o roteiro continua. Pode ter:
+#                  "seta"     o texto da seta (padrão: "Entrada da aldeia")
+#                  "dica"     a dica embaixo da tela
+#                  "pessoas"  quem está andando pela aldeia: clicar abre a conversa (os
+#                             "passos" dela) e, no fim, o jogador volta para a aldeia. Cada
+#                             uma tem "nome", "imagem" (dados/arte.py), "posicao" (o meio da
+#                             borda de baixo da imagem, x e y na tela 1600x900) e "escala"
+#                             (1 = o tamanho de quem fala; 0.5 = metade).
 #   "noite"      começa a noite na fogueira: o roteiro dela fica em dados/noites.py
 #
 # "efeitos" soma valores às variáveis do estado.py: {"memoria": 1, "vivos": 1}.
@@ -47,7 +54,8 @@ DIAS = {
             {"tipo": "aldeia"},
 
             # A chegada de Yara, pela trilha na mata. Ninguém comenta nem descreve: o jogador só vê e ouve.
-            # De dia a conversa é curta; a história da aldeia dela fica para a fogueira (dados/noites.py).
+            # Na entrada a conversa é curta. A história da aldeia dela fica para depois que ela
+            # entra, na aldeia; e a conversa sobre o que se vê nela, para a fogueira (dados/noites.py).
             {"tipo": "fundo", "fundo": "floresta", "filtro": "dia"},
             {"tipo": "visitante", "visitante": "yara"},
             {"tipo": "fala", "quem": "Yara",
@@ -70,6 +78,40 @@ DIAS = {
                             {"tipo": "fala", "quem": "Yara", "texto": "Então fico devendo."},
                         ]},
                     ]},
+
+                    # Yara já está dentro: o jogador anda pela aldeia de novo e, se quiser,
+                    # clica nela para ouvir sobre a aldeia antiga dela.
+                    {"tipo": "visitante", "visitante": None},
+                    {"tipo": "aldeia", "seta": "Esperar a noite",
+                     "dica": "Clique em Yara para conversar, ou numa oca. Depois, espere a noite.",
+                     "pessoas": [
+                        {"nome": "Yara", "imagem": "yara", "posicao": (250, 960), "escala": 0.5, "passos": [
+                            {"tipo": "fundo", "fundo": "aldeia", "filtro": "dia"},
+                            {"tipo": "visitante", "visitante": "yara"},
+                            {"tipo": "fala", "quem": "Yara",
+                             "texto": "A sua aldeia lembra a minha. A minha era maior."},
+                            {"tipo": "perguntas", "botao": "Voltar à aldeia", "perguntas": [
+                                {"pergunta": "Conte da sua aldeia.",
+                                 "resposta": [
+                                     "Ficava na boca de um rio grande. Dava para ver os barcos de longe.",
+                                     "Os barcos queriam pau de tinta. A gente cortava, eles davam ferro.",
+                                     "Cortar árvore com pedra levava o dia. Com o ferro, leva pouco.",
+                                 ],
+                                 "efeitos": {"memoria": 1}},
+                                {"pergunta": "Por que saiu de lá?",
+                                 "resposta": [
+                                     "Os padres levaram muita gente para perto da vila. Minha mãe foi.",
+                                     "Eu não fui. Vou para o sul, onde mora [a gente do meu pai].",
+                                 ]},
+                                {"pergunta": "A febre chegou lá?",
+                                 "resposta": [
+                                     "Chegou com as chuvas. Quem cuidava dos doentes caía depois.",
+                                     "Eu saí antes. [Não estou doente].",
+                                 ]},
+                            ]},
+                            {"tipo": "visitante", "visitante": None},
+                        ]},
+                     ]},
                 ]},
                 {"texto": "Não deixar entrar", "passos": [
                     {"tipo": "fala", "quem": "Yara", "texto": "Então sigo para o sul."},
