@@ -119,15 +119,12 @@ class Aldeia(Cena):
             pygame.draw.polygon(luz, (config.URUCUM if aberta else config.FUMACA) + (255,), pontos, 3)
             tela.blit(luz, (0, 0))
 
-        # As ocas abertas têm sempre uma etiqueta com o nome (dá para saber onde clicar);
-        # as fechadas só mostram a etiqueta quando o mouse passa por cima.
-        for nome in OCAS:
-            if nome in self.abertas:
-                self._rotulo(tela, nome, OCAS[nome]["nome"],
-                             config.URUCUM if nome == self.sobre else config.FUMACA)
-            elif nome == self.sobre:
-                fechada = ALDEIA["fechada_dia"] if self.de_dia else ALDEIA["fechada"]
-                self._rotulo(tela, nome, fechada % OCAS[nome]["nome"], config.FUMACA)
+        # O nome da oca só aparece quando o mouse passa por cima dela.
+        if self.sobre in self.abertas:
+            self._rotulo(tela, self.sobre, OCAS[self.sobre]["nome"], config.URUCUM)
+        elif self.sobre:
+            fechada = ALDEIA["fechada_dia"] if self.de_dia else ALDEIA["fechada"]
+            self._rotulo(tela, self.sobre, fechada % OCAS[self.sobre]["nome"], config.FUMACA)
 
         # A dica, sobre um fundo escuro arredondado (lê bem sobre a mata).
         # De dia ela sobe, para dar lugar à seta.

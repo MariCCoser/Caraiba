@@ -31,7 +31,7 @@ CENARIOS = [
     ("Ar_livre/FogueiraPerto.png", "cenarios/cenario-fogueira-perto.jpg"),
     ("Ar_livre/floresta_atras_personag.png", "cenarios/cenario-floresta.jpg"),
     # Por dentro das ocas (Arte/Ocas/). A oca 1 tem uma imagem só, para o dia e a noite.
-    ("Ocas/Interior_DN_1.png", "cenarios/cenario-oca1.jpg"),
+    ("Ocas/Yorixiriamori_DN.png", "cenarios/cenario-oca1.jpg"),
 ]
 
 # CORTE PADRÃO DAS PESSOAS: do topo da cabeça até o meio das coxas, sempre com esta
