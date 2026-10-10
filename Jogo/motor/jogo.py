@@ -15,7 +15,8 @@ from cenas.opcoes import Opcoes
 from cenas.introducao import Introducao
 from cenas.dia import Dia
 from cenas.tutorial import Tutorial
-from cenas.em_construcao import EmConstrucao
+from cenas.aldeia import Aldeia
+from cenas.oca import Oca
 
 CENAS = {
     "menu": Menu,
@@ -23,7 +24,8 @@ CENAS = {
     "introducao": Introducao,
     "dia": Dia,
     "tutorial": Tutorial,
-    "em_construcao": EmConstrucao,
+    "aldeia": Aldeia,
+    "oca": Oca,
 }
 
 # Tamanhos de janela tentados, do maior para o menor (todos 16:9).
@@ -50,6 +52,8 @@ class Jogo:
         self.estado = Estado()
         # Ações guardadas para a cena refazer ao "Continuar" (veja motor/progresso.py).
         self.acoes_para_refazer = None
+        # Em que oca o jogador está entrando (a aldeia escolhe, a cena Oca lê).
+        self.oca_atual = None
         self.relogio = pygame.time.Clock()
         self.mouse = (0, 0)       # posição do mouse já em coordenadas 1600x900
         self.rodando = True

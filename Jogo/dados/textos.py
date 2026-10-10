@@ -146,11 +146,3 @@ TUTORIAL = {
     "fundo": "fogueira_longe",
     "voltar": "Voltar",
 }
-
-# Cena provisória: aparece no fim do Dia 1 até a Noite 1 ficar pronta.
-EM_CONSTRUCAO = {
-    "titulo": "Noite 1",
-    "texto": "Em construção. Aqui começa a noite na fogueira.",
-    "voltar": "Voltar ao menu",
-    "fundo": "fogueira_perto",
-}

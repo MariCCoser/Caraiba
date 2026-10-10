@@ -122,7 +122,7 @@ Jogo/
 ├── config.py          Paleta, tamanhos, pastas
 ├── estado.py          As variáveis da partida (vivos, mortos, sanidade...)
 ├── dados/             CONTEÚDO: textos e lista de imagens (edite aqui)
-├── cenas/             Cada tela do jogo: menu, opções, tutorial, introdução, dia, em_construcao
+├── cenas/             Cada tela do jogo: menu, opções, tutorial, introdução, dia, aldeia, oca
 ├── motor/             Peças reutilizáveis:
 │   ├── jogo.py          janela, escala para qualquer monitor, troca de cenas
 │   ├── cena.py          o modelo de toda cena + fade entre cenas

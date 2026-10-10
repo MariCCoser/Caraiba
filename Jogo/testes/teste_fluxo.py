@@ -1,4 +1,4 @@
-# Teste de fumaça: joga sozinho, sem janela, menu -> opções -> introdução inteira -> Dia 1 -> cena provisória -> menu.
+# Teste de fumaça: joga sozinho, sem janela, menu -> opções -> introdução inteira -> Dia 1 -> aldeia e oca -> menu.
 #
 # Como rodar (de dentro da pasta Jogo, com o ambiente ativado):
 #     python -m testes.teste_fluxo
@@ -160,14 +160,13 @@ def testar_dia1(jogo):
     clicar_opcao(jogo, "Aceitar o machado")
     passar_falas(jogo)
     esperar_transicao(jogo)
-    assert nome_cena(jogo) == "EmConstrucao", nome_cena(jogo)
+    assert nome_cena(jogo) == "Aldeia", nome_cena(jogo)
     estado = jogo.estado
     assert estado.vivos == 13 and estado.dentro == ["Yara"], (estado.vivos, estado.dentro)
     assert estado.memoria == 1 and estado.proximidade_vila == 1, (estado.memoria, estado.proximidade_vila)
     assert estado.tabua == ["Olho vermelho, com o branco raiado."], estado.tabua
-    rodar(jogo, 5)
-    capturar(jogo, "11-noite1-em-construcao")
     print("ok Dia 1 deixando Yara entrar (perguntas, machado, sinal na tábua)")
+    testar_aldeia_e_oca(jogo, yara_dentro=True)
 
     # 2ª vez: decide direto, sem perguntar, e não deixa entrar.
     jogo.nova_partida()
@@ -178,13 +177,51 @@ def testar_dia1(jogo):
     clicar_opcao(jogo, "Não deixar entrar")
     passar_falas(jogo)
     esperar_transicao(jogo)
-    assert nome_cena(jogo) == "EmConstrucao", nome_cena(jogo)
+    assert nome_cena(jogo) == "Aldeia", nome_cena(jogo)
     estado = jogo.estado
     assert estado.vivos == 12 and estado.dentro == [] and estado.memoria == 0, estado.para_dicionario()
     assert len(estado.tabua) == 1
     print("ok Dia 1 sem deixar Yara entrar")
+    testar_aldeia_e_oca(jogo, yara_dentro=False)
     jogo.ir_para("menu")
     esperar_transicao(jogo)
+
+
+def centro_da_oca(nome):
+    from dados.aldeia import OCAS
+    pontos = OCAS[nome]["contorno"]
+    # Um ponto bem dentro do contorno: a média dos pontos.
+    return (sum(x for x, _ in pontos) // len(pontos), sum(y for _, y in pontos) // len(pontos))
+
+
+def testar_aldeia_e_oca(jogo, yara_dentro):
+    """Na noite 1 só a oca 1 abre; Yara está nela se o jogador a deixou entrar."""
+    aldeia = jogo.cenas.atual
+    assert aldeia.abertas == ["oca1"], aldeia.abertas
+
+    # Mouse em cima da oca 3 (fechada): acende, mas clicar não entra.
+    clicar(jogo, centro_da_oca("oca3"))
+    esperar_transicao(jogo)
+    assert nome_cena(jogo) == "Aldeia", "a oca 3 está fechada na noite 1"
+    rodar(jogo, 20)
+    capturar(jogo, "11-noite1-aldeia")
+
+    # Oca 1: entra.
+    clicar(jogo, centro_da_oca("oca1"))
+    esperar_transicao(jogo)
+    assert nome_cena(jogo) == "Oca", nome_cena(jogo)
+    oca = jogo.cenas.atual
+    assert oca.nome == "oca1"
+    if yara_dentro:
+        assert [quem for quem, _ in oca.pessoas] == ["Yara"], oca.pessoas
+        rodar(jogo, 5)
+        capturar(jogo, "11b-noite1-oca1-yara")
+    else:
+        assert oca.pessoas == [], oca.pessoas
+    clicar_botao(jogo, oca.botao_sair)
+    esperar_transicao(jogo)
+    assert nome_cena(jogo) == "Aldeia"
+    print("ok aldeia de noite: só a oca 1 abre%s" % (" e Yara dorme nela" if yara_dentro else ", vazia"))
 
 
 def testar_continuar_tabua_tutorial(jogo):
@@ -243,12 +280,12 @@ def testar_continuar_tabua_tutorial(jogo):
 
     passar_falas(jogo)
     esperar_transicao(jogo)
-    assert nome_cena(jogo) == "EmConstrucao"
+    assert nome_cena(jogo) == "Aldeia"
     jogo.ir_para("menu")
     esperar_transicao(jogo)
     clicar_botao(jogo, jogo.cenas.atual.botao_continuar)
     esperar_transicao(jogo)
-    assert nome_cena(jogo) == "EmConstrucao", "depois do Dia 1, Continuar leva à Noite 1"
+    assert nome_cena(jogo) == "Aldeia", "depois do Dia 1, Continuar leva à aldeia, de noite"
     print("ok Continuar depois do fim do Dia 1")
 
     # Como se joga, pelo menu.

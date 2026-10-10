@@ -219,9 +219,10 @@ class Dia(Cena):
 
     def terminar(self):
         self.modo = None
-        progresso.salvar("em_construcao", self.estado.para_dicionario())
+        progresso.salvar("aldeia", self.estado.para_dicionario())
         if not self.refazendo:
-            self.jogo.ir_para("em_construcao")
+            # Depois do sinal do pajé, a noite: o jogador anda pela aldeia e entra nas ocas.
+            self.jogo.ir_para("aldeia")
 
     # --- layout ---------------------------------------------------------------
 

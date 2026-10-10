@@ -26,10 +26,12 @@ QUALIDADE_JPG = 80
 
 # Lista de cenários: (arquivo original dentro de Arte/, arquivo de destino dentro de assets/)
 CENARIOS = [
-    ("Aldeia.png", "cenarios/cenario-aldeia.jpg"),
-    ("FogueiraLonge.png", "cenarios/cenario-fogueira-longe.jpg"),
-    ("FogueiraPerto.png", "cenarios/cenario-fogueira-perto.jpg"),
-    ("floresta_atras_personag.png", "cenarios/cenario-floresta.jpg"),
+    ("Ar_livre/Aldeia.png", "cenarios/cenario-aldeia.jpg"),
+    ("Ar_livre/FogueiraLonge.png", "cenarios/cenario-fogueira-longe.jpg"),
+    ("Ar_livre/FogueiraPerto.png", "cenarios/cenario-fogueira-perto.jpg"),
+    ("Ar_livre/floresta_atras_personag.png", "cenarios/cenario-floresta.jpg"),
+    # Por dentro das ocas (Arte/Ocas/). A oca 1 tem uma imagem só, para o dia e a noite.
+    ("Ocas/Interior_DN_1.png", "cenarios/cenario-oca1.jpg"),
 ]
 
 # CORTE PADRÃO DAS PESSOAS: do topo da cabeça até o meio das coxas, sempre com esta
