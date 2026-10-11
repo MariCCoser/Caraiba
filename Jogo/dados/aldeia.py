@@ -57,6 +57,7 @@ OCA = {
     "dorme": "%s dorme aqui esta noite.",
     "vazia": "Ninguém de fora dorme aqui esta noite.",
     "vazia_dia": "Por enquanto, ninguém de fora dorme aqui.",
+    "aqui_dia": "%s está aqui dentro. Clique para conversar.",
 }
 
 

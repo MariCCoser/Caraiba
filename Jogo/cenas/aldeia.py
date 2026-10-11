@@ -38,8 +38,9 @@ class Aldeia(Cena):
 
         # O passo "aldeia" do Dia: quem está andando por aqui, o texto da seta e a dica.
         passo = jogo.dia_pausado.passo_aldeia if self.de_dia else {}
+        # (Quem tem "oca" espera dentro dela: aparece na cena Oca, não aqui fora.)
         self.pessoas = [PessoaNoCenario(p["nome"], p["imagem"], p["posicao"], p["escala"], self.filtro)
-                        for p in passo.get("pessoas", [])]
+                        for p in passo.get("pessoas", []) if not p.get("oca")]
         self.texto_seta = passo.get("seta", ALDEIA["seta"])
         self.dica = passo.get("dica", ALDEIA["dica_dia"]) if self.de_dia else ALDEIA["dica"]
         self.rect_seta = pygame.Rect(0, 0, 330, 104)

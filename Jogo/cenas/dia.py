@@ -72,6 +72,7 @@ class Dia(Cena):
         self.perguntas_feitas = set()
         self.apresentados = set()  # exames e escolhas que já mostraram o "texto" de abertura
         self.passo_aldeia = None   # o passo "aldeia" em que o jogador está andando
+        self.voltar_para = None    # depois de uma conversa de dia: "aldeia" ou "oca" (onde ela começou)
         self.noite = None          # a noite de dados/noites.py, depois do sinal do pajé
         self.na_fogueira = []      # [PessoaNoCenario] sentados em volta do fogo
         self.conversados = set()   # com quem o jogador já conversou na fogueira, nesta noite
@@ -238,9 +239,11 @@ class Dia(Cena):
         self.modo = "aldeia"
         self.caixa = None
         self.botoes = []
+        destino = self.voltar_para or "aldeia"
+        self.voltar_para = None
         if not self.refazendo:
             self.jogo.dia_pausado = self
-            self.jogo.ir_para("aldeia")
+            self.jogo.ir_para(destino)
 
     def voltar_da_aldeia(self):
         """Chamado pela aldeia (seta da entrada): o roteiro continua na entrada."""

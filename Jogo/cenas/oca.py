@@ -2,6 +2,9 @@
 #
 # A oca é a de jogo.oca_atual (a aldeia escolhe antes de entrar). Quem dorme em cada oca:
 # dados/aldeia.py, ONDE_DORME. Quem o jogador levou ao tapiri, na fogueira, não dorme na oca.
+#
+# De dia, quem acabou de entrar na aldeia espera dentro da oca (as "pessoas" com "oca" no
+# passo "aldeia" de dados/dias.py): clicar nela abre a conversa e, no fim, volta para a oca.
 
 import pygame
 
@@ -10,6 +13,7 @@ from dados.aldeia import OCA, OCAS, ONDE_DORME
 from dados.textos import DIA
 from motor import efeitos, imagens, ui
 from motor.cena import Cena, desenhar_cenario
+from motor.pessoas import PessoaNoCenario
 from motor.tabua import Tabua
 
 CENTRO_PESSOA_X = 500
@@ -34,8 +38,17 @@ class Oca(Cena):
         self.pessoas = [(quem, ONDE_DORME[quem]["imagem"]) for quem in estado.dentro
                         if ONDE_DORME.get(quem, {}).get("oca") == self.nome and quem not in estado.tapiri]
 
+        # De dia: quem está esperando aqui dentro, para conversar.
+        self.na_oca = []
+        self.sobre_pessoa = None
         if self.de_dia:
-            texto = OCA["vazia_dia"]
+            passo = jogo.dia_pausado.passo_aldeia or {}
+            self.na_oca = [PessoaNoCenario(p["nome"], p["imagem"], p["posicao"], p["escala"], self.filtro)
+                           for p in passo.get("pessoas", []) if p.get("oca") == self.nome]
+
+        if self.de_dia:
+            nomes = " e ".join(pessoa.nome for pessoa in self.na_oca)
+            texto = OCA["aqui_dia"] % nomes if nomes else OCA["vazia_dia"]
             self.pessoas = []
         elif self.pessoas:
             texto = OCA["dorme"] % " e ".join(quem for quem, _ in self.pessoas)
@@ -72,6 +85,8 @@ class Oca(Cena):
             self.jogo.ir_para("menu")
         elif self.botao_sair.clicado(evento):
             self.sair()
+        elif evento.type == pygame.MOUSEBUTTONUP and evento.button == 1 and self._pessoa_no_ponto(evento.pos):
+            self.jogo.conversar_no_dia(self._pessoa_no_ponto(evento.pos).nome, voltar_para="oca")
         elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_ESCAPE:
             self.sair()
 
@@ -83,6 +98,15 @@ class Oca(Cena):
         if not self.tabua.aberta:
             self.botao_menu.atualizar(self.jogo.mouse)
             self.botao_sair.atualizar(self.jogo.mouse)
+            self.sobre_pessoa = self._pessoa_no_ponto(self.jogo.mouse)
+            if self.sobre_pessoa:
+                ui.mouse_sobre_botao = True   # cursor de "mãozinha"
+
+    def _pessoa_no_ponto(self, ponto):
+        for pessoa in self.na_oca:
+            if pessoa.contem(ponto):
+                return pessoa
+        return None
 
     def desenhar_cena(self, tela):
         desenhar_cenario(tela, self.oca["dentro"], self.filtro, self.tempo)
@@ -90,9 +114,13 @@ class Oca(Cena):
         for i, (_, imagem) in enumerate(self.pessoas):
             pessoa = imagens.personagem(imagem, self.filtro)
             tela.blit(pessoa, pessoa.get_rect(midbottom=(CENTRO_PESSOA_X + i * 300, config.ALTURA)))
+        for pessoa in self.na_oca:
+            pessoa.desenhar(tela)
 
     def desenhar_interface(self, tela):
         self.botao_menu.desenhar(tela)
+        if self.sobre_pessoa:
+            self.sobre_pessoa.desenhar_destaque(tela)
         self._posicionar()
         ui.painel_arredondado(tela, self.painel, config.PRETO + (205,), contorno=config.FUMACA)
         self.titulo.desenhar(tela)

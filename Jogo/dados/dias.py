@@ -19,11 +19,12 @@
 #                entrada da aldeia, onde o roteiro continua. Pode ter:
 #                  "seta"     o texto da seta (padrão: "Entrada da aldeia")
 #                  "dica"     a dica embaixo da tela
-#                  "pessoas"  quem está andando pela aldeia: clicar abre a conversa (os
-#                             "passos" dela) e, no fim, o jogador volta para a aldeia. Cada
-#                             uma tem "nome", "imagem" (dados/arte.py), "posicao" (o meio da
-#                             borda de baixo da imagem, x e y na tela 1600x900) e "escala"
-#                             (1 = o tamanho de quem fala; 0.5 = metade).
+#                  "pessoas"  quem está na aldeia: clicar abre a conversa (os "passos" dela)
+#                             e, no fim, o jogador volta para onde estava. Cada uma tem "nome",
+#                             "imagem" (dados/arte.py), "posicao" (o meio da borda de baixo da
+#                             imagem, x e y na tela 1600x900), "escala" (1 = o tamanho de quem
+#                             fala; 0.5 = metade) e, se ela espera dentro de uma oca, "oca"
+#                             (o nome da oca em dados/aldeia.py): aí ela aparece lá dentro.
 #   "noite"      começa a noite na fogueira: o roteiro dela fica em dados/noites.py
 #
 # "efeitos" soma valores às variáveis do estado.py: {"memoria": 1, "vivos": 1}.
@@ -79,18 +80,20 @@ DIAS = {
                         ]},
                     ]},
 
-                    # Yara já está dentro: o jogador anda pela aldeia de novo e, se quiser,
-                    # clica nela para ouvir sobre a aldeia antiga dela.
+                    # Yara já está dentro, esperando na oca Yorixiriamori: o jogador anda pela
+                    # aldeia de novo e, se quiser, entra na oca e clica nela para ouvir sobre a
+                    # aldeia antiga dela.
                     {"tipo": "visitante", "visitante": None},
                     {"tipo": "aldeia", "seta": "Esperar a noite",
-                     "dica": "Clique em Yara para conversar, ou numa oca. Depois, espere a noite.",
+                     "dica": "Yara está na oca Yorixiriamori. Entre para conversar, ou espere a noite.",
                      "pessoas": [
-                        {"nome": "Yara", "imagem": "yara", "posicao": (250, 960), "escala": 0.5, "passos": [
-                            {"tipo": "fundo", "fundo": "aldeia", "filtro": "dia"},
+                        {"nome": "Yara", "oca": "oca1", "imagem": "yara", "posicao": (480, 960),
+                         "escala": 0.85, "passos": [
+                            {"tipo": "fundo", "fundo": "oca1", "filtro": "dia"},
                             {"tipo": "visitante", "visitante": "yara"},
                             {"tipo": "fala", "quem": "Yara",
                              "texto": "A sua aldeia lembra a minha. A minha era maior."},
-                            {"tipo": "perguntas", "botao": "Voltar à aldeia", "perguntas": [
+                            {"tipo": "perguntas", "botao": "Terminar a conversa", "perguntas": [
                                 {"pergunta": "Conte da sua aldeia.",
                                  "resposta": [
                                      "Ficava na boca de um rio grande. Dava para ver os barcos de longe.",

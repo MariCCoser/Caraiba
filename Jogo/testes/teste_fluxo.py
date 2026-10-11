@@ -293,10 +293,10 @@ def ponto_na_pessoa(pessoa):
 
 
 def clicar_pessoa(jogo, nome):
-    """Clica numa pessoa desenhada no cenário (na aldeia de dia ou na fogueira)."""
+    """Clica numa pessoa desenhada no cenário (na aldeia, numa oca de dia ou na fogueira)."""
     cena = jogo.cenas.atual
-    pessoas = cena.pessoas if nome_cena(jogo) == "Aldeia" else cena.na_fogueira
-    pessoa = next(p for p in pessoas if p.nome == nome)
+    pessoas = {"Aldeia": "pessoas", "Oca": "na_oca", "Dia": "na_fogueira"}[nome_cena(jogo)]
+    pessoa = next(p for p in getattr(cena, pessoas) if p.nome == nome)
     ponto = ponto_na_pessoa(pessoa)
     rodar(jogo, 1, [pygame.event.Event(pygame.MOUSEMOTION, pos=jogo.logica_para_janela(ponto),
                                        rel=(0, 0), buttons=(0, 0, 0))])
@@ -304,28 +304,45 @@ def clicar_pessoa(jogo, nome):
     esperar_transicao(jogo)
 
 
+def entrar_na_oca(jogo, nome):
+    clicar(jogo, centro_da_oca(nome))
+    esperar_transicao(jogo)
+    assert nome_cena(jogo) == "Oca", nome_cena(jogo)
+    return jogo.cenas.atual
+
+
 def testar_aldeia_com_yara(jogo):
-    """Depois de entrar, Yara está na aldeia: clicar nela abre a conversa sobre a aldeia antiga."""
+    """Depois de entrar, Yara espera dentro da oca: clicar nela abre a conversa sobre a aldeia antiga."""
     aldeia = jogo.cenas.atual
     assert nome_cena(jogo) == "Aldeia" and aldeia.de_dia, nome_cena(jogo)
-    assert [p.nome for p in aldeia.pessoas] == ["Yara"] and aldeia.texto_seta == "Esperar a noite"
+    assert aldeia.pessoas == [], "Yara não fica do lado de fora: ela espera na oca"
+    assert aldeia.texto_seta == "Esperar a noite"
     rodar(jogo, 20)
-    capturar(jogo, "10b-dia1-aldeia-com-yara")
+    capturar(jogo, "10b-dia1-aldeia-depois-de-yara")
+
+    oca = entrar_na_oca(jogo, "oca1")
+    assert oca.de_dia and [p.nome for p in oca.na_oca] == ["Yara"]
+    rodar(jogo, 20)
+    capturar(jogo, "10c-dia1-yara-na-oca")
 
     clicar_pessoa(jogo, "Yara")
     dia = jogo.cenas.atual
-    assert nome_cena(jogo) == "Dia" and dia.visitante == "yara" and dia.fundo == ("aldeia", "dia"), (nome_cena(jogo), getattr(dia, "visitante", None), getattr(dia, "fundo", None))
+    assert nome_cena(jogo) == "Dia" and dia.visitante == "yara" and dia.fundo == ("oca1", "dia"), (
+        nome_cena(jogo), getattr(dia, "visitante", None), getattr(dia, "fundo", None))
     passar_falas(jogo)
     assert textos_dos_botoes(jogo) == ["Conte da sua aldeia.", "Por que saiu de lá?",
-                                       "A febre chegou lá?", "Voltar à aldeia"]
+                                       "A febre chegou lá?", "Terminar a conversa"]
     # A história da aldeia dela: três frases, e conta como história ouvida.
     clicar_opcao(jogo, "Conte da sua aldeia.")
     dia.caixa.completar()
     rodar(jogo, 2)
-    capturar(jogo, "10c-dia1-aldeia-de-yara")
+    capturar(jogo, "10d-dia1-aldeia-de-yara")
     passar_falas(jogo)
     assert jogo.estado.memoria == 1
-    clicar_opcao(jogo, "Voltar à aldeia")
+    clicar_opcao(jogo, "Terminar a conversa")
+    esperar_transicao(jogo)
+    assert nome_cena(jogo) == "Oca" and jogo.cenas.atual.de_dia, "a conversa termina dentro da oca"
+    clicar_botao(jogo, jogo.cenas.atual.botao_sair)
     esperar_transicao(jogo)
     assert nome_cena(jogo) == "Aldeia" and jogo.cenas.atual.de_dia
 
@@ -336,12 +353,15 @@ def testar_aldeia_com_yara(jogo):
     esperar_transicao(jogo)
     esperar_transicao(jogo)
     assert nome_cena(jogo) == "Aldeia" and jogo.estado.memoria == 1, (nome_cena(jogo), jogo.estado.memoria)
+    entrar_na_oca(jogo, "oca1")
     clicar_pessoa(jogo, "Yara")
     passar_falas(jogo)
-    assert textos_dos_botoes(jogo) == ["Por que saiu de lá?", "A febre chegou lá?", "Voltar à aldeia"]
-    clicar_opcao(jogo, "Voltar à aldeia")
+    assert textos_dos_botoes(jogo) == ["Por que saiu de lá?", "A febre chegou lá?", "Terminar a conversa"]
+    clicar_opcao(jogo, "Terminar a conversa")
     esperar_transicao(jogo)
-    print("ok aldeia de dia com Yara: conversa sobre a aldeia antiga dela (e Continuar)")
+    clicar_botao(jogo, jogo.cenas.atual.botao_sair)
+    esperar_transicao(jogo)
+    print("ok Yara espera na oca de dia: conversa sobre a aldeia antiga dela (e Continuar)")
 
 
 def testar_noite1_com_yara(jogo):
