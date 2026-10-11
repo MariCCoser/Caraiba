@@ -392,12 +392,17 @@ def testar_noite1_com_yara(jogo):
     clicar_opcao(jogo, "Seus olhos ainda estão vermelhos.")
     passar_falas(jogo)
 
-    # O exame: 3 de energia para 5 zonas.
+    # O exame: na noite 1 só os olhos (1 de energia).
     clicar_opcao(jogo, "Examinar o rosto")
-    assert dia.energia == 3 and textos_dos_botoes(jogo)[-1] == "Terminar o exame"
+    assert dia.energia == 1 and textos_dos_botoes(jogo) == ["Olhos", "Terminar o exame"], (
+        dia.energia, textos_dos_botoes(jogo))
     clicar_opcao(jogo, "Olhos")
+    dia.caixa.completar()
+    rodar(jogo, 5)
+    capturar(jogo, "10f-noite1-olhos")
     passar_falas(jogo)
-    assert dia.energia == 2 and dia.sinais == {"Yara": 1}
+    assert dia.energia == 0 and dia.sinais == {"Yara": 1}
+    assert textos_dos_botoes(jogo) == ["Terminar o exame"]
 
     # Continuar no meio do exame: a mesma energia, o mesmo sinal achado.
     clicar_botao(jogo, dia.botao_menu)
@@ -406,21 +411,10 @@ def testar_noite1_com_yara(jogo):
     esperar_transicao(jogo)
     dia = jogo.cenas.atual
     assert nome_cena(jogo) == "Dia" and dia.titulo == "Noite 1" and dia.modo == "perguntas"
-    assert dia.energia == 2 and dia.sinais == {"Yara": 1} and jogo.estado.memoria == 1
+    assert dia.energia == 0 and dia.sinais == {"Yara": 1} and jogo.estado.memoria == 1
     assert "Pajé" in dia.conversados and "Yara" in dia.conversados
-    assert textos_dos_botoes(jogo) == ["Boca", "Pele", "Pescoço", "Mãos", "Terminar o exame"]
-    print("ok Continuar no meio do exame da Noite 1")
-
-    for zona in ["Boca", "Mãos"]:
-        clicar_opcao(jogo, zona)
-        passar_falas(jogo)
-    assert dia.energia == 0
-    # Sem energia: as zonas que sobraram ficam fechadas, só dá para terminar.
-    assert [b.habilitado for b, _ in dia.botoes] == [False, False, True]
-    clicar(jogo, dia.botoes[0][0].rect.center)     # clique em "Pele", fechada
-    assert dia.modo == "perguntas" and dia.energia == 0, "zona sem energia não pode abrir"
-    rodar(jogo, 5)
-    capturar(jogo, "10d-noite1-sem-energia")
+    assert textos_dos_botoes(jogo) == ["Terminar o exame"]
+    print("ok Continuar no meio do exame da Noite 1 (só os olhos)")
     clicar_opcao(jogo, "Terminar o exame")
 
     # A decisão: só um sinal achado, então matar está fechado.

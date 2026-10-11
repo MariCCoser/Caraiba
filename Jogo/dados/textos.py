@@ -14,6 +14,7 @@ REGRAS = ("• [De dia], alguém chega à entrada. Converse e decida se a pessoa
           "• Os sinais ficam riscados na [tábua de barro], no canto de cima da tela.\n"
           "• [À noite], na fogueira, examine quem está dentro. Cada olhar gasta energia.\n"
           "• Depois: deixar na [oca], levar ao [tapiri] ou [matar] (exige dois sinais).\n"
+          "• [Tapiri]: abrigo isolado, longe das ocas. Quem dorme lá não passa a doença.\n"
           "• A doença só passa dentro da oca, nas redes. Na fogueira, ninguém pega nada.")
 
 MENU = {

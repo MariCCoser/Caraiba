@@ -30,6 +30,8 @@
 #               "pergunta" (o nome no botão), "resposta" (o que se vê) e, se o que se vê for
 #               um sinal, "sinal": True. Cada zona gasta 1 de energia; sem energia, só sobra
 #               "Terminar o exame". Diga de quem é o exame com "quem".
+#               "liberadas": a lista das zonas que dá para olhar nessa noite (ex.: só
+#               ["Olhos"] na noite 1). Sem ela, todas as zonas aparecem.
 #   "texto"     num "exame" ou numa "escolha": a frase que aparece no painel quando eles
 #               começam (sem nome em cima, como narração).
 #   Uma "fala" com "quem": "" também é narração: aparece sem nome em cima.
@@ -50,7 +52,8 @@ EFEITOS_MATAR = {"vivos": -1, "mortos": 1, "mortos_por_sua_mao": 1, "sanidade": 
 NOITES = {
     1: {
         "titulo": "Noite 1",
-        "energia": 3,
+        # Na noite 1 só os olhos podem ser examinados (veja "liberadas" no exame de Yara).
+        "energia": 1,
         "fundo": "fogueira_perto",
         "dica": "Clique em quem está perto do fogo para conversar.",
         "dormir": "Ir dormir",
@@ -92,7 +95,9 @@ NOITES = {
                          "resposta": "Troquei por farinha, na costa. É só pano."},
                     ]},
 
-                    {"tipo": "exame", "quem": "Yara",
+                    # Na noite 1 só os olhos: é o sinal que o pajé contou. As outras zonas
+                    # ficam escritas para as próximas noites (é só pôr o nome em "liberadas").
+                    {"tipo": "exame", "quem": "Yara", "liberadas": ["Olhos"],
                      "texto": "Você chega perto do rosto dela, na luz do fogo.", "zonas": [
                         {"pergunta": "Olhos", "sinal": True,
                          "resposta": "O branco do olho está raiado de vermelho. Lacrimeja perto do fogo."},

@@ -289,7 +289,10 @@ class Dia(Cena):
         exame = passo["tipo"] == "exame"
         self._apresentar(passo)
         opcoes = []
+        liberadas = passo.get("liberadas")   # exame: só estas zonas (sem a lista, todas)
         for i, item in enumerate(_itens(passo)):
+            if liberadas is not None and item["pergunta"] not in liberadas:
+                continue
             if (id(passo), i) not in self.perguntas_feitas:
                 opcoes.append((item["pergunta"], lambda i=i, item=item: self._perguntar(passo, i, item)))
         botao = passo.get("botao", DIA["terminar_exame"] if exame else DIA["decidir"])
