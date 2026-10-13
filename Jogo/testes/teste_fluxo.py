@@ -706,7 +706,7 @@ def testar_dia2_e_noite2(jogo):
     # O sinal do pajé e a fogueira: pajé, Yara e Mbaé. Só Mbaé é obrigatório.
     passar_falas(jogo)
     dia = jogo.cenas.atual
-    assert estado.tabua[-1] == "Corpo quente e tosse seca."
+    assert estado.tabua[-1] == "Boca com feridas."
     assert dia.titulo == "Noite 2" and dia.modo == "fogueira" and dia.energia == 1
     assert [p.nome for p in dia.na_fogueira] == ["Pajé", "Yara", "Mbaé"]
     assert not dia.botao_dormir.habilitado and "Mbaé" in dia.botao_dormir.texto

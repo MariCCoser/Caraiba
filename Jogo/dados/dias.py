@@ -202,8 +202,8 @@ DIAS = {
             {"tipo": "fundo", "fundo": "fogueira_longe", "filtro": "noite"},
             {"tipo": "visitante", "visitante": "paje"},
             {"tipo": "fala", "quem": "Pajé",
-             "texto": "Sonhei com gente tremendo na rede. O mal deixa [o corpo quente]."},
-            {"tipo": "sinal", "texto": "Corpo quente e tosse seca."},
+             "texto": "Sonhei com gente tremendo na rede. O mal deixa [a boca com feridas]."},
+            {"tipo": "sinal", "texto": "Boca com feridas."},
 
             {"tipo": "noite"},
         ],

@@ -91,7 +91,8 @@ ZONAS_YARA_NOITE_2[1] = {"pergunta": "Olhos", "imagem": "olho_yara",
 ZONAS_YARA_NOITE_2[3] = {"pergunta": "Boca",
                          "resposta": "Ela abre a boca e respira fundo, sem tossir. Língua rosada."}
 
-# Mbaé está com a febre, na fase "Quente": suor, olho vermelho e, abrindo a boca, a tosse seca.
+# Mbaé está com a febre: suor, olho vermelho e, abrindo a boca, a tosse e as feridas na língua
+# (o sinal que o pajé conta na noite 2).
 # (Os pontinhos brancos na bochecha ficam para Tamandaré-mirim, na noite 5.)
 # A pintura de jenipapo nunca é sinal de doença.
 ZONAS_MBAE = [
@@ -103,7 +104,7 @@ ZONAS_MBAE = [
     {"pergunta": "Orelhas",
      "resposta": "Nada atrás das orelhas. Só a pintura de jenipapo."},
     {"pergunta": "Boca", "sinal": True,
-     "resposta": "Ele abre a boca e tosse: uma tosse seca, que volta a cada pouco."},
+     "resposta": "Ele abre a boca e tosse. Por dentro, feridas na língua."},
     {"pergunta": "Mãos",
      "resposta": "Calos de arco. Nenhuma bolha na palma."},
     {"pergunta": "Respiração", "sinal": True,
@@ -199,7 +200,7 @@ NOITES = {
                     {"tipo": "fala", "quem": "Pajé", "texto": "Sente. Hoje o fogo custou a pegar."},
                     {"tipo": "perguntas", "botao": "Voltar para a fogueira", "perguntas": [
                         {"pergunta": "O que você viu no sono?",
-                         "resposta": "Gente tremendo na rede, tossindo seco. Foi assim da outra vez."},
+                         "resposta": "Gente tremendo na rede, com a boca ferida. Foi assim da outra vez."},
                         {"pergunta": "Por que olham torto para Mbaé?", "se_dentro": "Mbaé",
                          "resposta": [
                              "Não é a tosse. É o povo dele.",

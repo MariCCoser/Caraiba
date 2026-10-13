@@ -45,7 +45,10 @@ POSICAO_BOTAO_MENU = (1420, 60)
 CENTRO_DICA_FOGUEIRA = (800, 770)
 TOPO_BOTAO_DORMIR = 815
 LARGURA_BOTAO_DORMIR = 520
-LARGURA_DETALHE = 340          # o olho de perto, embaixo do painel
+LARGURA_DETALHE = 520          # o olho de perto, embaixo do painel
+# Fala que mostra o olho de perto: a caixa de texto fica menor, para o olho caber grande.
+LARGURA_PAINEL_DETALHE = 500
+TAMANHO_FALA_DETALHE = 25
 
 
 class Dia(Cena):
@@ -309,14 +312,23 @@ class Dia(Cena):
         self.quem = quem
         self.pergunta = pergunta
         self.imagem_fala = imagem
-        self.caixa = ui.CaixaTexto(texto, LARGURA_PAINEL, (0, 0), ancora="topo",
-                                   tamanho=TAMANHO_FALA_DIA, alinhamento="centro", fundo=False,
+        largura = LARGURA_PAINEL_DETALHE if imagem else LARGURA_PAINEL
+        tamanho = TAMANHO_FALA_DETALHE if imagem else TAMANHO_FALA_DIA
+        self.caixa = ui.CaixaTexto(texto, largura, (0, 0), ancora="topo",
+                                   tamanho=tamanho, alinhamento="centro", fundo=False,
                                    max_linhas=4, margem=MARGEM_PAINEL)
         self.caixa.comecar_digitacao()
 
     def _criar_blocos(self, opcoes):
         """opcoes: lista de (texto, função). Dois blocos por linha; se sobrar um, ele ocupa a linha toda."""
         self.botoes = []
+        # O olho de perto é grande: quando os botões aparecem, ele sai (já foi visto durante a fala)
+        # e a fala volta ao tamanho de sempre, alinhada com os botões.
+        if self.imagem_fala:
+            self.imagem_fala = None
+            self.caixa = ui.CaixaTexto(self.caixa.texto, LARGURA_PAINEL, (0, 0), ancora="topo",
+                                       tamanho=TAMANHO_FALA_DIA, alinhamento="centro", fundo=False,
+                                       max_linhas=4, margem=MARGEM_PAINEL)
         meia_largura = (LARGURA_PAINEL - ESPACO_ENTRE_OPCOES) // 2
         for i, (texto, acao) in enumerate(opcoes):
             sozinho_na_linha = (i == len(opcoes) - 1 and i % 2 == 0)
@@ -460,8 +472,8 @@ class Dia(Cena):
         self.caixa.posicao = (centro_x, y - 10)
         self.caixa.numero_de_linhas()            # garante o layout do texto
         self.caixa.rect.midtop = self.caixa.posicao
-        self.painel = pygame.Rect(centro_x - LARGURA_PAINEL // 2, TOPO_PAINEL,
-                                  LARGURA_PAINEL, self.caixa.rect.bottom - TOPO_PAINEL)
+        self.painel = pygame.Rect(centro_x - self.caixa.largura // 2, TOPO_PAINEL,
+                                  self.caixa.largura, self.caixa.rect.bottom - TOPO_PAINEL)
 
         # O detalhe do exame (o olho de perto) fica logo embaixo do painel; os blocos, embaixo dele.
         y = self.painel.bottom + ESPACO_PAINEL_OPCOES
