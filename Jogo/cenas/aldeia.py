@@ -111,7 +111,7 @@ class Aldeia(Cena):
         self.sobre_pessoa = None if self.sobre_seta else self._pessoa_no_ponto(self.jogo.mouse)
         self.sobre = None if self.sobre_pessoa or self.sobre_seta else self._oca_no_ponto(self.jogo.mouse)
         if self.sobre in self.abertas or self.sobre_seta or self.sobre_pessoa:
-            ui.mouse_sobre_botao = True   # cursor de "mãozinha"
+            ui.mouse_sobre_botao = True   # a tocha do cursor acende (motor/cursor.py)
 
     def _pessoa_no_ponto(self, ponto):
         for pessoa in self.pessoas:

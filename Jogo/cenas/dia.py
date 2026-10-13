@@ -535,7 +535,7 @@ class Dia(Cena):
                 self.botao_dormir.atualizar(self.jogo.mouse)
                 self.sobre = self._pessoa_no_ponto(self.jogo.mouse)
                 if self.sobre:
-                    ui.mouse_sobre_botao = True   # cursor de "mãozinha"
+                    ui.mouse_sobre_botao = True   # a tocha do cursor acende (motor/cursor.py)
 
     def _pessoa_no_ponto(self, ponto):
         # A da frente (a última desenhada) ganha.

@@ -63,10 +63,12 @@ ABERTAS_POR_NOITE = {
 }
 
 ONDE_DORME = {
-    # Yara senta no chão, ao lado da esteira de dormir.
-    "Yara": {"oca": "oca1", "imagem": "yara_sentada", "posicao": (760, 800), "escala": 0.75},
-    # Mbaé senta sobre a cama (o estrado da direita), na mesma pose da fogueira.
-    "Mbaé": {"oca": "oca2", "imagem": "mbae_sentado", "posicao": (1230, 640), "escala": 0.72},
+    # Yara senta no chão, encostada na parede do fundo, ao lado da esteira de dormir. Ocupa
+    # metade da altura da parede (a parede vai de y 215 a 515: uns 300; Yara, uns 150).
+    "Yara": {"oca": "oca1", "imagem": "yara_sentada", "posicao": (1115, 522), "escala": 0.27},
+    # Mbaé senta sobre a cama (o estrado da direita), na mesma pose da fogueira. Ocupa um pouco
+    # mais que a metade da altura da parede (a parede vai de y 235 a 570: uns 335; Mbaé, uns 195).
+    "Mbaé": {"oca": "oca2", "imagem": "mbae_sentado", "posicao": (1235, 598), "escala": 0.35},
 }
 
 # Textos de dentro da oca.

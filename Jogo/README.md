@@ -134,6 +134,7 @@ Jogo/
 │   ├── pessoas.py       gente desenhada no cenário, clicável (aldeia de dia e fogueira)
 │   ├── finais.py        escolhe o final (a fila de dados/finais.py)
 │   ├── febre.py         a febre que passa na oca: sorteio, febre no dia seguinte, morte no 2º dia
+│   ├── cursor.py        o cursor do mouse: uma tocha (a chama cresce sobre o que é clicável)
 │   ├── progresso.py     guarda a partida para o botão "Continuar"
 │   ├── efeitos.py       filtro da noite/dia, linhas, grão, vinheta, luz do fogo
 │   ├── imagens.py       carrega cada imagem uma vez só (e faz provisórios)

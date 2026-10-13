@@ -4,7 +4,7 @@ import pygame
 
 import config
 from estado import Estado
-from motor import efeitos, febre, fontes, imagens, preferencias, progresso, ui
+from motor import cursor, efeitos, febre, fontes, imagens, preferencias, progresso, ui
 from motor.cena import GerenciadorCenas
 
 # Todas as cenas do jogo, pelo nome. Para criar uma cena nova:
@@ -62,6 +62,7 @@ class Jogo:
         self.mouse = (0, 0)       # posição do mouse já em coordenadas 1600x900
         self.rodando = True
         self._cursor_mao = False
+        cursor.usar()             # o cursor do mouse é uma tocha (motor/cursor.py)
 
         efeitos.preparar_texturas()
 
@@ -203,14 +204,10 @@ class Jogo:
         self._mostrar_na_janela()
 
     def _atualizar_cursor(self):
-        # Mãozinha sobre botões: deixa claro o que é clicável.
+        # Sobre o que é clicável, a chama da tocha cresce e clareia: deixa claro onde clicar.
         if ui.mouse_sobre_botao != self._cursor_mao:
             self._cursor_mao = ui.mouse_sobre_botao
-            try:
-                cursor = pygame.SYSTEM_CURSOR_HAND if self._cursor_mao else pygame.SYSTEM_CURSOR_ARROW
-                pygame.mouse.set_cursor(cursor)
-            except Exception:
-                pass  # alguns sistemas não deixam trocar o cursor; não faz mal
+            cursor.usar(acesa=self._cursor_mao)
 
     def _mostrar_na_janela(self):
         area = self._area

@@ -15,7 +15,7 @@ import config
 from motor import fontes, preferencias
 
 # Fica True no quadro em que o mouse está sobre algum botão habilitado
-# (o jogo usa isso para trocar o cursor para a "mãozinha").
+# (o jogo usa isso para acender a tocha do cursor, motor/cursor.py).
 mouse_sobre_botao = False
 
 

@@ -116,7 +116,7 @@ class Oca(Cena):
             self.botao_sair.atualizar(self.jogo.mouse)
             self.sobre_pessoa = self._pessoa_no_ponto(self.jogo.mouse)
             if self.sobre_pessoa:
-                ui.mouse_sobre_botao = True   # cursor de "mãozinha"
+                ui.mouse_sobre_botao = True   # a tocha do cursor acende (motor/cursor.py)
 
     def _pessoa_no_ponto(self, ponto):
         for pessoa in self.na_oca:
