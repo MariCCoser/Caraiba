@@ -31,8 +31,8 @@
 #               Uma pergunta com "se_dentro": "Mbaé" só aparece se Mbaé entrou na aldeia.
 #   "exame"     o jogador escolhe as zonas do rosto para olhar de perto. Cada zona tem
 #               "pergunta" (o nome no botão), "resposta" (o que se vê) e, se o que se vê for
-#               um sinal, "sinal": True. Cada zona gasta 1 de energia ("custo": 2 para abrir a
-#               boca). Zona que custa mais do que sobrou fica apagada. Diga de quem é o exame
+#               um sinal, "sinal": True. Cada zona gasta 1 de energia (ou o "custo" dela, se
+#               tiver). Zona que custa mais do que sobrou fica apagada. Diga de quem é o exame
 #               com "quem". "liberadas": a lista das zonas que dá para olhar nessa noite (ex.:
 #               só ["Olhos"] na noite 1). Sem ela, todas as zonas aparecem.
 #               As zonas e os sinais seguem Textos/A_Febre_Caraiba.pdf.
@@ -56,6 +56,12 @@
 # seguinte e derruba a sanidade, mesmo quando ele acerta).
 EFEITOS_MATAR = {"vivos": -1, "mortos": 1, "mortos_por_sua_mao": 1, "sanidade": -3}
 
+# Onde cada um senta na fogueira (cenário "fogueira_perto"): (x, y) é onde a imagem encosta embaixo.
+# Quem está mais longe (nos troncos do fundo) fica menor.
+POSICAO_YARA, ESCALA_YARA = (300, 830), 0.66     # no chão, as costas apoiadas no tronco de baixo
+POSICAO_PAJE, ESCALA_PAJE = (1390, 545), 0.6     # sentado em cima do tronco da direita
+POSICAO_MBAE, ESCALA_MBAE = (470, 520), 0.5      # na ponta do tronco de cima, à esquerda
+
 TEXTO_EXAME = "Você chega perto do rosto, na luz do fogo."
 FALA_MATAR = {"tipo": "fala", "quem": "", "texto": "O fogo estala. Ninguém na aldeia diz nada."}
 
@@ -67,7 +73,7 @@ ZONAS_YARA = [
      "resposta": "O branco do olho está raiado de vermelho. Lacrimeja perto do fogo."},
     {"pergunta": "Orelhas",
      "resposta": "Nada atrás das orelhas. A pele está limpa."},
-    {"pergunta": "Boca", "custo": 2,
+    {"pergunta": "Boca",
      "resposta": "Ela abre a boca. Por dentro da bochecha, nada. Língua rosada."},
     {"pergunta": "Mãos",
      "resposta": "Firmes. Terra seca debaixo das unhas e calos de carregar peso."},
@@ -79,9 +85,12 @@ ZONAS_YARA = [
 ZONAS_YARA_NOITE_2 = [dict(zona) for zona in ZONAS_YARA]
 ZONAS_YARA_NOITE_2[1] = {"pergunta": "Olhos",
                          "resposta": "Ainda um pouco vermelhos, mas o branco clareou desde ontem."}
+ZONAS_YARA_NOITE_2[3] = {"pergunta": "Boca",
+                         "resposta": "Ela abre a boca e respira fundo, sem tossir. Língua rosada."}
 
-# Mbaé está com a febre, na fase "Quente": suor, olho vermelho, tosse seca e, abrindo a boca,
-# os pontinhos brancos. A pintura de jenipapo nunca é sinal de doença.
+# Mbaé está com a febre, na fase "Quente": suor, olho vermelho e, abrindo a boca, a tosse seca.
+# (Os pontinhos brancos na bochecha ficam para Tamandaré-mirim, na noite 5.)
+# A pintura de jenipapo nunca é sinal de doença.
 ZONAS_MBAE = [
     {"pergunta": "Testa", "sinal": True,
      "resposta": "Molhada de suor e quente, mesmo longe do fogo."},
@@ -89,12 +98,12 @@ ZONAS_MBAE = [
      "resposta": "Vermelhos e úmidos. Ele pisca devagar."},
     {"pergunta": "Orelhas",
      "resposta": "Nada atrás das orelhas. Só a pintura de jenipapo."},
-    {"pergunta": "Boca", "custo": 2, "sinal": True,
-     "resposta": "Por dentro da bochecha, pontinhos brancos, como grão de sal."},
+    {"pergunta": "Boca", "sinal": True,
+     "resposta": "Ele abre a boca e tosse: uma tosse seca, que volta a cada pouco."},
     {"pergunta": "Mãos",
      "resposta": "Calos de arco. Nenhuma bolha na palma."},
     {"pergunta": "Respiração", "sinal": True,
-     "resposta": "Uma tosse seca e curta, que volta a cada pouco."},
+     "resposta": "Respira curto, e o peito chia um pouco."},
 ]
 
 
@@ -121,7 +130,7 @@ NOITES = {
         "pessoas": {
             # O pajé, à direita do fogo: fala do sinal e do tapiri. Dá para voltar a ele.
             "Pajé": {
-                "imagem": "paje_sentado", "posicao": (1340, 880), "escala": 0.8,
+                "imagem": "paje_sentado", "posicao": POSICAO_PAJE, "escala": ESCALA_PAJE,
                 "passos": [
                     {"tipo": "visitante", "visitante": "paje"},
                     {"tipo": "fala", "quem": "Pajé", "texto": "Sente. O fogo está bom hoje."},
@@ -140,7 +149,7 @@ NOITES = {
             # Yara, à esquerda do fogo. A conversa é curta e só sobre o que se vê nela; a
             # história da aldeia dela ficou para o dia, na oca (dados/dias.py).
             "Yara": {
-                "imagem": "yara_sentada", "posicao": (330, 870), "escala": 0.72,
+                "imagem": "yara_sentada", "posicao": POSICAO_YARA, "escala": ESCALA_YARA,
                 "de_fora": True, "uma_vez": True, "obrigatorio": True,
                 "passos": [
                     {"tipo": "visitante", "visitante": "yara"},
@@ -170,7 +179,8 @@ NOITES = {
 
     2: {
         "titulo": "Noite 2",
-        "energia": 4,
+        # Na noite 2, 1 olhar só, e só os olhos ou a boca (a tosse): veja "liberadas".
+        "energia": 1,
         "fundo": "fogueira_perto",
         "dica": "Clique em quem está perto do fogo para conversar.",
         "dormir": "Ir dormir",
@@ -179,7 +189,7 @@ NOITES = {
             # O pajé fala do sinal, do tapiri (um lugar só) e do que a aldeia diz de Mbaé:
             # a aldeia quer Mbaé fora pelo povo dele, não pela tosse.
             "Pajé": {
-                "imagem": "paje_sentado", "posicao": (1360, 880), "escala": 0.8,
+                "imagem": "paje_sentado", "posicao": POSICAO_PAJE, "escala": ESCALA_PAJE,
                 "passos": [
                     {"tipo": "visitante", "visitante": "paje"},
                     {"tipo": "fala", "quem": "Pajé", "texto": "Sente. Hoje o fogo custou a pegar."},
@@ -200,7 +210,7 @@ NOITES = {
 
             # Yara, se ainda está na aldeia e não está no tapiri. Não é obrigatório falar com ela.
             "Yara": {
-                "imagem": "yara_sentada", "posicao": (230, 870), "escala": 0.72,
+                "imagem": "yara_sentada", "posicao": POSICAO_YARA, "escala": ESCALA_YARA,
                 "de_fora": True, "uma_vez": True,
                 "passos": [
                     {"tipo": "visitante", "visitante": "yara"},
@@ -209,7 +219,8 @@ NOITES = {
                         {"pergunta": "Seus olhos melhoraram.",
                          "resposta": "Aqui a lenha é seca. [Logo passa de vez]."},
                     ]},
-                    {"tipo": "exame", "quem": "Yara", "texto": TEXTO_EXAME, "zonas": ZONAS_YARA_NOITE_2},
+                    {"tipo": "exame", "quem": "Yara", "liberadas": ["Olhos", "Boca"],
+                     "texto": TEXTO_EXAME, "zonas": ZONAS_YARA_NOITE_2},
                     escolha_onde_dorme("Yara", "Então volto para a mesma rede.",
                                        "Sozinha, então. Já dormi em lugar pior."),
                     {"tipo": "visitante", "visitante": None},
@@ -219,7 +230,7 @@ NOITES = {
             # Mbaé, entre Yara e o fogo. Está com a febre: se dormir na oca, de 1 a 3 moradores
             # pegam a febre, acordam doentes no dia 3 e morrem no dia 4 (dados/febre.py).
             "Mbaé": {
-                "imagem": "mbae_sentado", "posicao": (545, 865), "escala": 0.7,
+                "imagem": "mbae_sentado", "posicao": POSICAO_MBAE, "escala": ESCALA_MBAE,
                 "de_fora": True, "uma_vez": True, "obrigatorio": True,
                 "passos": [
                     {"tipo": "visitante", "visitante": "mbae"},
@@ -230,7 +241,8 @@ NOITES = {
                         {"pergunta": "Essa tosse vem de onde?",
                          "resposta": "Da água fria do rio. [Já tive pior]."},
                     ]},
-                    {"tipo": "exame", "quem": "Mbaé", "texto": TEXTO_EXAME, "zonas": ZONAS_MBAE},
+                    {"tipo": "exame", "quem": "Mbaé", "liberadas": ["Olhos", "Boca"],
+                     "texto": TEXTO_EXAME, "zonas": ZONAS_MBAE},
                     escolha_onde_dorme("Mbaé", "Durmo no canto. Não incomodo ninguém.",
                                        "Sozinho no escuro. Já passei noite pior na caça."),
                     {"tipo": "visitante", "visitante": None},

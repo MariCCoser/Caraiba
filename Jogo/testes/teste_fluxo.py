@@ -707,7 +707,7 @@ def testar_dia2_e_noite2(jogo):
     passar_falas(jogo)
     dia = jogo.cenas.atual
     assert estado.tabua[-1] == "Corpo quente e tosse seca."
-    assert dia.titulo == "Noite 2" and dia.modo == "fogueira" and dia.energia == 4
+    assert dia.titulo == "Noite 2" and dia.modo == "fogueira" and dia.energia == 1
     assert [p.nome for p in dia.na_fogueira] == ["Pajé", "Yara", "Mbaé"]
     assert not dia.botao_dormir.habilitado and "Mbaé" in dia.botao_dormir.texto
     rodar(jogo, 40)
@@ -721,20 +721,17 @@ def testar_dia2_e_noite2(jogo):
     passar_falas(jogo)
     clicar_opcao(jogo, "Voltar para a fogueira")
 
-    # Mbaé: o exame com 4 de energia. Abrir a boca custa 2.
+    # Mbaé: na noite 2, 1 olhar só, e só os olhos ou a boca (a tosse).
     clicar_pessoa(jogo, "Mbaé")
     passar_falas(jogo)
     clicar_opcao(jogo, "Examinar o rosto")
-    assert textos_dos_botoes(jogo) == ["Testa", "Olhos", "Orelhas", "Boca", "Mãos", "Respiração",
-                                       "Terminar o exame"]
-    examinar(jogo, ["Boca"])
-    assert dia.energia == 2
-    examinar(jogo, ["Testa"])
-    # Com 1 de energia, tudo que custa 1 continua aberto.
-    assert all(b.habilitado for b, _ in dia.botoes)
-    examinar(jogo, ["Respiração"])
-    assert dia.energia == 0 and dia.sinais == {"Mbaé": 3}
-    assert [b.habilitado for b, _ in dia.botoes] == [False, False, False, True]
+    assert textos_dos_botoes(jogo) == ["Olhos", "Boca", "Terminar o exame"], textos_dos_botoes(jogo)
+    clicar_opcao(jogo, "Boca")
+    dia.caixa.completar()
+    assert "tosse" in dia.caixa.texto, dia.caixa.texto
+    passar_falas(jogo)
+    assert dia.energia == 0 and dia.sinais == {"Mbaé": 1}
+    assert [b.habilitado for b, _ in dia.botoes] == [False, True], "sem energia, os olhos ficam fechados"
     rodar(jogo, 5)
     capturar(jogo, "22-noite2-exame-mbae")
     clicar_opcao(jogo, "Terminar o exame")
@@ -757,7 +754,7 @@ def testar_dia2_e_noite2(jogo):
     assert oca.pessoas == [("Mbaé", "mbae")]
     rodar(jogo, 5)
     capturar(jogo, "23-noite2-oca2-mbae")
-    print("ok Dia 2 e Noite 2 (Mbaé na oca, exame com a boca, febre sorteada)")
+    print("ok Dia 2 e Noite 2 (Mbaé na oca, 1 olhar: a tosse na boca, febre sorteada)")
     jogo.ir_para("menu")
     esperar_transicao(jogo)
 
