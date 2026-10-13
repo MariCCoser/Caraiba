@@ -17,9 +17,10 @@ import pygame
 
 import config
 from dados.dias import DIAS
+from dados.febre import DOENTES
 from dados.noites import NOITES
 from dados.textos import DIA
-from motor import efeitos, fontes, imagens, progresso, ui
+from motor import efeitos, finais, fontes, imagens, progresso, ui
 from motor.pessoas import PessoaNoCenario
 from motor.cena import Cena, desenhar_cenario
 from motor.tabua import Tabua
@@ -354,6 +355,8 @@ class Dia(Cena):
             self.estado.dentro.append(opcao["entra"])
         if opcao.get("tapiri"):
             self.estado.tapiri.append(opcao["tapiri"])
+            if opcao["tapiri"] in DOENTES:
+                self.estado.tapiri_usos += 1
         if opcao.get("morre"):
             self.estado.dentro.remove(opcao["morre"])
             self.estado.mortos_nomes.append(opcao["morre"])
@@ -376,6 +379,14 @@ class Dia(Cena):
 
     def terminar(self):
         self.modo = None
+        # Fim da noite: a partida pode acabar aqui, antes do dia 10 (motor/finais.py).
+        final = finais.fim_da_noite(self.estado) if self.noite else None
+        if final:
+            self.estado.final = final["id"]
+            progresso.salvar("final", self.estado.para_dicionario())
+            if not self.refazendo:
+                self.jogo.ir_para("final")
+            return
         progresso.salvar("aldeia", self.estado.para_dicionario())
         if not self.refazendo:
             # Depois do sinal do pajé, a noite: o jogador anda pela aldeia e entra nas ocas.

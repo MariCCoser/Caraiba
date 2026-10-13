@@ -17,6 +17,7 @@ from cenas.dia import Dia
 from cenas.tutorial import Tutorial
 from cenas.aldeia import Aldeia
 from cenas.oca import Oca
+from cenas.final import Final
 
 CENAS = {
     "menu": Menu,
@@ -26,6 +27,7 @@ CENAS = {
     "tutorial": Tutorial,
     "aldeia": Aldeia,
     "oca": Oca,
+    "final": Final,
 }
 
 # Tamanhos de janela tentados, do maior para o menor (todos 16:9).

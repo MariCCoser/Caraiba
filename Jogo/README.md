@@ -57,6 +57,8 @@ Todo o texto do jogo fica na pasta **`dados/`**. Abra com qualquer editor de tex
 | Os cartões da introdução (e o cenário de cada um) | `dados/textos.py`, parte `INTRODUCAO` |
 | O que acontece em cada dia: falas do pajé, visitante, perguntas, escolhas, sinal | `dados/dias.py` (as instruções estão no topo do arquivo) |
 | O que acontece em cada noite, na fogueira: conversa, zonas do exame, energia, decisão | `dados/noites.py` (as instruções estão no topo do arquivo) |
+| Os finais: a fila, as condições e os textos das três telas | `dados/finais.py` (as contas: `Textos/Caraiba_Contas_dos_Finais.md`) |
+| Quem está doente de verdade (para as contas dos finais) | `dados/febre.py` |
 | Qual arquivo de imagem é cada cenário | `dados/arte.py` |
 | Cores, tamanhos de letra, velocidade do texto | `config.py` |
 
@@ -130,6 +132,7 @@ Jogo/
 │   ├── ui.py            Botao, CaixaTexto (palavras marcadas, letra a letra), painéis arredondados
 │   ├── tabua.py         a tábua de barro (ícone no canto e sinais do pajé)
 │   ├── pessoas.py       gente desenhada no cenário, clicável (aldeia de dia e fogueira)
+│   ├── finais.py        escolhe o final (a fila de dados/finais.py)
 │   ├── progresso.py     guarda a partida para o botão "Continuar"
 │   ├── efeitos.py       filtro da noite/dia, linhas, grão, vinheta, luz do fogo
 │   ├── imagens.py       carrega cada imagem uma vez só (e faz provisórios)

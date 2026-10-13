@@ -92,7 +92,8 @@ def testar_estado_inicial():
     estado = Estado()
     esperado = {"dia": 1, "vivos": 12, "mortos": 0, "mortos_por_sua_mao": 0, "entregues": 0,
                 "proximidade_vila": 0, "rio_acima": 0, "memoria": 0, "recusas_aleixo": 0,
-                "pistas": 0, "sanidade": 10, "dentro": [], "tapiri": [], "mortos_nomes": [], "tabua": []}
+                "pistas": 0, "sanidade": 10, "tapiri_usos": 0, "viu_anhanga": 0, "seguiu_paje": 0,
+                "inocentes": 0, "dentro": [], "tapiri": [], "mortos_nomes": [], "tabua": [], "final": None}
     assert estado.para_dicionario() == esperado, estado.para_dicionario()
     print("ok Estado com os valores iniciais do documento")
 
@@ -273,10 +274,118 @@ def testar_dia1(jogo):
     assert nome_cena(jogo) == "Aldeia", nome_cena(jogo)
     estado = jogo.estado
     assert estado.dentro == ["Yara"] and estado.tapiri == ["Yara"] and estado.proximidade_vila == 0
+    assert estado.tapiri_usos == 0, "Yara é sã: levar ao tapiri não conta para o final O Tapiri"
     print("ok Noite 1 levando Yara ao tapiri")
     testar_aldeia_e_oca(jogo, yara_dentro=False)
+
+    # 4ª vez: mata Yara. Uma morte só: o jogo segue.
+    jogar_ate_matar_yara(jogo)
+    esperar_transicao(jogo)
+    estado = jogo.estado
+    assert nome_cena(jogo) == "Aldeia", nome_cena(jogo)
+    assert estado.dentro == [] and estado.mortos_nomes == ["Yara"] and estado.vivos == 12
+    assert estado.mortos_por_sua_mao == 1 and estado.sanidade == 7 and estado.final is None
+    print("ok Noite 1 matando Yara (o jogo segue)")
+
+    # 5ª vez: quem já matou duas pessoas mata a terceira: A Loucura, antes do dia 10.
+    jogar_ate_matar_yara(jogo, mortes_antes=2)
+    esperar_transicao(jogo)
+    assert nome_cena(jogo) == "Final" and jogo.estado.final == "loucura", nome_cena(jogo)
+    final = jogo.cenas.atual
+    rodar(jogo, 10)
+    capturar(jogo, "16-final-loucura-cena")
+    for _ in range(2):
+        clicar_botao(jogo, final.botao)   # completa o texto
+        clicar_botao(jogo, final.botao)   # próxima tela
+    assert final.indice == 2 and final.botao.texto == "Voltar ao menu"
+    final.caixa.completar()
+    rodar(jogo, 3)
+    capturar(jogo, "17-final-loucura-fonte")
+    # Continuar, com a partida acabada, volta à tela do final.
+    clicar_botao(jogo, final.botao)
+    esperar_transicao(jogo)
+    assert nome_cena(jogo) == "Menu"
+    clicar_botao(jogo, jogo.cenas.atual.botao_continuar)
+    esperar_transicao(jogo)
+    assert nome_cena(jogo) == "Final" and jogo.cenas.atual.final["id"] == "loucura"
+    print("ok fim antecipado: A Loucura na noite em que a 3ª pessoa morre (e Continuar)")
     jogo.ir_para("menu")
     esperar_transicao(jogo)
+
+
+def jogar_ate_matar_yara(jogo, mortes_antes=0):
+    """Joga o Dia 1 deixando Yara entrar e, na fogueira, mata Yara (sem examinar) e vai dormir."""
+    jogo.nova_partida()
+    jogo.estado.mortos_por_sua_mao = mortes_antes
+    jogo.ir_para("dia")
+    esperar_transicao(jogo)
+    passar_falas(jogo)
+    clicar_opcao(jogo, "Decidir")
+    clicar_opcao(jogo, "Deixar entrar")
+    passar_falas(jogo)
+    clicar_opcao(jogo, "Recusar o machado")
+    passar_falas(jogo)
+    clicar_pessoa(jogo, "Yara")
+    passar_falas(jogo)
+    clicar_opcao(jogo, "Examinar o rosto")
+    clicar_opcao(jogo, "Terminar o exame")
+    clicar_opcao(jogo, "Matar")
+    passar_falas(jogo)
+    dia = jogo.cenas.atual
+    assert dia.modo == "fogueira" and [p.nome for p in dia.na_fogueira] == ["Pajé"]
+    clicar_botao(jogo, dia.botao_dormir)
+    passar_falas(jogo)
+
+
+def testar_finais():
+    """As contas de cada final (Textos/Caraiba_Contas_dos_Finais.md), sem jogar."""
+    from motor import finais
+
+    def estado_com(**valores):
+        estado = Estado()
+        for nome, valor in valores.items():
+            setattr(estado, nome, valor)
+        return estado
+
+    # O dia 10: cada caminho típico cai no seu final.
+    casos = [
+        ({"entregues": 2, "vivos": 15}, "troca"),
+        ({"proximidade_vila": 3}, "troca"),
+        ({"mortos_por_sua_mao": 3}, "loucura"),
+        ({"entregues": 2, "mortos_por_sua_mao": 3}, "troca"),          # a fila: Troca vem antes
+        ({"seguiu_paje": 3, "inocentes": 1, "tapiri_usos": 3}, "batismo"),
+        ({"seguiu_paje": 3, "inocentes": 0, "tapiri_usos": 3, "vivos": 14}, "tapiri"),
+        ({"rio_acima": 4}, "rio_acima"),
+        ({"rio_acima": 4, "entregues": 1}, "vazio"),                     # entregou alguém: não é Rio Acima
+        ({"viu_anhanga": 3, "memoria": 5, "vivos": 15}, "anhanga"),     # Anhangá antes da Honra
+        ({"viu_anhanga": 3, "mortos_por_sua_mao": 1}, "vazio"),
+        ({"memoria": 5, "vivos": 9}, "honra"),
+        ({"memoria": 5, "vivos": 8}, "vazio"),
+        ({"memoria": 4, "vivos": 15, "tapiri_usos": 3}, "tapiri"),
+        ({"tapiri_usos": 3, "vivos": 6}, "vazio"),
+        ({}, "vazio"),
+    ]
+    for valores, esperado in casos:
+        estado = estado_com(dia=10, **valores)
+        assert finais.escolher(estado)["id"] == esperado, (valores, finais.escolher(estado)["id"])
+        assert finais.fim_da_noite(estado)["id"] == esperado
+
+    # Antes do dia 10: só os finais antecipados (ou a aldeia vazia) acabam o jogo.
+    antes = [
+        ({"dia": 1, "mortos_por_sua_mao": 1}, None),
+        ({"dia": 4, "mortos_por_sua_mao": 3}, "loucura"),
+        ({"dia": 3, "proximidade_vila": 3}, "troca"),
+        ({"dia": 6, "entregues": 2}, "troca"),
+        ({"dia": 9, "rio_acima": 4}, "rio_acima"),
+        ({"dia": 9, "vivos": 7}, "vazio"),
+        ({"dia": 9, "vivos": 8}, None),
+        ({"dia": 5, "memoria": 5, "vivos": 15}, None),                  # A Honra só no dia 10
+        ({"dia": 7, "tapiri_usos": 3}, None),                           # O Tapiri só no dia 10
+    ]
+    for valores, esperado in antes:
+        final = finais.fim_da_noite(estado_com(**valores))
+        assert (final["id"] if final else None) == esperado, (valores, final and final["id"])
+    print("ok contas dos finais (fila do dia 10 e fins antecipados)")
 
 
 def textos_dos_botoes(jogo):
@@ -387,7 +496,7 @@ def testar_noite1_com_yara(jogo):
     clicar_pessoa(jogo, "Yara")
     assert dia.visitante == "yara"
     passar_falas(jogo)
-    assert textos_dos_botoes(jogo) == ["Seus olhos ainda estão vermelhos.", "Que terra é essa nas suas unhas?",
+    assert textos_dos_botoes(jogo) == ["Seus olhos ainda estão vermelhos.", "Como você sobreviveu sozinha?",
                                        "Esse pano é dos estrangeiros?", "Examinar o rosto"]
     clicar_opcao(jogo, "Seus olhos ainda estão vermelhos.")
     passar_falas(jogo)
@@ -417,12 +526,10 @@ def testar_noite1_com_yara(jogo):
     print("ok Continuar no meio do exame da Noite 1 (só os olhos)")
     clicar_opcao(jogo, "Terminar o exame")
 
-    # A decisão: só um sinal achado, então matar está fechado.
+    # A decisão: as três opções abertas (matar também).
     assert dia.modo == "escolha"
-    assert textos_dos_botoes(jogo) == ["Deixar na oca", "Levar ao tapiri", "Matar · só com dois sinais"]
-    assert not dia.botoes[2][0].habilitado
-    clicar(jogo, dia.botoes[2][0].rect.center)     # clique em "Matar", fechado
-    assert dia.modo == "escolha" and jogo.estado.dentro == ["Yara"], "matar exige dois sinais"
+    assert textos_dos_botoes(jogo) == ["Deixar na oca", "Levar ao tapiri", "Matar"]
+    assert all(bloco.habilitado for bloco, _ in dia.botoes)
     dia.caixa.completar()
     rodar(jogo, 5)
     capturar(jogo, "10e-noite1-decisao")
@@ -437,7 +544,7 @@ def testar_noite1_com_yara(jogo):
     esperar_transicao(jogo)
     assert nome_cena(jogo) == "Aldeia", nome_cena(jogo)
     assert jogo.estado.tapiri == [] and jogo.estado.mortos_por_sua_mao == 0
-    print("ok Noite 1 na fogueira (pajé e Yara, exame com energia, matar fechado, Yara na oca)")
+    print("ok Noite 1 na fogueira (pajé e Yara, exame com energia, matar aberto, Yara na oca)")
 
 
 def centro_da_oca(nome):
@@ -683,6 +790,7 @@ def testar_desempenho():
 if __name__ == "__main__":
     testar_marcacao()
     testar_estado_inicial()
+    testar_finais()
     testar_cartoes_introducao()
     testar_fluxo()
     testar_desempenho()

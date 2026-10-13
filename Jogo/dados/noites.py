@@ -89,8 +89,8 @@ NOITES = {
                     {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": [
                         {"pergunta": "Seus olhos ainda estão vermelhos.",
                          "resposta": "Três noites de fumaça não saem num dia só."},
-                        {"pergunta": "Que terra é essa nas suas unhas?",
-                         "resposta": "Do caminho. [Cavei raiz para comer]."},
+                        {"pergunta": "Como você sobreviveu sozinha?",
+                         "resposta": "Dormindo perto do fogo e [comendo raiz do caminho]."},
                         {"pergunta": "Esse pano é dos estrangeiros?",
                          "resposta": "Troquei por farinha, na costa. É só pano."},
                     ]},
@@ -121,8 +121,7 @@ NOITES = {
                             {"tipo": "fala", "quem": "Yara",
                              "texto": "Sozinha, então. Já dormi em lugar pior."},
                         ]},
-                        {"texto": "Matar", "texto_bloqueado": "Matar · só com dois sinais",
-                         "requer_sinais": 2, "morre": "Yara", "efeitos": EFEITOS_MATAR, "passos": [
+                        {"texto": "Matar", "morre": "Yara", "efeitos": EFEITOS_MATAR, "passos": [
                             {"tipo": "fala", "quem": "",
                              "texto": "O fogo estala. Ninguém na aldeia diz nada."},
                         ]},

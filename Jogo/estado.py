@@ -20,6 +20,10 @@ class Estado:
         self.recusas_aleixo = 0        # vezes que você recusou uma oferta
         self.pistas = 0                # caderno de Aleixo, colar, notícia (máximo 3)
         self.sanidade = 10             # não decide final; muda a tela (tremor, grão, tábua)
+        self.tapiri_usos = 0           # doentes de verdade levados ao tapiri (final O Tapiri)
+        self.viu_anhanga = 0           # noites em que olhou o veado na mata (final Anhangá)
+        self.seguiu_paje = 0           # vezes que levou ao tapiri quem o pajé acusou (A Água do Batismo)
+        self.inocentes = 0             # dessas vezes, quantas a pessoa era sã
 
         # Quem de fora entrou na aldeia (nomes), para a noite saber quem examinar
         self.dentro = []
@@ -29,6 +33,8 @@ class Estado:
         self.mortos_nomes = []
         # Os sinais que o pajé contou, um por noite (a tábua de barro do jogador)
         self.tabua = []
+        # O final da partida, quando ela acaba (o "id" de dados/finais.py), ou None
+        self.final = None
 
     def para_dicionario(self):
         """Copia as variáveis num dicionário simples (para salvar a partida)."""
