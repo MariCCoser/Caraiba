@@ -3,6 +3,8 @@
 # As escolhas do Dia (dados/dias.py) mudam estas variáveis pelo nome,
 # com "efeitos": {"memoria": 1} soma 1 em memoria.
 
+import random
+
 
 class Estado:
     def __init__(self):
@@ -31,8 +33,12 @@ class Estado:
         self.tapiri = []
         # Em que noite cada um entrou no tapiri (a vaga abre depois de TAPIRI["noites"] noites)
         self.tapiri_desde = {}
-        # A febre que vai aparecer: quem pegou na oca e em que dia ({"de", "adoecem", "dia"})
+        # A febre que passou na oca: de quem, quantos pegaram e em que noite (motor/febre.py)
         self.febre = []
+        # As frases da manhã de hoje (quem acordou com febre, quem morreu dela)
+        self.manha = []
+        # A sorte desta partida: a febre é sorteada com ela (o "Continuar" repete a mesma sorte)
+        self.semente = random.randrange(1_000_000_000)
         # Quem morreu pela mão do jogador (o corpo aparece com o nome no dia seguinte)
         self.mortos_nomes = []
         # Os sinais que o pajé contou, um por noite (a tábua de barro do jogador)

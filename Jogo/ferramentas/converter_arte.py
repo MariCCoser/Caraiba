@@ -242,6 +242,40 @@ def converter_personagem(origem, destino, giro, meio_da_coxa, descascar=False):
     print("  ok  %-22s -> %-36s %4d KB" % (origem, destino, tamanho_kb))
 
 
+# PESSOAS SENTADAS (a fogueira, de noite): o corpo inteiro, do topo da cabeça ao chão, já de pé
+# na arte (sem giro) e com fundo transparente. Saem todas com a mesma altura; o tamanho na
+# fogueira se ajusta em dados/noites.py ("escala").
+ALTURA_SENTADO = 560
+SENTADOS_PNG = "Personagens_sentados_png/Personagens_sentados/"
+SENTADOS = [
+    (SENTADOS_PNG + "Yara_sentada.png", "personagens/sentados/yara.png"),
+    (SENTADOS_PNG + "Mbaé_sentado.png", "personagens/sentados/mbae.png"),
+    (SENTADOS_PNG + "Pajé_sentado.png", "personagens/sentados/paje.png"),
+    (SENTADOS_PNG + "Tama_sentado.png", "personagens/sentados/tamandare.png"),
+    (SENTADOS_PNG + "Krenan_sentado.png", "personagens/sentados/krenan.png"),
+    # Os dois nomes vieram trocados: a moça grávida (Araci) está no arquivo "Iandé_sentada",
+    # e a moça abraçando os joelhos (Iandé) no arquivo "Araci_sentada".
+    (SENTADOS_PNG + "Iandé_sentada.png", "personagens/sentados/araci.png"),
+    (SENTADOS_PNG + "Araci_sentada.png", "personagens/sentados/iande.png"),
+]
+
+
+def converter_sentado(origem, destino):
+    caminho_origem = os.path.join(PASTA_ARTE, origem)
+    caminho_destino = os.path.join(PASTA_ASSETS, destino)
+    if not os.path.exists(caminho_origem):
+        print("  FALTA o original:", caminho_origem)
+        return
+    os.makedirs(os.path.dirname(caminho_destino), exist_ok=True)
+    imagem = Image.open(caminho_origem).convert("RGBA")
+    imagem = imagem.crop(imagem.getchannel("A").getbbox())   # só a pessoa, sem a sobra em volta
+    escala = ALTURA_SENTADO / imagem.height
+    imagem = imagem.resize((round(imagem.width * escala), ALTURA_SENTADO), Image.LANCZOS)
+    imagem.save(caminho_destino, optimize=True)
+    tamanho_kb = os.path.getsize(caminho_destino) // 1024
+    print("  ok  %-22s -> %-36s %4d KB" % (origem.split("/")[-1], destino, tamanho_kb))
+
+
 def main():
     print("Convertendo cenários de", PASTA_ARTE)
     for origem, destino in CENARIOS:
@@ -249,6 +283,9 @@ def main():
     print("Convertendo personagens")
     for linha in PERSONAGENS:
         converter_personagem(*linha)
+    print("Convertendo personagens sentados")
+    for origem, destino in SENTADOS:
+        converter_sentado(origem, destino)
     print("Pronto.")
 
 

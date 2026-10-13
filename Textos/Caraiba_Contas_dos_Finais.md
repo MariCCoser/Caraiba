@@ -35,15 +35,21 @@ precisam ser confirmadas pelo grupo.**
 | Levar ao tapiri um doente de verdade | `tapiri_usos` +1. Gente sã não conta |
 | Levar ao tapiri quem o pajé acusou | `seguiu_paje` +1. Se a pessoa era sã, `inocentes` +1 |
 
-**A febre (de `A_Febre_Caraiba.pdf`).** Se o doente dorme na oca, a doença passa:
+**A febre.** Se o doente dorme na oca, a febre passa para alguns moradores. **Quantos é
+sorteado** a cada partida, entre um mínimo e um máximo (`Jogo/dados/febre.py`). Quem pega a
+febre acorda doente no dia seguinte e **morre no 2º dia**. O doente que trouxe a febre não
+morre dela.
 
-| Doente | Noite | Se dormir na oca |
-|---|---|---|
-| Mbaé | 2 | 2 moradores, dia 4 |
-| Tamandaré-mirim | 5 | 3 moradores, dia 8 |
-| Iandé | 7 | ela e mais 4 moradores, dia 9 |
+| Doente | Noite | Se dormir na oca: moradores que pegam | Acordam doentes | Morrem |
+|---|---|---|---|---|
+| Mbaé | 2 | 1 a 3 | dia 3 | dia 4 |
+| Tamandaré-mirim | 5 | 2 a 4 | dia 6 | dia 7 |
+| Iandé | 7 | 3 a 5 | dia 8 | dia 9 |
 
-- **(proposta)** Quem pega a febre morre naquele dia: `vivos` −1 por pessoa.
+- O sorteio usa a "semente" da partida: muda de uma partida para outra, mas o "Continuar" repete
+  a mesma sorte.
+- **Atenção:** a Proposta diz "Não há sorte; o mesmo caminho dá sempre o mesmo resultado". Com
+  a febre sorteada, isso deixa de valer para o número de mortos.
 - **(proposta)** No tapiri, a doença não passa. A pessoa fica lá **3 noites** e depois a vaga
   abre.
 - O tapiri tem **1 vaga**. Se Potira entrou no dia 4, ela ergue a 2ª vaga no dia 5.
@@ -113,12 +119,14 @@ entram, e Araci chega depois do cálculo.
 
 - `memoria` ≥ 5 é a parte difícil: como há **uma história por visitante**, o jogador precisa
   deixar entrar **os cinco** (inclusive os três doentes) e ouvir a história de todos.
-- Os vivos são a parte fácil: com os cinco dentro são 17. Para cair abaixo de 9, os três
-  doentes teriam de dormir na oca (17 − 2 − 3 − 5 = 7). Basta pôr no tapiri **qualquer um**
-  dos três: o pior caso fica em 17 − 3 − 5 = 9.
+- Os vivos: com os cinco dentro são 17. Se os três doentes dormirem na oca, morrem de 6 a 12
+  (sorteio), e sobram de 5 a 11: A Honra fica por conta da sorte.
+- Com **Iandé ou Tamandaré-mirim** no tapiri, A Honra é garantida: no pior sorteio sobram
+  17 − 3 − 4 = 10 ou 17 − 3 − 5 = 9.
+- Com **só Mbaé** no tapiri, não é garantida: o pior sorteio deixa 17 − 4 − 5 = 8.
 - **Atenção:** a Proposta fala em "não deixar ninguém morrer sob o seu teto", mas a condição só
-  pede 9 vivos. Se Mbaé dormir na oca, 2 morrem e mesmo assim dá A Honra. O grupo decide se a
-  condição deve exigir `mortos` = 0.
+  pede 9 vivos. Se Mbaé dormir na oca, de 1 a 3 morrem e mesmo assim pode dar A Honra. O grupo
+  decide se a condição deve exigir `mortos` = 0.
 
 ### 7. O Tapiri: dia 10
 
@@ -134,9 +142,10 @@ entram, e Araci chega depois do cálculo.
 
 - No dia 10, é o que sobra quando nada mais bate.
 - Antes disso, o jogo acaba se, no fim de uma noite, sobrarem **7 vivos ou menos**.
-- Conta: o pior caso sem matar nem entregar é deixar os cinco entrarem e os três doentes
-  dormirem na oca. São 17 − 2 (dia 4) − 3 (dia 8) − 5 (dia 9) = **7 na noite 9**. Antes disso
-  a aldeia nunca chega a 7.
+- Com a febre sorteada, isso depende da sorte: no pior caso (os cinco dentro, os três doentes na
+  oca e o maior sorteio) sobram 17 − 3 − 4 − 5 = **5 na noite 9**; no melhor, 11, e o jogo segue.
+- Antes da noite 9 a aldeia nunca chega a 7: no pior sorteio, ficam 17 − 3 (dia 4) = 14 e
+  depois 14 − 4 (dia 7) = 10.
 
 ## 4. Resumo: o jogo pode acabar antes da noite 10?
 
@@ -148,12 +157,13 @@ Sim. Os fins mais cedo possíveis são:
 | 4 | A Loucura | matar Yara, Mbaé e Potira |
 | 6 | A Troca | 2ª entrega na 2ª visita do Aleixo |
 | 9 | Rio Acima | 4 moradores com Krenan (2 no dia 8, 2 no dia 9) |
-| 9 | O Vazio | a aldeia ficou com 7 ou menos |
+| 9 | O Vazio | a aldeia ficou com 7 ou menos (depende do sorteio da febre) |
 | 10 | os outros | a fila inteira, antes de Araci |
 
 ## 5. O que o grupo precisa decidir
 
-- [ ] Quem pega a febre morre no mesmo dia? (As contas acima consideram que sim.)
+- [x] Quem pega a febre morre no 2º dia; o doente que a trouxe não morre dela. Quantos pegam
+      é sorteado (decidido em 13/10/2026).
 - [ ] Quanto tempo o doente fica no tapiri? (Contas: 3 noites.)
 - [ ] Krenan leva até quantas pessoas por dia? (Contas: 2.)
 - [ ] "Remédio aceito" e "doente mandado seguir de dia" somam proximidade? Se sim, A Troca
@@ -174,7 +184,7 @@ Sim. Os fins mais cedo possíveis são:
   (Yara é sã, então não conta; Mbaé conta).
 - O tapiri com 1 vaga e 3 noites: se Yara foi para o tapiri na noite 1, na noite 2 não há
   lugar para Mbaé, e a vaga abre na noite 4.
-- A febre: Mbaé dormindo na oca marca 2 moradores doentes para o dia 4. Eles aparecem quando o
-  jogador dorme e o dia 4 começa.
+- A febre sorteada: Mbaé dormindo na oca passa a febre para 1 a 3 moradores, que acordam
+  doentes no dia 3 e morrem no dia 4. As notícias aparecem de manhã.
 - As outras variáveis (entregas, rio acima, Anhangá e acusações do pajé) passam a contar quando
   os dias 3 a 10 forem construídos.

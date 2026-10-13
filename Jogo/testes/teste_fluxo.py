@@ -93,10 +93,47 @@ def testar_estado_inicial():
     esperado = {"dia": 1, "vivos": 12, "mortos": 0, "mortos_por_sua_mao": 0, "entregues": 0,
                 "proximidade_vila": 0, "rio_acima": 0, "memoria": 0, "recusas_aleixo": 0,
                 "pistas": 0, "sanidade": 10, "tapiri_usos": 0, "viu_anhanga": 0, "seguiu_paje": 0,
-                "inocentes": 0, "dentro": [], "tapiri": [], "tapiri_desde": {}, "febre": [],
+                "inocentes": 0, "dentro": [], "tapiri": [], "tapiri_desde": {}, "febre": [], "manha": [],
                 "mortos_nomes": [], "tabua": [], "final": None}
-    assert estado.para_dicionario() == esperado, estado.para_dicionario()
+    dados = estado.para_dicionario()
+    assert isinstance(dados.pop("semente"), int), "cada partida tem a sua sorte"
+    assert dados == esperado, dados
     print("ok Estado com os valores iniciais do documento")
+
+
+def testar_febre():
+    """A febre na oca: quantos pegam é sorteado; quem pega morre no 2º dia; o doente não morre."""
+    from motor import febre
+
+    estado = Estado()
+    estado.semente = 7
+    estado.dia = 2
+    estado.dentro = ["Mbaé"]
+    estado.vivos = 13
+    febre.pegar(estado, "Mbaé")
+    quantos = estado.febre[0]["adoecem"]
+    assert 1 <= quantos <= 3 and estado.febre == [{"de": "Mbaé", "adoecem": quantos, "noite": 2}]
+    febre.pegar(estado, "Yara")                   # Yara é sã: não passa nada
+    assert len(estado.febre) == 1
+
+    febre.amanhecer(estado)                        # dia 3: acordam com febre
+    assert estado.dia == 3 and estado.vivos == 13 and len(estado.manha) == 1
+    assert "acordou com febre" in estado.manha[0] or "acordaram com febre" in estado.manha[0]
+    febre.amanhecer(estado)                        # dia 4: morrem (o 2º dia com febre)
+    assert estado.vivos == 13 - quantos and estado.mortos == quantos and estado.febre == []
+    assert "morre" in estado.manha[0] and estado.dentro == ["Mbaé"], "quem trouxe a febre não morre dela"
+    febre.amanhecer(estado)                        # dia 5: nada de novo
+    assert estado.manha == []
+
+    # A mesma partida (semente) sorteia sempre igual; partidas diferentes variam.
+    def sorteio(semente):
+        e = Estado()
+        e.semente, e.dia = semente, 2
+        febre.pegar(e, "Mbaé")
+        return e.febre[0]["adoecem"]
+    assert sorteio(7) == quantos
+    assert {sorteio(s) for s in range(200)} == {1, 2, 3}
+    print("ok febre sorteada (1 a 3 com Mbaé), com febre no dia seguinte e morte no 2º dia")
 
 
 def testar_cartoes_introducao():
@@ -702,11 +739,12 @@ def testar_dia2_e_noite2(jogo):
     capturar(jogo, "22-noite2-exame-mbae")
     clicar_opcao(jogo, "Terminar o exame")
 
-    # Deixar Mbaé na oca: 2 moradores pegam a febre (aparecem no dia 4).
+    # Deixar Mbaé na oca: de 1 a 3 moradores pegam a febre (morrem no dia 4).
     assert textos_dos_botoes(jogo) == ["Deixar na oca", "Levar ao tapiri", "Matar"]
     clicar_opcao(jogo, "Deixar na oca")
     passar_falas(jogo)
-    assert estado.febre == [{"adoecem": 2, "dia": 4, "de": "Mbaé"}], estado.febre
+    assert len(estado.febre) == 1 and estado.febre[0]["de"] == "Mbaé" and estado.febre[0]["noite"] == 2
+    assert 1 <= estado.febre[0]["adoecem"] <= 3, estado.febre
     assert dia.botao_dormir.habilitado
     clicar_botao(jogo, dia.botao_dormir)
     passar_falas(jogo)
@@ -719,7 +757,7 @@ def testar_dia2_e_noite2(jogo):
     assert oca.pessoas == [("Mbaé", "mbae")]
     rodar(jogo, 5)
     capturar(jogo, "23-noite2-oca2-mbae")
-    print("ok Dia 2 e Noite 2 (Mbaé na oca, exame com a boca, febre marcada para o dia 4)")
+    print("ok Dia 2 e Noite 2 (Mbaé na oca, exame com a boca, febre sorteada)")
     jogo.ir_para("menu")
     esperar_transicao(jogo)
 
@@ -751,15 +789,20 @@ def testar_dia2_e_noite2(jogo):
     jogo.ir_para("menu")
     esperar_transicao(jogo)
 
-    # Quem morreu aparece de manhã, com o nome; a febre marcada aparece no dia certo.
+    # De manhã: primeiro a febre, depois o corpo de quem o jogador matou, com o nome.
     comecar_noite_1_na_aldeia(jogo, dentro=[], vivos=12, mortos=1, mortos_por_sua_mao=1,
-                              mortos_nomes=["Yara"], febre=[{"adoecem": 2, "dia": 2, "de": "X"}])
+                              mortos_nomes=["Yara"], febre=[{"de": "X", "adoecem": 2, "noite": 1}])
     jogo.amanhecer()
     esperar_transicao(jogo)
     dia = jogo.cenas.atual
-    assert dia.modo == "fala" and dia.caixa.texto.startswith("O corpo de Yara"), dia.caixa.texto
-    assert jogo.estado.vivos == 10 and jogo.estado.mortos == 3 and jogo.estado.febre == []
-    print("ok manhã do Dia 2: o corpo com o nome, e a febre do dia aparece")
+    assert dia.modo == "fala" and dia.caixa.texto == "2 moradores acordaram com febre.", dia.caixa.texto
+    rodar(jogo, 5)
+    capturar(jogo, "25-dia2-manha-febre")
+    dia.caixa.completar()
+    clicar(jogo, (800, 300))
+    assert dia.caixa.texto.startswith("O corpo de Yara"), dia.caixa.texto
+    assert jogo.estado.vivos == 12 and len(jogo.estado.febre) == 1   # morrem no dia 3
+    print("ok manhã do Dia 2: a febre e o corpo com o nome")
     jogo.ir_para("menu")
     esperar_transicao(jogo)
 
@@ -972,6 +1015,7 @@ if __name__ == "__main__":
     testar_marcacao()
     testar_estado_inicial()
     testar_finais()
+    testar_febre()
     testar_cartoes_introducao()
     testar_fluxo()
     testar_desempenho()

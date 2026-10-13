@@ -21,7 +21,7 @@ from dados.dias import DIAS
 from dados.febre import DOENTES
 from dados.noites import NOITES
 from dados.textos import DIA
-from motor import efeitos, finais, fontes, imagens, progresso, ui
+from motor import efeitos, febre, finais, fontes, imagens, progresso, ui
 from motor.pessoas import PessoaNoCenario
 from motor.cena import Cena, desenhar_cenario
 from motor.tabua import Tabua
@@ -53,7 +53,9 @@ class Dia(Cena):
         self.tratamento = efeitos.Tratamento()
         self.estado = jogo.estado
         self.roteiro = DIAS[self.estado.dia]
-        self.fila = list(self.roteiro["passos"])   # passos que ainda vão acontecer
+        # Passos que ainda vão acontecer. O dia começa com as notícias da manhã (a febre).
+        manha = [{"tipo": "fala", "quem": "", "texto": frase} for frase in self.estado.manha]
+        self.fila = manha + list(self.roteiro["passos"])
         self.titulo = self.roteiro["titulo"]
         self.tempo = 0.0
         self.energia = None       # olhares que sobram na noite (None durante o dia)
@@ -399,9 +401,9 @@ class Dia(Cena):
             self.estado.tapiri_desde[opcao["tapiri"]] = self.estado.dia
             if opcao["tapiri"] in DOENTES:
                 self.estado.tapiri_usos += 1
-        if opcao.get("contagio"):
-            # Um doente dormiu na oca: a febre aparece em outros dias depois (jogo.amanhecer).
-            self.estado.febre.append(dict(opcao["contagio"], de=self.passo_atual.get("quem")))
+        if opcao.get("oca"):
+            # Se quem dorme na oca está com a febre, ela passa (o quanto é sorteado: motor/febre.py).
+            febre.pegar(self.estado, self.passo_atual.get("quem"))
         if opcao.get("morre"):
             self.estado.dentro.remove(opcao["morre"])
             self.estado.mortos_nomes.append(opcao["morre"])

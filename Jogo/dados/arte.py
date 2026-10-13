@@ -26,6 +26,15 @@ PERSONAGENS = {
     "araci": "personagens/araci.png",
     "aleixo": "personagens/aleixo.png",
     "paje": "personagens/paje.png",
+
+    # Sentados (a fogueira, de noite): o corpo inteiro, do topo da cabeça ao chão, 560 de altura.
+    "yara_sentada": "personagens/sentados/yara.png",
+    "mbae_sentado": "personagens/sentados/mbae.png",
+    "paje_sentado": "personagens/sentados/paje.png",
+    "tamandare_sentado": "personagens/sentados/tamandare.png",
+    "krenan_sentado": "personagens/sentados/krenan.png",
+    "iande_sentada": "personagens/sentados/iande.png",
+    "araci_sentada": "personagens/sentados/araci.png",
 }
 
 # Onde fica o fogo em cada cenário (x, y na tela 1600x900).

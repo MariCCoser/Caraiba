@@ -14,9 +14,9 @@
 #   "dormir", "dormir_bloqueado"  o botão de ir dormir; fechado, mostra quem ainda falta (%s)
 #   "pessoas"  quem senta em volta do fogo. Cada pessoa tem:
 #       "imagem"       o apelido da imagem (dados/arte.py)
-#       "posicao"      o meio da borda de baixo da imagem (x, y na tela 1600x900). Por enquanto
-#                      as imagens são de pé: para parecer sentada, a pessoa fica mais baixa,
-#                      com a cintura para fora da tela (y maior que 900).
+#       "imagem"       use a imagem sentada (ex.: "yara_sentada", dados/arte.py)
+#       "posicao"      o meio da borda de baixo da imagem (x, y na tela 1600x900): onde a
+#                      pessoa encosta no chão
 #       "escala"       o tamanho (1 = o tamanho de quem fala)
 #       "de_fora"      True: só aparece se o jogador a deixou entrar (e se não está no tapiri,
 #                      porque quem está no tapiri fica lá, isolado)
@@ -43,8 +43,8 @@
 #     "tapiri": "Yara"       a pessoa vai para o tapiri, o abrigo isolado (sai da oca). Se o
 #                            tapiri está cheio (dados/aldeia.py, TAPIRI), a opção fica fechada.
 #     "morre": "Yara"        a pessoa morre pela mão do jogador (sai da aldeia)
-#     "contagio": {...}      a pessoa é doente e dorme na oca: "adoecem" moradores pegam a
-#                            febre no "dia" indicado (Textos/A_Febre_Caraiba.pdf)
+#     "oca": True            a pessoa dorme na oca. Se ela está com a febre (dados/febre.py),
+#                            a febre passa para alguns moradores (quantos é sorteado).
 #     "requer_sinais": 2     a opção só abre com essa quantidade de sinais achados no exame
 #                            de quem está na "escolha" ("quem"); "texto_bloqueado" é o que o
 #                            botão mostra enquanto ela está fechada.
@@ -98,13 +98,11 @@ ZONAS_MBAE = [
 ]
 
 
-def escolha_onde_dorme(quem, fala_oca, fala_tapiri, contagio=None):
+def escolha_onde_dorme(quem, fala_oca, fala_tapiri):
     """A decisão do fim da conversa: deixar na oca, levar ao tapiri ou matar."""
-    oca = {"texto": "Deixar na oca", "passos": [{"tipo": "fala", "quem": quem, "texto": fala_oca}]}
-    if contagio:
-        oca["contagio"] = contagio
     return {"tipo": "escolha", "quem": quem, "texto": "Onde %s dorme esta noite?" % quem, "opcoes": [
-        oca,
+        {"texto": "Deixar na oca", "oca": True,
+         "passos": [{"tipo": "fala", "quem": quem, "texto": fala_oca}]},
         {"texto": "Levar ao tapiri", "tapiri": quem,
          "passos": [{"tipo": "fala", "quem": quem, "texto": fala_tapiri}]},
         {"texto": "Matar", "morre": quem, "efeitos": EFEITOS_MATAR, "passos": [FALA_MATAR]},
@@ -123,7 +121,7 @@ NOITES = {
         "pessoas": {
             # O pajé, à direita do fogo: fala do sinal e do tapiri. Dá para voltar a ele.
             "Pajé": {
-                "imagem": "paje", "posicao": (1330, 1040), "escala": 0.72,
+                "imagem": "paje_sentado", "posicao": (1340, 880), "escala": 0.8,
                 "passos": [
                     {"tipo": "visitante", "visitante": "paje"},
                     {"tipo": "fala", "quem": "Pajé", "texto": "Sente. O fogo está bom hoje."},
@@ -142,7 +140,7 @@ NOITES = {
             # Yara, à esquerda do fogo. A conversa é curta e só sobre o que se vê nela; a
             # história da aldeia dela ficou para o dia, na oca (dados/dias.py).
             "Yara": {
-                "imagem": "yara", "posicao": (290, 1040), "escala": 0.72,
+                "imagem": "yara_sentada", "posicao": (330, 870), "escala": 0.72,
                 "de_fora": True, "uma_vez": True, "obrigatorio": True,
                 "passos": [
                     {"tipo": "visitante", "visitante": "yara"},
@@ -181,7 +179,7 @@ NOITES = {
             # O pajé fala do sinal, do tapiri (um lugar só) e do que a aldeia diz de Mbaé:
             # a aldeia quer Mbaé fora pelo povo dele, não pela tosse.
             "Pajé": {
-                "imagem": "paje", "posicao": (1380, 1040), "escala": 0.72,
+                "imagem": "paje_sentado", "posicao": (1360, 880), "escala": 0.8,
                 "passos": [
                     {"tipo": "visitante", "visitante": "paje"},
                     {"tipo": "fala", "quem": "Pajé", "texto": "Sente. Hoje o fogo custou a pegar."},
@@ -202,7 +200,7 @@ NOITES = {
 
             # Yara, se ainda está na aldeia e não está no tapiri. Não é obrigatório falar com ela.
             "Yara": {
-                "imagem": "yara", "posicao": (200, 1040), "escala": 0.72,
+                "imagem": "yara_sentada", "posicao": (230, 870), "escala": 0.72,
                 "de_fora": True, "uma_vez": True,
                 "passos": [
                     {"tipo": "visitante", "visitante": "yara"},
@@ -218,10 +216,10 @@ NOITES = {
                 ],
             },
 
-            # Mbaé, entre Yara e o fogo. Está com a febre: se dormir na oca, 2 moradores
-            # pegam a febre e aparecem doentes no dia 4 (Textos/A_Febre_Caraiba.pdf).
+            # Mbaé, entre Yara e o fogo. Está com a febre: se dormir na oca, de 1 a 3 moradores
+            # pegam a febre, acordam doentes no dia 3 e morrem no dia 4 (dados/febre.py).
             "Mbaé": {
-                "imagem": "mbae", "posicao": (600, 1080), "escala": 0.62,
+                "imagem": "mbae_sentado", "posicao": (545, 865), "escala": 0.7,
                 "de_fora": True, "uma_vez": True, "obrigatorio": True,
                 "passos": [
                     {"tipo": "visitante", "visitante": "mbae"},
@@ -234,8 +232,7 @@ NOITES = {
                     ]},
                     {"tipo": "exame", "quem": "Mbaé", "texto": TEXTO_EXAME, "zonas": ZONAS_MBAE},
                     escolha_onde_dorme("Mbaé", "Durmo no canto. Não incomodo ninguém.",
-                                       "Sozinho no escuro. Já passei noite pior na caça.",
-                                       contagio={"adoecem": 2, "dia": 4}),
+                                       "Sozinho no escuro. Já passei noite pior na caça."),
                     {"tipo": "visitante", "visitante": None},
                 ],
             },

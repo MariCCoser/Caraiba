@@ -4,7 +4,7 @@ import pygame
 
 import config
 from estado import Estado
-from motor import efeitos, fontes, imagens, preferencias, progresso, ui
+from motor import efeitos, febre, fontes, imagens, preferencias, progresso, ui
 from motor.cena import GerenciadorCenas
 
 # Todas as cenas do jogo, pelo nome. Para criar uma cena nova:
@@ -161,13 +161,8 @@ class Jogo:
         self.cenas.trocar(dia)
 
     def amanhecer(self):
-        """Da aldeia de noite ("Dormir"): começa o dia seguinte. A febre pega na oca aparece agora."""
-        estado = self.estado
-        estado.dia += 1
-        for febre in [f for f in estado.febre if f["dia"] <= estado.dia]:
-            estado.febre.remove(febre)
-            estado.vivos -= febre["adoecem"]
-            estado.mortos += febre["adoecem"]
+        """Da aldeia de noite ("Dormir"): começa o dia seguinte (e a febre anda, motor/febre.py)."""
+        febre.amanhecer(self.estado)
         self.ir_para("dia")
 
     def sair(self):
