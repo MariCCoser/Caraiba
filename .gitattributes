@@ -1,0 +1,7 @@
+# Arquivos binários: o Git nunca mexe nos fins de linha deles (senão um PDF ou DOCX pode estragar).
+*.pdf binary
+*.docx binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.ttf binary
