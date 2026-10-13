@@ -77,7 +77,7 @@ NEUTRO_DESCASCAR = 30        # diferença entre o canal mais claro e o mais escu
 #   das coxas. O topo da cabeça é achado sozinho. Se a arte acaba antes do meio da coxa
 #   (Mbaé, Tamandaré-mirim e Iandé foram desenhados só até a cintura ou o quadril), coloque
 #   onde a coxa estaria: o pedaço que falta fica transparente, escondido atrás da caixa de fala.
-PNG = "personagens_png/personagens_em_png/"
+PNG = "personagens_png/"
 PERSONAGENS = [
     (PNG + "Yara.png", "personagens/yara.png", 90, 1675, True),
     (PNG + "Mbaé.png", "personagens/mbae.png", 90, 1920),
@@ -276,6 +276,37 @@ def converter_sentado(origem, destino):
     print("  ok  %-22s -> %-36s %4d KB" % (origem.split("/")[-1], destino, tamanho_kb))
 
 
+# DETALHES DO EXAME (Arte/Doenças/): o olho de perto, que aparece no exame da noite em vez de
+# uma descrição. Saem quadrados, em cores (a interface não passa pelo filtro da noite).
+TAMANHO_DETALHE = 420
+DETALHES = [
+    ("Doenças/Yara/OlhoYara_Doente.png", "detalhes/olho-yara.png"),        # vermelho da fumaça
+    ("Doenças/Mbaé/OlhoMbaé_ate3.png", "detalhes/olho-mbae.png"),          # até o 3º dia na oca
+    # Falta: Doenças/Mbaé/OlhoMbaé_Doente.png (depois de 3 dias na oca) -> detalhes/olho-mbae-doente.png
+    ("Doenças/Potira/OlhoPotira.png", "detalhes/olho-potira.png"),
+    ("Doenças/Tama/OlhoTama.png", "detalhes/olho-tamandare.png"),
+    ("Doenças/Iandé/OlhoIandé.png", "detalhes/olho-iande.png"),
+    ("Doenças/Iandé/OlhoIandé_Doente.png", "detalhes/olho-iande-doente.png"),
+    ("Doenças/Krenan/OlhoKrenan.png", "detalhes/olho-krenan.png"),
+    ("Doenças/Krenan/OlhoKrenan_Doente.png", "detalhes/olho-krenan-doente.png"),
+]
+
+
+def converter_detalhe(origem, destino):
+    caminho_origem = os.path.join(PASTA_ARTE, origem)
+    caminho_destino = os.path.join(PASTA_ASSETS, destino)
+    if not os.path.exists(caminho_origem):
+        print("  FALTA o original:", caminho_origem)
+        return
+    os.makedirs(os.path.dirname(caminho_destino), exist_ok=True)
+    imagem = Image.open(caminho_origem).convert("RGBA")
+    imagem = imagem.resize((TAMANHO_DETALHE, round(imagem.height * TAMANHO_DETALHE / imagem.width)),
+                           Image.LANCZOS)
+    imagem.save(caminho_destino, optimize=True)
+    tamanho_kb = os.path.getsize(caminho_destino) // 1024
+    print("  ok  %-22s -> %-36s %4d KB" % (origem.split("/")[-1], destino, tamanho_kb))
+
+
 def main():
     print("Convertendo cenários de", PASTA_ARTE)
     for origem, destino in CENARIOS:
@@ -286,6 +317,9 @@ def main():
     print("Convertendo personagens sentados")
     for origem, destino in SENTADOS:
         converter_sentado(origem, destino)
+    print("Convertendo detalhes do exame")
+    for origem, destino in DETALHES:
+        converter_detalhe(origem, destino)
     print("Pronto.")
 
 

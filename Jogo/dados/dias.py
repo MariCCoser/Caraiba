@@ -24,7 +24,8 @@
 #                             "imagem" (dados/arte.py), "posicao" (o meio da borda de baixo da
 #                             imagem, x e y na tela 1600x900), "escala" (1 = o tamanho de quem
 #                             fala; 0.5 = metade) e, se ela espera dentro de uma oca, "oca"
-#                             (o nome da oca em dados/aldeia.py): aí ela aparece lá dentro.
+#                             (o nome da oca em dados/aldeia.py): aí ela aparece lá dentro,
+#                             no lugar de ONDE_DORME (dados/aldeia.py).
 #   "noite"      começa a noite na fogueira: o roteiro dela fica em dados/noites.py
 #   "se"         os "passos" de dentro só acontecem se a condição bate:
 #                "morto": "Yara" (o jogador matou Yara), "dentro": "Yara" (Yara está na
@@ -90,8 +91,7 @@ DIAS = {
                     {"tipo": "aldeia", "seta": "Esperar a noite",
                      "dica": "Yara está na oca Yorixiriamori. Entre para conversar, ou espere a noite.",
                      "pessoas": [
-                        {"nome": "Yara", "oca": "oca1", "imagem": "yara", "posicao": (480, 960),
-                         "escala": 0.85, "passos": [
+                        {"nome": "Yara", "oca": "oca1", "passos": [
                             {"tipo": "fundo", "fundo": "oca1", "filtro": "dia"},
                             {"tipo": "visitante", "visitante": "yara"},
                             {"tipo": "fala", "quem": "Yara",
@@ -173,8 +173,7 @@ DIAS = {
                     {"tipo": "aldeia", "seta": "Esperar a noite",
                      "dica": "Mbaé está na oca Yebá Bëló. Entre para conversar, ou espere a noite.",
                      "pessoas": [
-                        {"nome": "Mbaé", "oca": "oca2", "imagem": "mbae", "posicao": (480, 960),
-                         "escala": 0.85, "passos": [
+                        {"nome": "Mbaé", "oca": "oca2", "passos": [
                             {"tipo": "fundo", "fundo": "oca2_dia", "filtro": "dia"},
                             {"tipo": "visitante", "visitante": "mbae"},
                             {"tipo": "fala", "quem": "Mbaé",

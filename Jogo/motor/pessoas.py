@@ -12,12 +12,15 @@ from motor import fontes, imagens, ui
 
 
 class PessoaNoCenario:
-    def __init__(self, nome, imagem, posicao, escala, filtro):
-        """posicao: o meio da borda de baixo da imagem (x, y na tela 1600x900)."""
+    def __init__(self, nome, imagem, posicao, escala, filtro, espelhar=False):
+        """posicao: o meio da borda de baixo da imagem (x, y na tela 1600x900).
+        espelhar: vira a pessoa para o outro lado (ex.: o pajé olhando para o fogo)."""
         self.nome = nome
         original = imagens.personagem(imagem, filtro)
         tamanho = (round(original.get_width() * escala), round(original.get_height() * escala))
         self.imagem = pygame.transform.smoothscale(original, tamanho)
+        if espelhar:
+            self.imagem = pygame.transform.flip(self.imagem, True, False)
         # Desenho que acaba antes do meio da coxa desce um pouco, para o corte não aparecer.
         x, y = posicao
         self.rect = self.imagem.get_rect(midbottom=(x, y + round(imagens.vazio_embaixo(imagem) * escala)))

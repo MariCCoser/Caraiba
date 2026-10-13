@@ -45,6 +45,7 @@ POSICAO_BOTAO_MENU = (1420, 60)
 CENTRO_DICA_FOGUEIRA = (800, 770)
 TOPO_BOTAO_DORMIR = 815
 LARGURA_BOTAO_DORMIR = 520
+LARGURA_DETALHE = 340          # o olho de perto, embaixo do painel
 
 
 class Dia(Cena):
@@ -72,6 +73,8 @@ class Dia(Cena):
         self.caixa = None         # a fala que está na tela
         self.quem = ""            # quem está falando
         self.pergunta = ""        # a pergunta que o jogador fez (aparece em cima da resposta)
+        self.imagem_fala = None   # o detalhe que a fala mostra (dados/arte.py, DETALHES), ou None
+        self.rect_imagem = pygame.Rect(0, 0, 0, 0)
         self.botoes = []          # [(BlocoOpcao, o que fazer ao clicar)]
         self.perguntas_feitas = set()
         self.apresentados = set()  # exames e escolhas que já mostraram o "texto" de abertura
@@ -235,7 +238,8 @@ class Dia(Cena):
         self.visitante = None
         self._trocar_fundo((self.noite["fundo"], "noite"))
         self.na_fogueira = [
-            PessoaNoCenario(nome, pessoa["imagem"], pessoa["posicao"], pessoa["escala"], "noite")
+            PessoaNoCenario(nome, pessoa["imagem"], pessoa["posicao"], pessoa["escala"], "noite",
+                            espelhar=pessoa.get("espelhar", False))
             for nome, pessoa in self._pessoas_da_noite()
             if not (pessoa.get("uma_vez") and nome in self.conversados)]
         # "Ir dormir" só abre depois de falar com quem é obrigatório (quem é de fora: decidir onde dorme).
@@ -300,10 +304,11 @@ class Dia(Cena):
             self.jogo.dia_pausado = self
             self.jogo.ir_para("aldeia")
 
-    def _mostrar_fala(self, quem, texto, pergunta=""):
+    def _mostrar_fala(self, quem, texto, pergunta="", imagem=None):
         self.modo = "fala"
         self.quem = quem
         self.pergunta = pergunta
+        self.imagem_fala = imagem
         self.caixa = ui.CaixaTexto(texto, LARGURA_PAINEL, (0, 0), ancora="topo",
                                    tamanho=TAMANHO_FALA_DIA, alinhamento="centro", fundo=False,
                                    max_linhas=4, margem=MARGEM_PAINEL)
@@ -367,7 +372,8 @@ class Dia(Cena):
         quem = passo.get("quem", self.quem)
         self.fila[0:0] = [{"tipo": "fala", "quem": quem, "texto": frase} for frase in frases[1:]] + [passo]
         self.botoes = []
-        self._mostrar_fala(quem, frases[0], pergunta=item["pergunta"])
+        # Zona com "imagem": o jogador vê (o olho de perto), em vez de ler uma descrição.
+        self._mostrar_fala(quem, frases[0], pergunta=item["pergunta"], imagem=item.get("imagem"))
 
     def _decidir(self):
         self._registrar(["decidir"])
@@ -457,8 +463,14 @@ class Dia(Cena):
         self.painel = pygame.Rect(centro_x - LARGURA_PAINEL // 2, TOPO_PAINEL,
                                   LARGURA_PAINEL, self.caixa.rect.bottom - TOPO_PAINEL)
 
-        # Blocos de resposta: duas colunas, embaixo do painel; cada linha com a altura do maior.
+        # O detalhe do exame (o olho de perto) fica logo embaixo do painel; os blocos, embaixo dele.
         y = self.painel.bottom + ESPACO_PAINEL_OPCOES
+        if self.imagem_fala:
+            imagem = imagens.detalhe(self.imagem_fala, LARGURA_DETALHE)
+            self.rect_imagem = imagem.get_rect(midtop=(self.painel.centerx, y))
+            y = self.rect_imagem.bottom + ESPACO_PAINEL_OPCOES
+
+        # Blocos de resposta: duas colunas, embaixo do painel; cada linha com a altura do maior.
         for i in range(0, len(self.botoes), 2):
             linha = [bloco for bloco, _ in self.botoes[i:i + 2]]
             altura = max(bloco.altura() for bloco in linha)
@@ -578,6 +590,11 @@ class Dia(Cena):
             if self.modo == "fala" and self.caixa.terminou():
                 ui.texto_simples(tela, "▸", (self.painel.right - 24, self.painel.bottom - 22),
                                  config.TAMANHO_PEQUENO)
+
+        if self.caixa and self.imagem_fala:
+            # Em cores (a interface não passa pelo filtro da noite): o vermelho do olho aparece.
+            tela.blit(imagens.detalhe(self.imagem_fala, LARGURA_DETALHE), self.rect_imagem)
+            pygame.draw.rect(tela, config.FUMACA, self.rect_imagem, 2, border_radius=6)
 
         for bloco, _ in self.botoes:
             bloco.desenhar(tela)

@@ -37,6 +37,18 @@ PERSONAGENS = {
     "araci_sentada": "personagens/sentados/araci.png",
 }
 
+# Detalhes do exame (Arte/Doenças/): o olho de perto, em cores, à direita da tela.
+DETALHES = {
+    "olho_yara": "detalhes/olho-yara.png",          # vermelho da fumaça (noites 1 e 2)
+    "olho_mbae": "detalhes/olho-mbae.png",          # até o 3º dia na oca
+    "olho_potira": "detalhes/olho-potira.png",
+    "olho_tamandare": "detalhes/olho-tamandare.png",
+    "olho_iande": "detalhes/olho-iande.png",
+    "olho_iande_doente": "detalhes/olho-iande-doente.png",
+    "olho_krenan": "detalhes/olho-krenan.png",
+    "olho_krenan_doente": "detalhes/olho-krenan-doente.png",
+}
+
 # Onde fica o fogo em cada cenário (x, y na tela 1600x900).
 # Usado para o brilho que pulsa em volta da fogueira. Cenário sem fogo: não coloque aqui.
 CENTRO_DO_FOGO = {

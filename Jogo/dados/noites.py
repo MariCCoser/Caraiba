@@ -18,6 +18,7 @@
 #       "posicao"      o meio da borda de baixo da imagem (x, y na tela 1600x900): onde a
 #                      pessoa encosta no chão
 #       "escala"       o tamanho (1 = o tamanho de quem fala)
+#       "espelhar"     True: vira a pessoa para o outro lado (o pajé olha para o fogo)
 #       "de_fora"      True: só aparece se o jogador a deixou entrar (e se não está no tapiri,
 #                      porque quem está no tapiri fica lá, isolado)
 #       "uma_vez"      True: depois da conversa ela sai da fogueira (foi dormir)
@@ -31,7 +32,9 @@
 #               Uma pergunta com "se_dentro": "Mbaé" só aparece se Mbaé entrou na aldeia.
 #   "exame"     o jogador escolhe as zonas do rosto para olhar de perto. Cada zona tem
 #               "pergunta" (o nome no botão), "resposta" (o que se vê) e, se o que se vê for
-#               um sinal, "sinal": True. Cada zona gasta 1 de energia (ou o "custo" dela, se
+#               um sinal, "sinal": True. Zona com "imagem" (dados/arte.py, DETALHES) mostra o
+#               detalhe de perto, à direita, em vez de descrever: a "resposta" fica só com o
+#               que a pessoa diz. Cada zona gasta 1 de energia (ou o "custo" dela, se
 #               tiver). Zona que custa mais do que sobrou fica apagada. Diga de quem é o exame
 #               com "quem". "liberadas": a lista das zonas que dá para olhar nessa noite (ex.:
 #               só ["Olhos"] na noite 1). Sem ela, todas as zonas aparecem.
@@ -69,8 +72,8 @@ FALA_MATAR = {"tipo": "fala", "quem": "", "texto": "O fogo estala. Ninguém na a
 ZONAS_YARA = [
     {"pergunta": "Testa",
      "resposta": "Fresca. Nenhum suor."},
-    {"pergunta": "Olhos", "sinal": True,
-     "resposta": "O branco do olho está raiado de vermelho. Lacrimeja perto do fogo."},
+    {"pergunta": "Olhos", "sinal": True, "imagem": "olho_yara",
+     "resposta": "[Dormi perto do fogo]."},
     {"pergunta": "Orelhas",
      "resposta": "Nada atrás das orelhas. A pele está limpa."},
     {"pergunta": "Boca",
@@ -81,10 +84,10 @@ ZONAS_YARA = [
      "resposta": "Respira fundo e devagar, sem tosse."},
 ]
 
-# Na noite 2 o olho de Yara já clareou: a fumaça foi passando.
+# Na noite 2 ainda é o mesmo olho (a arte do olho vermelho vale até a noite 3).
 ZONAS_YARA_NOITE_2 = [dict(zona) for zona in ZONAS_YARA]
-ZONAS_YARA_NOITE_2[1] = {"pergunta": "Olhos",
-                         "resposta": "Ainda um pouco vermelhos, mas o branco clareou desde ontem."}
+ZONAS_YARA_NOITE_2[1] = {"pergunta": "Olhos", "imagem": "olho_yara",
+                         "resposta": "Dormi perto do fogo. [Já está passando]."}
 ZONAS_YARA_NOITE_2[3] = {"pergunta": "Boca",
                          "resposta": "Ela abre a boca e respira fundo, sem tossir. Língua rosada."}
 
@@ -94,8 +97,9 @@ ZONAS_YARA_NOITE_2[3] = {"pergunta": "Boca",
 ZONAS_MBAE = [
     {"pergunta": "Testa", "sinal": True,
      "resposta": "Molhada de suor e quente, mesmo longe do fogo."},
-    {"pergunta": "Olhos", "sinal": True,
-     "resposta": "Vermelhos e úmidos. Ele pisca devagar."},
+    # Até o 3º dia na oca; depois, o olho doente (Arte/Doenças/Mbaé/OlhoMbaé_Doente, ainda por vir).
+    {"pergunta": "Olhos", "sinal": True, "imagem": "olho_mbae",
+     "resposta": "(tosse) [É o vento do rio]."},
     {"pergunta": "Orelhas",
      "resposta": "Nada atrás das orelhas. Só a pintura de jenipapo."},
     {"pergunta": "Boca", "sinal": True,
@@ -130,7 +134,7 @@ NOITES = {
         "pessoas": {
             # O pajé, à direita do fogo: fala do sinal e do tapiri. Dá para voltar a ele.
             "Pajé": {
-                "imagem": "paje_sentado", "posicao": POSICAO_PAJE, "escala": ESCALA_PAJE,
+                "imagem": "paje_sentado", "posicao": POSICAO_PAJE, "escala": ESCALA_PAJE, "espelhar": True,
                 "passos": [
                     {"tipo": "visitante", "visitante": "paje"},
                     {"tipo": "fala", "quem": "Pajé", "texto": "Sente. O fogo está bom hoje."},
@@ -189,7 +193,7 @@ NOITES = {
             # O pajé fala do sinal, do tapiri (um lugar só) e do que a aldeia diz de Mbaé:
             # a aldeia quer Mbaé fora pelo povo dele, não pela tosse.
             "Pajé": {
-                "imagem": "paje_sentado", "posicao": POSICAO_PAJE, "escala": ESCALA_PAJE,
+                "imagem": "paje_sentado", "posicao": POSICAO_PAJE, "escala": ESCALA_PAJE, "espelhar": True,
                 "passos": [
                     {"tipo": "visitante", "visitante": "paje"},
                     {"tipo": "fala", "quem": "Pajé", "texto": "Sente. Hoje o fogo custou a pegar."},

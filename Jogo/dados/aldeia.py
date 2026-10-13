@@ -10,7 +10,8 @@
 #   decorrer do jogo, acrescente a noite e a lista. Noite que não estiver aqui usa a
 #   última noite listada antes dela.
 # - ONDE_DORME: em que oca fica cada pessoa de fora que o jogador deixou entrar, e o
-#   apelido da imagem dela (dados/arte.py).
+#   apelido da imagem dela (dados/arte.py), sentada, e onde ela senta dentro da oca
+#   ("posicao": o meio da borda de baixo da imagem; "escala": o tamanho).
 
 ALDEIA = {
     "fundo": "aldeia",
@@ -45,6 +46,7 @@ OCAS = {
         "contorno": [(922, 318), (1008, 435), (960, 456), (850, 456), (840, 422)],
         "dentro": "oca2_noite",
         "dentro_dia": "oca2_dia",
+        "painel": "esquerda",   # a cama fica à direita: o texto vai para a esquerda
     },
     "oca3": {
         "nome": "Wanadi",
@@ -61,8 +63,10 @@ ABERTAS_POR_NOITE = {
 }
 
 ONDE_DORME = {
-    "Yara": {"oca": "oca1", "imagem": "yara"},
-    "Mbaé": {"oca": "oca2", "imagem": "mbae"},
+    # Yara senta no chão, ao lado da esteira de dormir.
+    "Yara": {"oca": "oca1", "imagem": "yara_sentada", "posicao": (760, 800), "escala": 0.75},
+    # Mbaé senta sobre a cama (o estrado da direita), na mesma pose da fogueira.
+    "Mbaé": {"oca": "oca2", "imagem": "mbae_sentado", "posicao": (1230, 640), "escala": 0.72},
 }
 
 # Textos de dentro da oca.

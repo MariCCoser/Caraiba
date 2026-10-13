@@ -88,6 +88,20 @@ def personagem(apelido, filtro=None):
     return imagem
 
 
+def detalhe(apelido, largura):
+    """Um detalhe do exame (dados/arte.py, DETALHES), em cores, com essa largura."""
+    chave = ("detalhe", apelido, largura)
+    if chave not in _cache:
+        if apelido in arte.DETALHES:
+            imagem = carregar(arte.DETALHES[apelido], transparente=True)
+        else:
+            print("Aviso: detalhe sem entrada em dados/arte.py:", apelido)
+            imagem = provisorio(apelido, (largura, largura))
+        altura = round(imagem.get_height() * largura / imagem.get_width())
+        _cache[chave] = pygame.transform.smoothscale(imagem, (largura, altura))
+    return _cache[chave]
+
+
 def vazio_embaixo(apelido):
     """Quantas linhas transparentes a pessoa tem embaixo (desenho que acaba antes do meio da coxa).
 

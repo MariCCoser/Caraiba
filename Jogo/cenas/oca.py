@@ -11,13 +11,13 @@ import pygame
 import config
 from dados.aldeia import OCA, OCAS, ONDE_DORME
 from dados.textos import DIA
-from motor import efeitos, imagens, ui
+from motor import efeitos, ui
 from motor.cena import Cena, desenhar_cenario
 from motor.pessoas import PessoaNoCenario
 from motor.tabua import Tabua
 
-CENTRO_PESSOA_X = 500
 CENTRO_PAINEL = (1180, 150)       # meio da borda de cima do painel
+CENTRO_PAINEL_ESQUERDA = (420, 150)   # oca com "painel": "esquerda" (dados/aldeia.py)
 LARGURA_PAINEL = 620
 POSICAO_BOTAO_MENU = (1420, 60)
 
@@ -33,6 +33,7 @@ class Oca(Cena):
         # De dia (o Dia está esperando o jogador voltar pela entrada) ou de noite.
         self.de_dia = jogo.dia_pausado is not None
         self.filtro = "dia" if self.de_dia else "noite"
+        self.centro_painel = CENTRO_PAINEL_ESQUERDA if self.oca.get("painel") == "esquerda" else CENTRO_PAINEL
 
         # Quem de fora dorme nesta oca (na ordem em que entrou na aldeia), menos quem está no tapiri.
         self.pessoas = [(quem, ONDE_DORME[quem]["imagem"]) for quem in estado.dentro
@@ -43,8 +44,8 @@ class Oca(Cena):
         self.sobre_pessoa = None
         if self.de_dia:
             passo = jogo.dia_pausado.passo_aldeia or {}
-            self.na_oca = [PessoaNoCenario(p["nome"], p["imagem"], p["posicao"], p["escala"], self.filtro)
-                           for p in passo.get("pessoas", []) if p.get("oca") == self.nome]
+            self.na_oca = [self._sentada(p["nome"]) for p in passo.get("pessoas", [])
+                           if p.get("oca") == self.nome]
 
         if self.de_dia:
             # Quem espera para conversar aparece uma vez só (clicável); os outros que dormem aqui
@@ -62,7 +63,9 @@ class Oca(Cena):
             texto = OCA["dorme"] % " e ".join(quem for quem, _ in self.pessoas)
         else:
             texto = OCA["vazia"]
-        self.titulo = ui.CaixaTexto(self.oca["nome"], LARGURA_PAINEL, CENTRO_PAINEL, ancora="topo",
+        # Quem dorme aqui e não está esperando para conversar: sentado no lugar dele, parado.
+        self.paradas = [self._sentada(quem) for quem, _ in self.pessoas]
+        self.titulo = ui.CaixaTexto(self.oca["nome"], LARGURA_PAINEL, self.centro_painel, ancora="topo",
                                     tamanho=config.TAMANHO_SUBTITULO, nome_fonte="serif_negrito",
                                     alinhamento="centro", fundo=False, margem=20)
         self.caixa = ui.CaixaTexto(texto, LARGURA_PAINEL, (0, 0), ancora="topo",
@@ -73,14 +76,19 @@ class Oca(Cena):
         self.painel = pygame.Rect(0, 0, 0, 0)
         self._posicionar()
 
+    def _sentada(self, nome):
+        """A pessoa no lugar dela dentro da oca (dados/aldeia.py, ONDE_DORME)."""
+        lugar = ONDE_DORME[nome]
+        return PessoaNoCenario(nome, lugar["imagem"], lugar["posicao"], lugar["escala"], self.filtro)
+
     def _posicionar(self):
         self.titulo.numero_de_linhas()
-        self.titulo.rect.midtop = CENTRO_PAINEL
-        self.caixa.posicao = (CENTRO_PAINEL[0], self.titulo.rect.bottom - 16)
+        self.titulo.rect.midtop = self.centro_painel
+        self.caixa.posicao = (self.centro_painel[0], self.titulo.rect.bottom - 16)
         self.caixa.numero_de_linhas()
         self.caixa.rect.midtop = self.caixa.posicao
-        self.painel = pygame.Rect(CENTRO_PAINEL[0] - LARGURA_PAINEL // 2, CENTRO_PAINEL[1],
-                                  LARGURA_PAINEL, self.caixa.rect.bottom - CENTRO_PAINEL[1])
+        self.painel = pygame.Rect(self.centro_painel[0] - LARGURA_PAINEL // 2, self.centro_painel[1],
+                                  LARGURA_PAINEL, self.caixa.rect.bottom - self.centro_painel[1])
         self.botao_sair.posicionar((self.painel.left, self.painel.bottom + 18))
 
     def sair(self):
@@ -120,12 +128,7 @@ class Oca(Cena):
         # A oca pode ter uma arte de dia ("dentro_dia") e outra de noite ("dentro").
         dentro = self.oca.get("dentro_dia", self.oca["dentro"]) if self.de_dia else self.oca["dentro"]
         desenhar_cenario(tela, dentro, self.filtro, self.tempo)
-        # Uma pessoa de cada vez ao lado da outra, da esquerda para a direita.
-        for i, (_, imagem) in enumerate(self.pessoas):
-            pessoa = imagens.personagem(imagem, self.filtro)
-            tela.blit(pessoa, pessoa.get_rect(midbottom=(CENTRO_PESSOA_X + i * 300,
-                                                         config.ALTURA + imagens.vazio_embaixo(imagem))))
-        for pessoa in self.na_oca:
+        for pessoa in self.paradas + self.na_oca:
             pessoa.desenhar(tela)
 
     def desenhar_interface(self, tela):

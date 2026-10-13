@@ -671,7 +671,7 @@ def testar_dia2_e_noite2(jogo):
 
     # De dia, Yara dorme na oca Yorixiriamori (parada, sem conversa nova).
     oca = entrar_na_oca(jogo, "oca1")
-    assert oca.de_dia and oca.pessoas == [("Yara", "yara")] and oca.na_oca == []
+    assert oca.de_dia and oca.pessoas == [("Yara", "yara_sentada")] and oca.na_oca == []
     clicar_botao(jogo, oca.botao_sair)
     esperar_transicao(jogo)
 
@@ -751,7 +751,7 @@ def testar_dia2_e_noite2(jogo):
     aldeia = jogo.cenas.atual
     assert nome_cena(jogo) == "Aldeia" and aldeia.abertas == ["oca1", "oca2"] and not aldeia.tem_seta
     oca = entrar_na_oca(jogo, "oca2")
-    assert oca.pessoas == [("Mbaé", "mbae")]
+    assert oca.pessoas == [("Mbaé", "mbae_sentado")]
     rodar(jogo, 5)
     capturar(jogo, "23-noite2-oca2-mbae")
     print("ok Dia 2 e Noite 2 (Mbaé na oca, 1 olhar: a tosse na boca, febre sorteada)")
