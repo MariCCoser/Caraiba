@@ -160,6 +160,16 @@ class Jogo:
         dia.conversar_na_aldeia(nome)
         self.cenas.trocar(dia)
 
+    def amanhecer(self):
+        """Da aldeia de noite ("Dormir"): começa o dia seguinte. A febre pega na oca aparece agora."""
+        estado = self.estado
+        estado.dia += 1
+        for febre in [f for f in estado.febre if f["dia"] <= estado.dia]:
+            estado.febre.remove(febre)
+            estado.vivos -= febre["adoecem"]
+            estado.mortos += febre["adoecem"]
+        self.ir_para("dia")
+
     def sair(self):
         self.rodando = False
 

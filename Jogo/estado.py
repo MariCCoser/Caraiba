@@ -29,6 +29,10 @@ class Estado:
         self.dentro = []
         # Quem o jogador levou ao tapiri (o abrigo isolado): está na aldeia, mas fora da oca
         self.tapiri = []
+        # Em que noite cada um entrou no tapiri (a vaga abre depois de TAPIRI["noites"] noites)
+        self.tapiri_desde = {}
+        # A febre que vai aparecer: quem pegou na oca e em que dia ({"de", "adoecem", "dia"})
+        self.febre = []
         # Quem morreu pela mão do jogador (o corpo aparece com o nome no dia seguinte)
         self.mortos_nomes = []
         # Os sinais que o pajé contou, um por noite (a tábua de barro do jogador)

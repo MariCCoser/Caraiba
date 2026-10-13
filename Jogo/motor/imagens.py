@@ -88,6 +88,20 @@ def personagem(apelido, filtro=None):
     return imagem
 
 
+def vazio_embaixo(apelido):
+    """Quantas linhas transparentes a pessoa tem embaixo (desenho que acaba antes do meio da coxa).
+
+    Quem desenha a pessoa desce a imagem por essa altura: a cabeça fica na mesma altura que a
+    dos outros e o fim do desenho cai para fora da tela, sem aparecer o corte.
+    """
+    chave = ("vazio", apelido)
+    if chave not in _cache:
+        imagem = personagem(apelido)
+        visivel = imagem.get_bounding_rect()
+        _cache[chave] = imagem.get_height() - visivel.bottom if visivel.height else 0
+    return _cache[chave]
+
+
 def _filtrar_mantendo_transparencia(imagem, filtro):
     """Os filtros perdem a transparência (o fundo vira preto). Aqui o filtro é aplicado
     numa cópia opaca e depois a transparência original é devolvida."""

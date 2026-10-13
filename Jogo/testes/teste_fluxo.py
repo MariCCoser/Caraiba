@@ -93,7 +93,8 @@ def testar_estado_inicial():
     esperado = {"dia": 1, "vivos": 12, "mortos": 0, "mortos_por_sua_mao": 0, "entregues": 0,
                 "proximidade_vila": 0, "rio_acima": 0, "memoria": 0, "recusas_aleixo": 0,
                 "pistas": 0, "sanidade": 10, "tapiri_usos": 0, "viu_anhanga": 0, "seguiu_paje": 0,
-                "inocentes": 0, "dentro": [], "tapiri": [], "mortos_nomes": [], "tabua": [], "final": None}
+                "inocentes": 0, "dentro": [], "tapiri": [], "tapiri_desde": {}, "febre": [],
+                "mortos_nomes": [], "tabua": [], "final": None}
     assert estado.para_dicionario() == esperado, estado.para_dicionario()
     print("ok Estado com os valores iniciais do documento")
 
@@ -584,6 +585,185 @@ def testar_aldeia_e_oca(jogo, yara_dentro):
     print("ok aldeia de noite: só a oca 1 abre%s" % (" e Yara dorme nela" if yara_dentro else ", vazia"))
 
 
+def comecar_noite_1_na_aldeia(jogo, **valores):
+    """Uma partida parada na aldeia, no fim da noite 1 (sem jogar o Dia 1)."""
+    jogo.nova_partida()
+    estado = jogo.estado
+    estado.dentro = ["Yara"]
+    estado.vivos = 13
+    estado.tabua = ["Olho vermelho, com o branco raiado."]
+    for nome, valor in valores.items():
+        setattr(estado, nome, valor)
+    jogo.ir_para("aldeia")
+    esperar_transicao(jogo)
+    return estado
+
+
+def ate_mbae_entrar(jogo):
+    """Do começo do Dia 2 até Mbaé entrar e esperar na oca (a aldeia de dia)."""
+    passar_falas(jogo)                       # a aldeia (seta) até a entrada
+    dia = jogo.cenas.atual
+    assert dia.modo == "perguntas" and dia.visitante == "mbae", (dia.modo, dia.visitante)
+    clicar_opcao(jogo, "Decidir")
+    clicar_opcao(jogo, "Deixar entrar")
+    passar_falas(jogo, seguir_seta=False)
+    assert nome_cena(jogo) == "Aldeia" and jogo.cenas.atual.de_dia
+
+
+def examinar(jogo, zonas):
+    for zona in zonas:
+        clicar_opcao(jogo, zona)
+        passar_falas(jogo)
+
+
+def testar_dia2_e_noite2(jogo):
+    """Da noite 1 ao Dia 2 (Mbaé) e à Noite 2: o tapiri tem lugar para um só."""
+    # A aldeia de noite tem a seta "Dormir", que leva ao Dia 2.
+    estado = comecar_noite_1_na_aldeia(jogo)
+    aldeia = jogo.cenas.atual
+    assert aldeia.tem_seta and aldeia.texto_seta == "Dormir"
+    rodar(jogo, 20)
+    capturar(jogo, "18-noite1-aldeia-dormir")
+    clicar(jogo, aldeia.rect_seta.center)
+    esperar_transicao(jogo)
+    esperar_transicao(jogo)
+    estado = jogo.estado
+    # O Dia 2 começa na aldeia de dia, com a seta para a entrada.
+    assert estado.dia == 2 and nome_cena(jogo) == "Aldeia" and jogo.cenas.atual.de_dia, nome_cena(jogo)
+    assert jogo.dia_pausado.titulo == "Dia 2" and jogo.cenas.atual.texto_seta == "Entrada da aldeia"
+
+    # De dia, Yara dorme na oca Yorixiriamori (parada, sem conversa nova).
+    oca = entrar_na_oca(jogo, "oca1")
+    assert oca.de_dia and oca.pessoas == [("Yara", "yara")] and oca.na_oca == []
+    clicar_botao(jogo, oca.botao_sair)
+    esperar_transicao(jogo)
+
+    # A entrada: Mbaé. Pergunta se está doente e deixa entrar.
+    passar_falas(jogo)
+    dia = jogo.cenas.atual
+    rodar(jogo, 60)
+    capturar(jogo, "19-dia2-mbae")
+    clicar_opcao(jogo, "Você está doente?")
+    passar_falas(jogo)
+    clicar_opcao(jogo, "Decidir")
+    clicar_opcao(jogo, "Deixar entrar")
+    passar_falas(jogo, seguir_seta=False)
+    assert estado.dentro == ["Yara", "Mbaé"] and estado.vivos == 14
+
+    # Mbaé espera na oca Yebá Bëló: a história de antes conta como história ouvida.
+    oca = entrar_na_oca(jogo, "oca2")
+    assert [p.nome for p in oca.na_oca] == ["Mbaé"]
+    rodar(jogo, 20)
+    capturar(jogo, "20-dia2-mbae-na-oca")
+    clicar_pessoa(jogo, "Mbaé")
+    assert jogo.cenas.atual.fundo == ("oca2_dia", "dia")
+    passar_falas(jogo)
+    clicar_opcao(jogo, "Conte de antes.")
+    passar_falas(jogo)
+    assert estado.memoria == 1
+    clicar_opcao(jogo, "Terminar a conversa")
+    esperar_transicao(jogo)
+    clicar_botao(jogo, jogo.cenas.atual.botao_sair)
+    esperar_transicao(jogo)
+
+    # O sinal do pajé e a fogueira: pajé, Yara e Mbaé. Só Mbaé é obrigatório.
+    passar_falas(jogo)
+    dia = jogo.cenas.atual
+    assert estado.tabua[-1] == "Corpo quente e tosse seca."
+    assert dia.titulo == "Noite 2" and dia.modo == "fogueira" and dia.energia == 4
+    assert [p.nome for p in dia.na_fogueira] == ["Pajé", "Yara", "Mbaé"]
+    assert not dia.botao_dormir.habilitado and "Mbaé" in dia.botao_dormir.texto
+    rodar(jogo, 40)
+    capturar(jogo, "21-noite2-fogueira")
+
+    # O pajé fala do que a aldeia diz de Mbaé (só porque ele entrou).
+    clicar_pessoa(jogo, "Pajé")
+    passar_falas(jogo)
+    assert "Por que olham torto para Mbaé?" in textos_dos_botoes(jogo)
+    clicar_opcao(jogo, "Por que olham torto para Mbaé?")
+    passar_falas(jogo)
+    clicar_opcao(jogo, "Voltar para a fogueira")
+
+    # Mbaé: o exame com 4 de energia. Abrir a boca custa 2.
+    clicar_pessoa(jogo, "Mbaé")
+    passar_falas(jogo)
+    clicar_opcao(jogo, "Examinar o rosto")
+    assert textos_dos_botoes(jogo) == ["Testa", "Olhos", "Orelhas", "Boca", "Mãos", "Respiração",
+                                       "Terminar o exame"]
+    examinar(jogo, ["Boca"])
+    assert dia.energia == 2
+    examinar(jogo, ["Testa"])
+    # Com 1 de energia, tudo que custa 1 continua aberto.
+    assert all(b.habilitado for b, _ in dia.botoes)
+    examinar(jogo, ["Respiração"])
+    assert dia.energia == 0 and dia.sinais == {"Mbaé": 3}
+    assert [b.habilitado for b, _ in dia.botoes] == [False, False, False, True]
+    rodar(jogo, 5)
+    capturar(jogo, "22-noite2-exame-mbae")
+    clicar_opcao(jogo, "Terminar o exame")
+
+    # Deixar Mbaé na oca: 2 moradores pegam a febre (aparecem no dia 4).
+    assert textos_dos_botoes(jogo) == ["Deixar na oca", "Levar ao tapiri", "Matar"]
+    clicar_opcao(jogo, "Deixar na oca")
+    passar_falas(jogo)
+    assert estado.febre == [{"adoecem": 2, "dia": 4, "de": "Mbaé"}], estado.febre
+    assert dia.botao_dormir.habilitado
+    clicar_botao(jogo, dia.botao_dormir)
+    passar_falas(jogo)
+    esperar_transicao(jogo)
+
+    # A aldeia de noite 2: as duas ocas abertas; ainda não há Dia 3, então não há seta.
+    aldeia = jogo.cenas.atual
+    assert nome_cena(jogo) == "Aldeia" and aldeia.abertas == ["oca1", "oca2"] and not aldeia.tem_seta
+    oca = entrar_na_oca(jogo, "oca2")
+    assert oca.pessoas == [("Mbaé", "mbae")]
+    rodar(jogo, 5)
+    capturar(jogo, "23-noite2-oca2-mbae")
+    print("ok Dia 2 e Noite 2 (Mbaé na oca, exame com a boca, febre marcada para o dia 4)")
+    jogo.ir_para("menu")
+    esperar_transicao(jogo)
+
+    # Yara ficou no tapiri na noite 1: na noite 2 ela não vem à fogueira, e não há lugar para Mbaé.
+    comecar_noite_1_na_aldeia(jogo, tapiri=["Yara"], tapiri_desde={"Yara": 1})
+    jogo.amanhecer()
+    esperar_transicao(jogo)
+    ate_mbae_entrar(jogo)
+    passar_falas(jogo)
+    dia = jogo.cenas.atual
+    assert [p.nome for p in dia.na_fogueira] == ["Pajé", "Mbaé"], [p.nome for p in dia.na_fogueira]
+    clicar_pessoa(jogo, "Mbaé")
+    passar_falas(jogo)
+    clicar_opcao(jogo, "Examinar o rosto")
+    clicar_opcao(jogo, "Terminar o exame")
+    assert textos_dos_botoes(jogo) == ["Deixar na oca", "Levar ao tapiri · não há lugar", "Matar"]
+    assert not dia.botoes[1][0].habilitado
+    dia.caixa.completar()
+    rodar(jogo, 5)
+    capturar(jogo, "24-noite2-tapiri-cheio")
+    clicar_opcao(jogo, "Matar")
+    passar_falas(jogo)
+    assert jogo.estado.mortos_nomes == ["Mbaé"] and jogo.estado.febre == []
+    # Na noite 4, Yara já passou três noites lá: a vaga abre.
+    jogo.estado.dia = 4
+    dia._liberar_tapiri()
+    assert jogo.estado.tapiri == [] and jogo.estado.tapiri_desde == {}
+    print("ok Noite 2 com o tapiri cheio (Yara lá desde a noite 1); a vaga abre na noite 4")
+    jogo.ir_para("menu")
+    esperar_transicao(jogo)
+
+    # Quem morreu aparece de manhã, com o nome; a febre marcada aparece no dia certo.
+    comecar_noite_1_na_aldeia(jogo, dentro=[], vivos=12, mortos=1, mortos_por_sua_mao=1,
+                              mortos_nomes=["Yara"], febre=[{"adoecem": 2, "dia": 2, "de": "X"}])
+    jogo.amanhecer()
+    esperar_transicao(jogo)
+    dia = jogo.cenas.atual
+    assert dia.modo == "fala" and dia.caixa.texto.startswith("O corpo de Yara"), dia.caixa.texto
+    assert jogo.estado.vivos == 10 and jogo.estado.mortos == 3 and jogo.estado.febre == []
+    print("ok manhã do Dia 2: o corpo com o nome, e a febre do dia aparece")
+    jogo.ir_para("menu")
+    esperar_transicao(jogo)
+
+
 def testar_continuar_tabua_tutorial(jogo):
     from dados.dias import DIAS
     perguntas = next(p for p in DIAS[1]["passos"] if p["tipo"] == "perguntas")["perguntas"]
@@ -745,6 +925,7 @@ def testar_fluxo():
 
     # 5b. O Dia 1 inteiro, pelos dois caminhos, e a aldeia de dia
     testar_dia1(jogo)
+    testar_dia2_e_noite2(jogo)
     testar_aldeia_de_dia(jogo)
 
     # 5c. Continuar de onde parou, a tábua de barro e o "Como se joga" do menu

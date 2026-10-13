@@ -16,6 +16,7 @@ import copy
 import pygame
 
 import config
+from dados.aldeia import TAPIRI
 from dados.dias import DIAS
 from dados.febre import DOENTES
 from dados.noites import NOITES
@@ -88,6 +89,7 @@ class Dia(Cena):
         self.estado_inicio = copy.deepcopy(self.estado.para_dicionario())
         self.acoes = []
         self.refazendo = False
+        self.construindo = True    # o roteiro começa a tocar antes de a cena aparecer
         self._proximo()
 
         # "Continuar": refaz as ações guardadas, sem animação, até o ponto em que o jogador parou.
@@ -102,6 +104,7 @@ class Dia(Cena):
                 self.caixa.completar()
             self.tempo_chegada = DURACAO_CHEGADA
             self.tempo_troca = DURACAO_TROCA_DE_FUNDO
+        self.construindo = False
         self._salvar()
 
     # --- progresso ----------------------------------------------------------
@@ -162,6 +165,9 @@ class Dia(Cena):
             elif tipo == "aldeia":
                 self._ir_para_aldeia(passo)
                 return
+            elif tipo == "se":
+                if self._condicao(passo):
+                    self.fila[0:0] = passo["passos"]
             elif tipo == "noite":
                 self._comecar_noite()
                 return
@@ -178,20 +184,47 @@ class Dia(Cena):
                 raise ValueError("Tipo de passo desconhecido em dados/dias.py: %r" % tipo)
         self.terminar()
 
+    def _condicao(self, item):
+        """Passo "se" (ou pergunta com "se_dentro"): "dentro", "morto" e "tapiri" levam um nome."""
+        estado = self.estado
+        if "dentro" in item and item["dentro"] not in estado.dentro:
+            return False
+        if "se_dentro" in item and item["se_dentro"] not in estado.dentro:
+            return False
+        if "morto" in item and item["morto"] not in estado.mortos_nomes:
+            return False
+        if "tapiri" in item and item["tapiri"] not in estado.tapiri:
+            return False
+        return True
+
     # --- a noite na fogueira ----------------------------------------------------
 
     def _comecar_noite(self):
         """A noite de dados/noites.py: todos sentam em volta do fogo e o jogador escolhe com quem falar."""
         self.noite = NOITES[self.estado.dia]
+        self._liberar_tapiri()
         self.titulo = self.noite["titulo"]
         self.energia = self.noite["energia"]
         self._mostrar_fogueira()
 
     def _pessoas_da_noite(self):
-        """Quem está em volta do fogo: o pessoal da aldeia e quem de fora entrou (na ordem do dicionário)."""
+        """Quem está em volta do fogo: o pessoal da aldeia e quem de fora entrou (na ordem do
+        dicionário). Quem está no tapiri fica lá, isolado: não vem para a fogueira."""
         for nome, pessoa in self.noite["pessoas"].items():
-            if not pessoa.get("de_fora") or nome in self.estado.dentro:
-                yield nome, pessoa
+            if pessoa.get("de_fora") and (nome not in self.estado.dentro or nome in self.estado.tapiri):
+                continue
+            yield nome, pessoa
+
+    def _liberar_tapiri(self):
+        """Quem já passou TAPIRI["noites"] noites no tapiri volta para a oca: a vaga abre."""
+        for nome in list(self.estado.tapiri):
+            desde = self.estado.tapiri_desde.get(nome, 0)
+            if self.estado.dia - desde >= TAPIRI["noites"]:
+                self.estado.tapiri.remove(nome)
+                self.estado.tapiri_desde.pop(nome, None)
+
+    def _tapiri_cheio(self):
+        return len(self.estado.tapiri) >= TAPIRI["vagas"]
 
     def _mostrar_fogueira(self):
         self.modo = "fogueira"
@@ -242,7 +275,8 @@ class Dia(Cena):
         self.botoes = []
         destino = self.voltar_para or "aldeia"
         self.voltar_para = None
-        if not self.refazendo:
+        # Se o dia já começa na aldeia, a cena ainda nem apareceu: ao_entrar leva até lá.
+        if not self.refazendo and not self.construindo:
             self.jogo.dia_pausado = self
             self.jogo.ir_para(destino)
 
@@ -259,7 +293,7 @@ class Dia(Cena):
         self._proximo()
 
     def ao_entrar(self):
-        # "Continuar" parado na aldeia de dia: refeito o roteiro, volta direto para a aldeia.
+        # "Continuar" parado na aldeia de dia (ou um dia que começa na aldeia): volta direto para ela.
         if self.modo == "aldeia" and self.jogo.dia_pausado is None:
             self.jogo.dia_pausado = self
             self.jogo.ir_para("aldeia")
@@ -294,15 +328,19 @@ class Dia(Cena):
         for i, item in enumerate(_itens(passo)):
             if liberadas is not None and item["pergunta"] not in liberadas:
                 continue
+            if not self._condicao(item):
+                continue
             if (id(passo), i) not in self.perguntas_feitas:
                 opcoes.append((item["pergunta"], lambda i=i, item=item: self._perguntar(passo, i, item)))
         botao = passo.get("botao", DIA["terminar_exame"] if exame else DIA["decidir"])
         opcoes.append((botao, self._decidir))
         self._criar_blocos(opcoes)
-        if exame and not self.energia:
-            # Sem energia, as zonas ficam apagadas: só dá para terminar o exame.
+        if exame:
+            # Zona que custa mais energia do que sobrou fica apagada: no fim, só dá para terminar.
+            itens = {item["pergunta"]: item for item in _itens(passo)}
             for bloco, _ in self.botoes[:-1]:
-                bloco.habilitado = False
+                if itens[bloco.texto].get("custo", 1) > (self.energia or 0):
+                    bloco.habilitado = False
 
     def _apresentar(self, passo):
         """Exame ou escolha com "texto": na primeira vez, ele aparece no painel (sem nome em cima)."""
@@ -317,7 +355,7 @@ class Dia(Cena):
         self.perguntas_feitas.add((id(passo), indice))
         self._aplicar(item.get("efeitos"))
         if passo["tipo"] == "exame":
-            self.energia -= 1
+            self.energia -= item.get("custo", 1)
             if item.get("sinal"):
                 self.sinais[passo["quem"]] = self.sinais.get(passo["quem"], 0) + 1
         # Uma resposta pode ter várias frases: a primeira aparece agora, as outras em seguida.
@@ -345,6 +383,9 @@ class Dia(Cena):
             if achados < opcao.get("requer_sinais", 0):
                 bloco.habilitado = False
                 bloco.definir_texto(opcao.get("texto_bloqueado", opcao["texto"]))
+            if opcao.get("tapiri") and self._tapiri_cheio():
+                bloco.habilitado = False
+                bloco.definir_texto(DIA["tapiri_cheio"])
         self._posicionar()
 
     def _escolher(self, indice):
@@ -355,8 +396,12 @@ class Dia(Cena):
             self.estado.dentro.append(opcao["entra"])
         if opcao.get("tapiri"):
             self.estado.tapiri.append(opcao["tapiri"])
+            self.estado.tapiri_desde[opcao["tapiri"]] = self.estado.dia
             if opcao["tapiri"] in DOENTES:
                 self.estado.tapiri_usos += 1
+        if opcao.get("contagio"):
+            # Um doente dormiu na oca: a febre aparece em outros dias depois (jogo.amanhecer).
+            self.estado.febre.append(dict(opcao["contagio"], de=self.passo_atual.get("quem")))
         if opcao.get("morre"):
             self.estado.dentro.remove(opcao["morre"])
             self.estado.mortos_nomes.append(opcao["morre"])
@@ -494,7 +539,8 @@ class Dia(Cena):
             pessoa = imagens.personagem(self.visitante, filtro)
             progresso_chegada = min(1.0, self.tempo_chegada / DURACAO_CHEGADA)
             rect = pessoa.get_rect(midbottom=(CENTRO_VISITANTE_X,
-                                              config.ALTURA + int(SUBIDA_CHEGADA * (1 - progresso_chegada))))
+                                              config.ALTURA + imagens.vazio_embaixo(self.visitante)
+                                              + int(SUBIDA_CHEGADA * (1 - progresso_chegada))))
             if progresso_chegada < 1.0:
                 pessoa.set_alpha(int(255 * progresso_chegada))
                 tela.blit(pessoa, rect)
@@ -508,7 +554,7 @@ class Dia(Cena):
                          nome_fonte="mono", cor=config.BARRO, ancora="esquerda")
         if self.energia is not None:
             # A energia da noite, logo abaixo do título: um ponto por olhar.
-            pontos = "●" * self.energia + "○" * (NOITES[self.estado.dia]["energia"] - self.energia)
+            pontos = "●" * self.energia + "○" * (self.noite["energia"] - self.energia)
             ui.texto_simples(tela, DIA["energia"] + " " + pontos, (40, 100), config.TAMANHO_PEQUENO,
                              nome_fonte="mono", cor=config.TABATINGA, ancora="esquerda")
         self.botao_menu.desenhar(tela)

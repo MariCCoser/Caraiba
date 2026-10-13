@@ -26,6 +26,9 @@
 #                             fala; 0.5 = metade) e, se ela espera dentro de uma oca, "oca"
 #                             (o nome da oca em dados/aldeia.py): aí ela aparece lá dentro.
 #   "noite"      começa a noite na fogueira: o roteiro dela fica em dados/noites.py
+#   "se"         os "passos" de dentro só acontecem se a condição bate:
+#                "morto": "Yara" (o jogador matou Yara), "dentro": "Yara" (Yara está na
+#                aldeia) ou "tapiri": "Yara" (Yara está no tapiri)
 #
 # "efeitos" soma valores às variáveis do estado.py: {"memoria": 1, "vivos": 1}.
 #
@@ -131,6 +134,78 @@ DIAS = {
             {"tipo": "sinal", "texto": "Olho vermelho, com o branco raiado."},
 
             # A noite na fogueira: conversa, exame do rosto e decisão (dados/noites.py).
+            {"tipo": "noite"},
+        ],
+    },
+
+    2: {
+        "titulo": "Dia 2",
+        "passos": [
+            {"tipo": "fundo", "fundo": "aldeia", "filtro": "dia"},
+
+            # A manhã: o jogo mostra quem morreu. Quem o jogador matou aparece com o nome.
+            {"tipo": "se", "morto": "Yara", "passos": [
+                {"tipo": "fala", "quem": "",
+                 "texto": "O corpo de Yara amanheceu coberto com uma esteira."},
+            ]},
+
+            # O jogador anda pela aldeia e vai até a entrada, como no dia 1.
+            {"tipo": "aldeia"},
+
+            # A chegada de Mbaé. Ninguém comenta nem descreve: o jogador vê e ouve.
+            # Ele está com a febre e não sabe (ou não diz).
+            {"tipo": "fundo", "fundo": "floresta", "filtro": "dia"},
+            {"tipo": "visitante", "visitante": "mbae"},
+            {"tipo": "fala", "quem": "Mbaé",
+             "texto": "Segui uma anta por dois dias. (tosse) [É só cansaço]."},
+            {"tipo": "perguntas", "perguntas": [
+                {"pergunta": "De onde você vem?",
+                 "resposta": "Do outro lado do rio. Meu povo caça onde o seu não vai."},
+                {"pergunta": "Você está doente?",
+                 "resposta": "[Não]. Dormi no sereno, e a tosse veio junto."},
+            ]},
+            {"tipo": "escolha", "opcoes": [
+                {"texto": "Deixar entrar", "efeitos": {"vivos": 1}, "entra": "Mbaé", "passos": [
+                    {"tipo": "fala", "quem": "Mbaé", "texto": "Não vou dar trabalho."},
+
+                    # Mbaé espera na oca Yebá Bëló: lá ele conta de antes, se o jogador quiser.
+                    {"tipo": "visitante", "visitante": None},
+                    {"tipo": "aldeia", "seta": "Esperar a noite",
+                     "dica": "Mbaé está na oca Yebá Bëló. Entre para conversar, ou espere a noite.",
+                     "pessoas": [
+                        {"nome": "Mbaé", "oca": "oca2", "imagem": "mbae", "posicao": (480, 960),
+                         "escala": 0.85, "passos": [
+                            {"tipo": "fundo", "fundo": "oca2_dia", "filtro": "dia"},
+                            {"tipo": "visitante", "visitante": "mbae"},
+                            {"tipo": "fala", "quem": "Mbaé",
+                             "texto": "Seu povo me olha torto. Já estou acostumado."},
+                            {"tipo": "perguntas", "botao": "Terminar a conversa", "perguntas": [
+                                {"pergunta": "Conte de antes.",
+                                 "resposta": [
+                                     "Antes a gente seguia a anta pelo rio inteiro. Sem dono de margem.",
+                                     "Agora desce barco pelo rio, e a caça foge para dentro da mata.",
+                                 ],
+                                 "efeitos": {"memoria": 1}},
+                                {"pergunta": "Por que olham torto para você?",
+                                 "resposta": "Contam histórias do meu povo. [Nenhuma é verdade]."},
+                            ]},
+                            {"tipo": "visitante", "visitante": None},
+                        ]},
+                     ]},
+                ]},
+                {"texto": "Não deixar entrar", "passos": [
+                    {"tipo": "fala", "quem": "Mbaé", "texto": "Então vou para a vila. Dizem que lá tem remédio."},
+                ]},
+            ]},
+            {"tipo": "visitante", "visitante": None},
+
+            # O sinal do pajé: hoje ele acerta (Mbaé tem a febre).
+            {"tipo": "fundo", "fundo": "fogueira_longe", "filtro": "noite"},
+            {"tipo": "visitante", "visitante": "paje"},
+            {"tipo": "fala", "quem": "Pajé",
+             "texto": "Sonhei com gente tremendo na rede. O mal deixa [o corpo quente]."},
+            {"tipo": "sinal", "texto": "Corpo quente e tosse seca."},
+
             {"tipo": "noite"},
         ],
     },

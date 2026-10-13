@@ -47,9 +47,17 @@ class Oca(Cena):
                            for p in passo.get("pessoas", []) if p.get("oca") == self.nome]
 
         if self.de_dia:
+            # Quem espera para conversar aparece uma vez só (clicável); os outros que dormem aqui
+            # aparecem parados.
             nomes = " e ".join(pessoa.nome for pessoa in self.na_oca)
-            texto = OCA["aqui_dia"] % nomes if nomes else OCA["vazia_dia"]
-            self.pessoas = []
+            self.pessoas = [(quem, imagem) for quem, imagem in self.pessoas
+                            if quem not in [pessoa.nome for pessoa in self.na_oca]]
+            if nomes:
+                texto = OCA["aqui_dia"] % nomes
+            elif self.pessoas:
+                texto = OCA["dorme_dia"] % " e ".join(quem for quem, _ in self.pessoas)
+            else:
+                texto = OCA["vazia_dia"]
         elif self.pessoas:
             texto = OCA["dorme"] % " e ".join(quem for quem, _ in self.pessoas)
         else:
@@ -109,11 +117,14 @@ class Oca(Cena):
         return None
 
     def desenhar_cena(self, tela):
-        desenhar_cenario(tela, self.oca["dentro"], self.filtro, self.tempo)
+        # A oca pode ter uma arte de dia ("dentro_dia") e outra de noite ("dentro").
+        dentro = self.oca.get("dentro_dia", self.oca["dentro"]) if self.de_dia else self.oca["dentro"]
+        desenhar_cenario(tela, dentro, self.filtro, self.tempo)
         # Uma pessoa de cada vez ao lado da outra, da esquerda para a direita.
         for i, (_, imagem) in enumerate(self.pessoas):
             pessoa = imagens.personagem(imagem, self.filtro)
-            tela.blit(pessoa, pessoa.get_rect(midbottom=(CENTRO_PESSOA_X + i * 300, config.ALTURA)))
+            tela.blit(pessoa, pessoa.get_rect(midbottom=(CENTRO_PESSOA_X + i * 300,
+                                                         config.ALTURA + imagens.vazio_embaixo(imagem))))
         for pessoa in self.na_oca:
             pessoa.desenhar(tela)
 

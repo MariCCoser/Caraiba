@@ -13,6 +13,7 @@ import pygame
 
 import config
 from dados.aldeia import ALDEIA, OCAS, ocas_abertas
+from dados.dias import DIAS
 from dados.textos import DIA
 from motor import efeitos, fontes, progresso, ui
 from motor.cena import Cena, desenhar_cenario
@@ -43,6 +44,11 @@ class Aldeia(Cena):
                         for p in passo.get("pessoas", []) if not p.get("oca")]
         self.texto_seta = passo.get("seta", ALDEIA["seta"])
         self.dica = passo.get("dica", ALDEIA["dica_dia"]) if self.de_dia else ALDEIA["dica"]
+        # De noite, a seta "Dormir" leva ao dia seguinte, se ele já foi construído (dados/dias.py).
+        self.tem_seta = self.de_dia or (self.noite + 1) in DIAS
+        if not self.de_dia and self.tem_seta:
+            self.texto_seta = ALDEIA["seta_dormir"]
+            self.dica = ALDEIA["dica_dormir"]
         self.rect_seta = pygame.Rect(0, 0, 330, 104)
         self.rect_seta.center = CENTRO_SETA
 
@@ -78,8 +84,11 @@ class Aldeia(Cena):
         if self.botao_menu.clicado(evento):
             self.jogo.ir_para("menu")
         elif evento.type == pygame.MOUSEBUTTONUP and evento.button == 1:
-            if self.de_dia and self.rect_seta.collidepoint(evento.pos):
-                self.jogo.voltar_ao_dia()
+            if self.tem_seta and self.rect_seta.collidepoint(evento.pos):
+                if self.de_dia:
+                    self.jogo.voltar_ao_dia()
+                else:
+                    self.jogo.amanhecer()
                 return
             pessoa = self._pessoa_no_ponto(evento.pos)
             if pessoa:
@@ -97,7 +106,7 @@ class Aldeia(Cena):
             self.sobre = None
             return
         self.botao_menu.atualizar(self.jogo.mouse)
-        self.sobre_seta = self.de_dia and self.rect_seta.collidepoint(self.jogo.mouse)
+        self.sobre_seta = self.tem_seta and self.rect_seta.collidepoint(self.jogo.mouse)
         # A pessoa fica na frente das ocas: se o mouse está nela, a oca de trás não acende.
         self.sobre_pessoa = None if self.sobre_seta else self._pessoa_no_ponto(self.jogo.mouse)
         self.sobre = None if self.sobre_pessoa or self.sobre_seta else self._oca_no_ponto(self.jogo.mouse)
@@ -161,11 +170,11 @@ class Aldeia(Cena):
         dica = self.dica
         fonte = fontes.fonte_escalada("sans", config.TAMANHO_PEQUENO + 2)
         rect_dica = pygame.Rect((0, 0), fonte.size(dica))
-        rect_dica.center = (800, 730 if self.de_dia else 850)
+        rect_dica.center = (800, 730 if self.tem_seta else 850)
         ui.painel_arredondado(tela, rect_dica.inflate(36, 18), config.PRETO + (190,), raio=14)
         ui.texto_simples(tela, dica, rect_dica.center, config.TAMANHO_PEQUENO + 2)
 
-        if self.de_dia:
+        if self.tem_seta:
             self._desenhar_seta(tela)
 
         self.tabua.desenhar(tela)

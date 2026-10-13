@@ -170,7 +170,11 @@ Sim. Os fins mais cedo possíveis são:
 - A checagem no fim de cada noite: o jogo acaba antes do dia 10 quando um final antecipado
   bate.
 - A tela de final, com três telas: a cena, o povo e o fato, e a fonte.
-- Na noite 1: matar Yara conta para A Loucura, e levar um doente ao tapiri conta para O Tapiri
-  (Yara é sã, então não conta).
+- Noites 1 e 2: matar conta para A Loucura, e levar um doente ao tapiri conta para O Tapiri
+  (Yara é sã, então não conta; Mbaé conta).
+- O tapiri com 1 vaga e 3 noites: se Yara foi para o tapiri na noite 1, na noite 2 não há
+  lugar para Mbaé, e a vaga abre na noite 4.
+- A febre: Mbaé dormindo na oca marca 2 moradores doentes para o dia 4. Eles aparecem quando o
+  jogador dorme e o dia 4 começa.
 - As outras variáveis (entregas, rio acima, Anhangá e acusações do pajé) passam a contar quando
-  os dias 2 a 10 forem construídos.
+  os dias 3 a 10 forem construídos.

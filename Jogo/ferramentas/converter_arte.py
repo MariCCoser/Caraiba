@@ -32,6 +32,9 @@ CENARIOS = [
     ("Ar_livre/floresta_atras_personag.png", "cenarios/cenario-floresta.jpg"),
     # Por dentro das ocas (Arte/Ocas/). A oca 1 tem uma imagem só, para o dia e a noite.
     ("Ocas/Yorixiriamori_DN.png", "cenarios/cenario-oca1.jpg"),
+    # A oca 2 (Yebá Bëló) tem uma imagem de dia e outra de noite.
+    ("Ocas/Yebá Bëló_dia_2.png", "cenarios/cenario-oca2-dia.jpg"),
+    ("Ocas/Yebá Bëló_noite_2.png", "cenarios/cenario-oca2-noite.jpg"),
 ]
 
 # CORTE PADRÃO DAS PESSOAS: do topo da cabeça até o meio das coxas, sempre com esta

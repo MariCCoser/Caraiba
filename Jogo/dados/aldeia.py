@@ -1,7 +1,8 @@
 # A aldeia vista de fora, como no Purble Place: clicar numa oca entra nela.
 # Edite à vontade: aqui não há lógica.
 #
-# - OCAS: cada oca, com o nome que aparece quando o mouse passa por cima, o contorno clicável (pontos x, y na tela 1600x900,
+# - OCAS: cada oca ("dentro" é o cenário de dentro; "dentro_dia", se houver, é o de dia),
+#   com o nome que aparece quando o mouse passa por cima, o contorno clicável (pontos x, y na tela 1600x900,
 #   rente ao telhado e à casa no cenário "aldeia", sem a vegetação) e o cenário de dentro dela.
 # - A aldeia aparece de dia (depois da fala do pajé, com uma seta para a entrada da aldeia,
 #   onde chegam os visitantes) e de noite (depois do sinal do pajé).
@@ -16,10 +17,20 @@ ALDEIA = {
     "titulo": "Noite %d",
     "titulo_dia": "Dia %d",
     "dica": "Clique numa oca para entrar.",
+    "dica_dormir": "Clique numa oca para entrar, ou durma até o amanhecer.",
     "dica_dia": "Clique numa oca para entrar, ou siga a seta até a entrada da aldeia.",
     "fechada": "%s · fechada esta noite",
     "fechada_dia": "%s · fechada hoje",
     "seta": "Entrada da aldeia",
+    "seta_dormir": "Dormir",
+}
+
+# O tapiri: o abrigo isolado, longe das ocas. Quem é levado para lá fica "noites" noites
+# (e a vaga abre de novo); a doença não passa de lá para ninguém.
+# (Textos/Caraiba_Contas_dos_Finais.md: 1 vaga; Potira ergue a 2ª no dia 5.)
+TAPIRI = {
+    "vagas": 1,
+    "noites": 3,
 }
 
 OCAS = {
@@ -32,7 +43,8 @@ OCAS = {
     "oca2": {
         "nome": "Yebá Bëló",
         "contorno": [(922, 318), (1008, 435), (960, 456), (850, 456), (840, 422)],
-        "dentro": None,   # ainda sem arte de dentro ligada (Arte/Ocas/Yebá Bëló_dia_2 e _noite_2)
+        "dentro": "oca2_noite",
+        "dentro_dia": "oca2_dia",
     },
     "oca3": {
         "nome": "Wanadi",
@@ -45,10 +57,12 @@ OCAS = {
 
 ABERTAS_POR_NOITE = {
     1: ["oca1"],
+    2: ["oca1", "oca2"],
 }
 
 ONDE_DORME = {
     "Yara": {"oca": "oca1", "imagem": "yara"},
+    "Mbaé": {"oca": "oca2", "imagem": "mbae"},
 }
 
 # Textos de dentro da oca.
@@ -57,6 +71,7 @@ OCA = {
     "dorme": "%s dorme aqui esta noite.",
     "vazia": "Ninguém de fora dorme aqui esta noite.",
     "vazia_dia": "Por enquanto, ninguém de fora dorme aqui.",
+    "dorme_dia": "%s dorme aqui.",
     "aqui_dia": "%s está aqui dentro. Clique para conversar.",
 }
 

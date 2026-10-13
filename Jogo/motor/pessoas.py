@@ -18,7 +18,9 @@ class PessoaNoCenario:
         original = imagens.personagem(imagem, filtro)
         tamanho = (round(original.get_width() * escala), round(original.get_height() * escala))
         self.imagem = pygame.transform.smoothscale(original, tamanho)
-        self.rect = self.imagem.get_rect(midbottom=posicao)
+        # Desenho que acaba antes do meio da coxa desce um pouco, para o corte não aparecer.
+        x, y = posicao
+        self.rect = self.imagem.get_rect(midbottom=(x, y + round(imagens.vazio_embaixo(imagem) * escala)))
         # A "máscara" diz, pixel a pixel, onde está a pessoa (o fundo transparente não conta).
         # Fica só o maior pedaço (o corpo), sem os pixels soltos que sobram do recorte.
         self.mascara = pygame.mask.from_surface(self.imagem).connected_component()
