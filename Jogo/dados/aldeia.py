@@ -53,13 +53,16 @@ OCAS = {
         "contorno": [(1352, 85), (1420, 200), (1470, 300), (1480, 370), (1440, 400), (1400, 425), (1390, 510),
                      (1250, 515), (1200, 560), (1190, 580), (1090, 580), (1075, 520), (1062, 425), (1125, 410),
                      (1180, 330), (1270, 200)],
-        "dentro": None,   # ainda sem arte de dentro ligada (Arte/Ocas/Wanadi_dia_3 e _noite_3)
+        "dentro": "oca3_noite",
+        "dentro_dia": "oca3_dia",
+        "painel": "esquerda",   # a cama fica à direita: o texto vai para a esquerda
     },
 }
 
 ABERTAS_POR_NOITE = {
     1: ["oca1"],
     2: ["oca1", "oca2"],
+    3: ["oca1", "oca2", "oca3"],
 }
 
 ONDE_DORME = {

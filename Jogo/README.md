@@ -109,7 +109,7 @@ Com o ambiente ativado, dentro da pasta `Jogo`:
 python -m testes.teste_fluxo
 ```
 O teste joga sozinho, sem abrir janela: menu → opções → introdução inteira → Dia 1 (duas
-vezes: deixando Yara entrar e não deixando) → aldeia com Yara → Noite 1 na fogueira (pajé e Yara: conversa, exame e decisão) → aldeia e oca → Dia 2 (Mbaé) → Noite 2 → menu. Se terminar com **TUDO CERTO**, está funcionando. Se der erro, a última linha diz o problema.
+vezes: deixando Yara entrar e não deixando) → aldeia com Yara → Noite 1 na fogueira (pajé e Yara: conversa, exame e decisão) → aldeia e oca → Dia 2 (Mbaé) → Noite 2 → Dia 3 (Irmão Aleixo) → Noite 3 (amaldiçoados) → menu. Se terminar com **TUDO CERTO**, está funcionando. Se der erro, a última linha diz o problema.
 
 Para salvar imagens das telas durante o teste:
 ```

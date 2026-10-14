@@ -35,6 +35,9 @@ CENARIOS = [
     # A oca 2 (Yebá Bëló) tem uma imagem de dia e outra de noite.
     ("Ocas/Yebá Bëló_dia_2.png", "cenarios/cenario-oca2-dia.jpg"),
     ("Ocas/Yebá Bëló_noite_2.png", "cenarios/cenario-oca2-noite.jpg"),
+    # A oca 3 (Wanadi) abre no dia 3: uma imagem de dia e outra de noite.
+    ("Ocas/Wanadi_dia_3.png", "cenarios/cenario-oca3-dia.jpg"),
+    ("Ocas/Wanadi_noite_3.png", "cenarios/cenario-oca3-noite.jpg"),
 ]
 
 # CORTE PADRÃO DAS PESSOAS: do topo da cabeça até o meio das coxas, sempre com esta

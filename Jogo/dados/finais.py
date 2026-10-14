@@ -119,7 +119,8 @@ FINAIS = [
         # Sempre bate (é o que sobra). Antes do dia 10, só acaba o jogo se a aldeia esvaziar.
         "condicao": [{}],
         "antecipado": False,
-        "cena": "As redes ficam vazias, uma a uma. Ninguém invadiu: a febre decidiu por você.",
+        "cena": "As redes ficam vazias, uma a uma. Ninguém invadiu: os amaldiçoados dormiram entre os "
+                "seus, e a febre decidiu por você.",
         "fato": "Os Goitacá eram temidos por boato: cronistas os descreveram como ferozes sem "
                 "nunca ter convivido com eles. Desapareceram no século XVIII, entre guerras e "
                 "epidemias. É o único final de um povo que não existe mais.",

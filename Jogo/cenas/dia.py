@@ -193,8 +193,30 @@ class Dia(Cena):
         self.terminar()
 
     def _condicao(self, item):
-        """Passo "se" (ou pergunta com "se_dentro"): "dentro", "morto" e "tapiri" levam um nome."""
+        """Passo "se", pergunta, zona do exame ou "condicao" de uma opção: só aparece se bate.
+
+        "dentro", "se_dentro", "morto", "morto_ontem" (morto na noite passada), "tapiri" e
+        "na_oca" levam o nome de quem é de fora;
+        "amaldicoado", "sao", "com_sinais" e "sem_sinais" levam um nome (motor/febre.py);
+        "se_remedio": True (sobra remédio do Aleixo) e "alguem_dentro": True (alguém de fora entrou).
+        """
         estado = self.estado
+        if "morto_ontem" in item and estado.mortos_quando.get(item["morto_ontem"]) != estado.dia - 1:
+            return False
+        if "na_oca" in item and (item["na_oca"] not in estado.dentro or item["na_oca"] in estado.tapiri):
+            return False
+        if "amaldicoado" in item and not febre.amaldicoado(estado, item["amaldicoado"]):
+            return False
+        if "sao" in item and febre.amaldicoado(estado, item["sao"]):
+            return False
+        if "com_sinais" in item and not febre.com_sinais(estado, item["com_sinais"]):
+            return False
+        if "sem_sinais" in item and febre.com_sinais(estado, item["sem_sinais"]):
+            return False
+        if item.get("se_remedio") and estado.remedios <= 0:
+            return False
+        if item.get("alguem_dentro") and not estado.dentro:
+            return False
         if "dentro" in item and item["dentro"] not in estado.dentro:
             return False
         if "se_dentro" in item and item["se_dentro"] not in estado.dentro:
@@ -218,8 +240,12 @@ class Dia(Cena):
     def _pessoas_da_noite(self):
         """Quem está em volta do fogo: o pessoal da aldeia e quem de fora entrou (na ordem do
         dicionário). Quem está no tapiri fica lá, isolado: não vem para a fogueira."""
+        estado = self.estado
         for nome, pessoa in self.noite["pessoas"].items():
-            if pessoa.get("de_fora") and (nome not in self.estado.dentro or nome in self.estado.tapiri):
+            if pessoa.get("de_fora") and (nome not in estado.dentro or nome in estado.tapiri):
+                continue
+            # Um morador que morreu, foi entregue ou está no tapiri também não vem.
+            if nome in estado.mortos_nomes or nome in estado.mortos_febre or nome in estado.tapiri                     or nome in estado.entregues_nomes:
                 continue
             yield nome, pessoa
 
@@ -265,6 +291,9 @@ class Dia(Cena):
         self._registrar(["dormir"])
         self.na_fogueira = []
         self.botao_dormir = None
+        # Noite com amaldiçoados: quem pegou a febre e dorme na oca passa adiante (motor/febre.py).
+        if self.noite.get("amaldicoados"):
+            febre.passar_na_oca(self.estado)
         self.fila[0:0] = self.noite.get("fim", [])
         self._proximo()
 
@@ -395,11 +424,13 @@ class Dia(Cena):
         self.passo_atual = passo
         self._apresentar(passo)
         self.modo = "escolha"
-        self._criar_blocos([(opcao["texto"], lambda i=i: self._escolher(i))
-                            for i, opcao in enumerate(passo["opcoes"])])
+        # Opção com "condicao" (ex.: {"se_remedio": True}) só aparece se ela bate.
+        visiveis = [(i, opcao) for i, opcao in enumerate(passo["opcoes"])
+                    if self._condicao(opcao.get("condicao", {}))]
+        self._criar_blocos([(opcao["texto"], lambda i=i: self._escolher(i)) for i, opcao in visiveis])
         # Opção que exige sinais (matar): fica apagada até o exame achar o bastante.
         achados = self.sinais.get(passo.get("quem"), 0)
-        for (bloco, _), opcao in zip(self.botoes, passo["opcoes"]):
+        for (bloco, _), (_, opcao) in zip(self.botoes, visiveis):
             if achados < opcao.get("requer_sinais", 0):
                 bloco.habilitado = False
                 bloco.definir_texto(opcao.get("texto_bloqueado", opcao["texto"]))
@@ -415,18 +446,38 @@ class Dia(Cena):
         if opcao.get("entra"):
             self.estado.dentro.append(opcao["entra"])
         if opcao.get("tapiri"):
-            self.estado.tapiri.append(opcao["tapiri"])
-            self.estado.tapiri_desde[opcao["tapiri"]] = self.estado.dia
-            if opcao["tapiri"] in DOENTES:
+            nome = opcao["tapiri"]
+            if nome in DOENTES or febre.amaldicoado(self.estado, nome):
                 self.estado.tapiri_usos += 1
+            self.estado.tapiri.append(nome)
+            self.estado.tapiri_desde[nome] = self.estado.dia
         if opcao.get("oca"):
             # Se quem dorme na oca está com a febre, ela passa (o quanto é sorteado: motor/febre.py).
             febre.pegar(self.estado, self.passo_atual.get("quem"))
+        if opcao.get("remedio"):
+            # O remédio do Aleixo: a febre sai de quem toma.
+            self.estado.remedios -= 1
+            febre.curar(self.estado, opcao["remedio"])
+        if opcao.get("entrega"):
+            # Entregue ao Aleixo: sai da aldeia (da oca ou do tapiri) e vai para a vila.
+            nome = opcao["entrega"]
+            self._sair_da_aldeia(nome)
+            self.estado.entregues_nomes.append(nome)
         if opcao.get("morre"):
-            self.estado.dentro.remove(opcao["morre"])
-            self.estado.mortos_nomes.append(opcao["morre"])
+            nome = opcao["morre"]
+            self._sair_da_aldeia(nome)
+            febre.tirar(self.estado, nome)
+            self.estado.mortos_nomes.append(nome)
+            self.estado.mortos_quando[nome] = self.estado.dia
         self.fila[0:0] = opcao.get("passos", [])
         self._proximo()
+
+    def _sair_da_aldeia(self, nome):
+        if nome in self.estado.dentro:
+            self.estado.dentro.remove(nome)
+        if nome in self.estado.tapiri:
+            self.estado.tapiri.remove(nome)
+            self.estado.tapiri_desde.pop(nome, None)
 
     def _aplicar(self, efeitos_do_passo):
         for nome, valor in (efeitos_do_passo or {}).items():

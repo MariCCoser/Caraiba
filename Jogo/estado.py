@@ -35,12 +35,22 @@ class Estado:
         self.tapiri_desde = {}
         # A febre que passou na oca: de quem, quantos pegaram e em que noite (motor/febre.py)
         self.febre = []
+        # Moradores que morreram da febre (com nome): não voltam para a fogueira
+        self.mortos_febre = []
+        # Remédios do Irmão Aleixo guardados (cada um cura a febre de uma pessoa, na fogueira)
+        self.remedios = 0
+        # Quem foi curado com o remédio: não passa mais a febre nem pega de novo
+        self.curados = []
+        # Quem o jogador entregou ao Irmão Aleixo (nomes)
+        self.entregues_nomes = []
         # As frases da manhã de hoje (quem acordou com febre, quem morreu dela)
         self.manha = []
         # A sorte desta partida: a febre é sorteada com ela (o "Continuar" repete a mesma sorte)
         self.semente = random.randrange(1_000_000_000)
         # Quem morreu pela mão do jogador (o corpo aparece com o nome no dia seguinte)
         self.mortos_nomes = []
+        # Em que noite cada um morreu pela mão do jogador (o corpo aparece na manhã seguinte)
+        self.mortos_quando = {}
         # Os sinais que o pajé contou, um por noite (a tábua de barro do jogador)
         self.tabua = []
         # O final da partida, quando ela acaba (o "id" de dados/finais.py), ou None
