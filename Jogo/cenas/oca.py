@@ -1,4 +1,6 @@
-# Por dentro de uma oca: mostra quem de fora dorme nela esta noite. "Sair da oca" volta à aldeia.
+# Por dentro de uma oca: mostra quem de fora dorme nela esta noite. "Sair da oca" (a seta embaixo,
+# como a da entrada da aldeia) volta à aldeia. O texto do painel some depois de alguns segundos,
+# para o jogador olhar a oca.
 #
 # A oca é a de jogo.oca_atual (a aldeia escolhe antes de entrar). Quem dorme em cada oca:
 # dados/aldeia.py, ONDE_DORME. Quem o jogador levou ao tapiri, na fogueira, não dorme na oca.
@@ -18,6 +20,8 @@ from motor.tabua import Tabua
 
 CENTRO_PAINEL = (1180, 150)       # meio da borda de cima do painel
 CENTRO_PAINEL_ESQUERDA = (420, 150)   # oca com "painel": "esquerda" (dados/aldeia.py)
+SEGUNDOS_DO_TEXTO = 5             # o painel com o nome e o texto fica na tela só esse tempo...
+SEGUNDOS_PARA_SUMIR = 1.0         # ...e depois some aos poucos
 LARGURA_PAINEL = 620
 POSICAO_BOTAO_MENU = (1420, 60)
 
@@ -70,7 +74,7 @@ class Oca(Cena):
                                     alinhamento="centro", fundo=False, margem=20)
         self.caixa = ui.CaixaTexto(texto, LARGURA_PAINEL, (0, 0), ancora="topo",
                                    tamanho=30, alinhamento="centro", fundo=False, margem=24, max_linhas=6)
-        self.botao_sair = ui.BlocoOpcao(OCA["sair"], LARGURA_PAINEL)
+        self.botao_sair = ui.Seta(OCA["sair"])
         self.botao_menu = ui.Botao(DIA["menu"], POSICAO_BOTAO_MENU, tamanho=config.TAMANHO_PEQUENO)
         self.tabua = Tabua(jogo)
         self.painel = pygame.Rect(0, 0, 0, 0)
@@ -89,7 +93,6 @@ class Oca(Cena):
         self.caixa.rect.midtop = self.caixa.posicao
         self.painel = pygame.Rect(self.centro_painel[0] - LARGURA_PAINEL // 2, self.centro_painel[1],
                                   LARGURA_PAINEL, self.caixa.rect.bottom - self.centro_painel[1])
-        self.botao_sair.posicionar((self.painel.left, self.painel.bottom + 18))
 
     def sair(self):
         self.jogo.ir_para("aldeia")
@@ -131,13 +134,23 @@ class Oca(Cena):
         for pessoa in self.paradas + self.na_oca:
             pessoa.desenhar(tela)
 
+    def opacidade_do_texto(self):
+        """1 nos primeiros SEGUNDOS_DO_TEXTO; depois cai até 0 (o painel some)."""
+        passou = self.tempo - SEGUNDOS_DO_TEXTO
+        return max(0.0, min(1.0, 1 - passou / SEGUNDOS_PARA_SUMIR))
+
     def desenhar_interface(self, tela):
         self.botao_menu.desenhar(tela)
         if self.sobre_pessoa:
             self.sobre_pessoa.desenhar_destaque(tela)
-        self._posicionar()
-        ui.painel_arredondado(tela, self.painel, config.PRETO + (205,), contorno=config.FUMACA)
-        self.titulo.desenhar(tela)
-        self.caixa.desenhar(tela)
-        self.botao_sair.desenhar(tela)
+        opacidade = self.opacidade_do_texto()
+        if opacidade > 0:
+            self._posicionar()
+            camada = pygame.Surface(config.TAMANHO_LOGICO, pygame.SRCALPHA)
+            ui.painel_arredondado(camada, self.painel, config.PRETO + (205,), contorno=config.FUMACA)
+            self.titulo.desenhar(camada)
+            self.caixa.desenhar(camada)
+            camada.set_alpha(int(255 * opacidade))
+            tela.blit(camada, (0, 0))
+        self.botao_sair.desenhar(tela, self.tempo)
         self.tabua.desenhar(tela)

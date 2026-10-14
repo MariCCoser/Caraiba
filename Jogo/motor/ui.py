@@ -422,3 +422,47 @@ class BlocoOpcao:
         if not self.habilitado:
             # Fechado (ex.: matar sem dois sinais): o bloco fica apagado, mas dá para ler.
             painel_arredondado(tela, self.rect, config.PRETO + (130,))
+
+
+class Seta:
+    """Seta para baixo, embaixo da tela, com o nome do lugar: "Entrada da aldeia", "Sair da oca".
+
+    Funciona como o Botao (visivel, habilitado, retangulo, atualizar, clicado, desenhar).
+    A seta balança um pouco para baixo, chamando o olhar.
+    """
+
+    TAMANHO = (330, 104)
+
+    def __init__(self, texto, centro=(800, 830)):
+        self.texto = texto
+        self.rect = pygame.Rect((0, 0), self.TAMANHO)
+        self.rect.center = centro
+        self.visivel = True
+        self.habilitado = True
+        self.mouse_em_cima = False
+
+    def retangulo(self):
+        return self.rect
+
+    def atualizar(self, posicao_mouse):
+        global mouse_sobre_botao
+        self.mouse_em_cima = self.visivel and self.rect.collidepoint(posicao_mouse)
+        if self.mouse_em_cima and self.habilitado:
+            mouse_sobre_botao = True
+
+    def clicado(self, evento):
+        if not self.visivel or not self.habilitado:
+            return False
+        return evento.type == pygame.MOUSEBUTTONUP and evento.button == 1 and self.rect.collidepoint(evento.pos)
+
+    def desenhar(self, tela, tempo):
+        if not self.visivel:
+            return
+        aceso = self.mouse_em_cima
+        cor = config.URUCUM if aceso else config.FUMACA
+        fundo = config.TERRA + (235,) if aceso else config.PRETO + (190,)
+        painel_arredondado(tela, self.rect, fundo, raio=18, contorno=cor, espessura=3 if aceso else 2)
+        texto_simples(tela, self.texto, (self.rect.centerx, self.rect.top + 30), config.TAMANHO_PEQUENO + 2)
+        desce = int(4 * abs(((tempo * 1.4) % 2) - 1))
+        x, y = self.rect.centerx, self.rect.top + 56 + desce
+        pygame.draw.polygon(tela, config.TABATINGA, [(x - 26, y), (x + 26, y), (x, y + 28)])

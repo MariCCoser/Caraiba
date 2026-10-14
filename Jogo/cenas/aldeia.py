@@ -49,8 +49,8 @@ class Aldeia(Cena):
         if not self.de_dia and self.tem_seta:
             self.texto_seta = ALDEIA["seta_dormir"]
             self.dica = ALDEIA["dica_dormir"]
-        self.rect_seta = pygame.Rect(0, 0, 330, 104)
-        self.rect_seta.center = CENTRO_SETA
+        self.seta = ui.Seta(self.texto_seta, CENTRO_SETA)
+        self.rect_seta = self.seta.rect
 
         # Uma "máscara" por oca: diz, pixel a pixel, se o mouse está dentro do contorno.
         self.mascaras = {}
@@ -107,6 +107,7 @@ class Aldeia(Cena):
             return
         self.botao_menu.atualizar(self.jogo.mouse)
         self.sobre_seta = self.tem_seta and self.rect_seta.collidepoint(self.jogo.mouse)
+        self.seta.mouse_em_cima = self.sobre_seta
         # A pessoa fica na frente das ocas: se o mouse está nela, a oca de trás não acende.
         self.sobre_pessoa = None if self.sobre_seta else self._pessoa_no_ponto(self.jogo.mouse)
         self.sobre = None if self.sobre_pessoa or self.sobre_seta else self._oca_no_ponto(self.jogo.mouse)
@@ -180,14 +181,5 @@ class Aldeia(Cena):
         self.tabua.desenhar(tela)
 
     def _desenhar_seta(self, tela):
-        """Seta para baixo, com o nome do lugar: leva à entrada da aldeia."""
-        cor = config.URUCUM if self.sobre_seta else config.FUMACA
-        fundo = config.TERRA + (235,) if self.sobre_seta else config.PRETO + (190,)
-        ui.painel_arredondado(tela, self.rect_seta, fundo, raio=18, contorno=cor,
-                              espessura=3 if self.sobre_seta else 2)
-        ui.texto_simples(tela, self.texto_seta, (self.rect_seta.centerx, self.rect_seta.top + 30),
-                         config.TAMANHO_PEQUENO + 2)
-        # A seta balança um pouco para baixo, chamando o olhar.
-        desce = int(4 * abs(((self.tempo * 1.4) % 2) - 1))
-        x, y = self.rect_seta.centerx, self.rect_seta.top + 56 + desce
-        pygame.draw.polygon(tela, config.TABATINGA, [(x - 26, y), (x + 26, y), (x, y + 28)])
+        """Seta para baixo, com o nome do lugar: leva à entrada da aldeia (ou ao dia seguinte)."""
+        self.seta.desenhar(tela, self.tempo)
