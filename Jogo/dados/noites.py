@@ -124,47 +124,19 @@ def escolha_onde_dorme(quem, fala_oca, fala_tapiri):
 
 
 # --- Noite 3: a fogueira da aldeia e os amaldiçoados (Textos/Amaldiçoados.txt) ---
-# Ninguém novo chegou. Em volta do fogo, a aldeia inteira: o pajé, quem é de fora (Yara e Mbaé,
-# se ficaram) e três moradores que dormem na oca de Mbaé. Quem pegou a febre dele é um
-# amaldiçoado: leva a morte para quem dorme perto. Alguns mostram a febre no rosto, outros não
-# mostram nada (dados/febre.py, CHANCE_DE_MOSTRAR). Quem não mostra só se descobre pela conversa
-# (onde dormiu). Quem é amaldiçoado e dorme na oca passa a febre para mais gente.
+# Ninguém novo chegou. Em volta do fogo: o pajé e quem é de fora (Yara e Mbaé, se ficaram).
+# Mbaé é o amaldiçoado que trouxe a febre; os moradores que pegaram dele também passam adiante,
+# mesmo sem mostrar nada (dados/febre.py). Eles não aparecem: o jogador só ouve o pajé e vê,
+# de manhã, quem adoeceu e quem morreu.
 #
-# Na noite com "amaldicoados": True, quem pegou a febre e dorme na oca passa adiante, no fim
-# da noite. Condições que o exame e as perguntas usam (motor/febre.py):
-#   "amaldicoado": "Tainá"  pegou a febre (com ou sem sinal)    "sao": "Tainá"  não pegou
-#   "com_sinais": "Tainá"   pegou e mostra no rosto             "sem_sinais": "Tainá"  não mostra
-# Duas zonas (ou perguntas) com o mesmo nome e condições opostas: aparece só a que bate.
-#
-# Os moradores ainda não têm arte: por enquanto usam a de quem chega depois (dados/arte.py).
-POSICAO_TAINA, ESCALA_TAINA = (200, 515), 0.5      # no tronco de cima, à esquerda de Mbaé
-POSICAO_CAIUBI, ESCALA_CAIUBI = (1130, 610), 0.5   # no chão, na frente da ponta do tronco da direita
-POSICAO_MOEMA, ESCALA_MOEMA = (1430, 895), 0.66    # no chão, na frente, no canto da direita
+# Na noite com "amaldicoados": True, os moradores que pegaram a febre passam adiante no fim
+# da noite. Perguntas podem ter "amaldicoado": "Mbaé" (Mbaé ainda passa a febre) ou
+# "sao": "Mbaé" (não passa mais): aparece só a que bate.
 
 # Yara na noite 3: o olho clareou (o sinal da noite 1 a acusou à toa).
 ZONAS_YARA_NOITE_3 = [dict(zona) for zona in ZONAS_YARA_NOITE_2]
 ZONAS_YARA_NOITE_3[1] = {"pergunta": "Olhos",
                          "resposta": "O branco do olho clareou. Nenhum risco vermelho."}
-
-
-def zonas_morador(nome, orelhas, maos):
-    """O rosto de um morador: com a febre que aparece ("com_sinais") ou sem nada para ver."""
-    return [
-        {"pergunta": "Testa", "com_sinais": nome, "sinal": True,
-         "resposta": "Quente e molhada de suor, mesmo longe do fogo."},
-        {"pergunta": "Testa", "sem_sinais": nome, "resposta": "Fresca. Nenhum suor."},
-        {"pergunta": "Olhos", "com_sinais": nome, "sinal": True,
-         "resposta": "Vermelhos e úmidos. Pisca devagar."},
-        {"pergunta": "Olhos", "sem_sinais": nome, "resposta": "Limpos. Só o reflexo do fogo."},
-        {"pergunta": "Orelhas", "resposta": orelhas},
-        {"pergunta": "Boca", "com_sinais": nome, "sinal": True,
-         "resposta": "Abre a boca e tosse. Feridas pequenas na língua."},
-        {"pergunta": "Boca", "sem_sinais": nome, "resposta": "Abre a boca. Língua rosada, nenhuma ferida."},
-        {"pergunta": "Mãos", "resposta": maos},
-        {"pergunta": "Respiração", "com_sinais": nome, "sinal": True,
-         "resposta": "Curta, com um chiado no fundo do peito."},
-        {"pergunta": "Respiração", "sem_sinais": nome, "resposta": "Funda e calma."},
-    ]
 
 
 def escolha_noite_3(quem, fala_oca, fala_tapiri):
@@ -179,38 +151,6 @@ def escolha_noite_3(quem, fala_oca, fala_tapiri):
                      "texto": "%s bebe a água com o remédio e volta para a rede." % quem}]},
         {"texto": "Matar", "morre": quem, "efeitos": EFEITOS_MATAR, "passos": [FALA_MATAR]},
     ]}
-
-
-def conversa_morador(nome, perto_de_mbae, longe_de_mbae):
-    """As perguntas de um morador. Onde dormiu é a pista de quem não mostra nada no rosto."""
-    return [
-        {"pergunta": "Onde você dormiu ontem?", "amaldicoado": nome, "resposta": perto_de_mbae},
-        {"pergunta": "Onde você dormiu ontem?", "sao": nome, "resposta": longe_de_mbae},
-        {"pergunta": "Como você está?", "com_sinais": nome,
-         "resposta": "Frio. Um frio que vem de dentro. [É do sereno]."},
-        {"pergunta": "Como você está?", "sem_sinais": nome,
-         "resposta": "[Bem]. Com sono, como todo mundo."},
-    ]
-
-
-def morador(nome, imagem, sentada, posicao, escala, conversa, orelhas, maos, fala_oca, fala_tapiri):
-    """Um morador na fogueira da noite 3. "conversa": as perguntas antes do exame."""
-    return {
-        "imagem": sentada, "posicao": posicao, "escala": escala, "uma_vez": True,
-        "passos": [
-            {"tipo": "visitante", "visitante": imagem},
-            {"tipo": "se", "com_sinais": nome, "passos": [
-                {"tipo": "fala", "quem": nome, "texto": "(treme) Não é nada. Amanhã passa."},
-            ]},
-            {"tipo": "se", "sem_sinais": nome, "passos": [
-                {"tipo": "fala", "quem": nome, "texto": "Hoje ninguém quis ficar longe do fogo."},
-            ]},
-            {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa},
-            {"tipo": "exame", "quem": nome, "texto": TEXTO_EXAME, "zonas": zonas_morador(nome, orelhas, maos)},
-            escolha_noite_3(nome, fala_oca, fala_tapiri),
-            {"tipo": "visitante", "visitante": None},
-        ],
-    }
 
 
 NOITES = {
@@ -351,21 +291,21 @@ NOITES = {
     },
     3: {
         "titulo": "Noite 3",
-        # A fogueira da aldeia: mais olhares, para dividir entre quem está em volta do fogo.
+        # A fogueira da aldeia: mais olhares, para dividir entre Yara e Mbaé.
         "energia": 4,
         "fundo": "fogueira_perto",
-        # Quem pegou a febre e dorme na oca passa adiante no fim da noite (dados/febre.py).
+        # Os moradores que pegaram a febre passam adiante no fim da noite (dados/febre.py).
         "amaldicoados": True,
-        "dica": "A aldeia inteira está perto do fogo. Clique em quem quiser examinar.",
+        "dica": "Clique em quem está perto do fogo para conversar.",
         "dormir": "Ir dormir",
         "dormir_bloqueado": "Ir dormir · antes, fale com %s",
         "pessoas": {
-            # O pajé conta dos amaldiçoados e ensina a pista: onde cada um dormiu.
+            # O pajé conta dos amaldiçoados: o mal já está do lado de dentro.
             "Pajé": {
                 "imagem": "paje_sentado", "posicao": POSICAO_PAJE, "escala": ESCALA_PAJE, "espelhar": True,
                 "passos": [
                     {"tipo": "visitante", "visitante": "paje"},
-                    {"tipo": "fala", "quem": "Pajé", "texto": "Sente. Hoje a aldeia inteira veio para o fogo."},
+                    {"tipo": "fala", "quem": "Pajé", "texto": "Sente. Hoje o fogo está mais vazio."},
                     {"tipo": "perguntas", "botao": "Voltar para a fogueira", "perguntas": [
                         {"pergunta": "O que você viu no sono?",
                          "resposta": [
@@ -380,7 +320,7 @@ NOITES = {
                         {"pergunta": "Dá para saber quem carrega?",
                          "resposta": [
                              "Às vezes o rosto mostra. Às vezes não mostra nada.",
-                             "Pergunte onde cada um dormiu. O mal anda de rede em rede.",
+                             "O mal anda de rede em rede. Quem dormiu perto do doente já pode estar levando.",
                          ]},
                         {"pergunta": "Alguém aqui carrega?", "amaldicoado": "Mbaé",
                          "resposta": "Alguém tosse de noite. Eu ouço, mas não sei de qual rede vem."},
@@ -431,26 +371,6 @@ NOITES = {
                     {"tipo": "visitante", "visitante": None},
                 ],
             },
-
-            # Os moradores da oca Yebá Bëló, onde Mbaé dormiu (dados/febre.py, PERTO).
-            "Tainá": morador(
-                "Tainá", "iande", "iande_sentada", POSICAO_TAINA, ESCALA_TAINA,
-                conversa_morador("Tainá", "Na rede do lado da de Mbaé. Ouvi a tosse a noite toda.",
-                                 "Na Yebá Bëló, do outro lado. A tosse nem chegava lá."),
-                "Nada atrás das orelhas.", "Mãos de ralar mandioca, cheias de cortes antigos.",
-                "Volto para a minha rede.", "Longe de todo mundo? Se você diz."),
-            "Caiubi": morador(
-                "Caiubi", "krenan", "krenan_sentado", POSICAO_CAIUBI, ESCALA_CAIUBI,
-                conversa_morador("Caiubi", "Perto da porta, na frente da rede de Mbaé.",
-                                 "Fui pescar e dormi na beira do rio. Voltei de manhã."),
-                "Uma cicatriz velha atrás da orelha. Seca.", "Calos de arco e de remo.",
-                "Amanhã cedo vou caçar. Durmo pouco.", "Tapiri é para doente. [Eu não estou]."),
-            "Moema": morador(
-                "Moema", "araci", "araci_sentada", POSICAO_MOEMA, ESCALA_MOEMA,
-                conversa_morador("Moema", "Com Peri, no meio da oca. Mbaé ficou perto da gente.",
-                                 "Com Peri, no fundo da oca, longe da porta."),
-                "Nada atrás das orelhas.", "Tinta de urucum nos dedos.",
-                "Peri dorme comigo. Não saio de perto dele.", "E o Peri? Quem fica com ele?"),
         },
         "fim": [
             {"tipo": "fala", "quem": "",

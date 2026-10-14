@@ -35,11 +35,9 @@ class Estado:
         self.tapiri_desde = {}
         # A febre que passou na oca: de quem, quantos pegaram e em que noite (motor/febre.py)
         self.febre = []
-        # Moradores que morreram da febre (com nome): não voltam para a fogueira
-        self.mortos_febre = []
         # Remédios do Irmão Aleixo guardados (cada um cura a febre de uma pessoa, na fogueira)
         self.remedios = 0
-        # Quem foi curado com o remédio: não passa mais a febre nem pega de novo
+        # Doentes de fora curados com o remédio do Aleixo: não passam mais a febre
         self.curados = []
         # Quem o jogador entregou ao Irmão Aleixo (nomes)
         self.entregues_nomes = []

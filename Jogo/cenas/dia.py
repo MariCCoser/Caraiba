@@ -197,7 +197,7 @@ class Dia(Cena):
 
         "dentro", "se_dentro", "morto", "morto_ontem" (morto na noite passada), "tapiri" e
         "na_oca" levam o nome de quem é de fora;
-        "amaldicoado", "sao", "com_sinais" e "sem_sinais" levam um nome (motor/febre.py);
+        "amaldicoado" e "sao" levam o nome de um doente de fora (motor/febre.py);
         "se_remedio": True (sobra remédio do Aleixo) e "alguem_dentro": True (alguém de fora entrou).
         """
         estado = self.estado
@@ -208,10 +208,6 @@ class Dia(Cena):
         if "amaldicoado" in item and not febre.amaldicoado(estado, item["amaldicoado"]):
             return False
         if "sao" in item and febre.amaldicoado(estado, item["sao"]):
-            return False
-        if "com_sinais" in item and not febre.com_sinais(estado, item["com_sinais"]):
-            return False
-        if "sem_sinais" in item and febre.com_sinais(estado, item["sem_sinais"]):
             return False
         if item.get("se_remedio") and estado.remedios <= 0:
             return False
@@ -244,8 +240,8 @@ class Dia(Cena):
         for nome, pessoa in self.noite["pessoas"].items():
             if pessoa.get("de_fora") and (nome not in estado.dentro or nome in estado.tapiri):
                 continue
-            # Um morador que morreu, foi entregue ou está no tapiri também não vem.
-            if nome in estado.mortos_nomes or nome in estado.mortos_febre or nome in estado.tapiri                     or nome in estado.entregues_nomes:
+            # Quem morreu ou foi entregue ao Aleixo também não vem.
+            if nome in estado.mortos_nomes or nome in estado.entregues_nomes:
                 continue
             yield nome, pessoa
 
@@ -447,7 +443,7 @@ class Dia(Cena):
             self.estado.dentro.append(opcao["entra"])
         if opcao.get("tapiri"):
             nome = opcao["tapiri"]
-            if nome in DOENTES or febre.amaldicoado(self.estado, nome):
+            if nome in DOENTES:
                 self.estado.tapiri_usos += 1
             self.estado.tapiri.append(nome)
             self.estado.tapiri_desde[nome] = self.estado.dia
@@ -466,7 +462,6 @@ class Dia(Cena):
         if opcao.get("morre"):
             nome = opcao["morre"]
             self._sair_da_aldeia(nome)
-            febre.tirar(self.estado, nome)
             self.estado.mortos_nomes.append(nome)
             self.estado.mortos_quando[nome] = self.estado.dia
         self.fila[0:0] = opcao.get("passos", [])
