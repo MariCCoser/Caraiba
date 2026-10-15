@@ -38,6 +38,10 @@
 # "efeitos" soma valores às variáveis do estado.py: {"memoria": 1, "vivos": 1}.
 #
 # Palavras em âmbar: só no que a pessoa afirma e o jogador não tem como verificar.
+#
+# Yara e Mbaé têm a mesma conversa na oca e em todas as noites (dados/conversas.py).
+
+from dados.conversas import conversa_mbae, conversa_yara
 
 # --- Dia 3: a primeira aparição do Irmão Aleixo (Textos/Caraíba — Dez Dias, Dez Fogueiras.pdf) ---
 # Ninguém chega pela trilha: Aleixo vem até a entrada, finca uma cruz e faz a primeira oferta.
@@ -48,6 +52,7 @@
 #   Entregar alguém:   entregues +1, proximidade_vila +1, vivos -1. A pessoa sai da aldeia.
 #   Recusar:           recusas_aleixo +1. Aceitar o remédio e entregar podem ir juntos;
 #                      recusar exclui os dois.
+
 ALEIXO = "Irmão Aleixo"
 FALA_ALEIXO_VAI = {"tipo": "fala", "quem": ALEIXO, "texto": "Fico por aqui, ao lado da cruz, se precisarem."}
 EFEITOS_ENTREGAR = {"entregues": 1, "proximidade_vila": 1, "vivos": -1}
@@ -129,25 +134,7 @@ DIAS = {
                             {"tipo": "visitante", "visitante": "yara"},
                             {"tipo": "fala", "quem": "Yara",
                              "texto": "A sua aldeia lembra a minha. A minha era maior."},
-                            {"tipo": "perguntas", "botao": "Terminar a conversa", "perguntas": [
-                                {"pergunta": "Conte da sua aldeia.",
-                                 "resposta": [
-                                     "Ficava na boca de um rio grande. Dava para ver os barcos de longe.",
-                                     "Os barcos queriam pau de tinta. A gente cortava, eles davam ferro.",
-                                     "Cortar árvore com pedra levava o dia. Com o ferro, leva pouco.",
-                                 ],
-                                 "efeitos": {"memoria": 1}},
-                                {"pergunta": "Por que saiu de lá?",
-                                 "resposta": [
-                                     "Os padres levaram muita gente para perto da vila. Minha mãe foi.",
-                                     "Eu não fui. Vou para o sul, onde mora [a gente do meu pai].",
-                                 ]},
-                                {"pergunta": "A febre chegou lá?",
-                                 "resposta": [
-                                     "Chegou com as chuvas. Quem cuidava dos doentes caía depois.",
-                                     "Eu saí antes. [Não estou doente].",
-                                 ]},
-                            ]},
+                            {"tipo": "perguntas", "botao": "Terminar a conversa", "perguntas": conversa_yara()},
                             {"tipo": "visitante", "visitante": None},
                         ]},
                      ]},
@@ -211,16 +198,7 @@ DIAS = {
                             {"tipo": "visitante", "visitante": "mbae"},
                             {"tipo": "fala", "quem": "Mbaé",
                              "texto": "Seu povo me olha torto. Já estou acostumado."},
-                            {"tipo": "perguntas", "botao": "Terminar a conversa", "perguntas": [
-                                {"pergunta": "Conte de antes.",
-                                 "resposta": [
-                                     "Antes a gente seguia a anta pelo rio inteiro. Sem dono de margem.",
-                                     "Agora desce barco pelo rio, e a caça foge para dentro da mata.",
-                                 ],
-                                 "efeitos": {"memoria": 1}},
-                                {"pergunta": "Por que olham torto para você?",
-                                 "resposta": "Contam histórias do meu povo. [Nenhuma é verdade]."},
-                            ]},
+                            {"tipo": "perguntas", "botao": "Terminar a conversa", "perguntas": conversa_mbae()},
                             {"tipo": "visitante", "visitante": None},
                         ]},
                      ]},

@@ -94,7 +94,7 @@ def testar_estado_inicial():
                 "proximidade_vila": 0, "rio_acima": 0, "memoria": 0, "recusas_aleixo": 0,
                 "pistas": 0, "sanidade": 10, "tapiri_usos": 0, "viu_anhanga": 0, "seguiu_paje": 0,
                 "inocentes": 0, "machado": 0, "dentro": [], "tapiri": [], "tapiri_desde": {}, "febre": [], "manha": [],
-                "remedios": 0, "curados": [], "entregues_nomes": [],
+                "remedios": 0, "curados": [], "historias": [], "entregues_nomes": [],
                 "mortos_nomes": [], "mortos_quando": {}, "tabua": [], "final": None}
     dados = estado.para_dicionario()
     assert isinstance(dados.pop("semente"), int), "cada partida tem a sua sorte"
@@ -565,14 +565,15 @@ def testar_noite1_com_yara(jogo):
     clicar_opcao(jogo, "Voltar para a fogueira")
     assert dia.modo == "fogueira" and dia.visitante is None
 
-    # Yara: a conversa é só sobre o que se vê nela.
+    # Yara: a conversa de sempre, a mesma da oca. A história já ouvida não soma memória de novo.
     clicar_pessoa(jogo, "Yara")
     assert dia.visitante == "yara"
     passar_falas(jogo)
-    assert textos_dos_botoes(jogo) == ["Seus olhos ainda estão vermelhos.", "Como você sobreviveu sozinha?",
-                                       "Esse pano é dos estrangeiros?", "Examinar o rosto"]
-    clicar_opcao(jogo, "Seus olhos ainda estão vermelhos.")
+    assert textos_dos_botoes(jogo) == ["Conte da sua aldeia.", "Por que saiu de lá?",
+                                       "A febre chegou lá?", "Examinar o rosto"]
+    clicar_opcao(jogo, "Conte da sua aldeia.")
     passar_falas(jogo)
+    assert jogo.estado.memoria == 1 and jogo.estado.historias == ["aldeia_yara"]
 
     # O exame: na noite 1 só os olhos (1 de energia).
     clicar_opcao(jogo, "Examinar o rosto")
@@ -763,9 +764,15 @@ def testar_dia2_e_noite2(jogo):
     passar_falas(jogo)
     clicar_opcao(jogo, "Voltar para a fogueira")
 
-    # Mbaé: na noite 2, 1 olhar só, e só os olhos ou a boca (a tosse).
+    # Mbaé: a conversa de sempre, a mesma da oca (e a história não soma memória de novo).
+    # Na noite 2, 1 olhar só, e só os olhos ou a boca (a tosse).
     clicar_pessoa(jogo, "Mbaé")
     passar_falas(jogo)
+    assert textos_dos_botoes(jogo) == ["Conte de antes.", "Por que olham torto para você?",
+                                       "Examinar o rosto"], textos_dos_botoes(jogo)
+    clicar_opcao(jogo, "Conte de antes.")
+    passar_falas(jogo)
+    assert estado.memoria == 1
     clicar_opcao(jogo, "Examinar o rosto")
     assert textos_dos_botoes(jogo) == ["Olhos", "Boca", "Terminar o exame"], textos_dos_botoes(jogo)
     clicar_opcao(jogo, "Boca")

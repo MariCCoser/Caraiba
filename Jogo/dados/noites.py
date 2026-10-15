@@ -56,6 +56,10 @@
 #
 # Palavras em âmbar: só no que a pessoa afirma e o jogador não tem como verificar.
 # O exame descreve o que se vê, sem dizer o que significa.
+#
+# Yara e Mbaé têm a mesma conversa em todas as noites (dados/conversas.py).
+
+from dados.conversas import conversa_mbae, conversa_yara
 
 # O que acontece quando o jogador mata alguém (a Proposta: mostra o corpo com nome no dia
 # seguinte e derruba a sanidade, mesmo quando ele acerta).
@@ -191,22 +195,14 @@ NOITES = {
                 ],
             },
 
-            # Yara, à esquerda do fogo. A conversa é curta e só sobre o que se vê nela; a
-            # história da aldeia dela ficou para o dia, na oca (dados/dias.py).
+            # Yara, à esquerda do fogo. A conversa é a de sempre (a mesma da oca, no dia).
             "Yara": {
                 "imagem": "yara_sentada", "posicao": POSICAO_YARA, "escala": ESCALA_YARA,
                 "de_fora": True, "uma_vez": True, "obrigatorio": True,
                 "passos": [
                     {"tipo": "visitante", "visitante": "yara"},
                     {"tipo": "fala", "quem": "Yara", "texto": "Você não para de olhar para mim."},
-                    {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": [
-                        {"pergunta": "Seus olhos ainda estão vermelhos.",
-                         "resposta": "Três noites de fumaça não saem num dia só."},
-                        {"pergunta": "Como você sobreviveu sozinha?",
-                         "resposta": "Dormindo perto do fogo e [comendo raiz do caminho]."},
-                        {"pergunta": "Esse pano é dos estrangeiros?",
-                         "resposta": "Troquei por farinha, na costa. É só pano."},
-                    ]},
+                    {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa_yara()},
                     # Na noite 1 só os olhos: é o sinal que o pajé contou.
                     {"tipo": "exame", "quem": "Yara", "liberadas": ["Olhos"],
                      "texto": TEXTO_EXAME, "zonas": ZONAS_YARA},
@@ -262,10 +258,7 @@ NOITES = {
                 "passos": [
                     {"tipo": "visitante", "visitante": "yara"},
                     {"tipo": "fala", "quem": "Yara", "texto": "A chuva não passou. Fico mais esta noite."},
-                    {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": [
-                        {"pergunta": "Seus olhos melhoraram.",
-                         "resposta": "Aqui a lenha é seca. [Logo passa de vez]."},
-                    ]},
+                    {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa_yara()},
                     {"tipo": "exame", "quem": "Yara", "liberadas": ["Olhos", "Boca"],
                      "texto": TEXTO_EXAME, "zonas": ZONAS_YARA_NOITE_2},
                     escolha_onde_dorme("Yara", "Então volto para a mesma rede.",
@@ -282,12 +275,7 @@ NOITES = {
                 "passos": [
                     {"tipo": "visitante", "visitante": "mbae"},
                     {"tipo": "fala", "quem": "Mbaé", "texto": "(tosse) O fogo ajuda. Daqui a pouco passa."},
-                    {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": [
-                        {"pergunta": "Você está tremendo.",
-                         "resposta": "[É o sereno]. Do outro lado do rio faz mais frio."},
-                        {"pergunta": "Essa tosse vem de onde?",
-                         "resposta": "Da água fria do rio. [Já tive pior]."},
-                    ]},
+                    {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa_mbae()},
                     {"tipo": "exame", "quem": "Mbaé", "liberadas": ["Olhos", "Boca"],
                      "texto": TEXTO_EXAME, "zonas": ZONAS_MBAE},
                     escolha_onde_dorme("Mbaé", "Durmo no canto. Não incomodo ninguém.",
@@ -344,10 +332,7 @@ NOITES = {
                 "passos": [
                     {"tipo": "visitante", "visitante": "yara"},
                     {"tipo": "fala", "quem": "Yara", "texto": "A chuva parou. Logo eu sigo para o sul."},
-                    {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": [
-                        {"pergunta": "Onde você dormiu ontem?",
-                         "resposta": "Perto da porta, como sempre. Longe de quem tosse."},
-                    ]},
+                    {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa_yara()},
                     {"tipo": "exame", "quem": "Yara", "liberadas": ["Olhos", "Boca"],
                      "texto": TEXTO_EXAME, "zonas": ZONAS_YARA_NOITE_3},
                     escolha_noite_3("Yara", "Mais uma noite, então. Obrigada.",
@@ -364,12 +349,7 @@ NOITES = {
                 "passos": [
                     {"tipo": "visitante", "visitante": "mbae"},
                     {"tipo": "fala", "quem": "Mbaé", "texto": "(tosse) Mais uma noite e eu sigo caminho."},
-                    {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": [
-                        {"pergunta": "A tosse piorou.",
-                         "resposta": "[Está passando]. O fogo daqui é bom."},
-                        {"pergunta": "Quem dormiu perto de você?",
-                         "resposta": "A gente da Yebá Bëló. Ninguém reclamou da tosse."},
-                    ]},
+                    {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa_mbae()},
                     {"tipo": "exame", "quem": "Mbaé", "liberadas": ["Olhos", "Boca"],
                      "texto": TEXTO_EXAME, "zonas": ZONAS_MBAE},
                     escolha_noite_3("Mbaé", "Durmo no canto. Não incomodo ninguém.",

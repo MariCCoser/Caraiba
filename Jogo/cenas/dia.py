@@ -402,7 +402,12 @@ class Dia(Cena):
     def _perguntar(self, passo, indice, item):
         self._registrar(["perguntar", indice])
         self.perguntas_feitas.add((id(passo), indice))
-        self._aplicar(item.get("efeitos"))
+        # Uma "historia" soma os efeitos só na primeira vez (dados/conversas.py).
+        historia = item.get("historia")
+        if historia not in self.estado.historias:
+            self._aplicar(item.get("efeitos"))
+            if historia:
+                self.estado.historias.append(historia)
         if passo["tipo"] == "exame":
             self.energia -= item.get("custo", 1)
             if item.get("sinal"):

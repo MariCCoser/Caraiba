@@ -40,6 +40,8 @@ class Estado:
         self.remedios = 0
         # Doentes de fora curados com o remédio do Aleixo: não passam mais a febre
         self.curados = []
+        # As histórias já ouvidas (dados/conversas.py): a memória sobe uma vez por história
+        self.historias = []
         # Quem o jogador entregou ao Irmão Aleixo (nomes)
         self.entregues_nomes = []
         # As frases da manhã de hoje (quem acordou com febre, quem morreu dela)
