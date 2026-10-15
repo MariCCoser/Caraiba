@@ -16,7 +16,7 @@ class Estado:
         self.mortos = 0                # doença sob o seu teto + mortos por sua mão + mortos na trilha
         self.mortos_por_sua_mao = 0    # quem você matou, doente ou não
         self.entregues = 0             # pessoas entregues a Aleixo numa oferta
-        self.levados = 0               # pessoas que o Irmão Aleixo levou (sorteadas: o jogador não escolhe)
+        self.levados = 0               # pessoas que o Irmão Aleixo levou mesmo negando (sorteadas)
         self.proximidade_vila = 0      # machado, entregas, doente mandado seguir de dia
         self.rio_acima = 0             # pessoas mandadas para a cabeceira
         self.memoria = 0               # histórias ouvidas
@@ -39,7 +39,7 @@ class Estado:
         self.febre = []
         # As histórias já ouvidas (dados/conversas.py): a memória sobe uma vez por história
         self.historias = []
-        # Quem de fora o Irmão Aleixo levou para a vila (nomes)
+        # Quem de fora foi com o Irmão Aleixo para a vila, entregue ou sorteado (nomes)
         self.entregues_nomes = []
         # As frases da manhã de hoje (quem acordou com febre, quem morreu dela)
         self.manha = []

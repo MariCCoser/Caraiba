@@ -32,6 +32,7 @@
 #                noite passada), "dentro": "Yara" (Yara está na aldeia), "tapiri": "Yara"
 #                (Yara está no tapiri) ou "na_oca": "Mbaé" (Mbaé está na aldeia, fora do tapiri)
 #   Uma opção de "escolha" com "condicao" só aparece se ela bate: {"dentro": "Yara"}.
+#                "entrega": "Yara" entrega a pessoa ao Irmão Aleixo (ela sai da aldeia).
 #   "aleixo_leva" o Irmão Aleixo leva uma pessoa da aldeia, sorteada (o jogador não escolhe):
 #                "de_fora" é a frase quando ele leva alguém de fora (%s = o nome) e "morador",
 #                quando leva um morador.
@@ -46,9 +47,15 @@ from dados.conversas import conversa_mbae, conversa_yara
 
 # --- Dia 3: a primeira das três visitas do Irmão Aleixo (dias 3, 6 e 9) ---
 # Ninguém chega pela trilha: Aleixo vem até a entrada e finca uma cruz. Ele não traz cura:
-# só leva gente para a vila. O jogador não escolhe nem pode recusar: Aleixo sorteia uma pessoa
-# da aldeia (quem é de fora ou um morador) e a leva. Ninguém que ele leva volta.
+# só leva gente para a vila. Ninguém que ele leva volta.
 # Ninguém ali conhece "febre": para a aldeia e para ele, é uma maldição.
+#
+# Em cada visita, ele pede alguém (oferta_aleixo):
+#   Entregar alguém de fora: entregues +1, proximidade_vila +1, vivos -1. A pessoa sai da aldeia.
+#   Negar:                   recusas_aleixo +1. Mesmo assim ele leva alguém, sorteado entre
+#                            todos da aldeia (quem é de fora ou um morador): levados +1, vivos -1.
+#                            A cada visita, ele fica mais irritado (FALA_ALEIXO_NEGADO).
+# Negar nas três visitas é o "nenhuma entrega" (entregues == 0) dos finais.
 #
 # As perguntas para ele ficam divididas entre as três visitas: as do dia 6 e do dia 9 já
 # estão aqui, para quando esses dias existirem.
@@ -72,6 +79,34 @@ PERGUNTAS_ALEIXO = {
          "efeitos": {"pistas": 1}},
     ],
 }
+
+# O que Aleixo diz quando o jogador nega, visita a visita: cada vez mais irritado.
+FALA_ALEIXO_NEGADO = {
+    3: "Ninguém? Então eu escolho.",
+    6: "De novo, não? A vila não espera. Eu escolho.",
+    9: "Chega. Eu levo quem eu quiser.",
+}
+EFEITOS_ENTREGAR = {"entregues": 1, "proximidade_vila": 1, "vivos": -1}
+FALA_ALEIXO_VOLTA = {"tipo": "fala", "quem": ALEIXO, "texto": "Volto daqui a alguns dias."}
+
+
+def oferta_aleixo(dia):
+    """O pedido de Aleixo: o jogador entrega alguém de fora ou nega. Negando, ele leva alguém
+    sorteado mesmo assim (o passo "aleixo_leva")."""
+    return {"tipo": "escolha", "texto": "Ele quer levar alguém para a vila.", "opcoes": [
+        {"texto": "Entregar Yara", "condicao": {"dentro": "Yara"}, "entrega": "Yara",
+         "efeitos": EFEITOS_ENTREGAR,
+         "passos": [{"tipo": "fala", "quem": ALEIXO, "texto": "Na vila ela terá teto e doutrina."}]},
+        {"texto": "Entregar Mbaé", "condicao": {"dentro": "Mbaé"}, "entrega": "Mbaé",
+         "efeitos": EFEITOS_ENTREGAR,
+         "passos": [{"tipo": "fala", "quem": ALEIXO, "texto": "Na vila temos onde deitá-lo."}]},
+        {"texto": "Negar", "efeitos": {"recusas_aleixo": 1}, "passos": [
+            {"tipo": "fala", "quem": ALEIXO, "texto": FALA_ALEIXO_NEGADO[dia]},
+            {"tipo": "aleixo_leva",
+             "de_fora": "Ele leva %s pela trilha. Ninguém consegue impedir.",
+             "morador": "Ele leva um morador da aldeia pela trilha. Ninguém consegue impedir."},
+        ]},
+    ]}
 
 
 DIAS = {
@@ -247,12 +282,9 @@ DIAS = {
             {"tipo": "fala", "quem": ALEIXO, "texto": "Sou o Irmão Aleixo, da vila. Vim buscar quem precisa de cuidado."},
             {"tipo": "perguntas", "botao": "Seguir", "perguntas": PERGUNTAS_ALEIXO[3]},
 
-            # Ele escolhe quem leva: o jogador querendo ou não.
-            {"tipo": "fala", "quem": ALEIXO, "texto": "Não precisa escolher. Eu escolho."},
-            {"tipo": "aleixo_leva",
-             "de_fora": "Ele leva %s pela trilha. Ninguém consegue impedir.",
-             "morador": "Ele leva um morador da aldeia pela trilha. Ninguém consegue impedir."},
-            {"tipo": "fala", "quem": ALEIXO, "texto": "Volto daqui a alguns dias."},
+            # O pedido: entregar alguém ou negar (negando, ele leva alguém do mesmo jeito).
+            oferta_aleixo(3),
+            FALA_ALEIXO_VOLTA,
             {"tipo": "visitante", "visitante": None},
             {"tipo": "fala", "quem": "", "texto": "A cruz fica na entrada."},
 

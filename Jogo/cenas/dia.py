@@ -459,6 +459,11 @@ class Dia(Cena):
         if opcao.get("oca"):
             # Se quem dorme na oca está com a febre, ela passa (o quanto é sorteado: motor/febre.py).
             febre.pegar(self.estado, self.passo_atual.get("quem"))
+        if opcao.get("entrega"):
+            # Entregue ao Aleixo: sai da aldeia (da oca ou do tapiri) e vai para a vila.
+            nome = opcao["entrega"]
+            self._sair_da_aldeia(nome)
+            self.estado.entregues_nomes.append(nome)
         if opcao.get("morre"):
             nome = opcao["morre"]
             self._sair_da_aldeia(nome)

@@ -170,6 +170,13 @@ def testar_febre():
     assert not febre.amaldicoado(e, "Mbaé")
     print("ok febre sorteada (1 a 3 com Mbaé), amaldiçoados com e sem sinal")
 
+    # A oferta do Aleixo: entregar só quem está dentro; negar sempre aparece, e ele fica mais
+    # irritado a cada visita.
+    from dados.dias import FALA_ALEIXO_NEGADO, oferta_aleixo
+    assert [o["texto"] for o in oferta_aleixo(3)["opcoes"]] == ["Entregar Yara", "Entregar Mbaé", "Negar"]
+    assert sorted(FALA_ALEIXO_NEGADO) == [3, 6, 9]
+    assert oferta_aleixo(9)["opcoes"][-1]["passos"][0]["texto"] == FALA_ALEIXO_NEGADO[9]
+
 
 def testar_cartoes_introducao():
     # A Proposta pede: aviso de conteúdo primeiro (tela preta) e as regras por último.
@@ -891,12 +898,17 @@ def testar_dia3_e_noite3(jogo):
     clicar_opcao(jogo, "O que você quer?")
     passar_falas(jogo)
     clicar_opcao(jogo, "Seguir")
+    assert textos_dos_botoes(jogo) == ["Entregar Yara", "Entregar Mbaé", "Negar"], textos_dos_botoes(jogo)
+    clicar_opcao(jogo, "Negar")
+    dia.caixa.completar()
+    assert dia.caixa.texto == "Ninguém? Então eu escolho.", dia.caixa.texto
     passar_falas(jogo)
-    # A semente foi escolhida para o sorteio cair em Yara (a 1ª de dentro): não há botão de escolha.
+    # Negou, e ele leva alguém mesmo assim. A semente foi escolhida para o sorteio cair em
+    # Yara (a 1ª de dentro). Negar não conta como entrega.
     assert estado.dentro == ["Mbaé"] and estado.entregues_nomes == ["Yara"], (estado.dentro, estado.entregues_nomes)
-    assert estado.vivos == 13 and estado.levados == 1 and estado.entregues == 0
+    assert estado.vivos == 13 and estado.levados == 1 and estado.entregues == 0 and estado.recusas_aleixo == 1
     assert estado.proximidade_vila == 0 and estado.pistas == 0
-    print("ok Dia 3: o Irmão Aleixo leva alguém sorteado (o jogador não escolhe)")
+    print("ok Dia 3: o Irmão Aleixo (negar, e ele leva alguém sorteado mesmo assim)")
 
     # O sinal do pajé e a fogueira: sem Yara (foi com Aleixo); os moradores não aparecem.
     passar_falas(jogo)
