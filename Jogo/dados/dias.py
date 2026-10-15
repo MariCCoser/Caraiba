@@ -108,7 +108,7 @@ DIAS = {
                     {"tipo": "fala", "quem": "Yara",
                      "texto": "Tenho este machado de ferro. É seu, pelo teto."},
                     {"tipo": "escolha", "opcoes": [
-                        {"texto": "Aceitar o machado", "efeitos": {"proximidade_vila": 1}, "passos": [
+                        {"texto": "Aceitar o machado", "efeitos": {"proximidade_vila": 1, "machado": 1}, "passos": [
                             {"tipo": "fala", "quem": "Yara", "texto": "Está pago, então."},
                         ]},
                         {"texto": "Recusar o machado", "passos": [

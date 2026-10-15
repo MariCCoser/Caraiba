@@ -63,6 +63,7 @@ class Dia(Cena):
         self.titulo = self.roteiro["titulo"]
         self.tempo = 0.0
         self.energia = None       # olhares que sobram na noite (None durante o dia)
+        self.energia_max = 0      # olhares da noite inteira (os pontos da tela)
         self.sinais = {}          # quantos sinais o exame achou em cada pessoa, nesta noite
 
         self.fundo = ("aldeia", "dia")
@@ -230,7 +231,11 @@ class Dia(Cena):
         self.noite = NOITES[self.estado.dia]
         self._liberar_tapiri()
         self.titulo = self.noite["titulo"]
-        self.energia = self.noite["energia"]
+        # "energia_extra": +1 olhar para cada variável do estado.py que já chegou ao valor pedido.
+        extra = sum(1 for nome, valor in self.noite.get("energia_extra", {}).items()
+                    if getattr(self.estado, nome) >= valor)
+        self.energia_max = self.noite["energia"] + extra
+        self.energia = self.energia_max
         self._mostrar_fogueira()
 
     def _pessoas_da_noite(self):
@@ -626,7 +631,7 @@ class Dia(Cena):
                          nome_fonte="mono", cor=config.BARRO, ancora="esquerda")
         if self.energia is not None:
             # A energia da noite, logo abaixo do título: um ponto por olhar.
-            pontos = "●" * self.energia + "○" * (self.noite["energia"] - self.energia)
+            pontos = "●" * self.energia + "○" * (self.energia_max - self.energia)
             ui.texto_simples(tela, DIA["energia"] + " " + pontos, (40, 100), config.TAMANHO_PEQUENO,
                              nome_fonte="mono", cor=config.TABATINGA, ancora="esquerda")
         self.botao_menu.desenhar(tela)

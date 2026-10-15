@@ -26,6 +26,7 @@ class Estado:
         self.viu_anhanga = 0           # noites em que olhou o veado na mata (final Anhangá)
         self.seguiu_paje = 0           # vezes que levou ao tapiri quem o pajé acusou (A Água do Batismo)
         self.inocentes = 0             # dessas vezes, quantas a pessoa era sã
+        self.machado = 0               # 1 se aceitou o machado de Yara (dá mais energia na noite 3)
 
         # Quem de fora entrou na aldeia (nomes), para a noite saber quem examinar
         self.dentro = []

@@ -93,7 +93,7 @@ def testar_estado_inicial():
     esperado = {"dia": 1, "vivos": 12, "mortos": 0, "mortos_por_sua_mao": 0, "entregues": 0,
                 "proximidade_vila": 0, "rio_acima": 0, "memoria": 0, "recusas_aleixo": 0,
                 "pistas": 0, "sanidade": 10, "tapiri_usos": 0, "viu_anhanga": 0, "seguiu_paje": 0,
-                "inocentes": 0, "dentro": [], "tapiri": [], "tapiri_desde": {}, "febre": [], "manha": [],
+                "inocentes": 0, "machado": 0, "dentro": [], "tapiri": [], "tapiri_desde": {}, "febre": [], "manha": [],
                 "remedios": 0, "curados": [], "entregues_nomes": [],
                 "mortos_nomes": [], "mortos_quando": {}, "tabua": [], "final": None}
     dados = estado.para_dicionario()
@@ -294,7 +294,7 @@ def testar_dia1(jogo):
     passar_falas(jogo, seguir_seta=False)
     estado = jogo.estado
     assert estado.vivos == 13 and estado.dentro == ["Yara"], (estado.vivos, estado.dentro)
-    assert estado.proximidade_vila == 1, estado.proximidade_vila
+    assert estado.proximidade_vila == 1 and estado.machado == 1, (estado.proximidade_vila, estado.machado)
     testar_aldeia_com_yara(jogo)
     passar_falas(jogo)
     estado = jogo.estado   # o Continuar da aldeia recriou o Estado
@@ -890,7 +890,11 @@ def testar_dia3_e_noite3(jogo):
     # O sinal do pajé e a fogueira: sem Yara (foi com Aleixo); os moradores não aparecem.
     passar_falas(jogo)
     assert estado.tabua[-1].startswith("Quem dormiu perto do doente")
-    assert dia.titulo == "Noite 3" and dia.modo == "fogueira" and dia.energia == 4
+    # 1 olhar; quem aceitou o machado de Yara tem 2.
+    assert dia.titulo == "Noite 3" and dia.modo == "fogueira" and dia.energia == 1
+    estado.machado = 1
+    dia._comecar_noite()
+    assert dia.energia == dia.energia_max == 2
     assert [p.nome for p in dia.na_fogueira] == ["Pajé", "Mbaé"]
     assert not dia.botao_dormir.habilitado and "Mbaé" in dia.botao_dormir.texto
     rodar(jogo, 40)
@@ -906,14 +910,14 @@ def testar_dia3_e_noite3(jogo):
     passar_falas(jogo)
     clicar_opcao(jogo, "Voltar para a fogueira")
 
-    # Mbaé: o exame inteiro (4 olhares) e o remédio do Aleixo: ele para de passar a febre.
+    # Mbaé: os 2 olhares (com o machado) e o remédio do Aleixo: ele para de passar a febre.
     clicar_pessoa(jogo, "Mbaé")
     passar_falas(jogo)
     clicar_opcao(jogo, "Examinar o rosto")
     assert textos_dos_botoes(jogo) == ["Testa", "Olhos", "Orelhas", "Boca", "Mãos", "Respiração",
                                        "Terminar o exame"], textos_dos_botoes(jogo)
     examinar(jogo, ["Testa", "Boca"])
-    assert dia.sinais["Mbaé"] == 2 and dia.energia == 2
+    assert dia.sinais["Mbaé"] == 2 and dia.energia == 0
     clicar_opcao(jogo, "Terminar o exame")
     assert textos_dos_botoes(jogo) == ["Deixar na oca", "Levar ao tapiri", "Dar o remédio do Aleixo", "Matar"]
     rodar(jogo, 5)

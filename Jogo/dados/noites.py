@@ -9,6 +9,8 @@
 # Cada noite tem:
 #   "titulo"   o que aparece no canto de cima (ex.: "Noite 1")
 #   "energia"  quantos olhares o jogador tem na noite inteira
+#   "energia_extra"  olhares a mais, se o estado.py bate: {"machado": 1} = +1 para quem aceitou
+#              o machado de Yara
 #   "fundo"    o cenário da fogueira (dados/arte.py)
 #   "dica"     a frase embaixo da tela, enquanto o jogador escolhe com quem falar
 #   "dormir", "dormir_bloqueado"  o botão de ir dormir; fechado, mostra quem ainda falta (%s)
@@ -291,8 +293,9 @@ NOITES = {
     },
     3: {
         "titulo": "Noite 3",
-        # A fogueira da aldeia: mais olhares, para dividir entre Yara e Mbaé.
-        "energia": 4,
+        # 1 olhar; quem aceitou o machado de Yara (dia 1) tem 2: com o ferro, a lenha rende mais.
+        "energia": 1,
+        "energia_extra": {"machado": 1},
         "fundo": "fogueira_perto",
         # Os moradores que pegaram a febre passam adiante no fim da noite (dados/febre.py).
         "amaldicoados": True,
