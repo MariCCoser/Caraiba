@@ -145,20 +145,6 @@ ZONAS_YARA_NOITE_3[1] = {"pergunta": "Olhos",
                          "resposta": "O branco do olho clareou. Nenhum risco vermelho."}
 
 
-def escolha_noite_3(quem, fala_oca, fala_tapiri):
-    """Onde a pessoa dorme na noite 3: como nas outras noites, e o remédio do Aleixo, se sobrou."""
-    return {"tipo": "escolha", "quem": quem, "texto": "Onde %s dorme esta noite?" % quem, "opcoes": [
-        {"texto": "Deixar na oca", "oca": True,
-         "passos": [{"tipo": "fala", "quem": quem, "texto": fala_oca}]},
-        {"texto": "Levar ao tapiri", "tapiri": quem,
-         "passos": [{"tipo": "fala", "quem": quem, "texto": fala_tapiri}]},
-        {"texto": "Dar o remédio do Aleixo", "remedio": quem, "condicao": {"se_remedio": True},
-         "passos": [{"tipo": "fala", "quem": "",
-                     "texto": "%s bebe a água com o remédio e volta para a rede." % quem}]},
-        {"texto": "Matar", "morre": quem, "efeitos": EFEITOS_MATAR, "passos": [FALA_MATAR]},
-    ]}
-
-
 NOITES = {
     1: {
         "titulo": "Noite 1",
@@ -301,7 +287,7 @@ NOITES = {
         "dormir": "Ir dormir",
         "dormir_bloqueado": "Ir dormir · antes, fale com %s",
         "pessoas": {
-            # O pajé só desconfia do Irmão Aleixo: quem cura manda, e Aleixo chegou curando.
+            # O pajé só desconfia do Irmão Aleixo: Aleixo fala em tirar a maldição, e isso é coisa de pajé.
             # Não há sinal novo hoje.
             "Pajé": {
                 "imagem": "paje_sentado", "posicao": POSICAO_PAJE, "escala": ESCALA_PAJE, "espelhar": True,
@@ -311,11 +297,9 @@ NOITES = {
                     {"tipo": "perguntas", "botao": "Voltar para a fogueira", "perguntas": [
                         {"pergunta": "O que você acha do Irmão Aleixo?",
                          "resposta": [
-                             "Chega com remédio e fala em tirar a maldição.",
+                             "Chega falando em cuidar de quem carrega a maldição.",
                              "Quem tira a maldição de uma aldeia é o pajé. [Ele sabe disso].",
                          ]},
-                        {"pergunta": "O remédio dele funciona?",
-                         "resposta": "Pode ser que funcione. É isso que me preocupa."},
                         {"pergunta": "Por que ele leva gente para a vila?",
                          "resposta": "Quem vai com ele não volta para contar como é lá."},
                         {"pergunta": "Ele vai voltar?",
@@ -335,8 +319,8 @@ NOITES = {
                     {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa_yara()},
                     {"tipo": "exame", "quem": "Yara", "liberadas": ["Olhos", "Boca"],
                      "texto": TEXTO_EXAME, "zonas": ZONAS_YARA_NOITE_3},
-                    escolha_noite_3("Yara", "Mais uma noite, então. Obrigada.",
-                                    "Sozinha, então. Já dormi em lugar pior."),
+                    escolha_onde_dorme("Yara", "Mais uma noite, então. Obrigada.",
+                                       "Sozinha, então. Já dormi em lugar pior."),
                     {"tipo": "visitante", "visitante": None},
                 ],
             },
@@ -352,8 +336,8 @@ NOITES = {
                     {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa_mbae()},
                     {"tipo": "exame", "quem": "Mbaé", "liberadas": ["Olhos", "Boca"],
                      "texto": TEXTO_EXAME, "zonas": ZONAS_MBAE},
-                    escolha_noite_3("Mbaé", "Durmo no canto. Não incomodo ninguém.",
-                                    "Sozinho no escuro. Já passei noite pior na caça."),
+                    escolha_onde_dorme("Mbaé", "Durmo no canto. Não incomodo ninguém.",
+                                       "Sozinho no escuro. Já passei noite pior na caça."),
                     {"tipo": "visitante", "visitante": None},
                 ],
             },

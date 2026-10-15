@@ -23,7 +23,7 @@ CONTAGIO = {
 # Os moradores não aparecem no jogo: quem pega a febre é "um morador". Mas quem pegou também
 # passa adiante: a cada noite com amaldiçoados (dados/noites.py), cada morador que pegou a
 # febre numa noite anterior passa para mais alguns (o sorteio, como no CONTAGIO), até morrer.
-# O doente de fora (Mbaé) para de passar no tapiri, com o remédio do Aleixo ou com a morte.
+# O doente de fora (Mbaé) para de passar no tapiri, quando o Irmão Aleixo o leva ou com a morte.
 # É por isso que deixar um amaldiçoado muitos dias na aldeia leva outros junto, e, se a
 # aldeia esvaziar, a partida acaba em O Vazio (dados/finais.py).
 CONTAGIO_MORADOR = (0, 1)

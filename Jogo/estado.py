@@ -16,7 +16,8 @@ class Estado:
         self.mortos = 0                # doença sob o seu teto + mortos por sua mão + mortos na trilha
         self.mortos_por_sua_mao = 0    # quem você matou, doente ou não
         self.entregues = 0             # pessoas entregues a Aleixo numa oferta
-        self.proximidade_vila = 0      # machado, remédio aceito, entregas, doente mandado seguir de dia
+        self.levados = 0               # pessoas que o Irmão Aleixo levou (sorteadas: o jogador não escolhe)
+        self.proximidade_vila = 0      # machado, entregas, doente mandado seguir de dia
         self.rio_acima = 0             # pessoas mandadas para a cabeceira
         self.memoria = 0               # histórias ouvidas
         self.recusas_aleixo = 0        # vezes que você recusou uma oferta
@@ -26,7 +27,7 @@ class Estado:
         self.viu_anhanga = 0           # noites em que olhou o veado na mata (final Anhangá)
         self.seguiu_paje = 0           # vezes que levou ao tapiri quem o pajé acusou (A Água do Batismo)
         self.inocentes = 0             # dessas vezes, quantas a pessoa era sã
-        self.machado = 0               # 1 se aceitou o machado de Yara (dá mais energia na noite 3)
+        self.machado = 0               # 1 se aceitou o machado de Yara (dá mais energia nas noites 2 e 3)
 
         # Quem de fora entrou na aldeia (nomes), para a noite saber quem examinar
         self.dentro = []
@@ -36,13 +37,9 @@ class Estado:
         self.tapiri_desde = {}
         # A febre que passou na oca: de quem, quantos pegaram e em que noite (motor/febre.py)
         self.febre = []
-        # Remédios do Irmão Aleixo guardados (cada um cura a febre de uma pessoa, na fogueira)
-        self.remedios = 0
-        # Doentes de fora curados com o remédio do Aleixo: não passam mais a febre
-        self.curados = []
         # As histórias já ouvidas (dados/conversas.py): a memória sobe uma vez por história
         self.historias = []
-        # Quem o jogador entregou ao Irmão Aleixo (nomes)
+        # Quem de fora o Irmão Aleixo levou para a vila (nomes)
         self.entregues_nomes = []
         # As frases da manhã de hoje (quem acordou com febre, quem morreu dela)
         self.manha = []

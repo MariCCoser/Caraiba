@@ -7,7 +7,7 @@
 #   morador que pegou a febre numa noite anterior passa para mais alguns.
 # - amanhecer(estado): passa para o dia seguinte. Quem pegou a febre acorda doente no 1º dia
 #   e morre no 2º; as frases da manhã ficam em estado.manha, para o Dia mostrar.
-# - amaldicoado(estado, nome) e curar(estado, nome): o doente de fora que ainda passa a febre.
+# - amaldicoado(estado, nome): o doente de fora que ainda passa a febre.
 #
 # Cada entrada de estado.febre é um morador (sem nome, ele não aparece no jogo):
 # {"de": "Mbaé", "noite": 2, "visivel": True}. "visivel": False é quem não mostra nada.
@@ -27,7 +27,7 @@ def _contaminar(estado, de, quantos, sorte):
 
 
 def pegar(estado, quem):
-    if quem not in CONTAGIO or quem in estado.curados:
+    if quem not in CONTAGIO:
         return
     minimo, maximo = CONTAGIO[quem]
     sorte = _sorte(estado, quem)
@@ -45,14 +45,8 @@ def passar_na_oca(estado):
 
 
 def amaldicoado(estado, nome):
-    """O doente de fora ainda passa a febre: está na aldeia e não tomou o remédio."""
-    return nome in CONTAGIO and nome in estado.dentro and nome not in estado.curados
-
-
-def curar(estado, nome):
-    """O remédio do Aleixo: o doente de fora não passa mais a febre."""
-    if nome not in estado.curados:
-        estado.curados.append(nome)
+    """O doente de fora ainda passa a febre: está na aldeia (não morreu nem foi levado)."""
+    return nome in CONTAGIO and nome in estado.dentro
 
 
 def _frase(chave, quantos):

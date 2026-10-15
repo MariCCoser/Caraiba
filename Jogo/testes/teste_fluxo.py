@@ -9,6 +9,7 @@
 # mostra a linha do problema.
 
 import os
+import random
 import tempfile
 
 # Sem janela e sem som: precisa vir ANTES de importar o pygame.
@@ -91,10 +92,10 @@ def testar_marcacao():
 def testar_estado_inicial():
     estado = Estado()
     esperado = {"dia": 1, "vivos": 12, "mortos": 0, "mortos_por_sua_mao": 0, "entregues": 0,
-                "proximidade_vila": 0, "rio_acima": 0, "memoria": 0, "recusas_aleixo": 0,
+                "proximidade_vila": 0, "rio_acima": 0, "memoria": 0, "recusas_aleixo": 0, "levados": 0,
                 "pistas": 0, "sanidade": 10, "tapiri_usos": 0, "viu_anhanga": 0, "seguiu_paje": 0,
                 "inocentes": 0, "machado": 0, "dentro": [], "tapiri": [], "tapiri_desde": {}, "febre": [], "manha": [],
-                "remedios": 0, "curados": [], "historias": [], "entregues_nomes": [],
+                "historias": [], "entregues_nomes": [],
                 "mortos_nomes": [], "mortos_quando": {}, "tabua": [], "final": None}
     dados = estado.para_dicionario()
     assert isinstance(dados.pop("semente"), int), "cada partida tem a sua sorte"
@@ -161,14 +162,13 @@ def testar_febre():
     assert {passa(s) for s in range(50)} == {0, 1}
     assert all(passa(s, noite=3) == 0 for s in range(50))
 
-    # O remédio: Mbaé não passa mais a febre.
+    # Mbaé passa a febre enquanto está na aldeia; levado pelo Aleixo (fora de "dentro"), não.
     e = Estado()
     e.dia, e.dentro = 3, ["Mbaé"]
-    febre.curar(e, "Mbaé")
-    assert not febre.amaldicoado(e, "Mbaé") and e.curados == ["Mbaé"]
-    febre.pegar(e, "Mbaé")
-    assert e.febre == [], "curado não passa"
-    print("ok febre sorteada (1 a 3 com Mbaé), amaldiçoados com e sem sinal, e o remédio")
+    assert febre.amaldicoado(e, "Mbaé")
+    e.dentro = []
+    assert not febre.amaldicoado(e, "Mbaé")
+    print("ok febre sorteada (1 a 3 com Mbaé), amaldiçoados com e sem sinal")
 
 
 def testar_cartoes_introducao():
@@ -854,12 +854,13 @@ def testar_dia2_e_noite2(jogo):
 
 
 def testar_dia3_e_noite3(jogo):
-    """Dia 3 (a primeira aparição do Irmão Aleixo e a oferta) e a Noite 3 (os amaldiçoados)."""
+    """Dia 3 (a primeira visita do Irmão Aleixo, que leva alguém) e a Noite 3 (os amaldiçoados)."""
     jogo.nova_partida()
     estado = jogo.estado
     estado.dia = 2
     estado.dentro = ["Yara", "Mbaé"]
     estado.vivos = 14
+    estado.semente = next(n for n in range(1000) if random.Random("%s:aleixo:3" % n).randrange(14) == 0)
     estado.tabua = ["Olho vermelho, com o branco raiado.", "Boca com feridas."]
     # Mbaé dormiu na oca na noite 2: dois moradores pegaram; um mostra, o outro não mostra nada.
     estado.febre = [{"de": "Mbaé", "noite": 2, "visivel": True},
@@ -880,26 +881,22 @@ def testar_dia3_e_noite3(jogo):
     clicar(jogo, (800, 300))
     assert dia.caixa.texto.startswith("Mbaé tossiu"), dia.caixa.texto
 
-    # A entrada: ninguém chega; o Irmão Aleixo finca a cruz e faz a oferta.
+    # A entrada: ninguém chega; o Irmão Aleixo finca a cruz, responde e leva alguém sorteado.
     passar_falas(jogo)
     dia = jogo.cenas.atual
     assert dia.modo == "perguntas" and dia.visitante == "aleixo", (dia.modo, dia.visitante)
     rodar(jogo, 60)
     capturar(jogo, "26-dia3-aleixo")
-    clicar_opcao(jogo, "O que tem nesse caderno?")
+    assert textos_dos_botoes(jogo) == ["O que você quer?", "Por que a cruz?", "Seguir"], textos_dos_botoes(jogo)
+    clicar_opcao(jogo, "O que você quer?")
     passar_falas(jogo)
-    assert estado.pistas == 1
-    clicar_opcao(jogo, "Ouvir a oferta")
-    assert textos_dos_botoes(jogo) == ["Aceitar o remédio", "Entregar alguém", "Recusar"]
-    clicar_opcao(jogo, "Aceitar o remédio")
+    clicar_opcao(jogo, "Seguir")
     passar_falas(jogo)
-    assert textos_dos_botoes(jogo) == ["Entregar alguém também", "Basta o remédio"]
-    clicar_opcao(jogo, "Entregar alguém também")
-    assert textos_dos_botoes(jogo) == ["Yara", "Mbaé", "Ninguém, afinal"]
-    clicar_opcao(jogo, "Yara")
-    assert estado.remedios == 1 and estado.proximidade_vila == 2 and estado.entregues == 1
-    assert estado.dentro == ["Mbaé"] and estado.entregues_nomes == ["Yara"] and estado.vivos == 13
-    print("ok Dia 3: o Irmão Aleixo (caderno, remédio e entrega)")
+    # A semente foi escolhida para o sorteio cair em Yara (a 1ª de dentro): não há botão de escolha.
+    assert estado.dentro == ["Mbaé"] and estado.entregues_nomes == ["Yara"], (estado.dentro, estado.entregues_nomes)
+    assert estado.vivos == 13 and estado.levados == 1 and estado.entregues == 0
+    assert estado.proximidade_vila == 0 and estado.pistas == 0
+    print("ok Dia 3: o Irmão Aleixo leva alguém sorteado (o jogador não escolhe)")
 
     # O sinal do pajé e a fogueira: sem Yara (foi com Aleixo); os moradores não aparecem.
     passar_falas(jogo)
@@ -924,7 +921,7 @@ def testar_dia3_e_noite3(jogo):
     passar_falas(jogo)
     clicar_opcao(jogo, "Voltar para a fogueira")
 
-    # Mbaé: os 2 olhares (com o machado) e o remédio do Aleixo: ele para de passar a febre.
+    # Mbaé: os 2 olhares (com o machado). Sem remédio: o Aleixo não traz cura.
     clicar_pessoa(jogo, "Mbaé")
     passar_falas(jogo)
     clicar_opcao(jogo, "Examinar o rosto")
@@ -932,13 +929,13 @@ def testar_dia3_e_noite3(jogo):
     examinar(jogo, ["Olhos", "Boca"])
     assert dia.sinais["Mbaé"] == 2 and dia.energia == 0
     clicar_opcao(jogo, "Terminar o exame")
-    assert textos_dos_botoes(jogo) == ["Deixar na oca", "Levar ao tapiri", "Dar o remédio do Aleixo", "Matar"]
+    assert textos_dos_botoes(jogo) == ["Deixar na oca", "Levar ao tapiri", "Matar"], textos_dos_botoes(jogo)
     rodar(jogo, 5)
     capturar(jogo, "28-noite3-mbae-escolha")
-    clicar_opcao(jogo, "Dar o remédio do Aleixo")
+    clicar_opcao(jogo, "Levar ao tapiri")
     passar_falas(jogo)
-    assert estado.remedios == 0 and estado.curados == ["Mbaé"]
-    assert all(e["noite"] == 2 for e in estado.febre), "curado, Mbaé não passa a febre"
+    assert estado.tapiri == ["Mbaé"]
+    assert all(e["noite"] == 2 for e in estado.febre), "no tapiri, Mbaé não passa a febre"
 
     # Ir dormir: os dois moradores que pegaram na noite 2 passam adiante (0 ou 1 cada).
     clicar_botao(jogo, dia.botao_dormir)
@@ -953,7 +950,7 @@ def testar_dia3_e_noite3(jogo):
     entrar_na_oca(jogo, "oca3")
     rodar(jogo, 5)
     capturar(jogo, "29-noite3-oca3")
-    print("ok Noite 3: amaldiçoados (sem moradores na fogueira), remédio e a febre que passa adiante")
+    print("ok Noite 3: amaldiçoados (sem moradores na fogueira) e a febre que passa adiante")
     jogo.ir_para("menu")
     esperar_transicao(jogo)
 

@@ -12,6 +12,7 @@
 # Cada clique do jogador fica guardado (motor/progresso.py), para o botão "Continuar".
 
 import copy
+import random
 
 import pygame
 
@@ -189,6 +190,9 @@ class Dia(Cena):
             elif tipo == "escolha":
                 self._mostrar_escolha(passo)
                 return
+            elif tipo == "aleixo_leva":
+                self._aleixo_leva(passo)
+                return
             else:
                 raise ValueError("Tipo de passo desconhecido em dados/dias.py: %r" % tipo)
         self.terminar()
@@ -198,8 +202,7 @@ class Dia(Cena):
 
         "dentro", "se_dentro", "morto", "morto_ontem" (morto na noite passada), "tapiri" e
         "na_oca" levam o nome de quem é de fora;
-        "amaldicoado" e "sao" levam o nome de um doente de fora (motor/febre.py);
-        "se_remedio": True (sobra remédio do Aleixo) e "alguem_dentro": True (alguém de fora entrou).
+        "amaldicoado" e "sao" levam o nome de um doente de fora (motor/febre.py).
         """
         estado = self.estado
         if "morto_ontem" in item and estado.mortos_quando.get(item["morto_ontem"]) != estado.dia - 1:
@@ -209,10 +212,6 @@ class Dia(Cena):
         if "amaldicoado" in item and not febre.amaldicoado(estado, item["amaldicoado"]):
             return False
         if "sao" in item and febre.amaldicoado(estado, item["sao"]):
-            return False
-        if item.get("se_remedio") and estado.remedios <= 0:
-            return False
-        if item.get("alguem_dentro") and not estado.dentro:
             return False
         if "dentro" in item and item["dentro"] not in estado.dentro:
             return False
@@ -245,7 +244,7 @@ class Dia(Cena):
         for nome, pessoa in self.noite["pessoas"].items():
             if pessoa.get("de_fora") and (nome not in estado.dentro or nome in estado.tapiri):
                 continue
-            # Quem morreu ou foi entregue ao Aleixo também não vem.
+            # Quem morreu ou foi levado pelo Aleixo também não vem.
             if nome in estado.mortos_nomes or nome in estado.entregues_nomes:
                 continue
             yield nome, pessoa
@@ -430,7 +429,7 @@ class Dia(Cena):
         self.passo_atual = passo
         self._apresentar(passo)
         self.modo = "escolha"
-        # Opção com "condicao" (ex.: {"se_remedio": True}) só aparece se ela bate.
+        # Opção com "condicao" (ex.: {"dentro": "Yara"}) só aparece se ela bate.
         visiveis = [(i, opcao) for i, opcao in enumerate(passo["opcoes"])
                     if self._condicao(opcao.get("condicao", {}))]
         self._criar_blocos([(opcao["texto"], lambda i=i: self._escolher(i)) for i, opcao in visiveis])
@@ -460,15 +459,6 @@ class Dia(Cena):
         if opcao.get("oca"):
             # Se quem dorme na oca está com a febre, ela passa (o quanto é sorteado: motor/febre.py).
             febre.pegar(self.estado, self.passo_atual.get("quem"))
-        if opcao.get("remedio"):
-            # O remédio do Aleixo: a febre sai de quem toma.
-            self.estado.remedios -= 1
-            febre.curar(self.estado, opcao["remedio"])
-        if opcao.get("entrega"):
-            # Entregue ao Aleixo: sai da aldeia (da oca ou do tapiri) e vai para a vila.
-            nome = opcao["entrega"]
-            self._sair_da_aldeia(nome)
-            self.estado.entregues_nomes.append(nome)
         if opcao.get("morre"):
             nome = opcao["morre"]
             self._sair_da_aldeia(nome)
@@ -476,6 +466,32 @@ class Dia(Cena):
             self.estado.mortos_quando[nome] = self.estado.dia
         self.fila[0:0] = opcao.get("passos", [])
         self._proximo()
+
+    def _aleixo_leva(self, passo):
+        """O Irmão Aleixo leva uma pessoa, sorteada entre todos da aldeia: quem é de fora (na oca
+        ou no tapiri) ou um morador. O jogador não escolhe. O sorteio usa a semente da partida,
+        e o "Continuar" refaz o mesmo."""
+        estado = self.estado
+        sorte = random.Random("%s:aleixo:%d" % (estado.semente, estado.dia))
+        de_fora = list(estado.dentro)
+        moradores = max(estado.vivos - len(de_fora), 0)
+        if not de_fora and not moradores:
+            self._proximo()
+            return
+        indice = sorte.randrange(len(de_fora) + moradores)
+        estado.vivos -= 1
+        estado.levados += 1
+        if indice < len(de_fora):
+            nome = de_fora[indice]
+            self._sair_da_aldeia(nome)
+            estado.entregues_nomes.append(nome)
+            texto = passo["de_fora"] % nome
+        else:
+            # Se o morador levado tinha pegado a febre, ela vai embora com ele.
+            if estado.febre and sorte.random() < len(estado.febre) / moradores:
+                estado.febre.pop(sorte.randrange(len(estado.febre)))
+            texto = passo["morador"]
+        self._mostrar_fala("", texto)
 
     def _sair_da_aldeia(self, nome):
         if nome in self.estado.dentro:
