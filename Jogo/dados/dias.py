@@ -41,18 +41,19 @@
 
 # --- Dia 3: a primeira aparição do Irmão Aleixo (Textos/Caraíba — Dez Dias, Dez Fogueiras.pdf) ---
 # Ninguém chega pela trilha: Aleixo vem até a entrada, finca uma cruz e faz a primeira oferta.
-# Tudo o que ele oferece funciona de verdade. E ninguém que ele leva volta.
-#   Aceitar o remédio: proximidade_vila +1 e 1 remédio guardado (na fogueira, cura a febre de uma
-#                      pessoa: a opção "Dar o remédio" de dados/noites.py).
+# Depois vai embora: só volta no dia 6. Tudo o que ele oferece funciona de verdade. E ninguém
+# que ele leva volta. Ninguém ali conhece "febre": para a aldeia e para ele, é uma maldição.
+#   Aceitar o remédio: proximidade_vila +1 e 1 remédio guardado (na fogueira, cura a maldição de
+#                      Mbaé: a opção "Dar o remédio" de dados/noites.py).
 #   Entregar alguém:   entregues +1, proximidade_vila +1, vivos -1. A pessoa sai da aldeia.
 #   Recusar:           recusas_aleixo +1. Aceitar o remédio e entregar podem ir juntos;
 #                      recusar exclui os dois.
 ALEIXO = "Irmão Aleixo"
-FALA_ALEIXO_FICA = {"tipo": "fala", "quem": ALEIXO, "texto": "Fico por aqui, ao lado da cruz, se precisarem."}
+FALA_ALEIXO_VAI = {"tipo": "fala", "quem": ALEIXO, "texto": "Fico por aqui, ao lado da cruz, se precisarem."}
 EFEITOS_ENTREGAR = {"entregues": 1, "proximidade_vila": 1, "vivos": -1}
 EFEITOS_REMEDIO = {"proximidade_vila": 1, "remedios": 1}
 FALA_REMEDIO = {"tipo": "fala", "quem": ALEIXO,
-                "texto": "Uma colher na água, para quem arder em febre. [Cura], com a graça de Deus."}
+                "texto": "Uma colher na água, para quem carrega a maldição. [Ela sai], com a graça de Deus."}
 
 
 def entregar(depois):
@@ -62,7 +63,7 @@ def entregar(depois):
          "passos": [{"tipo": "fala", "quem": ALEIXO, "texto": "Na vila ela terá teto e doutrina."}] + depois},
         {"texto": "Mbaé", "condicao": {"dentro": "Mbaé"}, "entrega": "Mbaé", "efeitos": EFEITOS_ENTREGAR,
          "passos": [{"tipo": "fala", "quem": ALEIXO,
-                     "texto": "Esse homem tem febre. Na vila temos onde deitá-lo."}] + depois},
+                     "texto": "Esse homem carrega a maldição. Na vila temos onde deitá-lo."}] + depois},
         {"texto": "Ninguém, afinal", "passos": depois},
     ]}
 
@@ -245,7 +246,7 @@ DIAS = {
         "passos": [
             {"tipo": "fundo", "fundo": "aldeia", "filtro": "dia"},
 
-            # A manhã: primeiro a febre (motor/febre.py, com o nome de quem acordou doente);
+            # A manhã: primeiro a febre (motor/febre.py: quantos acordaram doentes);
             # depois, o corpo de quem o jogador matou na noite 2, com o nome.
             {"tipo": "se", "morto_ontem": "Yara", "passos": [
                 {"tipo": "fala", "quem": "", "texto": "O corpo de Yara amanheceu coberto com uma esteira."},
@@ -265,19 +266,19 @@ DIAS = {
              "texto": "Ninguém chega pela trilha. Um homem de batina preta finca uma cruz ao lado da entrada."},
             {"tipo": "visitante", "visitante": "aleixo"},
             {"tipo": "fala", "quem": ALEIXO,
-             "texto": "Bom dia. Sou o Irmão Aleixo, da vila. Vou ficar por aqui umas manhãs, se não incomodar."},
-            {"tipo": "fala", "quem": ALEIXO, "texto": "Soube que há febre por estes lados. Trouxe o que pude."},
+             "texto": "Bom dia. Sou o Irmão Aleixo, da vila. Passo pelas aldeias desta margem, de tempos em tempos."},
+            {"tipo": "fala", "quem": ALEIXO, "texto": "Soube que há uma maldição por estes lados. Trouxe o que pude."},
             {"tipo": "perguntas", "botao": "Ouvir a oferta", "perguntas": [
                 {"pergunta": "O que você quer?",
-                 "resposta": "Ajudar. Trago remédio da botica e lugar na vila para quem precisar de cuidado."},
+                 "resposta": "Ajudar. Trago remédio contra a maldição e lugar na vila para quem precisar de cuidado."},
                 {"pergunta": "Por que a cruz?",
                  "resposta": "Para que quem passa saiba que aqui há quem reze por ele."},
                 {"pergunta": "Os que vão com você voltam?",
                  "resposta": "Quando sararem, terão trabalho e doutrina. [A vila é longe]."},
-                {"pergunta": "De onde vem essa febre?",
+                {"pergunta": "De onde vem essa maldição?",
                  "resposta": [
                      "Uns dizem que do ar ruim do rio. Outros, que do pecado.",
-                     "Eu sei o que vi: [o remédio cura]. E na vila ninguém morre sem cuidado.",
+                     "Eu sei o que vi: [o remédio tira a maldição]. E na vila ninguém morre sem cuidado.",
                  ]},
                 {"pergunta": "O que tem nesse caderno?",
                  "resposta": [
@@ -293,34 +294,35 @@ DIAS = {
                     FALA_REMEDIO,
                     {"tipo": "escolha", "opcoes": [
                         {"texto": "Entregar alguém também", "condicao": {"alguem_dentro": True},
-                         "passos": [entregar([FALA_ALEIXO_FICA])]},
-                        {"texto": "Basta o remédio", "passos": [FALA_ALEIXO_FICA]},
+                         "passos": [entregar([FALA_ALEIXO_VAI])]},
+                        {"texto": "Basta o remédio", "passos": [FALA_ALEIXO_VAI]},
                     ]},
                 ]},
                 {"texto": "Entregar alguém", "condicao": {"alguem_dentro": True}, "passos": [
                     entregar([
                         {"tipo": "escolha", "opcoes": [
                             {"texto": "Aceitar o remédio também", "efeitos": EFEITOS_REMEDIO,
-                             "passos": [FALA_REMEDIO, FALA_ALEIXO_FICA]},
-                            {"texto": "Basta", "passos": [FALA_ALEIXO_FICA]},
+                             "passos": [FALA_REMEDIO, FALA_ALEIXO_VAI]},
+                            {"texto": "Basta", "passos": [FALA_ALEIXO_VAI]},
                         ]},
                     ]),
                 ]},
                 {"texto": "Recusar", "efeitos": {"recusas_aleixo": 1}, "passos": [
-                    {"tipo": "fala", "quem": "", "texto": "Ele sorri, como quem entende, e volta para a cruz."},
-                    FALA_ALEIXO_FICA,
+                    {"tipo": "fala", "quem": "", "texto": "Ele sorri, como quem entende, e fecha a caixa de botica."},
+                    FALA_ALEIXO_VAI,
                 ]},
             ]},
             {"tipo": "visitante", "visitante": None},
+            {"tipo": "fala", "quem": "",
+             "texto": "O Irmão Aleixo vai embora pela trilha. A cruz fica na entrada."},
 
-            # O sinal do pajé: hoje o mal já está do lado de dentro (os amaldiçoados, dados/febre.py).
+            # Hoje o pajé não conta sinal novo (a tábua não muda): ele só desconfia de Aleixo.
             {"tipo": "fundo", "fundo": "fogueira_longe", "filtro": "noite"},
             {"tipo": "visitante", "visitante": "paje"},
-            {"tipo": "fala", "quem": "Pajé",
-             "texto": "Sonhei com redes vazias, do lado de dentro. O mal passa de rede em rede, [sem deixar sinal]."},
-            {"tipo": "sinal", "texto": "Quem dormiu perto do doente pode levar o mal, sem sinal nenhum."},
+            {"tipo": "fala", "quem": "Pajé", "texto": "Esta noite o sono não me mostrou nada novo."},
+            {"tipo": "fala", "quem": "Pajé", "texto": "Mas eu vi a cruz na entrada. Isso eu não precisei sonhar."},
 
-            # A fogueira da aldeia: sem visitante novo, o jogador examina gente de dentro.
+            # A fogueira da aldeia: sem visitante novo.
             {"tipo": "noite"},
         ],
     },

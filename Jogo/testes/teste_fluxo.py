@@ -743,6 +743,13 @@ def testar_dia2_e_noite2(jogo):
     dia = jogo.cenas.atual
     assert estado.tabua[-1] == "Boca com feridas."
     assert dia.titulo == "Noite 2" and dia.modo == "fogueira" and dia.energia == 1
+    # Quem aceitou o machado de Yara tem 2 olhares já na noite 2.
+    estado.machado = 1
+    dia._comecar_noite()
+    assert dia.energia == dia.energia_max == 2
+    estado.machado = 0
+    dia._comecar_noite()
+    assert dia.energia == 1
     assert [p.nome for p in dia.na_fogueira] == ["Pajé", "Yara", "Mbaé"]
     assert not dia.botao_dormir.habilitado and "Mbaé" in dia.botao_dormir.texto
     rodar(jogo, 40)
@@ -889,7 +896,7 @@ def testar_dia3_e_noite3(jogo):
 
     # O sinal do pajé e a fogueira: sem Yara (foi com Aleixo); os moradores não aparecem.
     passar_falas(jogo)
-    assert estado.tabua[-1].startswith("Quem dormiu perto do doente")
+    assert len(estado.tabua) == 2, "no Dia 3 o pajé não conta sinal novo"
     # 1 olhar; quem aceitou o machado de Yara tem 2.
     assert dia.titulo == "Noite 3" and dia.modo == "fogueira" and dia.energia == 1
     estado.machado = 1
@@ -900,13 +907,13 @@ def testar_dia3_e_noite3(jogo):
     rodar(jogo, 40)
     capturar(jogo, "27-noite3-fogueira")
 
-    # O pajé conta dos amaldiçoados.
+    # O pajé só desconfia do Irmão Aleixo.
     clicar_pessoa(jogo, "Pajé")
     passar_falas(jogo)
-    assert "Quem são os amaldiçoados?" in textos_dos_botoes(jogo)
-    clicar_opcao(jogo, "Alguém aqui carrega?")
+    assert textos_dos_botoes(jogo)[0] == "O que você acha do Irmão Aleixo?", textos_dos_botoes(jogo)
+    clicar_opcao(jogo, "Ele vai voltar?")
     dia.caixa.completar()
-    assert "tosse" in dia.caixa.texto, dia.caixa.texto
+    assert dia.caixa.texto.startswith("Volta."), dia.caixa.texto
     passar_falas(jogo)
     clicar_opcao(jogo, "Voltar para a fogueira")
 
@@ -914,9 +921,8 @@ def testar_dia3_e_noite3(jogo):
     clicar_pessoa(jogo, "Mbaé")
     passar_falas(jogo)
     clicar_opcao(jogo, "Examinar o rosto")
-    assert textos_dos_botoes(jogo) == ["Testa", "Olhos", "Orelhas", "Boca", "Mãos", "Respiração",
-                                       "Terminar o exame"], textos_dos_botoes(jogo)
-    examinar(jogo, ["Testa", "Boca"])
+    assert textos_dos_botoes(jogo) == ["Olhos", "Boca", "Terminar o exame"], textos_dos_botoes(jogo)
+    examinar(jogo, ["Olhos", "Boca"])
     assert dia.sinais["Mbaé"] == 2 and dia.energia == 0
     clicar_opcao(jogo, "Terminar o exame")
     assert textos_dos_botoes(jogo) == ["Deixar na oca", "Levar ao tapiri", "Dar o remédio do Aleixo", "Matar"]

@@ -128,8 +128,8 @@ def escolha_onde_dorme(quem, fala_oca, fala_tapiri):
 # --- Noite 3: a fogueira da aldeia e os amaldiçoados (Textos/Amaldiçoados.txt) ---
 # Ninguém novo chegou. Em volta do fogo: o pajé e quem é de fora (Yara e Mbaé, se ficaram).
 # Mbaé é o amaldiçoado que trouxe a febre; os moradores que pegaram dele também passam adiante,
-# mesmo sem mostrar nada (dados/febre.py). Eles não aparecem: o jogador só ouve o pajé e vê,
-# de manhã, quem adoeceu e quem morreu.
+# mesmo sem mostrar nada (dados/febre.py). Eles não aparecem: o jogador só vê, de manhã, quem
+# adoeceu e quem morreu. O pajé não conta sinal novo: só desconfia do Irmão Aleixo.
 #
 # Na noite com "amaldicoados": True, os moradores que pegaram a febre passam adiante no fim
 # da noite. Perguntas podem ter "amaldicoado": "Mbaé" (Mbaé ainda passa a febre) ou
@@ -217,7 +217,9 @@ NOITES = {
     2: {
         "titulo": "Noite 2",
         # Na noite 2, 1 olhar só, e só os olhos ou a boca (a tosse): veja "liberadas".
+        # Quem aceitou o machado de Yara (dia 1) tem 2: com o ferro, a lenha rende mais.
         "energia": 1,
+        "energia_extra": {"machado": 1},
         "fundo": "fogueira_perto",
         "dica": "Clique em quem está perto do fogo para conversar.",
         "dormir": "Ir dormir",
@@ -293,7 +295,7 @@ NOITES = {
     },
     3: {
         "titulo": "Noite 3",
-        # 1 olhar; quem aceitou o machado de Yara (dia 1) tem 2: com o ferro, a lenha rende mais.
+        # Como na noite 2: 1 olhar (2 com o machado), e só os olhos ou a boca. Nenhum sinal novo.
         "energia": 1,
         "energia_extra": {"machado": 1},
         "fundo": "fogueira_perto",
@@ -303,34 +305,25 @@ NOITES = {
         "dormir": "Ir dormir",
         "dormir_bloqueado": "Ir dormir · antes, fale com %s",
         "pessoas": {
-            # O pajé conta dos amaldiçoados: o mal já está do lado de dentro.
+            # O pajé só desconfia do Irmão Aleixo: quem cura manda, e Aleixo chegou curando.
+            # Não há sinal novo hoje.
             "Pajé": {
                 "imagem": "paje_sentado", "posicao": POSICAO_PAJE, "escala": ESCALA_PAJE, "espelhar": True,
                 "passos": [
                     {"tipo": "visitante", "visitante": "paje"},
-                    {"tipo": "fala", "quem": "Pajé", "texto": "Sente. Hoje o fogo está mais vazio."},
+                    {"tipo": "fala", "quem": "Pajé", "texto": "Sente. O homem da cruz já foi, mas a cruz ficou."},
                     {"tipo": "perguntas", "botao": "Voltar para a fogueira", "perguntas": [
-                        {"pergunta": "O que você viu no sono?",
+                        {"pergunta": "O que você acha do Irmão Aleixo?",
                          "resposta": [
-                             "Redes vazias, do lado de dentro.",
-                             "O mal não precisa mais chegar pela trilha. Ele já dorme aqui.",
+                             "Chega com remédio e fala em tirar a maldição.",
+                             "Quem tira a maldição de uma aldeia é o pajé. [Ele sabe disso].",
                          ]},
-                        {"pergunta": "Quem são os amaldiçoados?",
-                         "resposta": [
-                             "Gente que a doença dos brancos escolheu. Anda de aldeia em aldeia.",
-                             "Por onde dorme, deixa a morte. Muitos nem sabem que carregam.",
-                         ]},
-                        {"pergunta": "Dá para saber quem carrega?",
-                         "resposta": [
-                             "Às vezes o rosto mostra. Às vezes não mostra nada.",
-                             "O mal anda de rede em rede. Quem dormiu perto do doente já pode estar levando.",
-                         ]},
-                        {"pergunta": "Alguém aqui carrega?", "amaldicoado": "Mbaé",
-                         "resposta": "Alguém tosse de noite. Eu ouço, mas não sei de qual rede vem."},
-                        {"pergunta": "Alguém aqui carrega?", "sao": "Mbaé",
-                         "resposta": "Hoje o fogo está quieto. [Mas o fogo não vê tudo]."},
-                        {"pergunta": "E se ficarem muitos dias?",
-                         "resposta": "A aldeia vai junto, uma rede de cada vez. Já vi acontecer, rio abaixo."},
+                        {"pergunta": "O remédio dele funciona?",
+                         "resposta": "Pode ser que funcione. É isso que me preocupa."},
+                        {"pergunta": "Por que ele leva gente para a vila?",
+                         "resposta": "Quem vai com ele não volta para contar como é lá."},
+                        {"pergunta": "Ele vai voltar?",
+                         "resposta": "Volta. Homem assim volta quando a aldeia está mais fraca."},
                     ]},
                     {"tipo": "visitante", "visitante": None},
                 ],
@@ -347,7 +340,8 @@ NOITES = {
                         {"pergunta": "Onde você dormiu ontem?",
                          "resposta": "Perto da porta, como sempre. Longe de quem tosse."},
                     ]},
-                    {"tipo": "exame", "quem": "Yara", "texto": TEXTO_EXAME, "zonas": ZONAS_YARA_NOITE_3},
+                    {"tipo": "exame", "quem": "Yara", "liberadas": ["Olhos", "Boca"],
+                     "texto": TEXTO_EXAME, "zonas": ZONAS_YARA_NOITE_3},
                     escolha_noite_3("Yara", "Mais uma noite, então. Obrigada.",
                                     "Sozinha, então. Já dormi em lugar pior."),
                     {"tipo": "visitante", "visitante": None},
@@ -368,7 +362,8 @@ NOITES = {
                         {"pergunta": "Quem dormiu perto de você?",
                          "resposta": "A gente da Yebá Bëló. Ninguém reclamou da tosse."},
                     ]},
-                    {"tipo": "exame", "quem": "Mbaé", "texto": TEXTO_EXAME, "zonas": ZONAS_MBAE},
+                    {"tipo": "exame", "quem": "Mbaé", "liberadas": ["Olhos", "Boca"],
+                     "texto": TEXTO_EXAME, "zonas": ZONAS_MBAE},
                     escolha_noite_3("Mbaé", "Durmo no canto. Não incomodo ninguém.",
                                     "Sozinho no escuro. Já passei noite pior na caça."),
                     {"tipo": "visitante", "visitante": None},
