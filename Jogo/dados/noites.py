@@ -178,6 +178,14 @@ NOITES = {
                          "resposta": "O sonho mostra o sinal. Quem olha de perto é você."},
                         {"pergunta": "O que é o tapiri?",
                          "resposta": "O abrigo longe das ocas. Quem dorme lá não divide a rede."},
+                        # O que "Como se joga" não conta (dados/textos.py, REGRAS): o jogador descobre aqui.
+                        {"pergunta": "O mal passa aqui no fogo?",
+                         "resposta": "Ao ar livre, não. O mal passa nas redes, dentro da oca."},
+                        {"pergunta": "E se eu tiver certeza de que é o mal?",
+                         "resposta": [
+                             "Então a decisão é sua. Há quem tire a vida para salvar a aldeia.",
+                             "Mas quem faz isso carrega o peso. Eu vi homens que não dormiram mais.",
+                         ]},
                     ]},
                     {"tipo": "visitante", "visitante": None},
                 ],

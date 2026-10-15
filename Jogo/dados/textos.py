@@ -9,14 +9,13 @@
 
 # As regras do jogo, em poucas frases. Aparecem no último cartão da introdução e no
 # botão "Como se joga" do menu (o mesmo texto nos dois lugares).
+# O que é o tapiri, o que é matar e onde a maldição passa ficam de fora de propósito:
+# o jogador descobre conversando com o pajé.
 REGRAS = ("• [De dia], alguém chega à entrada. Converse e decida se a pessoa entra.\n"
-          "• Antes da noite, o [pajé] diz qual é o sinal da doença. Ele pode errar.\n"
+          "• Antes da noite, o [pajé] diz o sinal da maldição. Será que ele sempre acerta?\n"
           "• Os sinais ficam riscados na [tábua de barro], no canto de cima da tela.\n"
           "• [À noite], na fogueira, examine quem está dentro. Cada olhar gasta energia.\n"
-          "• Depois: deixar na [oca], levar ao [tapiri] ou [matar].\n"
-          "• [Tapiri]: abrigo isolado, longe das ocas. Quem dorme lá não passa a doença.\n"
-          "• [Matar]: caso você ache necessário, elimine a pessoa. Isso pesa em você.\n"
-          "• A doença só passa dentro da oca, nas redes. Na fogueira, ninguém pega nada.")
+          "• Depois: deixar na [oca], levar ao [tapiri] ou [matar].")
 
 MENU = {
     "titulo": "CARAÍBA",
