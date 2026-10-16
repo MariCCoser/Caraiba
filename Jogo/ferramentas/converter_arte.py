@@ -57,6 +57,11 @@ DISTANCIA_BRANCO_PRESO = 24
 # mancha branca for grande. Mancha pequena (dente, brilho do olho) fica.
 LIMIAR_BRANCO_CERCADO = 240
 AREA_MINIMA_BRANCO_CERCADO = 1500   # pixels da arte original
+# Arte com o fundo xadrez desenhado na imagem (cinza e branco, sem transparência de verdade):
+# o xadrez preso entre o braço e o corpo forma manchas pequenas, que também saem.
+ARTE_XADREZ = ["personagens_png/Potira_png.png", "Personagens_sentados_png/Potira_sentada_png.png"]
+AREA_MINIMA_BRANCO_CERCADO_XADREZ = 30
+LIMIAR_BRANCO_CERCADO_XADREZ = 232   # o cinza do xadrez (238) também conta
 
 # Arte que já vem transparente: o fundo é conhecido, então a limpeza perto da borda pode ser
 # mais firme. A ferramenta que tira o fundo costuma deixar fios meio transparentes porém
@@ -86,7 +91,9 @@ PNG = "personagens_png/"
 PERSONAGENS = [
     (PNG + "Yara.png", "personagens/yara.png", 90, 1675, True),
     (PNG + "Mbaé.png", "personagens/mbae.png", 90, 1920),
-    (PNG + "Potira.png", "personagens/potira.png", 90, 1040),
+    # Potira veio de novo (Potira_png.png): já de pé, com o fundo xadrez desenhado na própria
+    # imagem (cinza e branco, sem transparência de verdade), que sai como fundo branco.
+    (PNG + "Potira_png.png", "personagens/potira.png", 0, 950),
     (PNG + "Tama.png", "personagens/tamandare.png", 90, 1950),
     (PNG + "Iandé.png", "personagens/iande.png", 90, 1785),
     (PNG + "Krenan.png", "personagens/krenan.png", 90, 1590),
@@ -229,6 +236,10 @@ def converter_personagem(origem, destino, giro, meio_da_coxa, descascar=False):
         imagem.putalpha(ImageChops.subtract(alfa, fio_branco))
         if descascar:
             imagem = descascar_borda(imagem)
+    elif origem in ARTE_XADREZ:
+        imagem = tirar_fundo_branco(imagem, limiar_cercado=LIMIAR_BRANCO_CERCADO_XADREZ,
+                                    area_cercado=AREA_MINIMA_BRANCO_CERCADO_XADREZ)
+        imagem = descascar_borda(imagem)   # os fios claros do xadrez que sobram na borda
     else:
         imagem = tirar_fundo_branco(imagem)
     # Corte padrão: do topo da cabeça até o meio da coxa. Se a arte acabar antes,
@@ -262,6 +273,8 @@ SENTADOS = [
     # e a moça abraçando os joelhos (Iandé) no arquivo "Araci_sentada".
     (SENTADOS_PNG + "Iandé_sentada.png", "personagens/sentados/araci.png"),
     (SENTADOS_PNG + "Araci_sentada.png", "personagens/sentados/iande.png"),
+    # Potira veio fora da pasta dos sentados, com o fundo xadrez desenhado na imagem.
+    ("Personagens_sentados_png/Potira_sentada_png.png", "personagens/sentados/potira.png"),
 ]
 
 
@@ -273,6 +286,13 @@ def converter_sentado(origem, destino):
         return
     os.makedirs(os.path.dirname(caminho_destino), exist_ok=True)
     imagem = Image.open(caminho_origem).convert("RGBA")
+    if imagem.getchannel("A").getextrema()[0] == 255:
+        # Sem transparência (fundo branco, ou o xadrez claro desenhado na imagem): tira o fundo.
+        area = AREA_MINIMA_BRANCO_CERCADO_XADREZ if origem in ARTE_XADREZ else AREA_MINIMA_BRANCO_CERCADO
+        imagem = tirar_fundo_branco(imagem, limiar_cercado=LIMIAR_BRANCO_CERCADO_XADREZ if origem in ARTE_XADREZ
+                                    else LIMIAR_BRANCO_CERCADO, area_cercado=area)
+        if origem in ARTE_XADREZ:
+            imagem = descascar_borda(imagem)   # os fios claros do xadrez que sobram na borda
     imagem = imagem.crop(imagem.getchannel("A").getbbox())   # só a pessoa, sem a sobra em volta
     escala = ALTURA_SENTADO / imagem.height
     imagem = imagem.resize((round(imagem.width * escala), ALTURA_SENTADO), Image.LANCZOS)

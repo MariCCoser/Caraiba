@@ -38,6 +38,7 @@ PERSONAGENS = {
     "krenan_sentado": "personagens/sentados/krenan.png",
     "iande_sentada": "personagens/sentados/iande.png",
     "araci_sentada": "personagens/sentados/araci.png",
+    "potira_sentada": "personagens/sentados/potira.png",
 }
 
 # Detalhes do exame (Arte/Doenças/): o olho de perto, em cores, à direita da tela.

@@ -148,9 +148,8 @@ ZONAS_YARA_NOITE_3[1] = {"pergunta": "Olhos",
 
 # --- Noite 4: Potira, a que você conhece ---
 # Potira é sã: o olho está cansado, a boca seca de sede. Nada bate com a tábua.
-# Ainda não há arte dela sentada: na fogueira ela fica em pé, na frente, à direita, com a
-# borda de baixo da imagem rente à borda da tela.
-POSICAO_POTIRA, ESCALA_POTIRA = (1270, 900), 0.45
+# Na fogueira, ela senta no tronco da direita, ao lado do pajé.
+POSICAO_POTIRA, ESCALA_POTIRA = (1190, 560), 0.55
 
 ZONAS_POTIRA = [
     {"pergunta": "Testa",
@@ -439,9 +438,9 @@ NOITES = {
                 ],
             },
 
-            # Potira, se entrou: em pé, na frente, à direita do fogo.
+            # Potira, se entrou: sentada ao lado do pajé.
             "Potira": {
-                "imagem": "potira", "posicao": POSICAO_POTIRA, "escala": ESCALA_POTIRA,
+                "imagem": "potira_sentada", "posicao": POSICAO_POTIRA, "escala": ESCALA_POTIRA,
                 "de_fora": True, "uma_vez": True, "obrigatorio": True,
                 "passos": [
                     {"tipo": "visitante", "visitante": "potira"},

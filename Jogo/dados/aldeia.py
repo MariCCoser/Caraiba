@@ -86,9 +86,8 @@ ONDE_DORME = {
     # Mbaé senta sobre a cama (o estrado da direita), na mesma pose da fogueira. Ocupa um pouco
     # mais que a metade da altura da parede (a parede vai de y 235 a 570: uns 335; Mbaé, uns 195).
     "Mbaé": {"oca": "oca2", "imagem": "mbae_sentado", "posicao": (1235, 598), "escala": 0.35},
-    # Potira fica na oca Wanadi. Ainda não há arte dela sentada: ela aparece em pé, perto de
-    # quem olha, com a borda de baixo da imagem (o meio das coxas) rente à borda da tela.
-    "Potira": {"oca": "oca3", "imagem": "potira", "posicao": (1180, 900), "escala": 0.6},
+    # Potira senta sobre a cama da oca Wanadi (a cama fica à direita).
+    "Potira": {"oca": "oca3", "imagem": "potira_sentada", "posicao": (1240, 652), "escala": 0.33},
 }
 
 # Onde senta, dentro do tapiri, quem o jogador levou para lá (a esteira fica à direita).
@@ -96,7 +95,7 @@ ONDE_DORME = {
 ONDE_DORME_TAPIRI = {
     "Yara": {"imagem": "yara_sentada", "posicao": (1235, 690), "escala": 0.36},
     "Mbaé": {"imagem": "mbae_sentado", "posicao": (1420, 668), "escala": 0.42},
-    "Potira": {"imagem": "potira", "posicao": (1300, 900), "escala": 0.6},
+    "Potira": {"imagem": "potira_sentada", "posicao": (1330, 690), "escala": 0.36},
 }
 
 # Textos de dentro da oca.
