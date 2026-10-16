@@ -12,7 +12,7 @@ class Estado:
         self.dia = 1
 
         # Variáveis da tabela "As variáveis" do documento de design
-        self.vivos = 12                # pessoas vivas na aldeia (a Proposta: eram quarenta, restam doze)
+        self.vivos = 0                 # quem é de fora e está vivo na aldeia (além do jogador e do pajé)
         self.mortos = 0                # doença sob o seu teto + mortos por sua mão + mortos na trilha
         self.mortos_por_sua_mao = 0    # quem você matou, doente ou não
         self.entregues = 0             # pessoas entregues a Aleixo numa oferta
@@ -35,7 +35,7 @@ class Estado:
         self.tapiri = []
         # Em que noite cada um entrou no tapiri (a vaga abre depois de TAPIRI["noites"] noites)
         self.tapiri_desde = {}
-        # A febre que passou na oca: de quem, quantos pegaram e em que noite (motor/febre.py)
+        # A febre que passou na oca: quem pegou, de quem e em que noite (motor/febre.py)
         self.febre = []
         # As histórias já ouvidas (dados/conversas.py): a memória sobe uma vez por história
         self.historias = []

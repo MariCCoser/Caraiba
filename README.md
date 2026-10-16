@@ -2,7 +2,7 @@
 
 Jogo educativo de História sobre a epidemia de 1562-63 no litoral brasileiro, feito em **Python + pygame**.
 
-> Por volta de 1562, numa pequena aldeia entre a mata e o rio, restam doze pessoas. O cacique foi para a mata e deixou a entrada sob a sua guarda. Gente chega pela trilha todos os dias: uns doentes, outros sãos, alguns sem saber. De dia, o Irmão Aleixo, um jesuíta, dá a leitura dele de cada visitante. De noite, na fogueira, o pajé conta o que sonhou. Em quem você acredita?
+> Por volta de 1562, numa pequena aldeia entre a mata e o rio, restam só você e o pajé. O cacique foi para a mata e deixou a entrada sob a sua guarda. Gente chega pela trilha todos os dias: uns doentes, outros sãos, alguns sem saber. De dia, o Irmão Aleixo, um jesuíta, dá a leitura dele de cada visitante. De noite, na fogueira, o pajé conta o que sonhou. Em quem você acredita?
 
 Inspirado em *No, I'm Not a Human*.
 

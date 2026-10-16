@@ -34,8 +34,8 @@
 #   Uma opção de "escolha" com "condicao" só aparece se ela bate: {"dentro": "Yara"}.
 #                "entrega": "Yara" entrega a pessoa ao Irmão Aleixo (ela sai da aldeia).
 #   "aleixo_leva" o Irmão Aleixo leva uma pessoa da aldeia, sorteada (o jogador não escolhe):
-#                "de_fora" é a frase quando ele leva alguém de fora (%s = o nome) e "morador",
-#                quando leva um morador.
+#                "de_fora" é a frase quando ele leva alguém (%s = o nome) e "ninguem", quando
+#                não há ninguém de fora para levar.
 #
 # "efeitos" soma valores às variáveis do estado.py: {"memoria": 1, "vivos": 1}.
 #
@@ -53,7 +53,7 @@ from dados.conversas import conversa_mbae, conversa_potira, conversa_yara
 # Em cada visita, ele pede alguém (oferta_aleixo):
 #   Entregar alguém de fora: entregues +1, proximidade_vila +1, vivos -1. A pessoa sai da aldeia.
 #   Negar:                   recusas_aleixo +1. Mesmo assim ele leva alguém, sorteado entre
-#                            todos da aldeia (quem é de fora ou um morador): levados +1, vivos -1.
+#                            quem é de fora: levados +1, vivos -1. Sem ninguém, vai embora só.
 #                            A cada visita, ele fica mais irritado (FALA_ALEIXO_NEGADO).
 # Negar nas três visitas é o "nenhuma entrega" (entregues == 0) dos finais.
 #
@@ -104,7 +104,7 @@ def oferta_aleixo(dia):
             {"tipo": "fala", "quem": ALEIXO, "texto": FALA_ALEIXO_NEGADO[dia]},
             {"tipo": "aleixo_leva",
              "de_fora": "Ele leva %s pela trilha. Ninguém consegue impedir.",
-             "morador": "Ele leva um morador da aldeia pela trilha. Ninguém consegue impedir."},
+             "ninguem": "Ele olha as redes, não acha quem levar e fecha o caderno."},
         ]},
     ]}
 
@@ -120,7 +120,7 @@ DIAS = {
             {"tipo": "fala", "quem": "Pajé",
              "texto": "O cacique foi para a mata. Enquanto ele não volta, a entrada é sua."},
             {"tipo": "fala", "quem": "Pajé",
-             "texto": "Éramos quarenta antes da febre. Hoje somos doze. Cada rede vazia tem um nome."},
+             "texto": "Éramos quarenta antes da febre. Hoje somos dois. Cada rede vazia tem um nome."},
             {"tipo": "fala", "quem": "Pajé",
              "texto": "Quem chegar pela trilha, escute. Depois decida se entra ou se segue caminho."},
             {"tipo": "fala", "quem": "Pajé",

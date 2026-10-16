@@ -50,7 +50,8 @@
 #                            tapiri está cheio (dados/aldeia.py, TAPIRI), a opção fica fechada.
 #     "morre": "Yara"        a pessoa morre pela mão do jogador (sai da aldeia)
 #     "oca": True            a pessoa dorme na oca. Se ela está com a febre (dados/febre.py),
-#                            a febre passa para alguns moradores (quantos é sorteado).
+#                            no fim da noite a febre passa para outros de fora que dormem nas
+#                            ocas (quantos e quem é sorteado).
 #     "requer_sinais": 2     a opção só abre com essa quantidade de sinais achados no exame
 #                            de quem está na "escolha" ("quem"); "texto_bloqueado" é o que o
 #                            botão mostra enquanto ela está fechada.
@@ -132,12 +133,11 @@ def escolha_onde_dorme(quem, fala_oca, fala_tapiri):
 
 # --- Noite 3: a fogueira da aldeia e os amaldiçoados (Textos/Amaldiçoados.txt) ---
 # Ninguém novo chegou. Em volta do fogo: o pajé e quem é de fora (Yara e Mbaé, se ficaram).
-# Mbaé é o amaldiçoado que trouxe a febre; os moradores que pegaram dele também passam adiante,
-# mesmo sem mostrar nada (dados/febre.py). Eles não aparecem: o jogador só vê, de manhã, quem
-# adoeceu e quem morreu. O pajé não conta sinal novo: só desconfia do Irmão Aleixo.
+# Mbaé é o amaldiçoado que trouxe a febre; quem pegou dele também passa adiante, mesmo sem
+# mostrar nada (dados/febre.py). O jogador só vê, de manhã, quem adoeceu e quem morreu.
+# O pajé não conta sinal novo: só desconfia do Irmão Aleixo.
 #
-# Na noite com "amaldicoados": True, os moradores que pegaram a febre passam adiante no fim
-# da noite. Perguntas podem ter "amaldicoado": "Mbaé" (Mbaé ainda passa a febre) ou
+# Na noite com "amaldicoados": True, quem pegou a febre passa adiante no fim da noite. Perguntas podem ter "amaldicoado": "Mbaé" (Mbaé ainda passa a febre) ou
 # "sao": "Mbaé" (não passa mais): aparece só a que bate.
 
 # Yara na noite 3: o olho clareou (o sinal da noite 1 a acusou à toa).
@@ -274,8 +274,8 @@ NOITES = {
                 ],
             },
 
-            # Mbaé, entre Yara e o fogo. Está com a febre: se dormir na oca, de 1 a 3 moradores
-            # pegam a febre, acordam doentes no dia 3 e morrem no dia 4 (dados/febre.py).
+            # Mbaé, entre Yara e o fogo. Está com a febre: se dormir na oca, quem é de fora e
+            # dorme nas ocas pode pegar, acordar doente no dia 3 e morrer no dia 4 (dados/febre.py).
             "Mbaé": {
                 "imagem": "mbae_sentado", "posicao": POSICAO_MBAE, "escala": ESCALA_MBAE,
                 "de_fora": True, "uma_vez": True, "obrigatorio": True,
@@ -302,7 +302,7 @@ NOITES = {
         "energia": 1,
         "energia_extra": {"machado": 1},
         "fundo": "fogueira_perto",
-        # Os moradores que pegaram a febre passam adiante no fim da noite (dados/febre.py).
+        # Quem pegou a febre passa adiante no fim da noite (dados/febre.py).
         "amaldicoados": True,
         "dica": "Clique em quem está perto do fogo para conversar.",
         "dormir": "Ir dormir",
@@ -375,7 +375,7 @@ NOITES = {
         "energia": 1,
         "energia_extra": {"machado": 1},
         "fundo": "fogueira_perto",
-        # Os moradores que pegaram a febre continuam passando adiante (dados/febre.py).
+        # Quem pegou a febre continua passando adiante (dados/febre.py).
         "amaldicoados": True,
         "dica": "Clique em quem está perto do fogo para conversar.",
         "dormir": "Ir dormir",

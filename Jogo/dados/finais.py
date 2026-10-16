@@ -18,6 +18,9 @@
 # Cada final tem três telas: a "cena" (o que aconteceu com a aldeia), o "povo" e o "fato"
 # (o povo real que fez um caminho parecido e o que aconteceu com ele) e a "fonte".
 # Os textos das cenas são um rascunho: o grupo pode reescrever.
+#
+# "vivos" conta só quem é de fora e está vivo na aldeia: a aldeia é o jogador, o pajé e quem
+# o jogador deixou entrar (no máximo 5 até o dia 10).
 
 DIA_DO_CALCULO = 10
 
@@ -89,7 +92,7 @@ FINAIS = [
         "id": "honra",
         "nome": "A Honra",
         "povo": "Tupinambá",
-        "condicao": [{"vivos": ">= 9", "memoria": ">= 5", "mortos_por_sua_mao": "== 0",
+        "condicao": [{"vivos": ">= 3", "memoria": ">= 5", "mortos_por_sua_mao": "== 0",
                       "entregues": "== 0"}],
         "antecipado": False,
         "cena": "A aldeia chega ao fim da febre com as histórias de quem entrou guardadas.",
@@ -102,7 +105,7 @@ FINAIS = [
         "id": "tapiri",
         "nome": "O Tapiri",
         "povo": "Korubo",
-        "condicao": [{"tapiri_usos": ">= 3", "vivos": ">= 7", "mortos_por_sua_mao": "== 0",
+        "condicao": [{"tapiri_usos": ">= 3", "vivos": ">= 2", "mortos_por_sua_mao": "== 0",
                       "entregues": "== 0"}],
         "antecipado": False,
         "cena": "Poucas redes em volta da fogueira. Ao longe, o tapiri com uma luz acesa: "
@@ -125,8 +128,9 @@ FINAIS = [
                 "nunca ter convivido com eles. Desapareceram no século XVIII, entre guerras e "
                 "epidemias. É o único final de um povo que não existe mais.",
         "fonte": "Anthony Knivet (c. 1597); frei Vicente do Salvador, História do Brasil (1627).",
-        # A aldeia esvaziou antes do dia 10: o jogo acaba no fim da noite em que isso acontecer.
-        "esvaziou": {"vivos": "<= 7"},
+        # A aldeia esvaziou antes do dia 10 (ninguém de fora sobrou, e pelo menos 2 morreram):
+        # o jogo acaba no fim da noite em que isso acontecer.
+        "esvaziou": {"vivos": "== 0", "mortos": ">= 2"},
     },
 ]
 

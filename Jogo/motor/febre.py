@@ -1,47 +1,65 @@
 # A febre que passa na oca (os números ficam em dados/febre.py).
 #
-# - pegar(estado, quem): um doente dormiu na oca nesta noite. Sorteia quantos moradores pegam
-#   a febre e guarda cada um em estado.febre. O sorteio usa a semente da partida
-#   (estado.semente): muda de uma partida para outra, mas o "Continuar" refaz exatamente o mesmo.
-# - passar_na_oca(estado): no fim de uma noite com amaldiçoados (dados/noites.py): cada
-#   morador que pegou a febre numa noite anterior passa para mais alguns.
+# A aldeia é só o jogador, o pajé e quem o jogador deixou entrar: a febre passa entre quem é
+# de fora e dorme nas ocas (quem está no tapiri fica isolado: não passa nem pega).
+#
+# - pegar(estado, quem): um doente (CONTAGIO) dormiu na oca nesta noite. Sorteia quantos e
+#   quais dos outros de fora pegam a febre e guarda cada um em estado.febre. O sorteio usa a
+#   semente da partida (estado.semente): muda de uma partida para outra, mas o "Continuar"
+#   refaz exatamente o mesmo.
+# - passar_na_oca(estado): no fim de uma noite com amaldiçoados (dados/noites.py): quem pegou
+#   a febre numa noite anterior também passa para mais alguém.
 # - amanhecer(estado): passa para o dia seguinte. Quem pegou a febre acorda doente no 1º dia
-#   e morre no 2º; as frases da manhã ficam em estado.manha, para o Dia mostrar.
+#   e morre no 2º; as frases da manhã (com o nome) ficam em estado.manha, para o Dia mostrar.
 # - amaldicoado(estado, nome): o doente de fora que ainda passa a febre.
 #
-# Cada entrada de estado.febre é um morador (sem nome, ele não aparece no jogo):
-# {"de": "Mbaé", "noite": 2, "visivel": True}. "visivel": False é quem não mostra nada.
+# Cada entrada de estado.febre é uma pessoa de fora:
+# {"nome": "Yara", "de": "Mbaé", "noite": 2, "visivel": True}. "visivel": False é quem não
+# mostra nada.
 
 import random
 
-from dados.febre import CHANCE_DE_MOSTRAR, CONTAGIO, CONTAGIO_MORADOR, DIAS_ATE_MORRER, MANHA
+from dados.febre import CHANCE_DE_MOSTRAR, CONTAGIO, CONTAGIO_PEGOU, DIAS_ATE_MORRER, MANHA
 
 
 def _sorte(estado, quem):
     return random.Random("%s:%s:%d" % (estado.semente, quem, estado.dia))
 
 
-def _contaminar(estado, de, quantos, sorte):
-    for _ in range(quantos):
-        estado.febre.append({"de": de, "noite": estado.dia, "visivel": sorte.random() < CHANCE_DE_MOSTRAR})
+def _na_oca(estado, nome):
+    return nome in estado.dentro and nome not in estado.tapiri
+
+
+def _quem_pode_pegar(estado, quem):
+    """Quem dorme na oca e ainda não pegou: os outros de fora, menos os doentes que trazem a
+    febre (CONTAGIO: eles não morrem dela)."""
+    ja_pegaram = {entrada.get("nome") for entrada in estado.febre}
+    return [nome for nome in estado.dentro
+            if nome != quem and _na_oca(estado, nome) and nome not in ja_pegaram and nome not in CONTAGIO]
+
+
+def _contaminar(estado, de, intervalo, sorte):
+    minimo, maximo = intervalo
+    quantos = sorte.randint(minimo, maximo)
+    candidatos = _quem_pode_pegar(estado, de)
+    for nome in sorte.sample(candidatos, min(quantos, len(candidatos))):
+        estado.febre.append({"nome": nome, "de": de, "noite": estado.dia,
+                             "visivel": sorte.random() < CHANCE_DE_MOSTRAR})
 
 
 def pegar(estado, quem):
-    if quem not in CONTAGIO:
+    if quem not in CONTAGIO or not _na_oca(estado, quem):
         return
-    minimo, maximo = CONTAGIO[quem]
-    sorte = _sorte(estado, quem)
-    _contaminar(estado, quem, sorte.randint(minimo, maximo), sorte)
+    _contaminar(estado, quem, CONTAGIO[quem], _sorte(estado, quem))
 
 
 def passar_na_oca(estado):
-    """Os moradores amaldiçoados (que pegaram a febre numa noite anterior) passam adiante."""
-    minimo, maximo = CONTAGIO_MORADOR
-    for i, entrada in enumerate(list(estado.febre)):
-        if entrada["noite"] >= estado.dia:
+    """Os amaldiçoados (quem pegou a febre numa noite anterior) passam adiante."""
+    for entrada in list(estado.febre):
+        nome = entrada.get("nome")
+        if entrada["noite"] >= estado.dia or not _na_oca(estado, nome):
             continue
-        sorte = _sorte(estado, "morador%d" % i)
-        _contaminar(estado, "morador", sorte.randint(minimo, maximo), sorte)
+        _contaminar(estado, nome, CONTAGIO_PEGOU, _sorte(estado, nome))
 
 
 def amaldicoado(estado, nome):
@@ -49,30 +67,35 @@ def amaldicoado(estado, nome):
     return nome in CONTAGIO and nome in estado.dentro
 
 
-def _frase(chave, quantos):
+def _frase(chave, nomes):
     um, varios = MANHA[chave]
-    return um if quantos == 1 else varios % quantos
+    if len(nomes) == 1:
+        return um % nomes[0]
+    return varios % (", ".join(nomes[:-1]) + " e " + nomes[-1])
 
 
 def amanhecer(estado):
     estado.dia += 1
     estado.manha = []
-    doentes = mortos = mortos_sem_sinal = 0
+    doentes, mortos, mortos_sem_sinal = [], [], []
     for entrada in list(estado.febre):
-        # Save antigo: {"de", "adoecem", "noite"}, vários moradores numa entrada só.
-        quantos = entrada.get("adoecem", 1)
+        nome = entrada.get("nome")
+        # Save antigo (moradores sem nome) ou quem já saiu da aldeia (morto, levado): some.
+        if nome is None or nome not in estado.dentro:
+            estado.febre.remove(entrada)
+            continue
         visivel = entrada.get("visivel", True)
         if estado.dia == entrada["noite"] + 1 and visivel:
-            doentes += quantos
+            doentes.append(nome)
         if estado.dia >= entrada["noite"] + DIAS_ATE_MORRER:
-            if visivel:
-                mortos += quantos
-            else:
-                mortos_sem_sinal += quantos
+            (mortos if visivel else mortos_sem_sinal).append(nome)
             estado.febre.remove(entrada)
-    if mortos or mortos_sem_sinal:
-        estado.vivos -= mortos + mortos_sem_sinal
-        estado.mortos += mortos + mortos_sem_sinal
+            estado.dentro.remove(nome)
+            if nome in estado.tapiri:
+                estado.tapiri.remove(nome)
+                estado.tapiri_desde.pop(nome, None)
+            estado.vivos -= 1
+            estado.mortos += 1
     if mortos:
         estado.manha.append(_frase("mortos", mortos))
     if mortos_sem_sinal:

@@ -91,7 +91,7 @@ def testar_marcacao():
 
 def testar_estado_inicial():
     estado = Estado()
-    esperado = {"dia": 1, "vivos": 12, "mortos": 0, "mortos_por_sua_mao": 0, "entregues": 0,
+    esperado = {"dia": 1, "vivos": 0, "mortos": 0, "mortos_por_sua_mao": 0, "entregues": 0,
                 "proximidade_vila": 0, "rio_acima": 0, "memoria": 0, "recusas_aleixo": 0, "levados": 0,
                 "pistas": 0, "sanidade": 10, "tapiri_usos": 0, "viu_anhanga": 0, "seguiu_paje": 0,
                 "inocentes": 0, "machado": 0, "dentro": [], "tapiri": [], "tapiri_desde": {}, "febre": [], "manha": [],
@@ -104,59 +104,72 @@ def testar_estado_inicial():
 
 
 def testar_febre():
-    """A febre na oca: quantos pegam é sorteado; quem pega morre no 2º dia; o doente não morre;
-    alguns não mostram nada; quem pegou passa adiante (os amaldiçoados); o remédio para Mbaé."""
+    """A febre na oca, entre quem é de fora (não há moradores): quem pega é sorteado; quem pega
+    morre no 2º dia; o doente não morre; alguns não mostram nada; quem pegou passa adiante (os
+    amaldiçoados); quem está no tapiri não pega."""
     from motor import febre
 
     estado = Estado()
     estado.semente = 7
     estado.dia = 2
-    estado.dentro = ["Mbaé"]
-    estado.vivos = 13
+    estado.dentro = ["Yara", "Mbaé", "Potira"]
+    estado.vivos = 3
     febre.pegar(estado, "Mbaé")
-    quantos = len(estado.febre)
-    assert 1 <= quantos <= 3 and all(e["de"] == "Mbaé" and e["noite"] == 2 for e in estado.febre)
+    pegaram = [e["nome"] for e in estado.febre]
+    assert 1 <= len(pegaram) <= 2 and set(pegaram) <= {"Yara", "Potira"}, estado.febre
+    assert all(e["de"] == "Mbaé" and e["noite"] == 2 for e in estado.febre)
     febre.pegar(estado, "Yara")                   # Yara é sã: não passa nada
-    assert len(estado.febre) == quantos
+    assert len(estado.febre) == len(pegaram)
     assert febre.amaldicoado(estado, "Mbaé") and not febre.amaldicoado(estado, "Yara")
 
-    visiveis = sum(1 for e in estado.febre if e["visivel"])
+    visiveis = [e["nome"] for e in estado.febre if e["visivel"]]
     febre.amanhecer(estado)                        # dia 3: acordam com febre (só quem mostra)
-    assert estado.dia == 3 and estado.vivos == 13
+    assert estado.dia == 3 and estado.vivos == 3
     if visiveis:
-        assert len(estado.manha) == 1 and "febre" in estado.manha[0], estado.manha
+        assert len(estado.manha) == 1 and visiveis[0] in estado.manha[0], estado.manha
     else:
         assert estado.manha == [], "quem não mostra nada não aparece de manhã"
     febre.amanhecer(estado)                        # dia 4: morrem (o 2º dia com febre)
-    assert estado.vivos == 13 - quantos and estado.mortos == quantos and estado.febre == []
+    assert estado.vivos == 3 - len(pegaram) and estado.mortos == len(pegaram) and estado.febre == []
     assert all("morreu" in frase or "morreram" in frase for frase in estado.manha)
-    assert estado.dentro == ["Mbaé"], "quem trouxe a febre não morre dela"
+    assert "Mbaé" in estado.dentro and not set(pegaram) & set(estado.dentro), "quem pegou sai da aldeia"
     febre.amanhecer(estado)                        # dia 5: nada de novo
     assert estado.manha == []
 
     # A mesma partida (semente) sorteia sempre igual; partidas diferentes variam.
-    def sorteio(semente):
+    def sorteio(semente, tapiri=()):
         e = Estado()
         e.semente, e.dia = semente, 2
+        e.dentro, e.tapiri = ["Yara", "Mbaé", "Potira"], list(tapiri)
         febre.pegar(e, "Mbaé")
-        return len(e.febre)
-    assert sorteio(7) == quantos
-    assert {sorteio(s) for s in range(200)} == {1, 2, 3}
+        return tuple(sorted(x["nome"] for x in e.febre))
+    assert sorteio(7) == tuple(sorted(pegaram))
+    assert {len(sorteio(s)) for s in range(200)} == {1, 2}
+    # Quem está no tapiri não pega; e Mbaé no tapiri não passa.
+    assert all("Yara" not in sorteio(s, tapiri=["Yara"]) for s in range(50))
+    assert all(sorteio(s, tapiri=["Mbaé"]) == () for s in range(50))
+    # Sem ninguém de fora para pegar, não acontece nada.
+    e = Estado()
+    e.dia, e.dentro = 2, ["Mbaé"]
+    febre.pegar(e, "Mbaé")
+    assert e.febre == []
 
     # Quem não mostra nada morre do mesmo jeito, e a manhã diz que ele não tinha nada.
     e = Estado()
-    e.dia, e.vivos = 3, 14
-    e.febre = [{"de": "Mbaé", "noite": 2, "visivel": False}, {"de": "Mbaé", "noite": 2, "visivel": True}]
+    e.dia, e.vivos, e.dentro = 3, 3, ["Yara", "Mbaé", "Potira"]
+    e.febre = [{"nome": "Yara", "de": "Mbaé", "noite": 2, "visivel": False},
+               {"nome": "Potira", "de": "Mbaé", "noite": 2, "visivel": True}]
     febre.amanhecer(e)
-    assert e.manha == ["Um morador morreu de febre esta noite.",
-                       "Um morador que não tinha nada morreu de febre esta noite."], e.manha
-    assert e.vivos == 12
+    assert e.manha == ["Potira morreu de febre esta noite.",
+                       "Yara não tinha nada, e morreu de febre esta noite."], e.manha
+    assert e.vivos == 1 and e.dentro == ["Mbaé"]
 
-    # O morador amaldiçoado passa adiante (0 ou 1 por noite); quem pegou nesta noite, ainda não.
+    # Quem pegou passa adiante (0 ou 1 por noite); quem pegou nesta noite, ainda não.
     def passa(semente, noite=2):
         e = Estado()
         e.semente, e.dia = semente, 3
-        e.febre = [{"de": "Mbaé", "noite": noite, "visivel": True}]
+        e.dentro = ["Yara", "Potira"]
+        e.febre = [{"nome": "Yara", "de": "Mbaé", "noite": noite, "visivel": True}]
         febre.passar_na_oca(e)
         return len(e.febre) - 1
     assert {passa(s) for s in range(50)} == {0, 1}
@@ -168,7 +181,7 @@ def testar_febre():
     assert febre.amaldicoado(e, "Mbaé")
     e.dentro = []
     assert not febre.amaldicoado(e, "Mbaé")
-    print("ok febre sorteada (1 a 3 com Mbaé), amaldiçoados com e sem sinal")
+    print("ok febre entre quem é de fora (sorteada), amaldiçoados com e sem sinal, tapiri isola")
 
     # A oferta do Aleixo: entregar só quem está dentro; negar sempre aparece, e ele fica mais
     # irritado a cada visita.
@@ -300,7 +313,7 @@ def testar_dia1(jogo):
     clicar_opcao(jogo, "Aceitar o machado")
     passar_falas(jogo, seguir_seta=False)
     estado = jogo.estado
-    assert estado.vivos == 13 and estado.dentro == ["Yara"], (estado.vivos, estado.dentro)
+    assert estado.vivos == 1 and estado.dentro == ["Yara"], (estado.vivos, estado.dentro)
     assert estado.proximidade_vila == 1 and estado.machado == 1, (estado.proximidade_vila, estado.machado)
     testar_aldeia_com_yara(jogo)
     passar_falas(jogo)
@@ -327,7 +340,7 @@ def testar_dia1(jogo):
     esperar_transicao(jogo)
     assert nome_cena(jogo) == "Aldeia", nome_cena(jogo)
     estado = jogo.estado
-    assert estado.vivos == 12 and estado.dentro == [] and estado.memoria == 0, estado.para_dicionario()
+    assert estado.vivos == 0 and estado.dentro == [] and estado.memoria == 0, estado.para_dicionario()
     assert len(estado.tabua) == 1
     print("ok Dia 1 sem deixar Yara entrar (noite sem ninguém de fora)")
     testar_aldeia_e_oca(jogo, yara_dentro=False)
@@ -374,7 +387,7 @@ def testar_dia1(jogo):
     esperar_transicao(jogo)
     estado = jogo.estado
     assert nome_cena(jogo) == "Aldeia", nome_cena(jogo)
-    assert estado.dentro == [] and estado.mortos_nomes == ["Yara"] and estado.vivos == 12
+    assert estado.dentro == [] and estado.mortos_nomes == ["Yara"] and estado.vivos == 0
     assert estado.mortos_por_sua_mao == 1 and estado.sanidade == 7 and estado.final is None
     print("ok Noite 1 matando Yara (o jogo segue)")
 
@@ -440,20 +453,20 @@ def testar_finais():
 
     # O dia 10: cada caminho típico cai no seu final.
     casos = [
-        ({"entregues": 2, "vivos": 15}, "troca"),
+        ({"entregues": 2, "vivos": 5}, "troca"),
         ({"proximidade_vila": 3}, "troca"),
         ({"mortos_por_sua_mao": 3}, "loucura"),
         ({"entregues": 2, "mortos_por_sua_mao": 3}, "troca"),          # a fila: Troca vem antes
         ({"seguiu_paje": 3, "inocentes": 1, "tapiri_usos": 3}, "batismo"),
-        ({"seguiu_paje": 3, "inocentes": 0, "tapiri_usos": 3, "vivos": 14}, "tapiri"),
+        ({"seguiu_paje": 3, "inocentes": 0, "tapiri_usos": 3, "vivos": 4}, "tapiri"),
         ({"rio_acima": 4}, "rio_acima"),
         ({"rio_acima": 4, "entregues": 1}, "vazio"),                     # entregou alguém: não é Rio Acima
-        ({"viu_anhanga": 3, "memoria": 5, "vivos": 15}, "anhanga"),     # Anhangá antes da Honra
+        ({"viu_anhanga": 3, "memoria": 5, "vivos": 5}, "anhanga"),     # Anhangá antes da Honra
         ({"viu_anhanga": 3, "mortos_por_sua_mao": 1}, "vazio"),
-        ({"memoria": 5, "vivos": 9}, "honra"),
-        ({"memoria": 5, "vivos": 8}, "vazio"),
-        ({"memoria": 4, "vivos": 15, "tapiri_usos": 3}, "tapiri"),
-        ({"tapiri_usos": 3, "vivos": 6}, "vazio"),
+        ({"memoria": 5, "vivos": 3}, "honra"),
+        ({"memoria": 5, "vivos": 2}, "vazio"),
+        ({"memoria": 4, "vivos": 5, "tapiri_usos": 3}, "tapiri"),
+        ({"tapiri_usos": 3, "vivos": 1}, "vazio"),
         ({}, "vazio"),
     ]
     for valores, esperado in casos:
@@ -468,9 +481,11 @@ def testar_finais():
         ({"dia": 3, "proximidade_vila": 3}, "troca"),
         ({"dia": 6, "entregues": 2}, "troca"),
         ({"dia": 9, "rio_acima": 4}, "rio_acima"),
-        ({"dia": 9, "vivos": 7}, "vazio"),
-        ({"dia": 9, "vivos": 8}, None),
-        ({"dia": 5, "memoria": 5, "vivos": 15}, None),                  # A Honra só no dia 10
+        ({"dia": 9, "vivos": 0, "mortos": 2}, "vazio"),                 # ninguém de fora sobrou
+        ({"dia": 9, "vivos": 0, "mortos": 1}, None),
+        ({"dia": 2, "vivos": 0}, None),                                 # ninguém entrou ainda
+        ({"dia": 9, "vivos": 1, "mortos": 4}, None),
+        ({"dia": 5, "memoria": 5, "vivos": 5}, None),                   # A Honra só no dia 10
         ({"dia": 7, "tapiri_usos": 3}, None),                           # O Tapiri só no dia 10
     ]
     for valores, esperado in antes:
@@ -688,7 +703,7 @@ def comecar_noite_1_na_aldeia(jogo, **valores):
     jogo.nova_partida()
     estado = jogo.estado
     estado.dentro = ["Yara"]
-    estado.vivos = 13
+    estado.vivos = 1
     estado.tabua = ["Olho vermelho, com o branco raiado."]
     for nome, valor in valores.items():
         setattr(estado, nome, valor)
@@ -746,7 +761,7 @@ def testar_dia2_e_noite2(jogo):
     clicar_opcao(jogo, "Decidir")
     clicar_opcao(jogo, "Deixar entrar")
     passar_falas(jogo, seguir_seta=False)
-    assert estado.dentro == ["Yara", "Mbaé"] and estado.vivos == 14
+    assert estado.dentro == ["Yara", "Mbaé"] and estado.vivos == 2
 
     # Mbaé espera na oca Yebá Bëló: a história de antes conta como história ouvida.
     oca = entrar_na_oca(jogo, "oca2")
@@ -810,16 +825,17 @@ def testar_dia2_e_noite2(jogo):
     capturar(jogo, "22-noite2-exame-mbae")
     clicar_opcao(jogo, "Terminar o exame")
 
-    # Deixar Mbaé na oca: de 1 a 3 moradores pegam a febre (morrem no dia 4).
+    # Deixar Mbaé na oca: no fim da noite, a febre passa para quem é de fora e dorme nas ocas.
+    # Só Yara: ela pega (Mbaé passa para 1 a 3, e só há ela), e morre no dia 4.
     assert textos_dos_botoes(jogo) == ["Deixar na oca", "Levar ao tapiri", "Matar"]
     clicar_opcao(jogo, "Deixar na oca")
     passar_falas(jogo)
-    assert 1 <= len(estado.febre) <= 3, estado.febre
-    assert all(e["de"] == "Mbaé" and e["noite"] == 2 for e in estado.febre), estado.febre
+    assert estado.febre == [], "a febre só passa no fim da noite"
     assert dia.botao_dormir.visivel
     clicar_botao(jogo, dia.botao_dormir)
     passar_falas(jogo)
     esperar_transicao(jogo)
+    assert [(e["nome"], e["de"], e["noite"]) for e in estado.febre] == [("Yara", "Mbaé", 2)], estado.febre
 
     # A aldeia de noite 2: as duas ocas abertas, e a seta "Dormir" leva ao Dia 3.
     aldeia = jogo.cenas.atual
@@ -861,18 +877,19 @@ def testar_dia2_e_noite2(jogo):
     esperar_transicao(jogo)
 
     # De manhã: primeiro a febre, depois o corpo de quem o jogador matou, com o nome.
-    comecar_noite_1_na_aldeia(jogo, dentro=[], vivos=12, mortos=1, mortos_por_sua_mao=1,
-                              mortos_nomes=["Yara"], febre=[{"de": "X", "adoecem": 2, "noite": 1}])
+    comecar_noite_1_na_aldeia(jogo, dentro=["Potira"], vivos=1, mortos=1, mortos_por_sua_mao=1,
+                              mortos_nomes=["Yara"],
+                              febre=[{"nome": "Potira", "de": "Mbaé", "noite": 1, "visivel": True}])
     jogo.amanhecer()
     esperar_transicao(jogo)
     dia = jogo.cenas.atual
-    assert dia.modo == "fala" and dia.caixa.texto == "2 moradores acordaram com febre.", dia.caixa.texto
+    assert dia.modo == "fala" and dia.caixa.texto == "Potira acordou com febre.", dia.caixa.texto
     rodar(jogo, 5)
     capturar(jogo, "25-dia2-manha-febre")
     dia.caixa.completar()
     clicar(jogo, (800, 300))
     assert dia.caixa.texto.startswith("O corpo de Yara"), dia.caixa.texto
-    assert jogo.estado.vivos == 12 and len(jogo.estado.febre) == 1   # morrem no dia 3
+    assert jogo.estado.vivos == 1 and len(jogo.estado.febre) == 1   # morre no dia 3
     print("ok manhã do Dia 2: a febre e o corpo com o nome")
     jogo.ir_para("menu")
     esperar_transicao(jogo)
@@ -883,13 +900,14 @@ def testar_dia3_e_noite3(jogo):
     jogo.nova_partida()
     estado = jogo.estado
     estado.dia = 2
-    estado.dentro = ["Yara", "Mbaé"]
-    estado.vivos = 14
-    estado.semente = next(n for n in range(1000) if random.Random("%s:aleixo:3" % n).randrange(14) == 0)
+    estado.dentro = ["Yara", "Mbaé", "Potira"]
+    estado.vivos = 3
+    # A semente faz o sorteio do Aleixo cair em Mbaé.
+    estado.semente = next(n for n in range(1000)
+                          if random.Random("%s:aleixo:3" % n).choice(estado.dentro) == "Mbaé")
     estado.tabua = ["Olho vermelho, com o branco raiado.", "Boca com feridas."]
-    # Mbaé dormiu na oca na noite 2: dois moradores pegaram; um mostra, o outro não mostra nada.
-    estado.febre = [{"de": "Mbaé", "noite": 2, "visivel": True},
-                    {"de": "Mbaé", "noite": 2, "visivel": False}]
+    # Mbaé dormiu na oca na noite 2 e Yara pegou dele.
+    estado.febre = [{"nome": "Yara", "de": "Mbaé", "noite": 2, "visivel": True}]
     jogo.ir_para("aldeia")
     esperar_transicao(jogo)
     aldeia = jogo.cenas.atual
@@ -898,10 +916,10 @@ def testar_dia3_e_noite3(jogo):
     esperar_transicao(jogo)
     esperar_transicao(jogo)
 
-    # A manhã: só quem mostra a febre aparece; e Mbaé tossiu a noite toda.
+    # A manhã: Yara acordou com febre (com o nome); e Mbaé tossiu a noite toda.
     dia = jogo.cenas.atual
     assert estado.dia == 3 and dia.titulo == "Dia 3"
-    assert dia.modo == "fala" and dia.caixa.texto == "Um morador acordou com febre.", dia.caixa.texto
+    assert dia.modo == "fala" and dia.caixa.texto == "Yara acordou com febre.", dia.caixa.texto
     dia.caixa.completar()
     clicar(jogo, (800, 300))
     assert dia.caixa.texto.startswith("Mbaé tossiu"), dia.caixa.texto
@@ -921,14 +939,15 @@ def testar_dia3_e_noite3(jogo):
     dia.caixa.completar()
     assert dia.caixa.texto == "Ninguém? Então eu escolho.", dia.caixa.texto
     passar_falas(jogo)
-    # Negou, e ele leva alguém mesmo assim. A semente foi escolhida para o sorteio cair em
-    # Yara (a 1ª de dentro). Negar não conta como entrega.
-    assert estado.dentro == ["Mbaé"] and estado.entregues_nomes == ["Yara"], (estado.dentro, estado.entregues_nomes)
-    assert estado.vivos == 13 and estado.levados == 1 and estado.entregues == 0 and estado.recusas_aleixo == 1
+    # Negou, e ele leva alguém de fora mesmo assim (o sorteio caiu em Mbaé). Negar não conta
+    # como entrega.
+    assert estado.dentro == ["Yara", "Potira"] and estado.entregues_nomes == ["Mbaé"], (
+        estado.dentro, estado.entregues_nomes)
+    assert estado.vivos == 2 and estado.levados == 1 and estado.entregues == 0 and estado.recusas_aleixo == 1
     assert estado.proximidade_vila == 0 and estado.pistas == 0
-    print("ok Dia 3: o Irmão Aleixo (negar, e ele leva alguém sorteado mesmo assim)")
+    print("ok Dia 3: o Irmão Aleixo (negar, e ele leva alguém de fora sorteado mesmo assim)")
 
-    # O sinal do pajé e a fogueira: sem Yara (foi com Aleixo); os moradores não aparecem.
+    # O sinal do pajé e a fogueira: sem Mbaé (foi com Aleixo).
     passar_falas(jogo)
     assert len(estado.tabua) == 2, "no Dia 3 o pajé não conta sinal novo"
     # 1 olhar; quem aceitou o machado de Yara tem 2.
@@ -936,8 +955,8 @@ def testar_dia3_e_noite3(jogo):
     estado.machado = 1
     dia._comecar_noite()
     assert dia.energia == dia.energia_max == 2
-    assert [p.nome for p in dia.na_fogueira] == ["Pajé", "Mbaé"]
-    assert not dia.botao_dormir.visivel
+    assert [p.nome for p in dia.na_fogueira] == ["Pajé", "Yara"]
+    assert not dia.botao_dormir.visivel, "ainda há energia e alguém para examinar"
     rodar(jogo, 40)
     capturar(jogo, "27-noite3-fogueira")
 
@@ -951,28 +970,27 @@ def testar_dia3_e_noite3(jogo):
     passar_falas(jogo)
     clicar_opcao(jogo, "Voltar para a fogueira")
 
-    # Mbaé: os 2 olhares (com o machado). Sem remédio: o Aleixo não traz cura.
-    clicar_pessoa(jogo, "Mbaé")
+    # Yara: os 2 olhares (com o machado). Ela pegou a febre, mas o rosto ainda não mostra.
+    clicar_pessoa(jogo, "Yara")
     passar_falas(jogo)
     clicar_opcao(jogo, "Examinar o rosto")
     assert textos_dos_botoes(jogo) == ["Olhos", "Boca", "Terminar o exame"], textos_dos_botoes(jogo)
     examinar(jogo, ["Olhos", "Boca"])
-    assert dia.sinais["Mbaé"] == 2 and dia.energia == 0
+    assert dia.energia == 0
     clicar_opcao(jogo, "Terminar o exame")
     assert textos_dos_botoes(jogo) == ["Deixar na oca", "Levar ao tapiri", "Matar"], textos_dos_botoes(jogo)
     rodar(jogo, 5)
-    capturar(jogo, "28-noite3-mbae-escolha")
-    clicar_opcao(jogo, "Levar ao tapiri")
+    capturar(jogo, "28-noite3-yara-escolha")
+    clicar_opcao(jogo, "Deixar na oca")
     passar_falas(jogo)
-    assert estado.tapiri == ["Mbaé"]
-    assert all(e["noite"] == 2 for e in estado.febre), "no tapiri, Mbaé não passa a febre"
+    assert dia.botao_dormir.visivel
 
-    # Ir dormir: os dois moradores que pegaram na noite 2 passam adiante (0 ou 1 cada).
+    # Ir dormir: Yara, que pegou na noite 2, passa adiante (0 ou 1): só pode ser para Potira.
     clicar_botao(jogo, dia.botao_dormir)
     passar_falas(jogo)
     esperar_transicao(jogo)
     novos = [e for e in estado.febre if e["noite"] == 3]
-    assert len(novos) <= 2 and all(e["de"] == "morador" for e in novos), novos
+    assert len(novos) <= 1 and all(e["nome"] == "Potira" and e["de"] == "Yara" for e in novos), novos
 
     # A aldeia de noite 3: as três ocas abertas, e a seta "Dormir" leva ao Dia 4.
     aldeia = jogo.cenas.atual
@@ -980,7 +998,7 @@ def testar_dia3_e_noite3(jogo):
     entrar_na_oca(jogo, "oca3")
     rodar(jogo, 5)
     capturar(jogo, "29-noite3-oca3")
-    print("ok Noite 3: amaldiçoados (sem moradores na fogueira) e a febre que passa adiante")
+    print("ok Noite 3: amaldiçoados (quem pegou passa adiante, entre quem é de fora)")
     jogo.ir_para("menu")
     esperar_transicao(jogo)
 
@@ -991,7 +1009,7 @@ def testar_dia4_e_noite4(jogo):
     estado = jogo.estado
     estado.dia = 3
     estado.dentro = ["Mbaé"]
-    estado.vivos = 13
+    estado.vivos = 1
     estado.tabua = ["Olho vermelho, com o branco raiado.", "Boca com feridas."]
     estado.tabua_noites = [1, 2]
     jogo.ir_para("aldeia")
@@ -1015,7 +1033,7 @@ def testar_dia4_e_noite4(jogo):
     clicar_opcao(jogo, "Decidir")
     clicar_opcao(jogo, "Deixar entrar")
     passar_falas(jogo, seguir_seta=False)
-    assert estado.dentro == ["Mbaé", "Potira"] and estado.vivos == 14
+    assert estado.dentro == ["Mbaé", "Potira"] and estado.vivos == 2
 
     # Na oca Wanadi, a conversa inteira (mais longa que a da entrada).
     oca = entrar_na_oca(jogo, "oca3")

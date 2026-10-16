@@ -295,9 +295,12 @@ class Dia(Cena):
         self._registrar(["dormir"])
         self.na_fogueira = []
         self.botao_dormir = None
-        # Noite com amaldiçoados: quem pegou a febre e dorme na oca passa adiante (motor/febre.py).
+        # A febre passa no fim da noite, entre quem dorme nas ocas (motor/febre.py): primeiro
+        # quem pegou numa noite anterior (nas noites com amaldiçoados), depois os doentes de fora.
         if self.noite.get("amaldicoados"):
             febre.passar_na_oca(self.estado)
+        for nome in list(self.estado.dentro):
+            febre.pegar(self.estado, nome)
         self.fila[0:0] = self.noite.get("fim", [])
         self._proximo()
 
@@ -460,9 +463,6 @@ class Dia(Cena):
                 self.estado.tapiri_usos += 1
             self.estado.tapiri.append(nome)
             self.estado.tapiri_desde[nome] = self.estado.dia
-        if opcao.get("oca"):
-            # Se quem dorme na oca está com a febre, ela passa (o quanto é sorteado: motor/febre.py).
-            febre.pegar(self.estado, self.passo_atual.get("quem"))
         if opcao.get("entrega"):
             # Entregue ao Aleixo: sai da aldeia (da oca ou do tapiri) e vai para a vila.
             nome = opcao["entrega"]
@@ -477,30 +477,20 @@ class Dia(Cena):
         self._proximo()
 
     def _aleixo_leva(self, passo):
-        """O Irmão Aleixo leva uma pessoa, sorteada entre todos da aldeia: quem é de fora (na oca
-        ou no tapiri) ou um morador. O jogador não escolhe. O sorteio usa a semente da partida,
+        """O Irmão Aleixo leva uma pessoa de fora (na oca ou no tapiri), sorteada: o jogador não
+        escolhe. Sem ninguém de fora, ele não leva ninguém. O sorteio usa a semente da partida,
         e o "Continuar" refaz o mesmo."""
         estado = self.estado
-        sorte = random.Random("%s:aleixo:%d" % (estado.semente, estado.dia))
-        de_fora = list(estado.dentro)
-        moradores = max(estado.vivos - len(de_fora), 0)
-        if not de_fora and not moradores:
-            self._proximo()
+        if not estado.dentro:
+            self._mostrar_fala("", passo["ninguem"])
             return
-        indice = sorte.randrange(len(de_fora) + moradores)
+        sorte = random.Random("%s:aleixo:%d" % (estado.semente, estado.dia))
+        nome = sorte.choice(estado.dentro)
         estado.vivos -= 1
         estado.levados += 1
-        if indice < len(de_fora):
-            nome = de_fora[indice]
-            self._sair_da_aldeia(nome)
-            estado.entregues_nomes.append(nome)
-            texto = passo["de_fora"] % nome
-        else:
-            # Se o morador levado tinha pegado a febre, ela vai embora com ele.
-            if estado.febre and sorte.random() < len(estado.febre) / moradores:
-                estado.febre.pop(sorte.randrange(len(estado.febre)))
-            texto = passo["morador"]
-        self._mostrar_fala("", texto)
+        self._sair_da_aldeia(nome)
+        estado.entregues_nomes.append(nome)
+        self._mostrar_fala("", passo["de_fora"] % nome)
 
     def _sair_da_aldeia(self, nome):
         if nome in self.estado.dentro:

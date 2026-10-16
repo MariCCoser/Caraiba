@@ -95,7 +95,7 @@ INTRODUCAO = {
         },
         {
             "texto": "A sua aldeia, entre a mata e o rio, tinha cerca de quarenta pessoas. "
-                     "[Restam doze].",
+                     "[Restam você e o pajé].",
             "fundo": "aldeia",
             "filtro": "dia",
         },
