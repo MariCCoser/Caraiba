@@ -60,10 +60,12 @@ OCAS = {
     },
     # O tapiri, o abrigo isolado: ao lado da Yebá Bëló, no caminho que entra mais fundo na
     # mata. Lá dentro fica quem o jogador levou ao tapiri (ONDE_DORME_TAPIRI), não quem dorme
-    # na oca.
+    # na oca. O tapiri não aparece no cenário: no lugar dele há uma seta /\ apontando para
+    # dentro da mata ("seta": True), sempre à vista.
     "tapiri": {
         "nome": "Tapiri",
-        "contorno": [(720, 400), (790, 368), (836, 395), (842, 455), (792, 500), (722, 492)],
+        "contorno": [(780, 400), (816, 446), (802, 458), (780, 430), (758, 458), (744, 446)],
+        "seta": True,
         "dentro": "tapiri",
         "tapiri": True,
         "painel": "esquerda",   # a esteira fica à direita: o texto vai para a esquerda

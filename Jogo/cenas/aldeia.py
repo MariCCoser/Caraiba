@@ -140,7 +140,17 @@ class Aldeia(Cena):
         ui.painel_arredondado(tela, caixa, config.PRETO + (200,), raio=12, contorno=cor_borda)
         tela.blit(imagem, rect)
 
+    def _desenhar_setas_das_ocas(self, tela):
+        """Lugar sem desenho no cenário (o tapiri): uma seta apontando para cima, sempre à vista, de leve."""
+        luz = pygame.Surface(config.TAMANHO_LOGICO, pygame.SRCALPHA)
+        for nome, oca in OCAS.items():
+            if oca.get("seta") and nome in self.abertas and nome != self.sobre:
+                pygame.draw.polygon(luz, config.TABATINGA + (70,), oca["contorno"])
+                pygame.draw.polygon(luz, config.TABATINGA + (150,), oca["contorno"], 2)
+        tela.blit(luz, (0, 0))
+
     def desenhar_interface(self, tela):
+        self._desenhar_setas_das_ocas(tela)
         titulo = ALDEIA["titulo_dia"] if self.de_dia else ALDEIA["titulo"]
         ui.texto_simples(tela, titulo % self.noite, (40, 60), config.TAMANHO_PEQUENO,
                          nome_fonte="mono", cor=config.BARRO, ancora="esquerda")

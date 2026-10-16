@@ -642,8 +642,15 @@ def testar_noite1_com_yara(jogo):
 def centro_da_oca(nome):
     from dados.aldeia import OCAS
     pontos = OCAS[nome]["contorno"]
-    # Um ponto bem dentro do contorno: a média dos pontos.
-    return (sum(x for x, _ in pontos) // len(pontos), sum(y for _, y in pontos) // len(pontos))
+    # Um ponto bem dentro do contorno: a média dos pontos. A seta do tapiri (/\) é oca no
+    # meio: aí o ponto sobe até cair dentro dela.
+    forma = pygame.Surface(config.TAMANHO_LOGICO, pygame.SRCALPHA)
+    pygame.draw.polygon(forma, (255, 255, 255, 255), pontos)
+    mascara = pygame.mask.from_surface(forma)
+    x, y = (sum(x for x, _ in pontos) // len(pontos), sum(y for _, y in pontos) // len(pontos))
+    while not mascara.get_at((x, y)):
+        y -= 1
+    return (x, y - 4) if mascara.get_at((x, y - 4)) else (x, y)
 
 
 def testar_aldeia_e_oca(jogo, yara_dentro):
