@@ -35,8 +35,8 @@ TECLAS_AVANCAR = (pygame.K_SPACE, pygame.K_RETURN, pygame.K_KP_ENTER)
 
 # Onde fica cada coisa na tela 1600x900
 CENTRO_VISITANTE_X = 500       # a pessoa fica à esquerda
-# Quem o Irmão Aleixo leva fica atrás dele, um pouco à direita e menor (mais longe).
-CENTRO_ACOMPANHANTE_X = 720
+# Quem o Irmão Aleixo leva fica atrás dele, à esquerda (para quem olha) e menor (mais longe).
+CENTRO_ACOMPANHANTE_X = 270
 ESCALA_ACOMPANHANTE = 0.82
 CENTRO_PAINEL_COM_VISITANTE = 1180
 CENTRO_PAINEL_SOZINHO = 800    # sem ninguém na entrada, a fala fica no meio
