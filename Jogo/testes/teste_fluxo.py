@@ -225,7 +225,7 @@ def testar_aldeia_de_dia(jogo):
     jogo.nova_partida()
     jogo.ir_para("dia")
     aldeia = ate_a_aldeia_de_dia(jogo)
-    assert aldeia.de_dia and aldeia.abertas == ["oca1"]
+    assert aldeia.de_dia and aldeia.abertas == ["oca1", "tapiri"]
     assert jogo.cenas.atual.filtro == "dia"
     rodar(jogo, 20)
     capturar(jogo, "07b-dia1-aldeia")
@@ -357,6 +357,17 @@ def testar_dia1(jogo):
     assert estado.tapiri_usos == 0, "Yara é sã: levar ao tapiri não conta para o final O Tapiri"
     print("ok Noite 1 levando Yara ao tapiri")
     testar_aldeia_e_oca(jogo, yara_dentro=False)
+
+    # O tapiri, ao lado da Yebá Bëló: Yara está lá dentro.
+    oca = entrar_na_oca(jogo, "tapiri")
+    assert oca.no_tapiri and [quem for quem, _ in oca.pessoas] == ["Yara"], oca.pessoas
+    assert oca.botao_sair.texto == "Sair do tapiri", oca.botao_sair.texto
+    rodar(jogo, 5)
+    capturar(jogo, "11c-noite1-tapiri-yara")
+    clicar_botao(jogo, oca.botao_sair)
+    esperar_transicao(jogo)
+    assert nome_cena(jogo) == "Aldeia"
+    print("ok tapiri: Yara dorme lá, longe das ocas")
 
     # 4ª vez: mata Yara. Uma morte só: o jogo segue.
     jogar_ate_matar_yara(jogo)
@@ -636,9 +647,9 @@ def centro_da_oca(nome):
 
 
 def testar_aldeia_e_oca(jogo, yara_dentro):
-    """Na noite 1 só a oca 1 abre; Yara está nela se o jogador a deixou entrar."""
+    """Na noite 1 só a oca 1 (e o tapiri) abre; Yara está nela se o jogador a deixou entrar."""
     aldeia = jogo.cenas.atual
-    assert aldeia.abertas == ["oca1"], aldeia.abertas
+    assert aldeia.abertas == ["oca1", "tapiri"], aldeia.abertas
 
     # Mouse em cima da oca 3 (fechada): acende, mas clicar não entra.
     clicar(jogo, centro_da_oca("oca3"))
@@ -805,7 +816,7 @@ def testar_dia2_e_noite2(jogo):
 
     # A aldeia de noite 2: as duas ocas abertas, e a seta "Dormir" leva ao Dia 3.
     aldeia = jogo.cenas.atual
-    assert nome_cena(jogo) == "Aldeia" and aldeia.abertas == ["oca1", "oca2"] and aldeia.tem_seta
+    assert nome_cena(jogo) == "Aldeia" and aldeia.abertas == ["oca1", "oca2", "tapiri"] and aldeia.tem_seta
     oca = entrar_na_oca(jogo, "oca2")
     assert oca.pessoas == [("Mbaé", "mbae_sentado")]
     rodar(jogo, 5)
@@ -958,7 +969,7 @@ def testar_dia3_e_noite3(jogo):
 
     # A aldeia de noite 3: as três ocas abertas; ainda não há Dia 4, então não há seta.
     aldeia = jogo.cenas.atual
-    assert nome_cena(jogo) == "Aldeia" and aldeia.abertas == ["oca1", "oca2", "oca3"] and not aldeia.tem_seta
+    assert nome_cena(jogo) == "Aldeia" and aldeia.abertas == ["oca1", "oca2", "oca3", "tapiri"] and not aldeia.tem_seta
     entrar_na_oca(jogo, "oca3")
     rodar(jogo, 5)
     capturar(jogo, "29-noite3-oca3")

@@ -38,6 +38,8 @@ CENARIOS = [
     # A oca 3 (Wanadi) abre no dia 3: uma imagem de dia e outra de noite.
     ("Ocas/Wanadi_dia_3.png", "cenarios/cenario-oca3-dia.jpg"),
     ("Ocas/Wanadi_noite_3.png", "cenarios/cenario-oca3-noite.jpg"),
+    # O tapiri por dentro: uma imagem só, para o dia e a noite.
+    ("Ocas/Tabiri.png", "cenarios/cenario-tapiri.jpg"),
 ]
 
 # CORTE PADRÃO DAS PESSOAS: do topo da cabeça até o meio das coxas, sempre com esta

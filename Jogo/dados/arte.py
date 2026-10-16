@@ -14,6 +14,7 @@ CENARIOS = {
     "oca2_noite": "cenarios/cenario-oca2-noite.jpg",  # e de noite
     "oca3_dia": "cenarios/cenario-oca3-dia.jpg",   # por dentro da oca 3 (Wanadi), de dia
     "oca3_noite": "cenarios/cenario-oca3-noite.jpg",  # e de noite
+    "tapiri": "cenarios/cenario-tapiri.jpg",       # por dentro do tapiri, dia e noite
 }
 
 # Personagens gerados por ferramentas/converter_arte.py: PNG com fundo transparente,

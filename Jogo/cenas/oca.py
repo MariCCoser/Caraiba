@@ -3,7 +3,8 @@
 # para o jogador olhar a oca.
 #
 # A oca é a de jogo.oca_atual (a aldeia escolhe antes de entrar). Quem dorme em cada oca:
-# dados/aldeia.py, ONDE_DORME. Quem o jogador levou ao tapiri, na fogueira, não dorme na oca.
+# dados/aldeia.py, ONDE_DORME. Quem o jogador levou ao tapiri, na fogueira, não dorme na oca:
+# fica dentro do tapiri (o "tapiri" de OCAS, com os lugares de ONDE_DORME_TAPIRI).
 #
 # De dia, quem acabou de entrar na aldeia espera dentro da oca (as "pessoas" com "oca" no
 # passo "aldeia" de dados/dias.py): clicar nela abre a conversa e, no fim, volta para a oca.
@@ -11,7 +12,7 @@
 import pygame
 
 import config
-from dados.aldeia import OCA, OCAS, ONDE_DORME
+from dados.aldeia import OCA, OCAS, ONDE_DORME, ONDE_DORME_TAPIRI
 from dados.textos import DIA
 from motor import efeitos, ui
 from motor.cena import Cena, desenhar_cenario
@@ -40,8 +41,16 @@ class Oca(Cena):
         self.centro_painel = CENTRO_PAINEL_ESQUERDA if self.oca.get("painel") == "esquerda" else CENTRO_PAINEL
 
         # Quem de fora dorme nesta oca (na ordem em que entrou na aldeia), menos quem está no tapiri.
-        self.pessoas = [(quem, ONDE_DORME[quem]["imagem"]) for quem in estado.dentro
-                        if ONDE_DORME.get(quem, {}).get("oca") == self.nome and quem not in estado.tapiri]
+        # No tapiri, ao contrário: só quem o jogador levou para lá.
+        self.no_tapiri = bool(self.oca.get("tapiri"))
+        if self.no_tapiri:
+            self.lugares = ONDE_DORME_TAPIRI
+            self.pessoas = [(quem, ONDE_DORME_TAPIRI[quem]["imagem"]) for quem in estado.tapiri
+                            if quem in ONDE_DORME_TAPIRI]
+        else:
+            self.lugares = ONDE_DORME
+            self.pessoas = [(quem, ONDE_DORME[quem]["imagem"]) for quem in estado.dentro
+                            if ONDE_DORME.get(quem, {}).get("oca") == self.nome and quem not in estado.tapiri]
 
         # De dia: quem está esperando aqui dentro, para conversar.
         self.na_oca = []
@@ -60,13 +69,15 @@ class Oca(Cena):
             if nomes:
                 texto = OCA["aqui_dia"] % nomes
             elif self.pessoas:
-                texto = OCA["dorme_dia"] % " e ".join(quem for quem, _ in self.pessoas)
+                chave = "dormem_dia" if len(self.pessoas) > 1 else "dorme_dia"
+                texto = OCA[chave] % " e ".join(quem for quem, _ in self.pessoas)
             else:
-                texto = OCA["vazia_dia"]
+                texto = OCA["vazio_tapiri"] if self.no_tapiri else OCA["vazia_dia"]
         elif self.pessoas:
-            texto = OCA["dorme"] % " e ".join(quem for quem, _ in self.pessoas)
+            chave = "dormem" if len(self.pessoas) > 1 else "dorme"
+            texto = OCA[chave] % " e ".join(quem for quem, _ in self.pessoas)
         else:
-            texto = OCA["vazia"]
+            texto = OCA["vazio_tapiri"] if self.no_tapiri else OCA["vazia"]
         # Quem dorme aqui e não está esperando para conversar: sentado no lugar dele, parado.
         self.paradas = [self._sentada(quem) for quem, _ in self.pessoas]
         self.titulo = ui.CaixaTexto(self.oca["nome"], LARGURA_PAINEL, self.centro_painel, ancora="topo",
@@ -74,15 +85,15 @@ class Oca(Cena):
                                     alinhamento="centro", fundo=False, margem=20)
         self.caixa = ui.CaixaTexto(texto, LARGURA_PAINEL, (0, 0), ancora="topo",
                                    tamanho=30, alinhamento="centro", fundo=False, margem=24, max_linhas=6)
-        self.botao_sair = ui.Seta(OCA["sair"])
+        self.botao_sair = ui.Seta(OCA["sair_tapiri"] if self.no_tapiri else OCA["sair"])
         self.botao_menu = ui.Botao(DIA["menu"], POSICAO_BOTAO_MENU, tamanho=config.TAMANHO_PEQUENO)
         self.tabua = Tabua(jogo)
         self.painel = pygame.Rect(0, 0, 0, 0)
         self._posicionar()
 
     def _sentada(self, nome):
-        """A pessoa no lugar dela dentro da oca (dados/aldeia.py, ONDE_DORME)."""
-        lugar = ONDE_DORME[nome]
+        """A pessoa no lugar dela dentro da oca (dados/aldeia.py, ONDE_DORME ou ONDE_DORME_TAPIRI)."""
+        lugar = self.lugares[nome]
         return PessoaNoCenario(nome, lugar["imagem"], lugar["posicao"], lugar["escala"], self.filtro)
 
     def _posicionar(self):

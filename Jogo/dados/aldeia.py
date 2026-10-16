@@ -12,6 +12,7 @@
 # - ONDE_DORME: em que oca fica cada pessoa de fora que o jogador deixou entrar, e o
 #   apelido da imagem dela (dados/arte.py), sentada, e onde ela senta dentro da oca
 #   ("posicao": o meio da borda de baixo da imagem; "escala": o tamanho).
+# - ONDE_DORME_TAPIRI: o mesmo, dentro do tapiri, para quem o jogador levou para lá.
 
 ALDEIA = {
     "fundo": "aldeia",
@@ -57,12 +58,23 @@ OCAS = {
         "dentro_dia": "oca3_dia",
         "painel": "esquerda",   # a cama fica à direita: o texto vai para a esquerda
     },
+    # O tapiri, o abrigo isolado: ao lado da Yebá Bëló, no caminho que entra mais fundo na
+    # mata. Lá dentro fica quem o jogador levou ao tapiri (ONDE_DORME_TAPIRI), não quem dorme
+    # na oca.
+    "tapiri": {
+        "nome": "Tapiri",
+        "contorno": [(720, 400), (790, 368), (836, 395), (842, 455), (792, 500), (722, 492)],
+        "dentro": "tapiri",
+        "tapiri": True,
+        "painel": "esquerda",   # a esteira fica à direita: o texto vai para a esquerda
+    },
 }
 
+# O tapiri abre desde a noite 1 (o pajé fala dele na primeira fogueira).
 ABERTAS_POR_NOITE = {
-    1: ["oca1"],
-    2: ["oca1", "oca2"],
-    3: ["oca1", "oca2", "oca3"],
+    1: ["oca1", "tapiri"],
+    2: ["oca1", "oca2", "tapiri"],
+    3: ["oca1", "oca2", "oca3", "tapiri"],
 }
 
 ONDE_DORME = {
@@ -74,14 +86,25 @@ ONDE_DORME = {
     "Mbaé": {"oca": "oca2", "imagem": "mbae_sentado", "posicao": (1235, 598), "escala": 0.35},
 }
 
+# Onde senta, dentro do tapiri, quem o jogador levou para lá (a esteira fica à direita).
+# A parede do tapiri vai de y 220 a 610 (uns 390): cada um ocupa pouco mais que a metade.
+ONDE_DORME_TAPIRI = {
+    "Yara": {"imagem": "yara_sentada", "posicao": (1235, 690), "escala": 0.36},
+    "Mbaé": {"imagem": "mbae_sentado", "posicao": (1420, 668), "escala": 0.42},
+}
+
 # Textos de dentro da oca.
 OCA = {
     "sair": "Sair da oca",
+    "sair_tapiri": "Sair do tapiri",
     "dorme": "%s dorme aqui esta noite.",
+    "dormem": "%s dormem aqui esta noite.",
     "vazia": "Ninguém de fora dorme aqui esta noite.",
     "vazia_dia": "Por enquanto, ninguém de fora dorme aqui.",
     "dorme_dia": "%s dorme aqui.",
+    "dormem_dia": "%s dormem aqui.",
     "aqui_dia": "%s está aqui dentro. Clique para conversar.",
+    "vazio_tapiri": "Ninguém está no tapiri.",
 }
 
 
