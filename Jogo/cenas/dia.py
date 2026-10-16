@@ -43,9 +43,9 @@ TAMANHO_FALA_DIA = 32
 ESPACO_PAINEL_OPCOES = 18      # entre a fala e os blocos de resposta
 ESPACO_ENTRE_OPCOES = 14
 POSICAO_BOTAO_MENU = (1420, 60)
-CENTRO_DICA_FOGUEIRA = (800, 770)
-TOPO_BOTAO_DORMIR = 815
-LARGURA_BOTAO_DORMIR = 520
+CENTRO_DICA_FOGUEIRA = (800, 850)          # sem a seta de ir dormir, a dica fica embaixo
+CENTRO_DICA_FOGUEIRA_SETA = (800, 730)     # com a seta, ela sobe
+CENTRO_SETA_DORMIR = (800, 830)
 LARGURA_DETALHE = 520          # o olho de perto, embaixo do painel
 # Fala que mostra o olho de perto: a caixa de texto fica menor, para o olho caber grande.
 LARGURA_PAINEL_DETALHE = 500
@@ -272,13 +272,16 @@ class Dia(Cena):
                             espelhar=pessoa.get("espelhar", False))
             for nome, pessoa in self._pessoas_da_noite()
             if not (pessoa.get("uma_vez") and nome in self.conversados)]
-        # "Ir dormir" só abre depois de falar com quem é obrigatório (quem é de fora: decidir onde dorme).
+        # A seta "Ir dormir" só aparece depois de falar com quem é obrigatório (quem é de fora:
+        # decidir onde dorme) e de gastar toda a energia. Se não sobrou ninguém para examinar,
+        # ela aparece mesmo com energia (senão o jogador ficaria preso na fogueira).
         faltam = [nome for nome, pessoa in self._pessoas_da_noite()
                   if pessoa.get("obrigatorio") and nome not in self.conversados]
-        texto = self.noite["dormir_bloqueado"] % " e ".join(faltam) if faltam else self.noite["dormir"]
-        self.botao_dormir = ui.BlocoOpcao(texto, LARGURA_BOTAO_DORMIR)
-        self.botao_dormir.habilitado = not faltam
-        self.botao_dormir.posicionar((config.LARGURA // 2 - LARGURA_BOTAO_DORMIR // 2, TOPO_BOTAO_DORMIR))
+        da_para_examinar = any(passo["tipo"] == "exame"
+                               for pessoa in self.na_fogueira
+                               for passo in self.noite["pessoas"][pessoa.nome]["passos"])
+        self.botao_dormir = ui.Seta(self.noite["dormir"], CENTRO_SETA_DORMIR)
+        self.botao_dormir.visivel = not faltam and (self.energia <= 0 or not da_para_examinar)
 
     def _conversar_na_fogueira(self, nome):
         self._registrar(["pessoa", nome])
@@ -611,7 +614,7 @@ class Dia(Cena):
                 bloco.atualizar(self.jogo.mouse)
             if self.modo == "fogueira":
                 self.botao_dormir.atualizar(self.jogo.mouse)
-                self.sobre = self._pessoa_no_ponto(self.jogo.mouse)
+                self.sobre = None if self.botao_dormir.mouse_em_cima else self._pessoa_no_ponto(self.jogo.mouse)
                 if self.sobre:
                     ui.mouse_sobre_botao = True   # a tocha do cursor acende (motor/cursor.py)
 
@@ -692,13 +695,13 @@ class Dia(Cena):
         if self.modo == "fogueira":
             if self.sobre:
                 self.sobre.desenhar_destaque(tela)
-            # A dica, sobre um fundo escuro arredondado, e o botão de ir dormir.
+            # A dica, sobre um fundo escuro arredondado, e a seta de ir dormir (quando ela aparece).
             fonte = fontes.fonte_escalada("sans", config.TAMANHO_PEQUENO + 2)
             rect_dica = pygame.Rect((0, 0), fonte.size(self.noite["dica"]))
-            rect_dica.center = CENTRO_DICA_FOGUEIRA
+            rect_dica.center = CENTRO_DICA_FOGUEIRA_SETA if self.botao_dormir.visivel else CENTRO_DICA_FOGUEIRA
             ui.painel_arredondado(tela, rect_dica.inflate(36, 18), config.PRETO + (190,), raio=14)
             ui.texto_simples(tela, self.noite["dica"], rect_dica.center, config.TAMANHO_PEQUENO + 2)
-            self.botao_dormir.desenhar(tela)
+            self.botao_dormir.desenhar(tela, self.tempo)
 
         # A tábua por último: aberta, ela fica por cima de tudo.
         self.tabua.desenhar(tela)

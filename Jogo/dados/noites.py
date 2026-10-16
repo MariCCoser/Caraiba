@@ -13,7 +13,8 @@
 #              o machado de Yara
 #   "fundo"    o cenário da fogueira (dados/arte.py)
 #   "dica"     a frase embaixo da tela, enquanto o jogador escolhe com quem falar
-#   "dormir", "dormir_bloqueado"  o botão de ir dormir; fechado, mostra quem ainda falta (%s)
+#   "dormir"   o texto da seta de ir dormir. Ela só aparece depois de falar com quem é
+#              "obrigatorio" e de gastar toda a energia (ou se não sobrou ninguém para examinar)
 #   "pessoas"  quem senta em volta do fogo. Cada pessoa tem:
 #       "imagem"       o apelido da imagem (dados/arte.py)
 #       "imagem"       use a imagem sentada (ex.: "yara_sentada", dados/arte.py)
@@ -175,7 +176,6 @@ NOITES = {
         "fundo": "fogueira_perto",
         "dica": "Clique em quem está perto do fogo para conversar.",
         "dormir": "Ir dormir",
-        "dormir_bloqueado": "Ir dormir · antes, fale com %s",
         "pessoas": {
             # O pajé, à direita do fogo: fala do sinal e do tapiri. Dá para voltar a ele.
             "Pajé": {
@@ -235,7 +235,6 @@ NOITES = {
         "fundo": "fogueira_perto",
         "dica": "Clique em quem está perto do fogo para conversar.",
         "dormir": "Ir dormir",
-        "dormir_bloqueado": "Ir dormir · antes, fale com %s",
         "pessoas": {
             # O pajé fala do sinal, do tapiri (um lugar só) e do que a aldeia diz de Mbaé:
             # a aldeia quer Mbaé fora pelo povo dele, não pela tosse.
@@ -307,7 +306,6 @@ NOITES = {
         "amaldicoados": True,
         "dica": "Clique em quem está perto do fogo para conversar.",
         "dormir": "Ir dormir",
-        "dormir_bloqueado": "Ir dormir · antes, fale com %s",
         "pessoas": {
             # O pajé só desconfia do Irmão Aleixo: Aleixo fala em tirar a maldição, e isso é coisa de pajé.
             # Não há sinal novo hoje.
@@ -381,7 +379,6 @@ NOITES = {
         "amaldicoados": True,
         "dica": "Clique em quem está perto do fogo para conversar.",
         "dormir": "Ir dormir",
-        "dormir_bloqueado": "Ir dormir · antes, fale com %s",
         "pessoas": {
             # O pajé fala do sinal da noite, continua explicando o tapiri e fala de Potira,
             # que ele viu nascer.

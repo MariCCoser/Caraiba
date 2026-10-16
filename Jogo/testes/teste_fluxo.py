@@ -321,7 +321,7 @@ def testar_dia1(jogo):
     passar_falas(jogo)
     dia = jogo.cenas.atual
     assert dia.modo == "fogueira" and [p.nome for p in dia.na_fogueira] == ["Pajé"]
-    assert dia.botao_dormir.habilitado and dia.botao_dormir.texto == "Ir dormir"
+    assert dia.botao_dormir.visivel and dia.botao_dormir.texto == "Ir dormir"
     clicar_botao(jogo, dia.botao_dormir)
     passar_falas(jogo)
     esperar_transicao(jogo)
@@ -570,7 +570,7 @@ def testar_noite1_com_yara(jogo):
     assert nome_cena(jogo) == "Dia" and dia.titulo == "Noite 1", (nome_cena(jogo), dia.titulo)
     assert dia.modo == "fogueira" and dia.fundo == ("fogueira_perto", "noite")
     assert [p.nome for p in dia.na_fogueira] == ["Pajé", "Yara"]
-    assert not dia.botao_dormir.habilitado, "só dá para dormir depois de decidir sobre Yara"
+    assert not dia.botao_dormir.visivel, "só dá para dormir depois de decidir sobre Yara"
     rodar(jogo, 60)
     capturar(jogo, "10d-noite1-fogueira")
 
@@ -630,7 +630,7 @@ def testar_noite1_com_yara(jogo):
 
     # De volta à fogueira: Yara foi dormir, só sobra o pajé, e agora dá para ir dormir.
     assert dia.modo == "fogueira" and [p.nome for p in dia.na_fogueira] == ["Pajé"]
-    assert dia.botao_dormir.habilitado
+    assert dia.botao_dormir.visivel
     clicar_botao(jogo, dia.botao_dormir)
     passar_falas(jogo)
     esperar_transicao(jogo)
@@ -777,7 +777,7 @@ def testar_dia2_e_noite2(jogo):
     dia._comecar_noite()
     assert dia.energia == 1
     assert [p.nome for p in dia.na_fogueira] == ["Pajé", "Yara", "Mbaé"]
-    assert not dia.botao_dormir.habilitado and "Mbaé" in dia.botao_dormir.texto
+    assert not dia.botao_dormir.visivel
     rodar(jogo, 40)
     capturar(jogo, "21-noite2-fogueira")
 
@@ -816,7 +816,7 @@ def testar_dia2_e_noite2(jogo):
     passar_falas(jogo)
     assert 1 <= len(estado.febre) <= 3, estado.febre
     assert all(e["de"] == "Mbaé" and e["noite"] == 2 for e in estado.febre), estado.febre
-    assert dia.botao_dormir.habilitado
+    assert dia.botao_dormir.visivel
     clicar_botao(jogo, dia.botao_dormir)
     passar_falas(jogo)
     esperar_transicao(jogo)
@@ -937,7 +937,7 @@ def testar_dia3_e_noite3(jogo):
     dia._comecar_noite()
     assert dia.energia == dia.energia_max == 2
     assert [p.nome for p in dia.na_fogueira] == ["Pajé", "Mbaé"]
-    assert not dia.botao_dormir.habilitado and "Mbaé" in dia.botao_dormir.texto
+    assert not dia.botao_dormir.visivel
     rodar(jogo, 40)
     capturar(jogo, "27-noite3-fogueira")
 
@@ -1048,6 +1048,7 @@ def testar_dia4_e_noite4(jogo):
     # A fogueira: pajé, Mbaé e Potira. Os dois de fora são obrigatórios.
     assert dia.titulo == "Noite 4" and dia.modo == "fogueira" and dia.energia == 1
     assert [p.nome for p in dia.na_fogueira] == ["Pajé", "Mbaé", "Potira"]
+    assert not dia.botao_dormir.visivel, "a seta de ir dormir só aparece sem energia"
     rodar(jogo, 40)
     capturar(jogo, "33-noite4-fogueira")
     clicar_pessoa(jogo, "Pajé")
@@ -1065,6 +1066,7 @@ def testar_dia4_e_noite4(jogo):
     clicar_opcao(jogo, "Terminar o exame")
     clicar_opcao(jogo, "Deixar na oca")
     passar_falas(jogo)
+    assert dia.energia == 0 and not dia.botao_dormir.visivel, "sem energia, mas ainda falta Mbaé"
 
     clicar_pessoa(jogo, "Mbaé")
     passar_falas(jogo)
@@ -1073,6 +1075,9 @@ def testar_dia4_e_noite4(jogo):
     clicar_opcao(jogo, "Levar ao tapiri")
     passar_falas(jogo)
     assert estado.tapiri == ["Mbaé"]
+    assert dia.botao_dormir.visivel
+    rodar(jogo, 10)
+    capturar(jogo, "33b-noite4-seta-dormir")
 
     # Ir dormir: a aldeia de noite 4. Ainda não há Dia 5, então não há seta.
     clicar_botao(jogo, dia.botao_dormir)
