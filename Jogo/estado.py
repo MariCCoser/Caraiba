@@ -49,8 +49,9 @@ class Estado:
         self.mortos_nomes = []
         # Em que noite cada um morreu pela mão do jogador (o corpo aparece na manhã seguinte)
         self.mortos_quando = {}
-        # Os sinais que o pajé contou, um por noite (a tábua de barro do jogador)
+        # Os sinais que o pajé contou (a tábua de barro do jogador) e em que noite cada um
         self.tabua = []
+        self.tabua_noites = []
         # O final da partida, quando ela acaba (o "id" de dados/finais.py), ou None
         self.final = None
 

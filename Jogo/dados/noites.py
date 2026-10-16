@@ -57,9 +57,9 @@
 # Palavras em âmbar: só no que a pessoa afirma e o jogador não tem como verificar.
 # O exame descreve o que se vê, sem dizer o que significa.
 #
-# Yara e Mbaé têm a mesma conversa em todas as noites (dados/conversas.py).
+# Quem é de fora tem a mesma conversa em todas as noites (dados/conversas.py).
 
-from dados.conversas import conversa_mbae, conversa_yara
+from dados.conversas import conversa_mbae, conversa_potira, conversa_yara
 
 # O que acontece quando o jogador mata alguém (a Proposta: mostra o corpo com nome no dia
 # seguinte e derruba a sanidade, mesmo quando ele acerta).
@@ -143,6 +143,28 @@ def escolha_onde_dorme(quem, fala_oca, fala_tapiri):
 ZONAS_YARA_NOITE_3 = [dict(zona) for zona in ZONAS_YARA_NOITE_2]
 ZONAS_YARA_NOITE_3[1] = {"pergunta": "Olhos",
                          "resposta": "O branco do olho clareou. Nenhum risco vermelho."}
+
+
+# --- Noite 4: Potira, a que você conhece ---
+# Potira é sã: o olho está cansado, a boca seca de sede. Nada bate com a tábua.
+# Ainda não há arte dela sentada: na fogueira ela fica em pé, na frente, à direita, com a
+# borda de baixo da imagem rente à borda da tela.
+POSICAO_POTIRA, ESCALA_POTIRA = (1270, 900), 0.45
+
+ZONAS_POTIRA = [
+    {"pergunta": "Testa",
+     "resposta": "Fresca. Poeira do caminho, nenhum suor."},
+    {"pergunta": "Olhos", "imagem": "olho_potira",
+     "resposta": "[É sono]. Andei desde antes do sol."},
+    {"pergunta": "Orelhas",
+     "resposta": "Nada atrás das orelhas. A pele está limpa."},
+    {"pergunta": "Boca",
+     "resposta": "Lábios rachados de sede. Por dentro da bochecha, nada."},
+    {"pergunta": "Mãos",
+     "resposta": "Vazias, unhas limpas. Arranhões de mato nos braços."},
+    {"pergunta": "Respiração",
+     "resposta": "Respira fundo, sem tosse."},
+]
 
 
 NOITES = {
@@ -338,6 +360,100 @@ NOITES = {
                      "texto": TEXTO_EXAME, "zonas": ZONAS_MBAE},
                     escolha_onde_dorme("Mbaé", "Durmo no canto. Não incomodo ninguém.",
                                        "Sozinho no escuro. Já passei noite pior na caça."),
+                    {"tipo": "visitante", "visitante": None},
+                ],
+            },
+        },
+        "fim": [
+            {"tipo": "fala", "quem": "",
+             "texto": "O fogo baixa. A aldeia vai para as redes."},
+        ],
+    },
+
+    4: {
+        "titulo": "Noite 4",
+        # Como nas noites 2 e 3: 1 olhar (2 com o machado). Só dá para investigar os sinais já
+        # riscados na tábua: os olhos e a boca (o sinal novo, a bochecha, também é na boca).
+        "energia": 1,
+        "energia_extra": {"machado": 1},
+        "fundo": "fogueira_perto",
+        # Os moradores que pegaram a febre continuam passando adiante (dados/febre.py).
+        "amaldicoados": True,
+        "dica": "Clique em quem está perto do fogo para conversar.",
+        "dormir": "Ir dormir",
+        "dormir_bloqueado": "Ir dormir · antes, fale com %s",
+        "pessoas": {
+            # O pajé fala do sinal da noite, continua explicando o tapiri e fala de Potira,
+            # que ele viu nascer.
+            "Pajé": {
+                "imagem": "paje_sentado", "posicao": POSICAO_PAJE, "escala": ESCALA_PAJE, "espelhar": True,
+                "passos": [
+                    {"tipo": "visitante", "visitante": "paje"},
+                    {"tipo": "fala", "quem": "Pajé", "texto": "Sente. Hoje o fogo está quieto."},
+                    {"tipo": "perguntas", "botao": "Voltar para a fogueira", "perguntas": [
+                        {"pergunta": "O que você viu no sono?",
+                         "resposta": [
+                             "Pontos brancos, por dentro da bochecha.",
+                             "Ainda não vi em ninguém. [Mas vai chegar].",
+                         ]},
+                        {"pergunta": "O tapiri tem lugar?",
+                         "resposta": "Um lugar só. Quem entra fica três noites, longe de todos."},
+                        {"pergunta": "E quem sai do tapiri?",
+                         "resposta": [
+                             "Quem passa as três noites e não piora volta para a rede.",
+                             "Quem piora, [não leva o mal para ninguém]. É para isso que ele serve.",
+                         ]},
+                        {"pergunta": "E a Potira?", "se_dentro": "Potira",
+                         "resposta": "Essa eu vi nascer. Senta perto do fogo, menina."},
+                    ]},
+                    {"tipo": "visitante", "visitante": None},
+                ],
+            },
+
+            # Yara, se ficou e não está no tapiri. Não é obrigatório falar com ela.
+            "Yara": {
+                "imagem": "yara_sentada", "posicao": POSICAO_YARA, "escala": ESCALA_YARA,
+                "de_fora": True, "uma_vez": True,
+                "passos": [
+                    {"tipo": "visitante", "visitante": "yara"},
+                    {"tipo": "fala", "quem": "Yara", "texto": "A chuva voltou. Mais uma noite e eu sigo."},
+                    {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa_yara()},
+                    {"tipo": "exame", "quem": "Yara", "liberadas": ["Olhos", "Boca"],
+                     "texto": TEXTO_EXAME, "zonas": ZONAS_YARA_NOITE_3},
+                    escolha_onde_dorme("Yara", "Mais uma noite, então. Obrigada.",
+                                       "Sozinha, então. Já dormi em lugar pior."),
+                    {"tipo": "visitante", "visitante": None},
+                ],
+            },
+
+            # Mbaé, se ficou e não está no tapiri: ainda passa a febre se dormir na oca.
+            "Mbaé": {
+                "imagem": "mbae_sentado", "posicao": POSICAO_MBAE, "escala": ESCALA_MBAE,
+                "de_fora": True, "uma_vez": True, "obrigatorio": True,
+                "passos": [
+                    {"tipo": "visitante", "visitante": "mbae"},
+                    {"tipo": "fala", "quem": "Mbaé", "texto": "(tosse) Assim eu não subo o rio."},
+                    {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa_mbae()},
+                    {"tipo": "exame", "quem": "Mbaé", "liberadas": ["Olhos", "Boca"],
+                     "texto": TEXTO_EXAME, "zonas": ZONAS_MBAE},
+                    escolha_onde_dorme("Mbaé", "Durmo no canto. Não incomodo ninguém.",
+                                       "Sozinho no escuro. Já passei noite pior na caça."),
+                    {"tipo": "visitante", "visitante": None},
+                ],
+            },
+
+            # Potira, se entrou: em pé, na frente, à direita do fogo.
+            "Potira": {
+                "imagem": "potira", "posicao": POSICAO_POTIRA, "escala": ESCALA_POTIRA,
+                "de_fora": True, "uma_vez": True, "obrigatorio": True,
+                "passos": [
+                    {"tipo": "visitante", "visitante": "potira"},
+                    {"tipo": "fala", "quem": "Potira", "texto": "Não achei nada. Desculpa."},
+                    {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa_potira()},
+                    {"tipo": "exame", "quem": "Potira", "liberadas": ["Olhos", "Boca"],
+                     "texto": TEXTO_EXAME, "zonas": ZONAS_POTIRA},
+                    escolha_onde_dorme("Potira", "Durmo na rede de sempre.",
+                                       "Sozinha? Se você manda, eu vou."),
                     {"tipo": "visitante", "visitante": None},
                 ],
             },

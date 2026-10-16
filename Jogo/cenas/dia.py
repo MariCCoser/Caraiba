@@ -169,6 +169,7 @@ class Dia(Cena):
                 return
             elif tipo == "sinal":
                 self.estado.tabua.append(passo["texto"])
+                self.estado.tabua_noites.append(self.estado.dia)
                 self.tabua.marcar_nova()
                 self._mostrar_fala(DIA["tabua"], DIA["anotado"] + " " + passo["texto"])
                 return

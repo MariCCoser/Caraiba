@@ -1,7 +1,8 @@
 # As conversas de sempre de quem é de fora. Edite à vontade: aqui não há lógica.
 #
-# Yara e Mbaé têm uma conversa só, a mesma na oca (de dia, dados/dias.py) e em todas as
-# noites na fogueira (dados/noites.py). Muda só a primeira frase de cada noite.
+# Quem é de fora (Yara, Mbaé, Potira) tem uma conversa só, a mesma na oca (de dia,
+# dados/dias.py) e em todas as noites na fogueira (dados/noites.py). Muda só a primeira frase
+# de cada noite.
 #
 # Uma pergunta com "historia" soma a "memoria" (estado.py) só na primeira vez que o jogador
 # ouve aquela história: ouvir de novo, em outra noite, não soma mais.
@@ -41,4 +42,23 @@ def conversa_mbae():
          "historia": "antes_mbae", "efeitos": {"memoria": 1}},
         {"pergunta": "Por que olham torto para você?",
          "resposta": "Contam histórias do meu povo. [Nenhuma é verdade]."},
+    ]
+
+
+def conversa_potira():
+    """As perguntas de sempre para Potira (a conversa dela na oca Wanadi). Na entrada da
+    aldeia, a conversa é mais curta (dados/dias.py, Dia 4)."""
+    return [
+        {"pergunta": "Achou comida?",
+         "resposta": "As roças do caminho estão de pé. Ninguém colhe."},
+        {"pergunta": "Viu gente doente?",
+         "resposta": "Vi rede vazia pendurada. Não entrei."},
+        {"pergunta": "Por que foi sozinha?",
+         "resposta": "Quem ia comigo está na rede, com a maldição. Alguém tinha que ir."},
+        {"pergunta": "Conte de antes.",
+         "resposta": [
+             "Minha mãe dizia que a mandioca precisa de gente perto para crescer.",
+             "Acho que é verdade.",
+         ],
+         "historia": "antes_potira", "efeitos": {"memoria": 1}},
     ]

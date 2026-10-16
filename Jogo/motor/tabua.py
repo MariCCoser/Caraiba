@@ -163,12 +163,15 @@ class Tabua:
                              config.TAMANHO_PEQUENO + 4, nome_fonte="serif", cor=config.NOITE)
         fonte = fontes.fonte_escalada("serif", config.TAMANHO_PEQUENO + 6)
         fonte_noite = fontes.fonte_escalada("mono", config.TAMANHO_PEQUENO)
+        noites = self.jogo.estado.tabua_noites
         for numero, sinal in enumerate(sinais, start=1):
-            # Marcas de contagem da noite (|||), como riscos de graveto, e o texto do sinal.
+            # Marcas de contagem do sinal (I, II, III), como riscos de graveto, a noite em que
+            # o pajé o contou (nem toda noite tem sinal novo) e o texto do sinal.
             for i in range(numero):
                 x = esquerda + i * 9
                 pygame.draw.line(tela, config.TERRA, (x, y - 12), (x + 2, y + 12), 3)
-            rotulo = fonte_noite.render(TABUA["noite"] % numero, True, config.TERRA)
+            noite = noites[numero - 1] if len(noites) == len(sinais) else numero
+            rotulo = fonte_noite.render(TABUA["noite"] % noite, True, config.TERRA)
             tela.blit(rotulo, (esquerda + 110, y - rotulo.get_height() // 2))
             texto = fonte.render(sinal, True, config.NOITE)
             tela.blit(texto, (esquerda + 240, y - texto.get_height() // 2))

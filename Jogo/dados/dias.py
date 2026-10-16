@@ -41,9 +41,9 @@
 #
 # Palavras em âmbar: só no que a pessoa afirma e o jogador não tem como verificar.
 #
-# Yara e Mbaé têm a mesma conversa na oca e em todas as noites (dados/conversas.py).
+# Quem é de fora tem a mesma conversa na oca e em todas as noites (dados/conversas.py).
 
-from dados.conversas import conversa_mbae, conversa_yara
+from dados.conversas import conversa_mbae, conversa_potira, conversa_yara
 
 # --- Dia 3: a primeira das três visitas do Irmão Aleixo (dias 3, 6 e 9) ---
 # Ninguém chega pela trilha: Aleixo vem até a entrada e finca uma cruz. Ele não traz cura:
@@ -295,6 +295,73 @@ DIAS = {
             {"tipo": "fala", "quem": "Pajé", "texto": "Mas eu vi a cruz na entrada. Isso eu não precisei sonhar."},
 
             # A fogueira da aldeia: sem visitante novo.
+            {"tipo": "noite"},
+        ],
+    },
+
+    # --- Dia 4: a que você conhece (Textos/Caraíba — Dez Dias, Dez Fogueiras.pdf) ---
+    # Potira, 24 anos, é da sua aldeia: saiu para buscar comida e volta com o cesto vazio.
+    # Ela é sã: não há armadilha nenhuma, e serve para o jogador baixar a guarda.
+    # Na entrada a conversa é curta; a conversa inteira é na oca Wanadi (dados/conversas.py).
+    # O pajé conta o sinal do próximo mal (Tamandaré-mirim, no dia 5): o 3º risco da tábua.
+    4: {
+        "titulo": "Dia 4",
+        "passos": [
+            {"tipo": "fundo", "fundo": "aldeia", "filtro": "dia"},
+
+            # A manhã: primeiro a febre (motor/febre.py); depois, quem o jogador matou ontem.
+            {"tipo": "se", "morto_ontem": "Yara", "passos": [
+                {"tipo": "fala", "quem": "", "texto": "O corpo de Yara amanheceu coberto com uma esteira."},
+            ]},
+            {"tipo": "se", "morto_ontem": "Mbaé", "passos": [
+                {"tipo": "fala", "quem": "", "texto": "O corpo de Mbaé amanheceu coberto com uma esteira."},
+            ]},
+            {"tipo": "se", "na_oca": "Mbaé", "passos": [
+                {"tipo": "fala", "quem": "", "texto": "Mbaé tossiu a noite toda na oca Yebá Bëló."},
+            ]},
+
+            {"tipo": "aldeia"},
+
+            # A chegada de Potira. Ninguém comenta nem descreve: o jogador vê e ouve.
+            {"tipo": "fundo", "fundo": "floresta", "filtro": "dia"},
+            {"tipo": "visitante", "visitante": "potira"},
+            {"tipo": "fala", "quem": "Potira", "texto": "Sou eu, Potira. O cesto voltou vazio."},
+            {"tipo": "perguntas", "perguntas": [
+                {"pergunta": "Onde você estava?",
+                 "resposta": "Nas roças do outro lado do morro. [Não encontrei ninguém]."},
+            ]},
+            {"tipo": "escolha", "opcoes": [
+                {"texto": "Deixar entrar", "efeitos": {"vivos": 1}, "entra": "Potira", "passos": [
+                    {"tipo": "fala", "quem": "Potira", "texto": "Obrigada. Com fome, mas viva."},
+
+                    # Potira espera na oca Wanadi: lá a conversa é mais longa, se o jogador quiser.
+                    {"tipo": "visitante", "visitante": None},
+                    {"tipo": "aldeia", "seta": "Esperar a noite",
+                     "dica": "Potira está na oca Wanadi. Entre para conversar, ou espere a noite.",
+                     "pessoas": [
+                        {"nome": "Potira", "oca": "oca3", "passos": [
+                            {"tipo": "fundo", "fundo": "oca3_dia", "filtro": "dia"},
+                            {"tipo": "visitante", "visitante": "potira"},
+                            {"tipo": "fala", "quem": "Potira",
+                             "texto": "Desculpa. Saí para buscar comida e não achei nada."},
+                            {"tipo": "perguntas", "botao": "Terminar a conversa", "perguntas": conversa_potira()},
+                            {"tipo": "visitante", "visitante": None},
+                        ]},
+                     ]},
+                ]},
+                {"texto": "Não deixar entrar", "passos": [
+                    {"tipo": "fala", "quem": "Potira", "texto": "Então durmo do lado de fora da cerca."},
+                ]},
+            ]},
+            {"tipo": "visitante", "visitante": None},
+
+            # O sinal do pajé: o mal que vem amanhã (Tamandaré-mirim). Fica riscado como III.
+            {"tipo": "fundo", "fundo": "fogueira_longe", "filtro": "noite"},
+            {"tipo": "visitante", "visitante": "paje"},
+            {"tipo": "fala", "quem": "Pajé",
+             "texto": "Sonhei com uma boca aberta. O mal se esconde [por dentro da bochecha], em pontos brancos."},
+            {"tipo": "sinal", "texto": "Pontos brancos por dentro da bochecha."},
+
             {"tipo": "noite"},
         ],
     },

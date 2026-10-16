@@ -96,7 +96,7 @@ def testar_estado_inicial():
                 "pistas": 0, "sanidade": 10, "tapiri_usos": 0, "viu_anhanga": 0, "seguiu_paje": 0,
                 "inocentes": 0, "machado": 0, "dentro": [], "tapiri": [], "tapiri_desde": {}, "febre": [], "manha": [],
                 "historias": [], "entregues_nomes": [],
-                "mortos_nomes": [], "mortos_quando": {}, "tabua": [], "final": None}
+                "mortos_nomes": [], "mortos_quando": {}, "tabua": [], "tabua_noites": [], "final": None}
     dados = estado.para_dicionario()
     assert isinstance(dados.pop("semente"), int), "cada partida tem a sua sorte"
     assert dados == esperado, dados
@@ -974,13 +974,117 @@ def testar_dia3_e_noite3(jogo):
     novos = [e for e in estado.febre if e["noite"] == 3]
     assert len(novos) <= 2 and all(e["de"] == "morador" for e in novos), novos
 
-    # A aldeia de noite 3: as três ocas abertas; ainda não há Dia 4, então não há seta.
+    # A aldeia de noite 3: as três ocas abertas, e a seta "Dormir" leva ao Dia 4.
     aldeia = jogo.cenas.atual
-    assert nome_cena(jogo) == "Aldeia" and aldeia.abertas == ["oca1", "oca2", "oca3", "tapiri"] and not aldeia.tem_seta
+    assert nome_cena(jogo) == "Aldeia" and aldeia.abertas == ["oca1", "oca2", "oca3", "tapiri"] and aldeia.tem_seta
     entrar_na_oca(jogo, "oca3")
     rodar(jogo, 5)
     capturar(jogo, "29-noite3-oca3")
     print("ok Noite 3: amaldiçoados (sem moradores na fogueira) e a febre que passa adiante")
+    jogo.ir_para("menu")
+    esperar_transicao(jogo)
+
+
+def testar_dia4_e_noite4(jogo):
+    """Dia 4 (Potira chega: conversa curta na entrada, longa na oca Wanadi; o 3º sinal) e a Noite 4."""
+    jogo.nova_partida()
+    estado = jogo.estado
+    estado.dia = 3
+    estado.dentro = ["Mbaé"]
+    estado.vivos = 13
+    estado.tabua = ["Olho vermelho, com o branco raiado.", "Boca com feridas."]
+    estado.tabua_noites = [1, 2]
+    jogo.ir_para("aldeia")
+    esperar_transicao(jogo)
+    aldeia = jogo.cenas.atual
+    assert aldeia.tem_seta and aldeia.texto_seta == "Dormir"
+    clicar(jogo, aldeia.rect_seta.center)
+    esperar_transicao(jogo)
+    esperar_transicao(jogo)
+    dia = jogo.cenas.atual
+    assert estado.dia == 4 and dia.titulo == "Dia 4"
+    assert dia.caixa.texto.startswith("Mbaé tossiu"), dia.caixa.texto
+
+    # Na entrada: Potira, e uma pergunta só.
+    passar_falas(jogo)
+    dia = jogo.cenas.atual
+    assert dia.modo == "perguntas" and dia.visitante == "potira", (dia.modo, dia.visitante)
+    assert textos_dos_botoes(jogo) == ["Onde você estava?", "Decidir"], textos_dos_botoes(jogo)
+    rodar(jogo, 60)
+    capturar(jogo, "30-dia4-potira")
+    clicar_opcao(jogo, "Decidir")
+    clicar_opcao(jogo, "Deixar entrar")
+    passar_falas(jogo, seguir_seta=False)
+    assert estado.dentro == ["Mbaé", "Potira"] and estado.vivos == 14
+
+    # Na oca Wanadi, a conversa inteira (mais longa que a da entrada).
+    oca = entrar_na_oca(jogo, "oca3")
+    assert [p.nome for p in oca.na_oca] == ["Potira"]
+    rodar(jogo, 20)
+    capturar(jogo, "31-dia4-potira-na-oca")
+    clicar_pessoa(jogo, "Potira")
+    passar_falas(jogo)
+    assert textos_dos_botoes(jogo) == ["Achou comida?", "Viu gente doente?", "Por que foi sozinha?",
+                                       "Conte de antes.", "Terminar a conversa"], textos_dos_botoes(jogo)
+    clicar_opcao(jogo, "Conte de antes.")
+    passar_falas(jogo)
+    assert estado.memoria == 1 and "antes_potira" in estado.historias
+    clicar_opcao(jogo, "Terminar a conversa")
+    esperar_transicao(jogo)
+    clicar_botao(jogo, jogo.cenas.atual.botao_sair)
+    esperar_transicao(jogo)
+
+    # O sinal do pajé: o 3º risco da tábua (III), contado na noite 4.
+    passar_falas(jogo)
+    dia = jogo.cenas.atual
+    assert estado.tabua[-1] == "Pontos brancos por dentro da bochecha." and len(estado.tabua) == 3
+    assert estado.tabua_noites == [1, 2, 4], estado.tabua_noites
+    dia.tabua.aberta = True
+    rodar(jogo, 5)
+    capturar(jogo, "32-dia4-tabua-III")
+    dia.tabua.aberta = False
+    print("ok Dia 4: Potira (curta na entrada, longa na oca) e o 3º sinal na tábua")
+
+    # A fogueira: pajé, Mbaé e Potira. Os dois de fora são obrigatórios.
+    assert dia.titulo == "Noite 4" and dia.modo == "fogueira" and dia.energia == 1
+    assert [p.nome for p in dia.na_fogueira] == ["Pajé", "Mbaé", "Potira"]
+    rodar(jogo, 40)
+    capturar(jogo, "33-noite4-fogueira")
+    clicar_pessoa(jogo, "Pajé")
+    passar_falas(jogo)
+    assert "E a Potira?" in textos_dos_botoes(jogo)
+    clicar_opcao(jogo, "Voltar para a fogueira")
+
+    # Potira é sã: nada bate com a tábua.
+    clicar_pessoa(jogo, "Potira")
+    passar_falas(jogo)
+    clicar_opcao(jogo, "Examinar o rosto")
+    assert textos_dos_botoes(jogo) == ["Olhos", "Boca", "Terminar o exame"], textos_dos_botoes(jogo)
+    examinar(jogo, ["Boca"])
+    assert dia.sinais.get("Potira", 0) == 0 and dia.energia == 0
+    clicar_opcao(jogo, "Terminar o exame")
+    clicar_opcao(jogo, "Deixar na oca")
+    passar_falas(jogo)
+
+    clicar_pessoa(jogo, "Mbaé")
+    passar_falas(jogo)
+    clicar_opcao(jogo, "Examinar o rosto")
+    clicar_opcao(jogo, "Terminar o exame")
+    clicar_opcao(jogo, "Levar ao tapiri")
+    passar_falas(jogo)
+    assert estado.tapiri == ["Mbaé"]
+
+    # Ir dormir: a aldeia de noite 4. Ainda não há Dia 5, então não há seta.
+    clicar_botao(jogo, dia.botao_dormir)
+    passar_falas(jogo)
+    esperar_transicao(jogo)
+    aldeia = jogo.cenas.atual
+    assert nome_cena(jogo) == "Aldeia" and not aldeia.tem_seta
+    oca = entrar_na_oca(jogo, "oca3")
+    assert [quem for quem, _ in oca.pessoas] == ["Potira"], oca.pessoas
+    rodar(jogo, 5)
+    capturar(jogo, "34-noite4-oca3-potira")
+    print("ok Noite 4: Potira sã, Mbaé ao tapiri")
     jogo.ir_para("menu")
     esperar_transicao(jogo)
 
@@ -1148,6 +1252,7 @@ def testar_fluxo():
     testar_dia1(jogo)
     testar_dia2_e_noite2(jogo)
     testar_dia3_e_noite3(jogo)
+    testar_dia4_e_noite4(jogo)
     testar_aldeia_de_dia(jogo)
 
     # 5c. Continuar de onde parou, a tábua de barro e o "Como se joga" do menu
