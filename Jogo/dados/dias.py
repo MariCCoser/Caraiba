@@ -31,6 +31,8 @@
 #                "morto": "Yara" (o jogador matou Yara), "morto_ontem": "Yara" (matou Yara na
 #                noite passada), "dentro": "Yara" (Yara está na aldeia), "tapiri": "Yara"
 #                (Yara está no tapiri) ou "na_oca": "Mbaé" (Mbaé está na aldeia, fora do tapiri)
+#                "amaldicoados_ao_menos": 2 / "amaldicoados_menos_de": 2 (quantos amaldiçoados há
+#                na aldeia: os doentes de fora e quem pegou deles)
 #   Uma opção de "escolha" com "condicao" só aparece se ela bate: {"dentro": "Yara"}.
 #                "entrega": "Yara" entrega a pessoa ao Irmão Aleixo (ela sai da aldeia).
 #   "aleixo_leva" o Irmão Aleixo leva uma pessoa da aldeia, sorteada (o jogador não escolhe):
@@ -43,7 +45,7 @@
 #
 # Quem é de fora tem a mesma conversa na oca e em todas as noites (dados/conversas.py).
 
-from dados.conversas import conversa_mbae, conversa_potira, conversa_yara
+from dados.conversas import conversa_mbae, conversa_potira, conversa_tamandare, conversa_yara
 
 # --- Dia 3: a primeira das três visitas do Irmão Aleixo (dias 3, 6 e 9) ---
 # Ninguém chega pela trilha: Aleixo vem até a entrada e finca uma cruz. Ele não traz cura:
@@ -60,6 +62,16 @@ from dados.conversas import conversa_mbae, conversa_potira, conversa_yara
 # As perguntas para ele ficam divididas entre as três visitas: as do dia 6 e do dia 9 já
 # estão aqui, para quando esses dias existirem.
 ALEIXO = "Irmão Aleixo"
+
+# O pajé sobre os deuses: felizes com poucos amaldiçoados na aldeia, infelizes com 2 ou mais
+# (os doentes de fora que estão nela e quem pegou deles: motor/febre.py).
+DEUSES = 2
+DEUSES_FELIZES = {"tipo": "se", "amaldicoados_menos_de": DEUSES, "passos": [
+    {"tipo": "fala", "quem": "Pajé", "texto": "Os deuses estão felizes. O sono foi tranquilo."},
+]}
+DEUSES_INFELIZES = {"tipo": "se", "amaldicoados_ao_menos": DEUSES, "passos": [
+    {"tipo": "fala", "quem": "Pajé", "texto": "Os deuses estão infelizes. Há maldição demais entre as redes."},
+]}
 PERGUNTAS_ALEIXO = {
     3: [
         {"pergunta": "O que você quer?",
@@ -361,6 +373,81 @@ DIAS = {
             {"tipo": "fala", "quem": "Pajé",
              "texto": "Sonhei com uma boca aberta. O mal se esconde [por dentro da bochecha], em pontos brancos."},
             {"tipo": "sinal", "texto": "Pontos brancos por dentro da bochecha."},
+
+            {"tipo": "noite"},
+        ],
+    },
+
+    # --- Dia 5: Tamandaré-mirim, o caraíba que prega (Textos/Caraíba — Dez Dias, Dez Fogueiras.pdf) ---
+    # Ele vem "dos caraíbas" (é assim que ele chama os homens brancos). Está com a maldição
+    # (sarampo, antes das manchas na pele): os pontos brancos por dentro da bochecha, o sinal III
+    # da tábua. Ele acha que está só rouco de pregar.
+    # Na entrada a conversa é curta; a conversa inteira é na oca Yebá Bëló (dados/conversas.py).
+    # O pajé não conta sinal novo: só diz se os deuses estão felizes (poucos amaldiçoados na
+    # aldeia) ou infelizes (2 ou mais: DEUSES).
+    5: {
+        "titulo": "Dia 5",
+        "passos": [
+            {"tipo": "fundo", "fundo": "aldeia", "filtro": "dia"},
+
+            # A manhã: primeiro a febre (motor/febre.py); depois, quem o jogador matou ontem.
+            {"tipo": "se", "morto_ontem": "Yara", "passos": [
+                {"tipo": "fala", "quem": "", "texto": "O corpo de Yara amanheceu coberto com uma esteira."},
+            ]},
+            {"tipo": "se", "morto_ontem": "Mbaé", "passos": [
+                {"tipo": "fala", "quem": "", "texto": "O corpo de Mbaé amanheceu coberto com uma esteira."},
+            ]},
+            {"tipo": "se", "morto_ontem": "Potira", "passos": [
+                {"tipo": "fala", "quem": "", "texto": "O corpo de Potira amanheceu coberto com uma esteira."},
+            ]},
+            {"tipo": "se", "na_oca": "Mbaé", "passos": [
+                {"tipo": "fala", "quem": "", "texto": "Mbaé tossiu a noite toda na oca Yebá Bëló."},
+            ]},
+
+            {"tipo": "aldeia"},
+
+            # A chegada de Tamandaré-mirim. Ninguém comenta nem descreve: o jogador vê e ouve.
+            {"tipo": "fundo", "fundo": "floresta", "filtro": "dia"},
+            {"tipo": "visitante", "visitante": "tamandare"},
+            {"tipo": "fala", "quem": "Tamandaré-mirim",
+             "texto": "Ninguém precisa mais trabalhar para os caraíbas. Eu vim dizer isso. E dormir."},
+            {"tipo": "perguntas", "perguntas": [
+                {"pergunta": "De onde você vem?",
+                 "resposta": "Dos caraíbas. Saí antes da lua nova. [Ninguém me seguiu]."},
+                {"pergunta": "Você está amaldiçoado?",
+                 "resposta": "[Rouco de pregar]. Só isso."},
+            ]},
+            {"tipo": "escolha", "opcoes": [
+                {"texto": "Deixar entrar", "efeitos": {"vivos": 1}, "entra": "Tamandaré-mirim", "passos": [
+                    {"tipo": "fala", "quem": "Tamandaré-mirim",
+                     "texto": "Que a terra sem mal chegue a esta aldeia também."},
+
+                    # Ele espera na oca Yebá Bëló, à esquerda da porta: lá ele conta o que prega.
+                    {"tipo": "visitante", "visitante": None},
+                    {"tipo": "aldeia", "seta": "Esperar a noite",
+                     "dica": "Tamandaré-mirim está na oca Yebá Bëló. Entre para conversar, ou espere a noite.",
+                     "pessoas": [
+                        {"nome": "Tamandaré-mirim", "oca": "oca2", "passos": [
+                            {"tipo": "fundo", "fundo": "oca2_dia", "filtro": "dia"},
+                            {"tipo": "visitante", "visitante": "tamandare"},
+                            {"tipo": "fala", "quem": "Tamandaré-mirim",
+                             "texto": "Sente. Eu falo baixo, que a voz já acabou."},
+                            {"tipo": "perguntas", "botao": "Terminar a conversa", "perguntas": conversa_tamandare()},
+                            {"tipo": "visitante", "visitante": None},
+                        ]},
+                     ]},
+                ]},
+                {"texto": "Não deixar entrar", "passos": [
+                    {"tipo": "fala", "quem": "Tamandaré-mirim", "texto": "Então prego para as árvores. Elas escutam melhor."},
+                ]},
+            ]},
+            {"tipo": "visitante", "visitante": None},
+
+            # O pajé não conta sinal novo: só diz como estão os deuses.
+            {"tipo": "fundo", "fundo": "fogueira_longe", "filtro": "noite"},
+            {"tipo": "visitante", "visitante": "paje"},
+            DEUSES_FELIZES,
+            DEUSES_INFELIZES,
 
             {"tipo": "noite"},
         ],

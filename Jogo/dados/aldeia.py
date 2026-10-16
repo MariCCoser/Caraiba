@@ -90,6 +90,8 @@ ONDE_DORME = {
     # Potira senta sobre a cama da oca Wanadi (a cama fica à direita), virada para o fogo.
     "Potira": {"oca": "oca3", "imagem": "potira_sentada", "posicao": (1240, 652), "escala": 0.33,
                "espelhar": True},
+    # Tamandaré-mirim senta no chão da oca Yebá Bëló, à esquerda da porta.
+    "Tamandaré-mirim": {"oca": "oca2", "imagem": "tamandare_sentado", "posicao": (590, 592), "escala": 0.33},
 }
 
 # Onde senta, dentro do tapiri, quem o jogador levou para lá (a esteira fica à direita).
@@ -98,6 +100,7 @@ ONDE_DORME_TAPIRI = {
     "Yara": {"imagem": "yara_sentada", "posicao": (1235, 690), "escala": 0.36},
     "Mbaé": {"imagem": "mbae_sentado", "posicao": (1420, 668), "escala": 0.42},
     "Potira": {"imagem": "potira_sentada", "posicao": (1330, 690), "escala": 0.36},
+    "Tamandaré-mirim": {"imagem": "tamandare_sentado", "posicao": (1110, 690), "escala": 0.36},
 }
 
 # Textos de dentro da oca.

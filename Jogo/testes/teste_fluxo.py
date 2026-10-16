@@ -1111,17 +1111,128 @@ def testar_dia4_e_noite4(jogo):
     rodar(jogo, 10)
     capturar(jogo, "33b-noite4-seta-dormir")
 
-    # Ir dormir: a aldeia de noite 4. Ainda não há Dia 5, então não há seta.
+    # Ir dormir: a aldeia de noite 4, e a seta "Dormir" leva ao Dia 5.
     clicar_botao(jogo, dia.botao_dormir)
     passar_falas(jogo)
     esperar_transicao(jogo)
     aldeia = jogo.cenas.atual
-    assert nome_cena(jogo) == "Aldeia" and not aldeia.tem_seta
+    assert nome_cena(jogo) == "Aldeia" and aldeia.tem_seta
     oca = entrar_na_oca(jogo, "oca3")
     assert [quem for quem, _ in oca.pessoas] == ["Potira"], oca.pessoas
     rodar(jogo, 5)
     capturar(jogo, "34-noite4-oca3-potira")
     print("ok Noite 4: Potira sã, Mbaé ao tapiri")
+    jogo.ir_para("menu")
+    esperar_transicao(jogo)
+
+
+def testar_dia5_e_noite5(jogo):
+    """Dia 5 (Tamandaré-mirim: curto na entrada, longo na oca Yebá Bëló; o pajé e os deuses) e a
+    Noite 5."""
+    from motor import febre
+    jogo.nova_partida()
+    estado = jogo.estado
+    estado.dia = 4
+    estado.dentro = ["Mbaé", "Potira"]
+    estado.vivos = 2
+    estado.tabua = ["Olho vermelho, com o branco raiado.", "Boca com feridas.",
+                    "Pontos brancos por dentro da bochecha."]
+    estado.tabua_noites = [1, 2, 4]
+    jogo.ir_para("aldeia")
+    esperar_transicao(jogo)
+    aldeia = jogo.cenas.atual
+    clicar(jogo, aldeia.rect_seta.center)
+    esperar_transicao(jogo)
+    esperar_transicao(jogo)
+    dia = jogo.cenas.atual
+    assert estado.dia == 5 and dia.titulo == "Dia 5"
+    assert dia.caixa.texto.startswith("Mbaé tossiu"), dia.caixa.texto
+
+    # Na entrada: só "de onde vem" e "está amaldiçoado".
+    passar_falas(jogo)
+    dia = jogo.cenas.atual
+    assert dia.modo == "perguntas" and dia.visitante == "tamandare", (dia.modo, dia.visitante)
+    assert textos_dos_botoes(jogo) == ["De onde você vem?", "Você está amaldiçoado?", "Decidir"], (
+        textos_dos_botoes(jogo))
+    clicar_opcao(jogo, "De onde você vem?")
+    dia.caixa.completar()
+    assert dia.caixa.texto.startswith("Dos caraíbas."), dia.caixa.texto
+    rodar(jogo, 60)
+    capturar(jogo, "35-dia5-tamandare")
+    passar_falas(jogo)
+    clicar_opcao(jogo, "Decidir")
+    clicar_opcao(jogo, "Deixar entrar")
+    passar_falas(jogo, seguir_seta=False)
+    assert estado.dentro == ["Mbaé", "Potira", "Tamandaré-mirim"] and estado.vivos == 3
+
+    # Na oca Yebá Bëló, à esquerda da porta: a conversa inteira.
+    oca = entrar_na_oca(jogo, "oca2")
+    assert [p.nome for p in oca.na_oca] == ["Tamandaré-mirim"]
+    assert [p.nome for p in oca.paradas] == ["Mbaé"], "Mbaé dorme na mesma oca"
+    rodar(jogo, 20)
+    capturar(jogo, "36-dia5-tamandare-na-oca")
+    clicar_pessoa(jogo, "Tamandaré-mirim")
+    passar_falas(jogo)
+    assert textos_dos_botoes(jogo) == ["Conte do que você prega.", "Por que tosse?", "Por que essa cruz?",
+                                       "Terminar a conversa"], textos_dos_botoes(jogo)
+    clicar_opcao(jogo, "Conte do que você prega.")
+    passar_falas(jogo)
+    assert estado.memoria == 1 and "prega_tamandare" in estado.historias
+    clicar_opcao(jogo, "Terminar a conversa")
+    esperar_transicao(jogo)
+    clicar_botao(jogo, jogo.cenas.atual.botao_sair)
+    esperar_transicao(jogo)
+
+    # O pajé: Mbaé e Tamandaré-mirim na aldeia são 2 amaldiçoados: os deuses estão infelizes.
+    # Nenhum sinal novo na tábua.
+    assert febre.quantos_amaldicoados(estado) == 2
+    passar_falas(jogo)
+    dia = jogo.cenas.atual
+    assert len(estado.tabua) == 3, "no Dia 5 o pajé não conta sinal novo"
+    assert dia.titulo == "Noite 5" and dia.modo == "fogueira"
+    assert [p.nome for p in dia.na_fogueira] == ["Potira", "Pajé", "Mbaé", "Tamandaré-mirim"]
+    rodar(jogo, 40)
+    capturar(jogo, "37-noite5-fogueira")
+    clicar_pessoa(jogo, "Pajé")
+    dia.caixa.completar()
+    assert "infelizes" in dia.caixa.texto, dia.caixa.texto
+    passar_falas(jogo)
+    assert dia.modo == "fogueira"
+    # Com poucos amaldiçoados, os deuses estão felizes.
+    assert dia._condicao({"amaldicoados_menos_de": 2}) is False
+    estado.dentro.remove("Mbaé")
+    assert dia._condicao({"amaldicoados_menos_de": 2}) and not dia._condicao({"amaldicoados_ao_menos": 2})
+    estado.dentro.insert(0, "Mbaé")
+
+    # Tamandaré-mirim: a boca mostra os pontos brancos (o sinal III).
+    clicar_pessoa(jogo, "Tamandaré-mirim")
+    passar_falas(jogo)
+    clicar_opcao(jogo, "Examinar o rosto")
+    assert textos_dos_botoes(jogo) == ["Olhos", "Boca", "Terminar o exame"], textos_dos_botoes(jogo)
+    examinar(jogo, ["Boca"])
+    assert dia.sinais["Tamandaré-mirim"] == 1 and dia.energia == 0
+    clicar_opcao(jogo, "Terminar o exame")
+    clicar_opcao(jogo, "Levar ao tapiri")
+    passar_falas(jogo)
+    assert estado.tapiri == ["Tamandaré-mirim"] and estado.tapiri_usos == 1
+
+    clicar_pessoa(jogo, "Mbaé")
+    passar_falas(jogo)
+    clicar_opcao(jogo, "Examinar o rosto")
+    clicar_opcao(jogo, "Terminar o exame")
+    clicar_opcao(jogo, "Deixar na oca")
+    passar_falas(jogo)
+    assert dia.botao_dormir.visivel
+    clicar_botao(jogo, dia.botao_dormir)
+    passar_falas(jogo)
+    esperar_transicao(jogo)
+    aldeia = jogo.cenas.atual
+    assert nome_cena(jogo) == "Aldeia" and not aldeia.tem_seta, "ainda não há Dia 6"
+    oca = entrar_na_oca(jogo, "tapiri")
+    assert [quem for quem, _ in oca.pessoas] == ["Tamandaré-mirim"]
+    rodar(jogo, 5)
+    capturar(jogo, "38-noite5-tapiri-tamandare")
+    print("ok Dia 5 e Noite 5: Tamandaré-mirim (dois sinais), o pajé e os deuses")
     jogo.ir_para("menu")
     esperar_transicao(jogo)
 
@@ -1290,6 +1401,7 @@ def testar_fluxo():
     testar_dia2_e_noite2(jogo)
     testar_dia3_e_noite3(jogo)
     testar_dia4_e_noite4(jogo)
+    testar_dia5_e_noite5(jogo)
     testar_aldeia_de_dia(jogo)
 
     # 5c. Continuar de onde parou, a tábua de barro e o "Como se joga" do menu

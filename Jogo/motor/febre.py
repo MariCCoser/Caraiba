@@ -12,6 +12,7 @@
 # - amanhecer(estado): passa para o dia seguinte. Quem pegou a febre acorda doente no 1º dia
 #   e morre no 2º; as frases da manhã (com o nome) ficam em estado.manha, para o Dia mostrar.
 # - amaldicoado(estado, nome): o doente de fora que ainda passa a febre.
+# - quantos_amaldicoados(estado): os doentes de fora na aldeia mais quem pegou deles.
 #
 # Cada entrada de estado.febre é uma pessoa de fora:
 # {"nome": "Yara", "de": "Mbaé", "noite": 2, "visivel": True}. "visivel": False é quem não
@@ -60,6 +61,11 @@ def passar_na_oca(estado):
         if entrada["noite"] >= estado.dia or not _na_oca(estado, nome):
             continue
         _contaminar(estado, nome, CONTAGIO_PEGOU, _sorte(estado, nome))
+
+
+def quantos_amaldicoados(estado):
+    """Quantos amaldiçoados há na aldeia: os doentes de fora que estão nela e quem pegou deles."""
+    return sum(1 for nome in estado.dentro if nome in CONTAGIO) + len(estado.febre)
 
 
 def amaldicoado(estado, nome):

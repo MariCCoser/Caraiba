@@ -1,6 +1,6 @@
 # As conversas de sempre de quem é de fora. Edite à vontade: aqui não há lógica.
 #
-# Quem é de fora (Yara, Mbaé, Potira) tem uma conversa só, a mesma na oca (de dia,
+# Quem é de fora (Yara, Mbaé, Potira, Tamandaré-mirim) tem uma conversa só, a mesma na oca (de dia,
 # dados/dias.py) e em todas as noites na fogueira (dados/noites.py). Muda só a primeira frase
 # de cada noite. (Potira é a exceção: na fogueira, a conversa dela é mais curta.)
 #
@@ -60,4 +60,25 @@ def conversa_potira():
              "Acho que é verdade.",
          ],
          "historia": "antes_potira", "efeitos": {"memoria": 1}},
+    ]
+
+
+def conversa_tamandare():
+    """As perguntas de sempre para Tamandaré-mirim (a conversa dele na oca Yebá Bëló).
+    Na entrada da aldeia, a conversa é mais curta (dados/dias.py, Dia 5).
+    "Caraíbas", na boca dele, são os homens brancos."""
+    return [
+        {"pergunta": "Conte do que você prega.",
+         "resposta": [
+             "Que a terra sem mal está perto.",
+             "Que quem largar o trabalho dos caraíbas chega lá.",
+         ],
+         "historia": "prega_tamandare", "efeitos": {"memoria": 1}},
+        {"pergunta": "Por que tosse?",
+         "resposta": "[Rouco de pregar]. Grito para as árvores desde a lua nova."},
+        {"pergunta": "Por que essa cruz?",
+         "resposta": [
+             "Tirei dos caraíbas.",
+             "Se o deus deles mora nela, agora ele anda comigo.",
+         ]},
     ]
