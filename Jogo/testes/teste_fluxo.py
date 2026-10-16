@@ -938,7 +938,14 @@ def testar_dia3_e_noite3(jogo):
     clicar_opcao(jogo, "Negar")
     dia.caixa.completar()
     assert dia.caixa.texto == "Ninguém? Então eu escolho.", dia.caixa.texto
+    clicar(jogo, (800, 300))
+    # Quem ele leva fica em pé atrás dele, até ele ir embora.
+    assert dia.caixa.texto.startswith("Ele leva Mbaé"), dia.caixa.texto
+    assert dia.visitante == "aleixo" and dia.acompanhante == "mbae", (dia.visitante, dia.acompanhante)
+    rodar(jogo, 60)
+    capturar(jogo, "26b-dia3-aleixo-leva-mbae")
     passar_falas(jogo)
+    assert dia.acompanhante is None, "quem foi levado some com o Aleixo"
     # Negou, e ele leva alguém de fora mesmo assim (o sorteio caiu em Mbaé). Negar não conta
     # como entrega.
     assert estado.dentro == ["Yara", "Potira"] and estado.entregues_nomes == ["Mbaé"], (
@@ -1042,7 +1049,7 @@ def testar_dia4_e_noite4(jogo):
     capturar(jogo, "31-dia4-potira-na-oca")
     clicar_pessoa(jogo, "Potira")
     passar_falas(jogo)
-    assert textos_dos_botoes(jogo) == ["Achou comida?", "Viu gente doente?", "Por que foi sozinha?",
+    assert textos_dos_botoes(jogo) == ["Viu gente doente?", "Por que foi sozinha?",
                                        "Conte de antes.", "Terminar a conversa"], textos_dos_botoes(jogo)
     clicar_opcao(jogo, "Conte de antes.")
     passar_falas(jogo)
@@ -1065,7 +1072,8 @@ def testar_dia4_e_noite4(jogo):
 
     # A fogueira: pajé, Mbaé e Potira. Os dois de fora são obrigatórios.
     assert dia.titulo == "Noite 4" and dia.modo == "fogueira" and dia.energia == 1
-    assert [p.nome for p in dia.na_fogueira] == ["Pajé", "Mbaé", "Potira"]
+    # Potira senta atrás do pajé: é desenhada primeiro.
+    assert [p.nome for p in dia.na_fogueira] == ["Potira", "Pajé", "Mbaé"]
     assert not dia.botao_dormir.visivel, "a seta de ir dormir só aparece sem energia"
     rodar(jogo, 40)
     capturar(jogo, "33-noite4-fogueira")
@@ -1074,12 +1082,18 @@ def testar_dia4_e_noite4(jogo):
     assert "E a Potira?" in textos_dos_botoes(jogo)
     clicar_opcao(jogo, "Voltar para a fogueira")
 
-    # Potira é sã: nada bate com a tábua.
+    # Potira é sã: nada bate com a tábua. Na fogueira, a conversa dela é curta.
     clicar_pessoa(jogo, "Potira")
     passar_falas(jogo)
+    assert textos_dos_botoes(jogo) == ["Viu gente doente?", "Examinar o rosto"], textos_dos_botoes(jogo)
     clicar_opcao(jogo, "Examinar o rosto")
     assert textos_dos_botoes(jogo) == ["Olhos", "Boca", "Terminar o exame"], textos_dos_botoes(jogo)
-    examinar(jogo, ["Boca"])
+    # A boca: os lábios rachados, e ela se justifica (o frio, longe da fogueira).
+    clicar_opcao(jogo, "Boca")
+    dia.caixa.completar()
+    clicar(jogo, (800, 300))
+    assert "frio" in dia.caixa.texto, dia.caixa.texto
+    passar_falas(jogo)
     assert dia.sinais.get("Potira", 0) == 0 and dia.energia == 0
     clicar_opcao(jogo, "Terminar o exame")
     clicar_opcao(jogo, "Deixar na oca")

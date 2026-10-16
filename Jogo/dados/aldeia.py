@@ -11,7 +11,8 @@
 #   última noite listada antes dela.
 # - ONDE_DORME: em que oca fica cada pessoa de fora que o jogador deixou entrar, e o
 #   apelido da imagem dela (dados/arte.py), sentada, e onde ela senta dentro da oca
-#   ("posicao": o meio da borda de baixo da imagem; "escala": o tamanho).
+#   ("posicao": o meio da borda de baixo da imagem; "escala": o tamanho; "espelhar": True
+#   vira a pessoa para o outro lado).
 # - ONDE_DORME_TAPIRI: o mesmo, dentro do tapiri, para quem o jogador levou para lá.
 
 ALDEIA = {
@@ -86,8 +87,9 @@ ONDE_DORME = {
     # Mbaé senta sobre a cama (o estrado da direita), na mesma pose da fogueira. Ocupa um pouco
     # mais que a metade da altura da parede (a parede vai de y 235 a 570: uns 335; Mbaé, uns 195).
     "Mbaé": {"oca": "oca2", "imagem": "mbae_sentado", "posicao": (1235, 598), "escala": 0.35},
-    # Potira senta sobre a cama da oca Wanadi (a cama fica à direita).
-    "Potira": {"oca": "oca3", "imagem": "potira_sentada", "posicao": (1240, 652), "escala": 0.33},
+    # Potira senta sobre a cama da oca Wanadi (a cama fica à direita), virada para o fogo.
+    "Potira": {"oca": "oca3", "imagem": "potira_sentada", "posicao": (1240, 652), "escala": 0.33,
+               "espelhar": True},
 }
 
 # Onde senta, dentro do tapiri, quem o jogador levou para lá (a esteira fica à direita).

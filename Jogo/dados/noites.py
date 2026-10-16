@@ -22,6 +22,7 @@
 #                      pessoa encosta no chão
 #       "escala"       o tamanho (1 = o tamanho de quem fala)
 #       "espelhar"     True: vira a pessoa para o outro lado (o pajé olha para o fogo)
+#       "atras"        True: senta atrás dos outros (é desenhada antes, os outros na frente)
 #       "de_fora"      True: só aparece se o jogador a deixou entrar (e se não está no tapiri,
 #                      porque quem está no tapiri fica lá, isolado)
 #       "uma_vez"      True: depois da conversa ela sai da fogueira (foi dormir)
@@ -61,7 +62,7 @@
 #
 # Quem é de fora tem a mesma conversa em todas as noites (dados/conversas.py).
 
-from dados.conversas import conversa_mbae, conversa_potira, conversa_yara
+from dados.conversas import conversa_mbae, conversa_yara
 
 # O que acontece quando o jogador mata alguém (a Proposta: mostra o corpo com nome no dia
 # seguinte e derruba a sanidade, mesmo quando ele acerta).
@@ -148,8 +149,9 @@ ZONAS_YARA_NOITE_3[1] = {"pergunta": "Olhos",
 
 # --- Noite 4: Potira, a que você conhece ---
 # Potira é sã: o olho está cansado, a boca seca de sede. Nada bate com a tábua.
-# Na fogueira, ela senta no tronco da direita, ao lado do pajé.
-POSICAO_POTIRA, ESCALA_POTIRA = (1190, 560), 0.55
+# Na fogueira, ela senta à direita do pajé, um pouco atrás dele e menor (mais longe),
+# virada para o fogo.
+POSICAO_POTIRA, ESCALA_POTIRA = (1530, 478), 0.46
 
 ZONAS_POTIRA = [
     {"pergunta": "Testa",
@@ -159,7 +161,10 @@ ZONAS_POTIRA = [
     {"pergunta": "Orelhas",
      "resposta": "Nada atrás das orelhas. A pele está limpa."},
     {"pergunta": "Boca",
-     "resposta": "Lábios rachados de sede. Por dentro da bochecha, nada."},
+     "resposta": [
+         "Os lábios estão rachados. Por dentro da bochecha, nada.",
+         "[É do frio]. Dormi no mato, longe de qualquer fogueira.",
+     ]},
     {"pergunta": "Mãos",
      "resposta": "Vazias, unhas limpas. Arranhões de mato nos braços."},
     {"pergunta": "Respiração",
@@ -438,14 +443,19 @@ NOITES = {
                 ],
             },
 
-            # Potira, se entrou: sentada ao lado do pajé.
+            # Potira, se entrou: sentada à direita do pajé, um pouco atrás dele.
             "Potira": {
                 "imagem": "potira_sentada", "posicao": POSICAO_POTIRA, "escala": ESCALA_POTIRA,
+                "espelhar": True, "atras": True,
                 "de_fora": True, "uma_vez": True, "obrigatorio": True,
                 "passos": [
                     {"tipo": "visitante", "visitante": "potira"},
                     {"tipo": "fala", "quem": "Potira", "texto": "Não achei nada. Desculpa."},
-                    {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa_potira()},
+                    # Na fogueira a conversa é curta: a conversa inteira fica na oca Wanadi.
+                    {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": [
+                        {"pergunta": "Viu gente doente?",
+                         "resposta": "Vi rede vazia pendurada. Não entrei."},
+                    ]},
                     {"tipo": "exame", "quem": "Potira", "liberadas": ["Olhos", "Boca"],
                      "texto": TEXTO_EXAME, "zonas": ZONAS_POTIRA},
                     escolha_onde_dorme("Potira", "Durmo na rede de sempre.",

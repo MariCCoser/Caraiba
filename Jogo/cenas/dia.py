@@ -18,6 +18,7 @@ import pygame
 
 import config
 from dados.aldeia import TAPIRI
+from dados.arte import EM_PE
 from dados.dias import DIAS
 from dados.febre import DOENTES
 from dados.noites import NOITES
@@ -34,6 +35,9 @@ TECLAS_AVANCAR = (pygame.K_SPACE, pygame.K_RETURN, pygame.K_KP_ENTER)
 
 # Onde fica cada coisa na tela 1600x900
 CENTRO_VISITANTE_X = 500       # a pessoa fica à esquerda
+# Quem o Irmão Aleixo leva fica atrás dele, um pouco à direita e menor (mais longe).
+CENTRO_ACOMPANHANTE_X = 720
+ESCALA_ACOMPANHANTE = 0.82
 CENTRO_PAINEL_COM_VISITANTE = 1180
 CENTRO_PAINEL_SOZINHO = 800    # sem ninguém na entrada, a fala fica no meio
 TOPO_PAINEL = 150
@@ -72,6 +76,8 @@ class Dia(Cena):
         self.tempo_troca = DURACAO_TROCA_DE_FUNDO
         self.visitante = None
         self.tempo_chegada = DURACAO_CHEGADA
+        self.acompanhante = None   # quem o Irmão Aleixo leva: em pé, atrás dele, até ele ir embora
+        self.tempo_acompanhante = 0.0
 
         self.modo = None          # "fala", "perguntas" (também o exame) ou "escolha"
         self.passo_atual = None   # o passo de perguntas, exame ou escolha que está na tela
@@ -163,6 +169,8 @@ class Dia(Cena):
                 self._trocar_fundo((passo["fundo"], passo.get("filtro", "noite")))
             elif tipo == "visitante":
                 self.visitante = passo["visitante"]
+                if self.visitante is None:
+                    self.acompanhante = None   # quem ia com o visitante some com ele
                 self.tempo_chegada = 0.0
             elif tipo == "fala":
                 self._mostrar_fala(passo["quem"], passo["texto"])
@@ -267,11 +275,14 @@ class Dia(Cena):
         self.botoes = []
         self.visitante = None
         self._trocar_fundo((self.noite["fundo"], "noite"))
+        # Quem tem "atras": True senta mais longe: é desenhado antes (os outros ficam na frente).
+        pessoas = [(nome, pessoa) for nome, pessoa in self._pessoas_da_noite()
+                   if not (pessoa.get("uma_vez") and nome in self.conversados)]
+        pessoas.sort(key=lambda item: 0 if item[1].get("atras") else 1)
         self.na_fogueira = [
             PessoaNoCenario(nome, pessoa["imagem"], pessoa["posicao"], pessoa["escala"], "noite",
                             espelhar=pessoa.get("espelhar", False))
-            for nome, pessoa in self._pessoas_da_noite()
-            if not (pessoa.get("uma_vez") and nome in self.conversados)]
+            for nome, pessoa in pessoas]
         # A seta "Ir dormir" só aparece depois de falar com quem é obrigatório (quem é de fora:
         # decidir onde dorme) e de gastar toda a energia. Se não sobrou ninguém para examinar,
         # ela aparece mesmo com energia (senão o jogador ficaria preso na fogueira).
@@ -468,6 +479,7 @@ class Dia(Cena):
             nome = opcao["entrega"]
             self._sair_da_aldeia(nome)
             self.estado.entregues_nomes.append(nome)
+            self._acompanhar(nome)
         if opcao.get("morre"):
             nome = opcao["morre"]
             self._sair_da_aldeia(nome)
@@ -490,7 +502,13 @@ class Dia(Cena):
         estado.levados += 1
         self._sair_da_aldeia(nome)
         estado.entregues_nomes.append(nome)
+        self._acompanhar(nome)
         self._mostrar_fala("", passo["de_fora"] % nome)
+
+    def _acompanhar(self, nome):
+        """A pessoa que o Irmão Aleixo leva aparece em pé, atrás dele."""
+        self.acompanhante = EM_PE.get(nome)
+        self.tempo_acompanhante = 0.0
 
     def _sair_da_aldeia(self, nome):
         if nome in self.estado.dentro:
@@ -593,6 +611,7 @@ class Dia(Cena):
         self.tempo += dt
         self.tempo_troca += dt
         self.tempo_chegada += dt
+        self.tempo_acompanhante += dt
         if self.caixa:
             self.caixa.atualizar(dt)
         self._posicionar()
@@ -632,6 +651,9 @@ class Dia(Cena):
             for pessoa in self.na_fogueira:
                 pessoa.desenhar(tela)
 
+        if self.visitante and self.acompanhante:
+            self._desenhar_acompanhante(tela, filtro)
+
         if self.visitante:
             pessoa = imagens.personagem(self.visitante, filtro)
             progresso_chegada = min(1.0, self.tempo_chegada / DURACAO_CHEGADA)
@@ -645,6 +667,20 @@ class Dia(Cena):
                 pessoa.set_alpha(255)
             else:
                 tela.blit(pessoa, rect)
+
+    def _desenhar_acompanhante(self, tela, filtro):
+        """Quem o Irmão Aleixo leva: atrás dele, menor, aparecendo aos poucos."""
+        chave = (self.acompanhante, filtro)
+        if getattr(self, "_imagem_acompanhante", (None, None))[0] != chave:
+            original = imagens.personagem(self.acompanhante, filtro)
+            tamanho = (round(original.get_width() * ESCALA_ACOMPANHANTE),
+                       round(original.get_height() * ESCALA_ACOMPANHANTE))
+            self._imagem_acompanhante = (chave, pygame.transform.smoothscale(original, tamanho))
+        imagem = self._imagem_acompanhante[1]
+        vazio = round(imagens.vazio_embaixo(self.acompanhante) * ESCALA_ACOMPANHANTE)
+        rect = imagem.get_rect(midbottom=(CENTRO_ACOMPANHANTE_X, config.ALTURA + vazio))
+        imagem.set_alpha(int(255 * min(1.0, self.tempo_acompanhante / DURACAO_CHEGADA)))
+        tela.blit(imagem, rect)
 
     def desenhar_interface(self, tela):
         ui.texto_simples(tela, self.titulo, (40, 60), config.TAMANHO_PEQUENO,

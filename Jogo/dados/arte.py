@@ -41,6 +41,18 @@ PERSONAGENS = {
     "potira_sentada": "personagens/sentados/potira.png",
 }
 
+# Quem é de fora, pelo nome, e o apelido da arte em pé (em PERSONAGENS). Usado quando o Irmão
+# Aleixo leva alguém: a pessoa fica atrás dele, em pé, até os dois irem embora.
+EM_PE = {
+    "Yara": "yara",
+    "Mbaé": "mbae",
+    "Potira": "potira",
+    "Tamandaré-mirim": "tamandare",
+    "Iandé": "iande",
+    "Krenan": "krenan",
+    "Araci": "araci",
+}
+
 # Detalhes do exame (Arte/Doenças/): o olho de perto, em cores, à direita da tela.
 DETALHES = {
     "olho_yara": "detalhes/olho-yara.png",          # vermelho da fumaça (noites 1 e 2)

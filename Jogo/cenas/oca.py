@@ -94,7 +94,8 @@ class Oca(Cena):
     def _sentada(self, nome):
         """A pessoa no lugar dela dentro da oca (dados/aldeia.py, ONDE_DORME ou ONDE_DORME_TAPIRI)."""
         lugar = self.lugares[nome]
-        return PessoaNoCenario(nome, lugar["imagem"], lugar["posicao"], lugar["escala"], self.filtro)
+        return PessoaNoCenario(nome, lugar["imagem"], lugar["posicao"], lugar["escala"], self.filtro,
+                               espelhar=lugar.get("espelhar", False))
 
     def _posicionar(self):
         self.titulo.numero_de_linhas()
