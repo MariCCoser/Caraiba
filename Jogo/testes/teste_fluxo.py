@@ -94,7 +94,7 @@ def testar_estado_inicial():
     esperado = {"dia": 1, "vivos": 0, "mortos": 0, "mortos_por_sua_mao": 0, "entregues": 0,
                 "proximidade_vila": 0, "rio_acima": 0, "memoria": 0, "recusas_aleixo": 0, "levados": 0,
                 "pistas": 0, "sanidade": 10, "tapiri_usos": 0, "viu_anhanga": 0, "seguiu_paje": 0,
-                "inocentes": 0, "machado": 0, "dentro": [], "tapiri": [], "tapiri_desde": {}, "febre": [], "manha": [],
+                "inocentes": 0, "machado": 0, "energia_hoje": 0, "dentro": [], "tapiri": [], "tapiri_desde": {}, "febre": [], "manha": [],
                 "historias": [], "entregues_nomes": [],
                 "mortos_nomes": [], "mortos_quando": {}, "tabua": [], "tabua_noites": [], "final": None}
     dados = estado.para_dicionario()
@@ -960,9 +960,13 @@ def testar_dia3_e_noite3(jogo):
     # O sinal do pajé e a fogueira: sem Mbaé (foi com Aleixo).
     passar_falas(jogo)
     assert len(estado.tabua) == 2, "no Dia 3 o pajé não conta sinal novo"
-    # 1 olhar; quem aceitou o machado de Yara tem 2.
-    assert dia.titulo == "Noite 3" and dia.modo == "fogueira" and dia.energia == 1
+    # 1 olhar, e mais 1 por ter negado o Aleixo; quem aceitou o machado de Yara tem mais 1.
+    assert estado.energia_hoje == 1
+    assert dia.titulo == "Noite 3" and dia.modo == "fogueira" and dia.energia == 2, dia.energia
     estado.machado = 1
+    dia._comecar_noite()
+    assert dia.energia == dia.energia_max == 3
+    estado.energia_hoje = 0
     dia._comecar_noite()
     assert dia.energia == dia.energia_max == 2
     assert [p.nome for p in dia.na_fogueira] == ["Pajé", "Yara"]
@@ -1292,7 +1296,7 @@ def testar_dia6_e_noite6(jogo):
     assert estado.entregues_nomes == ["Yara", "Mbaé"] and estado.proximidade_vila == 1 and estado.vivos == 2
 
     # O sinal do pajé: o 4º risco da tábua, na noite 6.
-    assert estado.tabua[-1].startswith("Manchas pelo corpo") and estado.tabua_noites == [1, 2, 4, 6]
+    assert estado.tabua[-1] == "Manchas brancas atrás da orelha." and estado.tabua_noites == [1, 2, 4, 6]
     print("ok Dia 6: o Irmão Aleixo volta sozinho (caderno, o que mudou, entregar) e o 4º sinal")
 
     # A fogueira: pajé, Potira e Tamandaré-mirim. Agora dá para olhar atrás das orelhas.
@@ -1328,7 +1332,7 @@ def testar_dia7_e_noite7(jogo):
     estado.dentro = ["Yara"]
     estado.vivos = 1
     estado.tabua = ["Olho vermelho, com o branco raiado.", "Boca com feridas.",
-                    "Pontos brancos por dentro da bochecha.", "Manchas pelo corpo, começando atrás da orelha."]
+                    "Pontos brancos por dentro da bochecha.", "Manchas brancas atrás da orelha."]
     estado.tabua_noites = [1, 2, 4, 6]
     jogo.ir_para("aldeia")
     esperar_transicao(jogo)
@@ -1390,6 +1394,7 @@ def testar_dia7_e_noite7(jogo):
     clicar_opcao(jogo, "Voltar para a fogueira")
     clicar_pessoa(jogo, "Iandé")
     passar_falas(jogo)
+    assert textos_dos_botoes(jogo) == ["Viu alguém doente?", "Examinar o rosto"], textos_dos_botoes(jogo)
     clicar_opcao(jogo, "Examinar o rosto")
     assert textos_dos_botoes(jogo) == ["Olhos", "Orelhas", "Boca", "Terminar o exame"], textos_dos_botoes(jogo)
     examinar(jogo, ["Orelhas"])

@@ -86,14 +86,15 @@ ONDE_DORME = {
     "Yara": {"oca": "oca1", "imagem": "yara_sentada", "posicao": (1115, 522), "escala": 0.27},
     # Mbaé senta sobre a cama (o estrado da direita), na mesma pose da fogueira. Ocupa um pouco
     # mais que a metade da altura da parede (a parede vai de y 235 a 570: uns 335; Mbaé, uns 195).
-    "Mbaé": {"oca": "oca2", "imagem": "mbae_sentado", "posicao": (1235, 598), "escala": 0.35},
+    "Mbaé": {"oca": "oca2", "imagem": "mbae_sentado", "posicao": (1290, 570), "escala": 0.31},
     # Potira senta sobre a cama da oca Wanadi (a cama fica à direita), virada para o fogo.
     "Potira": {"oca": "oca3", "imagem": "potira_sentada", "posicao": (1240, 652), "escala": 0.33,
                "espelhar": True},
     # Tamandaré-mirim senta no chão da oca Yebá Bëló, à esquerda da porta.
     "Tamandaré-mirim": {"oca": "oca2", "imagem": "tamandare_sentado", "posicao": (590, 592), "escala": 0.33},
-    # Iandé divide a oca Yorixiriamori com Yara: senta sobre a esteira de dormir, à esquerda.
-    "Iandé": {"oca": "oca1", "imagem": "iande_sentada", "posicao": (470, 578), "escala": 0.3},
+    # Iandé divide a oca Yorixiriamori com Yara: senta no chão com as costas no poste do meio,
+    # de frente para o fogo (à direita).
+    "Iandé": {"oca": "oca1", "imagem": "iande_sentada", "posicao": (1327, 765), "escala": 0.38},
 }
 
 # Onde senta, dentro do tapiri, quem o jogador levou para lá (a esteira fica à direita).

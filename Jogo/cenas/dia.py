@@ -36,7 +36,9 @@ TECLAS_AVANCAR = (pygame.K_SPACE, pygame.K_RETURN, pygame.K_KP_ENTER)
 # Onde fica cada coisa na tela 1600x900
 CENTRO_VISITANTE_X = 500       # a pessoa fica à esquerda
 # Quem o Irmão Aleixo leva fica atrás dele, à esquerda (para quem olha) e menor (mais longe).
-CENTRO_ACOMPANHANTE_X = 270
+# O que importa é o rosto: ele fica nesta altura x, à esquerda do Aleixo, mesmo que o resto da
+# pessoa (o cesto de Potira, o arco de Mbaé) saia pela borda da tela.
+ROSTO_ACOMPANHANTE_X = 185
 ESCALA_ACOMPANHANTE = 0.82
 CENTRO_PAINEL_COM_VISITANTE = 1180
 CENTRO_PAINEL_SOZINHO = 800    # sem ninguém na entrada, a fala fica no meio
@@ -251,7 +253,8 @@ class Dia(Cena):
         # "energia_extra": +1 olhar para cada variável do estado.py que já chegou ao valor pedido.
         extra = sum(1 for nome, valor in self.noite.get("energia_extra", {}).items()
                     if getattr(self.estado, nome) >= valor)
-        self.energia_max = self.noite["energia"] + extra
+        # "energia_hoje": a mais só nesta noite (negar o pedido do Irmão Aleixo, dados/dias.py).
+        self.energia_max = self.noite["energia"] + extra + self.estado.energia_hoje
         self.energia = self.energia_max
         self._mostrar_fogueira()
 
@@ -697,7 +700,8 @@ class Dia(Cena):
             self._imagem_acompanhante = (chave, pygame.transform.smoothscale(original, tamanho))
         imagem = self._imagem_acompanhante[1]
         vazio = round(imagens.vazio_embaixo(self.acompanhante) * ESCALA_ACOMPANHANTE)
-        rect = imagem.get_rect(midbottom=(CENTRO_ACOMPANHANTE_X, config.ALTURA + vazio))
+        rect = imagem.get_rect(bottom=config.ALTURA + vazio)
+        rect.x = ROSTO_ACOMPANHANTE_X - _meio_do_rosto(imagem)
         imagem.set_alpha(int(255 * min(1.0, self.tempo_acompanhante / DURACAO_CHEGADA)))
         tela.blit(imagem, rect)
 
@@ -750,6 +754,15 @@ class Dia(Cena):
 
         # A tábua por último: aberta, ela fica por cima de tudo.
         self.tabua.desenhar(tela)
+
+
+def _meio_do_rosto(imagem):
+    """Onde fica o rosto na imagem (x): o meio do que está desenhado no alto (a cabeça)."""
+    mascara = pygame.mask.from_surface(imagem)
+    caixa = mascara.get_bounding_rects()[0]
+    xs = [x for y in range(caixa.top, caixa.top + caixa.height // 8)
+          for x in range(caixa.left, caixa.right) if mascara.get_at((x, y))]
+    return sum(xs) // len(xs) if xs else imagem.get_width() // 2
 
 
 def _itens(passo):

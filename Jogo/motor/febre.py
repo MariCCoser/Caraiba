@@ -83,6 +83,7 @@ def _frase(chave, nomes):
 def amanhecer(estado):
     estado.dia += 1
     estado.manha = []
+    estado.energia_hoje = 0   # a energia a mais (negar o Aleixo) vale só para a noite em que veio
     doentes, mortos, mortos_sem_sinal = [], [], []
     for entrada in list(estado.febre):
         nome = entrada.get("nome")

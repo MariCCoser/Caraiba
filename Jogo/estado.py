@@ -28,6 +28,7 @@ class Estado:
         self.seguiu_paje = 0           # vezes que levou ao tapiri quem o pajé acusou (A Água do Batismo)
         self.inocentes = 0             # dessas vezes, quantas a pessoa era sã
         self.machado = 0               # 1 se aceitou o machado de Yara (dá mais energia nas noites 2 e 3)
+        self.energia_hoje = 0          # energia a mais só na noite de hoje (negar o Aleixo); zera de manhã
 
         # Quem de fora entrou na aldeia (nomes), para a noite saber quem examinar
         self.dentro = []

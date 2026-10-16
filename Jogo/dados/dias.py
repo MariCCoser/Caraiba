@@ -59,6 +59,7 @@ from dados.conversas import (conversa_iande, conversa_mbae, conversa_potira, con
 #   Negar:                   recusas_aleixo +1. Mesmo assim ele leva alguém, sorteado entre
 #                            quem é de fora: levados +1, vivos -1. Sem ninguém, vai embora só.
 #                            A cada visita, ele fica mais irritado (FALA_ALEIXO_NEGADO).
+#                            Negar dá mais energia na noite (ENERGIA_POR_NEGAR).
 # Negar nas três visitas é o "nenhuma entrega" (entregues == 0) dos finais.
 #
 # As perguntas para ele ficam divididas entre as três visitas: as do dia 6 e do dia 9 já
@@ -107,6 +108,8 @@ FALA_ALEIXO_NEGADO = {
     9: "Chega. Eu levo quem eu quiser.",
 }
 EFEITOS_ENTREGAR = {"entregues": 1, "proximidade_vila": 1, "vivos": -1}
+# Negar o pedido do Aleixo dá energia a mais na noite do mesmo dia (olhares na fogueira).
+ENERGIA_POR_NEGAR = 1
 FALA_ALEIXO_VOLTA = {"tipo": "fala", "quem": ALEIXO, "texto": "Volto daqui a alguns dias."}
 
 
@@ -128,7 +131,7 @@ def oferta_aleixo(dia):
          "efeitos": EFEITOS_ENTREGAR, "passos": [{"tipo": "fala", "quem": ALEIXO, "texto": fala}]}
         for nome, fala in FALA_ENTREGUE.items()]
     return {"tipo": "escolha", "texto": "Ele quer levar alguém para a vila.", "opcoes": entregar + [
-        {"texto": "Negar", "efeitos": {"recusas_aleixo": 1}, "passos": [
+        {"texto": "Negar", "efeitos": {"recusas_aleixo": 1, "energia_hoje": ENERGIA_POR_NEGAR}, "passos": [
             {"tipo": "fala", "quem": ALEIXO, "texto": FALA_ALEIXO_NEGADO[dia]},
             {"tipo": "aleixo_leva",
              "de_fora": "Ele leva %s pela trilha. Ninguém consegue impedir.",
@@ -520,7 +523,7 @@ DIAS = {
             {"tipo": "visitante", "visitante": "paje"},
             {"tipo": "fala", "quem": "Pajé",
              "texto": "Sonhei com manchas pelo corpo. Começam [atrás da orelha] e descem pela pele."},
-            {"tipo": "sinal", "texto": "Manchas pelo corpo, começando atrás da orelha."},
+            {"tipo": "sinal", "texto": "Manchas brancas atrás da orelha."},
 
             {"tipo": "noite"},
         ],

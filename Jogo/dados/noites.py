@@ -64,7 +64,7 @@
 #
 # Quem é de fora tem a mesma conversa em todas as noites (dados/conversas.py).
 
-from dados.conversas import conversa_iande, conversa_mbae, conversa_tamandare, conversa_yara
+from dados.conversas import conversa_mbae, conversa_tamandare, conversa_yara
 from dados.dias import DEUSES_FELIZES, DEUSES_INFELIZES
 
 # O que acontece quando o jogador mata alguém (a Proposta: mostra o corpo com nome no dia
@@ -207,7 +207,7 @@ LIBERADAS_NOITE_6 = ["Olhos", "Boca", "Orelhas"]
 # Tamandaré-mirim na noite 6: as primeiras manchas atrás da orelha. Três sinais da tábua.
 ZONAS_TAMANDARE_NOITE_6 = [dict(zona) for zona in ZONAS_TAMANDARE]
 ZONAS_TAMANDARE_NOITE_6[2] = {"pergunta": "Orelhas", "sinal": True,
-                              "resposta": "Atrás das orelhas, manchas vermelhas começando a descer."}
+                              "resposta": "Atrás das orelhas, manchas brancas começando a descer."}
 
 
 # --- Noite 7: Iandé, a que está perfeita ---
@@ -825,7 +825,11 @@ NOITES = {
                 "passos": [
                     {"tipo": "visitante", "visitante": "iande"},
                     {"tipo": "fala", "quem": "Iandé", "texto": "Que bom estar perto do fogo de casa."},
-                    {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa_iande()},
+                    # Na fogueira, só o essencial: a conversa inteira fica na oca.
+                    {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": [
+                        {"pergunta": "Viu alguém doente?",
+                         "resposta": "Vi uma casa fechada, com uma cruz na porta."},
+                    ]},
                     {"tipo": "exame", "quem": "Iandé", "liberadas": LIBERADAS_NOITE_6,
                      "texto": TEXTO_EXAME, "zonas": ZONAS_IANDE},
                     escolha_onde_dorme("Iandé", "Na minha rede de sempre. Que saudade.",
