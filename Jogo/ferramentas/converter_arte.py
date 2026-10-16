@@ -11,7 +11,7 @@
 # Chegou arte nova? Acrescente uma linha na lista CENARIOS (ou PERSONAGENS) abaixo e rode de novo.
 
 import os
-from PIL import Image, ImageChops, ImageDraw, ImageFilter
+from PIL import Image, ImageChops, ImageDraw, ImageEnhance, ImageFilter
 
 # Pasta Jogo/ (este arquivo está em Jogo/ferramentas/)
 PASTA_JOGO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -41,6 +41,12 @@ CENARIOS = [
     # O tapiri por dentro: uma imagem só, para o dia e a noite.
     ("Ocas/Tabiri.png", "cenarios/cenario-tapiri.jpg"),
 ]
+
+# Cenários que saem mais claros que o original (1 = igual; 1.3 = 30% mais claro).
+CLAREAR = {
+    "cenarios/cenario-oca3-dia.jpg": 1.3,     # a oca Wanadi, onde Potira fica
+    "cenarios/cenario-oca3-noite.jpg": 1.3,
+}
 
 # CORTE PADRÃO DAS PESSOAS: do topo da cabeça até o meio das coxas, sempre com esta
 # altura. Assim todo mundo aparece na mesma escala, com a cabeça no mesmo lugar da tela.
@@ -130,6 +136,8 @@ def converter_cenario(origem, destino):
     os.makedirs(os.path.dirname(caminho_destino), exist_ok=True)
     imagem = Image.open(caminho_origem).convert("RGB")
     imagem = ajustar_ao_tamanho(imagem, TAMANHO_CENARIO)
+    if destino in CLAREAR:
+        imagem = ImageEnhance.Brightness(imagem).enhance(CLAREAR[destino])
     imagem.save(caminho_destino, quality=QUALIDADE_JPG, optimize=True, progressive=True)
     tamanho_kb = os.path.getsize(caminho_destino) // 1024
     print("  ok  %-22s -> %-36s %4d KB" % (origem, destino, tamanho_kb))

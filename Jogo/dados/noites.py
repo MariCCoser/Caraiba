@@ -23,6 +23,8 @@
 #       "escala"       o tamanho (1 = o tamanho de quem fala)
 #       "espelhar"     True: vira a pessoa para o outro lado (o pajé olha para o fogo)
 #       "atras"        True: senta atrás dos outros (é desenhada antes, os outros na frente)
+#       "posicao_com"  {"Potira": (x, y)}: outra posição, quando essa pessoa está na fogueira
+#                      nesta noite (ex.: o pajé chega para o lado quando Potira senta perto)
 #       "de_fora"      True: só aparece se o jogador a deixou entrar (e se não está no tapiri,
 #                      porque quem está no tapiri fica lá, isolado)
 #       "uma_vez"      True: depois da conversa ela sai da fogueira (foi dormir)
@@ -150,9 +152,10 @@ ZONAS_YARA_NOITE_3[1] = {"pergunta": "Olhos",
 
 # --- Noite 4: Potira, a que você conhece ---
 # Potira é sã: o olho está cansado, a boca seca de sede. Nada bate com a tábua.
-# Na fogueira, ela senta à direita do pajé, um pouco atrás dele e menor (mais longe),
-# virada para o fogo.
-POSICAO_POTIRA, ESCALA_POTIRA = (1530, 478), 0.46
+# Na fogueira, ela senta no chão, à esquerda do pajé (para quem olha), com as costas
+# encostadas no tronco, virada para o fogo. Com ela ali, o pajé chega mais para a esquerda.
+POSICAO_POTIRA, ESCALA_POTIRA = (1275, 612), 0.5
+POSICAO_PAJE_COM_POTIRA = (1475, 560)
 
 ZONAS_POTIRA = [
     {"pergunta": "Testa",
@@ -413,6 +416,7 @@ NOITES = {
             # que ele viu nascer.
             "Pajé": {
                 "imagem": "paje_sentado", "posicao": POSICAO_PAJE, "escala": ESCALA_PAJE, "espelhar": True,
+                "posicao_com": {"Potira": POSICAO_PAJE_COM_POTIRA},
                 "passos": [
                     {"tipo": "visitante", "visitante": "paje"},
                     {"tipo": "fala", "quem": "Pajé", "texto": "Sente. Hoje o fogo está quieto."},
@@ -468,10 +472,10 @@ NOITES = {
                 ],
             },
 
-            # Potira, se entrou: sentada à direita do pajé, um pouco atrás dele.
+            # Potira, se entrou: no chão, à esquerda do pajé, encostada no tronco.
             "Potira": {
                 "imagem": "potira_sentada", "posicao": POSICAO_POTIRA, "escala": ESCALA_POTIRA,
-                "espelhar": True, "atras": True,
+                "espelhar": True,
                 "de_fora": True, "uma_vez": True, "obrigatorio": True,
                 "passos": [
                     {"tipo": "visitante", "visitante": "potira"},
@@ -509,6 +513,7 @@ NOITES = {
             # O pajé só diz como estão os deuses (dados/dias.py, DEUSES).
             "Pajé": {
                 "imagem": "paje_sentado", "posicao": POSICAO_PAJE, "escala": ESCALA_PAJE, "espelhar": True,
+                "posicao_com": {"Potira": POSICAO_PAJE_COM_POTIRA},
                 "passos": [
                     {"tipo": "visitante", "visitante": "paje"},
                     DEUSES_FELIZES,
@@ -550,7 +555,7 @@ NOITES = {
             # Potira: a conversa curta, como na noite 4. Não é obrigatório falar com ela.
             "Potira": {
                 "imagem": "potira_sentada", "posicao": POSICAO_POTIRA, "escala": ESCALA_POTIRA,
-                "espelhar": True, "atras": True,
+                "espelhar": True,
                 "de_fora": True, "uma_vez": True,
                 "passos": [
                     {"tipo": "visitante", "visitante": "potira"},

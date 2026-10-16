@@ -285,8 +285,18 @@ class Dia(Cena):
         pessoas = [(nome, pessoa) for nome, pessoa in self._pessoas_da_noite()
                    if not (pessoa.get("uma_vez") and nome in self.conversados)]
         pessoas.sort(key=lambda item: 0 if item[1].get("atras") else 1)
+        # "posicao_com": a pessoa muda de lugar se outra está na fogueira nesta noite (mesmo que
+        # já tenha ido dormir: o lugar não muda no meio da noite).
+        da_noite = [nome for nome, _ in self._pessoas_da_noite()]
+
+        def posicao(pessoa):
+            for outro, lugar in pessoa.get("posicao_com", {}).items():
+                if outro in da_noite:
+                    return lugar
+            return pessoa["posicao"]
+
         self.na_fogueira = [
-            PessoaNoCenario(nome, pessoa["imagem"], pessoa["posicao"], pessoa["escala"], "noite",
+            PessoaNoCenario(nome, pessoa["imagem"], posicao(pessoa), pessoa["escala"], "noite",
                             espelhar=pessoa.get("espelhar", False))
             for nome, pessoa in pessoas]
         # A seta "Ir dormir" só aparece depois de falar com quem é obrigatório (quem é de fora:

@@ -1072,8 +1072,10 @@ def testar_dia4_e_noite4(jogo):
 
     # A fogueira: pajé, Mbaé e Potira. Os dois de fora são obrigatórios.
     assert dia.titulo == "Noite 4" and dia.modo == "fogueira" and dia.energia == 1
-    # Potira senta atrás do pajé: é desenhada primeiro.
-    assert [p.nome for p in dia.na_fogueira] == ["Potira", "Pajé", "Mbaé"]
+    # Potira senta no chão, à esquerda do pajé, e o pajé chega para o lado.
+    assert [p.nome for p in dia.na_fogueira] == ["Pajé", "Mbaé", "Potira"]
+    from dados.noites import POSICAO_PAJE_COM_POTIRA
+    assert dia.na_fogueira[0].rect.midbottom[0] == POSICAO_PAJE_COM_POTIRA[0]
     assert not dia.botao_dormir.visivel, "a seta de ir dormir só aparece sem energia"
     rodar(jogo, 40)
     capturar(jogo, "33-noite4-fogueira")
@@ -1190,7 +1192,7 @@ def testar_dia5_e_noite5(jogo):
     dia = jogo.cenas.atual
     assert len(estado.tabua) == 3, "no Dia 5 o pajé não conta sinal novo"
     assert dia.titulo == "Noite 5" and dia.modo == "fogueira"
-    assert [p.nome for p in dia.na_fogueira] == ["Potira", "Pajé", "Mbaé", "Tamandaré-mirim"]
+    assert [p.nome for p in dia.na_fogueira] == ["Pajé", "Mbaé", "Potira", "Tamandaré-mirim"]
     rodar(jogo, 40)
     capturar(jogo, "37-noite5-fogueira")
     clicar_pessoa(jogo, "Pajé")
