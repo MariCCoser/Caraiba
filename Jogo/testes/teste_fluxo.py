@@ -187,7 +187,8 @@ def testar_febre():
     # irritado a cada visita.
     from dados.dias import FALA_ALEIXO_NEGADO, oferta_aleixo
     assert [o["texto"] for o in oferta_aleixo(3)["opcoes"]] == [
-        "Entregar Yara", "Entregar Mbaé", "Entregar Potira", "Entregar Tamandaré-mirim", "Negar"]
+        "Entregar Yara", "Entregar Mbaé", "Entregar Potira", "Entregar Tamandaré-mirim", "Entregar Iandé",
+        "Negar"]
     assert sorted(FALA_ALEIXO_NEGADO) == [3, 6, 9]
     assert oferta_aleixo(9)["opcoes"][-1]["passos"][0]["texto"] == FALA_ALEIXO_NEGADO[9]
 
@@ -1313,8 +1314,98 @@ def testar_dia6_e_noite6(jogo):
     passar_falas(jogo)
     esperar_transicao(jogo)
     aldeia = jogo.cenas.atual
-    assert nome_cena(jogo) == "Aldeia" and not aldeia.tem_seta, "ainda não há Dia 7"
+    assert nome_cena(jogo) == "Aldeia" and aldeia.tem_seta, "a seta Dormir leva ao Dia 7"
     print("ok Noite 6: manchas atrás das orelhas, Tamandaré-mirim ao tapiri")
+    jogo.ir_para("menu")
+    esperar_transicao(jogo)
+
+
+def testar_dia7_e_noite7(jogo):
+    """Dia 7 (Iandé: curta na entrada, longa na oca Yorixiriamori, com Yara) e a Noite 7."""
+    jogo.nova_partida()
+    estado = jogo.estado
+    estado.dia = 6
+    estado.dentro = ["Yara"]
+    estado.vivos = 1
+    estado.tabua = ["Olho vermelho, com o branco raiado.", "Boca com feridas.",
+                    "Pontos brancos por dentro da bochecha.", "Manchas pelo corpo, começando atrás da orelha."]
+    estado.tabua_noites = [1, 2, 4, 6]
+    jogo.ir_para("aldeia")
+    esperar_transicao(jogo)
+    clicar(jogo, jogo.cenas.atual.rect_seta.center)
+    esperar_transicao(jogo)
+    esperar_transicao(jogo)
+    # Sem manhã para contar, o Dia 7 já começa andando pela aldeia.
+    assert estado.dia == 7 and nome_cena(jogo) == "Aldeia", nome_cena(jogo)
+
+    # Na entrada: uma pergunta só.
+    passar_falas(jogo)
+    dia = jogo.cenas.atual
+    assert dia.modo == "perguntas" and dia.visitante == "iande", (dia.modo, dia.visitante)
+    assert textos_dos_botoes(jogo) == ["Como estava a vila?", "Decidir"], textos_dos_botoes(jogo)
+    rodar(jogo, 60)
+    capturar(jogo, "41-dia7-iande")
+    clicar_opcao(jogo, "Decidir")
+    clicar_opcao(jogo, "Deixar entrar")
+    passar_falas(jogo, seguir_seta=False)
+    assert estado.dentro == ["Yara", "Iandé"] and estado.vivos == 2
+
+    # Na oca Yorixiriamori, com Yara: a conversa inteira.
+    oca = entrar_na_oca(jogo, "oca1")
+    assert [p.nome for p in oca.na_oca] == ["Iandé"] and [p.nome for p in oca.paradas] == ["Yara"]
+    rodar(jogo, 20)
+    capturar(jogo, "42-dia7-iande-na-oca")
+    clicar_pessoa(jogo, "Iandé")
+    passar_falas(jogo)
+    assert textos_dos_botoes(jogo) == ["Como estava a vila?", "Viu alguém doente?", "Que conta é essa no pulso?",
+                                       "Conte da viagem.", "Terminar a conversa"], textos_dos_botoes(jogo)
+    clicar_opcao(jogo, "Viu alguém doente?")
+    dia = jogo.cenas.atual
+    dia.caixa.completar()
+    assert dia.caixa.texto == "Vi uma casa fechada, com uma cruz na porta.", dia.caixa.texto
+    passar_falas(jogo)
+    clicar_opcao(jogo, "Conte da viagem.")
+    passar_falas(jogo)
+    assert estado.memoria == 1 and "viagem_iande" in estado.historias
+    clicar_opcao(jogo, "Terminar a conversa")
+    esperar_transicao(jogo)
+    clicar_botao(jogo, jogo.cenas.atual.botao_sair)
+    esperar_transicao(jogo)
+
+    # O pajé não conta sinal novo; na fogueira, Iandé é obrigatória e nada nela bate com a tábua.
+    passar_falas(jogo)
+    dia = jogo.cenas.atual
+    assert len(estado.tabua) == 4, "no Dia 7 o pajé não conta sinal novo"
+    print("ok Dia 7: Iandé (curta na entrada, longa na oca com Yara)")
+    assert dia.titulo == "Noite 7" and dia.modo == "fogueira"
+    assert [p.nome for p in dia.na_fogueira] == ["Pajé", "Yara", "Iandé"]
+    rodar(jogo, 40)
+    capturar(jogo, "43-noite7-fogueira")
+    clicar_pessoa(jogo, "Pajé")
+    passar_falas(jogo)
+    clicar_opcao(jogo, "E a Iandé?")
+    dia.caixa.completar()
+    assert dia.caixa.texto == "Ela é nossa.", dia.caixa.texto
+    passar_falas(jogo)
+    clicar_opcao(jogo, "Voltar para a fogueira")
+    clicar_pessoa(jogo, "Iandé")
+    passar_falas(jogo)
+    clicar_opcao(jogo, "Examinar o rosto")
+    assert textos_dos_botoes(jogo) == ["Olhos", "Orelhas", "Boca", "Terminar o exame"], textos_dos_botoes(jogo)
+    examinar(jogo, ["Orelhas"])
+    assert dia.sinais.get("Iandé", 0) == 0 and dia.energia == 0
+    clicar_opcao(jogo, "Terminar o exame")
+    clicar_opcao(jogo, "Deixar na oca")
+    passar_falas(jogo)
+    assert dia.botao_dormir.visivel
+    clicar_botao(jogo, dia.botao_dormir)
+    passar_falas(jogo)
+    esperar_transicao(jogo)
+    # Iandé dormiu na oca: ela é amaldiçoada, e Yara (na mesma aldeia) pode pegar.
+    assert all(e["de"] == "Iandé" and e["nome"] == "Yara" for e in estado.febre), estado.febre
+    aldeia = jogo.cenas.atual
+    assert nome_cena(jogo) == "Aldeia" and not aldeia.tem_seta, "ainda não há Dia 8"
+    print("ok Noite 7: Iandé sem nenhum sinal, e mesmo assim amaldiçoada")
     jogo.ir_para("menu")
     esperar_transicao(jogo)
 
@@ -1485,6 +1576,7 @@ def testar_fluxo():
     testar_dia4_e_noite4(jogo)
     testar_dia5_e_noite5(jogo)
     testar_dia6_e_noite6(jogo)
+    testar_dia7_e_noite7(jogo)
     testar_aldeia_de_dia(jogo)
 
     # 5c. Continuar de onde parou, a tábua de barro e o "Como se joga" do menu

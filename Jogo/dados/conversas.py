@@ -1,6 +1,6 @@
 # As conversas de sempre de quem é de fora. Edite à vontade: aqui não há lógica.
 #
-# Quem é de fora (Yara, Mbaé, Potira, Tamandaré-mirim) tem uma conversa só, a mesma na oca (de dia,
+# Quem é de fora (Yara, Mbaé, Potira, Tamandaré-mirim, Iandé) tem uma conversa só, a mesma na oca (de dia,
 # dados/dias.py) e em todas as noites na fogueira (dados/noites.py). Muda só a primeira frase
 # de cada noite. (Potira é a exceção: na fogueira, a conversa dela é mais curta.)
 #
@@ -81,4 +81,23 @@ def conversa_tamandare():
              "Tirei dos caraíbas.",
              "Se o deus deles mora nela, agora ele anda comigo.",
          ]},
+    ]
+
+
+def conversa_iande():
+    """As perguntas de sempre para Iandé (a conversa dela na oca Yorixiriamori, com Yara).
+    Na entrada da aldeia, a conversa é mais curta (dados/dias.py, Dia 7)."""
+    return [
+        {"pergunta": "Como estava a vila?",
+         "resposta": "Todo mundo bem. Tinha festa de santo."},
+        {"pergunta": "Viu alguém doente?",
+         "resposta": "Vi uma casa fechada, com uma cruz na porta."},
+        {"pergunta": "Que conta é essa no pulso?",
+         "resposta": "Ganhei na festa. É de vidro, brilha no sol."},
+        {"pergunta": "Conte da viagem.",
+         "resposta": [
+             "Fui com o cesto cheio de mandioca. Voltei com ele vazio, e com sal.",
+             "Na vila, um padre jogou água na minha cabeça. Disse que agora eu tenho outro nome.",
+         ],
+         "historia": "viagem_iande", "efeitos": {"memoria": 1}},
     ]

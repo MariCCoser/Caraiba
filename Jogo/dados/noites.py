@@ -64,7 +64,7 @@
 #
 # Quem é de fora tem a mesma conversa em todas as noites (dados/conversas.py).
 
-from dados.conversas import conversa_mbae, conversa_tamandare, conversa_yara
+from dados.conversas import conversa_iande, conversa_mbae, conversa_tamandare, conversa_yara
 from dados.dias import DEUSES_FELIZES, DEUSES_INFELIZES
 
 # O que acontece quando o jogador mata alguém (a Proposta: mostra o corpo com nome no dia
@@ -208,6 +208,27 @@ LIBERADAS_NOITE_6 = ["Olhos", "Boca", "Orelhas"]
 ZONAS_TAMANDARE_NOITE_6 = [dict(zona) for zona in ZONAS_TAMANDARE]
 ZONAS_TAMANDARE_NOITE_6[2] = {"pergunta": "Orelhas", "sinal": True,
                               "resposta": "Atrás das orelhas, manchas vermelhas começando a descer."}
+
+
+# --- Noite 7: Iandé, a que está perfeita ---
+# Ela está com a maldição (varíola, nos primeiros dias), mas nada se vê: nenhuma zona bate
+# com a tábua. Na fogueira, ela senta na frente, à esquerda do fogo.
+POSICAO_IANDE, ESCALA_IANDE = (690, 790), 0.45
+
+ZONAS_IANDE = [
+    {"pergunta": "Testa",
+     "resposta": "Fresca. Nenhum suor."},
+    {"pergunta": "Olhos", "imagem": "olho_iande",
+     "resposta": "[Dormi bem na vila]."},
+    {"pergunta": "Orelhas",
+     "resposta": "Nada atrás das orelhas. A pele está limpa."},
+    {"pergunta": "Boca",
+     "resposta": "Normal. Por dentro da bochecha também."},
+    {"pergunta": "Mãos",
+     "resposta": "Firmes. Uma conta de vidro nova no pulso."},
+    {"pergunta": "Respiração",
+     "resposta": "Respira fundo, sem tosse."},
+]
 
 
 NOITES = {
@@ -696,6 +717,119 @@ NOITES = {
                      "texto": TEXTO_EXAME, "zonas": ZONAS_TAMANDARE_NOITE_6},
                     escolha_onde_dorme("Tamandaré-mirim", "Durmo perto da porta. Acordo antes do sol.",
                                        "Sozinho. Os profetas sempre dormem sozinhos."),
+                    {"tipo": "visitante", "visitante": None},
+                ],
+            },
+        },
+        "fim": [
+            {"tipo": "fala", "quem": "",
+             "texto": "O fogo baixa. A aldeia vai para as redes."},
+        ],
+    },
+
+    7: {
+        "titulo": "Noite 7",
+        # 1 olhar (2 com o machado); os olhos, a boca e atrás das orelhas, como na noite 6.
+        "energia": 1,
+        "energia_extra": {"machado": 1},
+        "fundo": "fogueira_perto",
+        "amaldicoados": True,
+        "dica": "Clique em quem está perto do fogo para conversar.",
+        "dormir": "Ir dormir",
+        "pessoas": {
+            "Pajé": {
+                "imagem": "paje_sentado", "posicao": POSICAO_PAJE, "escala": ESCALA_PAJE, "espelhar": True,
+                "posicao_com": {"Potira": POSICAO_PAJE_COM_POTIRA},
+                "passos": [
+                    {"tipo": "visitante", "visitante": "paje"},
+                    {"tipo": "fala", "quem": "Pajé", "texto": "Sente. Hoje eu não sonhei nada que sirva."},
+                    {"tipo": "perguntas", "botao": "Voltar para a fogueira", "perguntas": [
+                        {"pergunta": "O que você viu no sono?",
+                         "resposta": "O mal anda com quem parece bem. Eu não sei dizer mais que isso."},
+                        {"pergunta": "E a Iandé?", "se_dentro": "Iandé",
+                         "resposta": "Ela é nossa."},
+                    ]},
+                    {"tipo": "visitante", "visitante": None},
+                ],
+            },
+
+            "Yara": {
+                "imagem": "yara_sentada", "posicao": POSICAO_YARA, "escala": ESCALA_YARA,
+                "de_fora": True, "uma_vez": True,
+                "passos": [
+                    {"tipo": "visitante", "visitante": "yara"},
+                    {"tipo": "fala", "quem": "Yara", "texto": "Tem gente nova na minha oca. Fala sem parar."},
+                    {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa_yara()},
+                    {"tipo": "exame", "quem": "Yara", "liberadas": LIBERADAS_NOITE_6,
+                     "texto": TEXTO_EXAME, "zonas": ZONAS_YARA_NOITE_3},
+                    escolha_onde_dorme("Yara", "Mais uma noite, então. Obrigada.",
+                                       "Sozinha, então. Já dormi em lugar pior."),
+                    {"tipo": "visitante", "visitante": None},
+                ],
+            },
+
+            "Mbaé": {
+                "imagem": "mbae_sentado", "posicao": POSICAO_MBAE, "escala": ESCALA_MBAE,
+                "de_fora": True, "uma_vez": True, "obrigatorio": True,
+                "passos": [
+                    {"tipo": "visitante", "visitante": "mbae"},
+                    {"tipo": "fala", "quem": "Mbaé", "texto": "(tosse) Mais um dia."},
+                    {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa_mbae()},
+                    {"tipo": "exame", "quem": "Mbaé", "liberadas": LIBERADAS_NOITE_6,
+                     "texto": TEXTO_EXAME, "zonas": ZONAS_MBAE},
+                    escolha_onde_dorme("Mbaé", "Durmo no canto. Não incomodo ninguém.",
+                                       "Sozinho no escuro. Já passei noite pior na caça."),
+                    {"tipo": "visitante", "visitante": None},
+                ],
+            },
+
+            "Potira": {
+                "imagem": "potira_sentada", "posicao": POSICAO_POTIRA, "escala": ESCALA_POTIRA,
+                "espelhar": True,
+                "de_fora": True, "uma_vez": True,
+                "passos": [
+                    {"tipo": "visitante", "visitante": "potira"},
+                    {"tipo": "fala", "quem": "Potira", "texto": "A Iandé voltou rindo. Fazia tempo que ninguém ria."},
+                    {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": [
+                        {"pergunta": "Viu gente doente?",
+                         "resposta": "Vi rede vazia pendurada. Não entrei."},
+                    ]},
+                    {"tipo": "exame", "quem": "Potira", "liberadas": LIBERADAS_NOITE_6,
+                     "texto": TEXTO_EXAME, "zonas": ZONAS_POTIRA},
+                    escolha_onde_dorme("Potira", "Durmo na rede de sempre.",
+                                       "Sozinha? Se você manda, eu vou."),
+                    {"tipo": "visitante", "visitante": None},
+                ],
+            },
+
+            "Tamandaré-mirim": {
+                "imagem": "tamandare_sentado", "posicao": POSICAO_TAMANDARE, "escala": ESCALA_TAMANDARE,
+                "de_fora": True, "uma_vez": True, "obrigatorio": True,
+                "passos": [
+                    {"tipo": "visitante", "visitante": "tamandare"},
+                    {"tipo": "fala", "quem": "Tamandaré-mirim",
+                     "texto": "Ela voltou da vila dos caraíbas. Olhe bem para ela."},
+                    {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa_tamandare()},
+                    {"tipo": "exame", "quem": "Tamandaré-mirim", "liberadas": LIBERADAS_NOITE_6,
+                     "texto": TEXTO_EXAME, "zonas": ZONAS_TAMANDARE_NOITE_6},
+                    escolha_onde_dorme("Tamandaré-mirim", "Durmo perto da porta. Acordo antes do sol.",
+                                       "Sozinho. Os profetas sempre dormem sozinhos."),
+                    {"tipo": "visitante", "visitante": None},
+                ],
+            },
+
+            # Iandé, se entrou: na frente, à esquerda do fogo. Nada nela bate com a tábua.
+            "Iandé": {
+                "imagem": "iande_sentada", "posicao": POSICAO_IANDE, "escala": ESCALA_IANDE,
+                "de_fora": True, "uma_vez": True, "obrigatorio": True,
+                "passos": [
+                    {"tipo": "visitante", "visitante": "iande"},
+                    {"tipo": "fala", "quem": "Iandé", "texto": "Que bom estar perto do fogo de casa."},
+                    {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa_iande()},
+                    {"tipo": "exame", "quem": "Iandé", "liberadas": LIBERADAS_NOITE_6,
+                     "texto": TEXTO_EXAME, "zonas": ZONAS_IANDE},
+                    escolha_onde_dorme("Iandé", "Na minha rede de sempre. Que saudade.",
+                                       "Sozinha? O que foi que eu fiz?"),
                     {"tipo": "visitante", "visitante": None},
                 ],
             },

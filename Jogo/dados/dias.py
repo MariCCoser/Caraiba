@@ -46,7 +46,8 @@
 #
 # Quem é de fora tem a mesma conversa na oca e em todas as noites (dados/conversas.py).
 
-from dados.conversas import conversa_mbae, conversa_potira, conversa_tamandare, conversa_yara
+from dados.conversas import (conversa_iande, conversa_mbae, conversa_potira, conversa_tamandare,
+                             conversa_yara)
 
 # --- Dia 3: a primeira das três visitas do Irmão Aleixo (dias 3, 6 e 9) ---
 # Ninguém chega pela trilha: Aleixo vem até a entrada e finca uma cruz. Ele não traz cura:
@@ -115,6 +116,7 @@ FALA_ENTREGUE = {
     "Mbaé": "Na vila temos onde deitá-lo.",
     "Potira": "Na vila há comida para quem trabalha.",
     "Tamandaré-mirim": "Esse eu conheço. Na vila há lugar para ele.",
+    "Iandé": "Esta eu batizei no domingo. Na vila ela já tem nome.",
 }
 
 
@@ -519,6 +521,78 @@ DIAS = {
             {"tipo": "fala", "quem": "Pajé",
              "texto": "Sonhei com manchas pelo corpo. Começam [atrás da orelha] e descem pela pele."},
             {"tipo": "sinal", "texto": "Manchas pelo corpo, começando atrás da orelha."},
+
+            {"tipo": "noite"},
+        ],
+    },
+
+    # --- Dia 7: a que está perfeita (Textos/Caraíba — Dez Dias, Dez Fogueiras.pdf) ---
+    # Iandé, 27 anos, é da sua aldeia: foi à vila trocar mandioca e voltou sorrindo. Ela está
+    # com a maldição (varíola, nos primeiros dias), sem nenhum sinal: não há nada para achar.
+    # Ela não mente: ela não sabe. Na entrada a conversa é curta; a conversa inteira é na oca
+    # Yorixiriamori, que ela divide com Yara (dados/conversas.py).
+    # O pajé não conta sinal novo.
+    7: {
+        "titulo": "Dia 7",
+        "passos": [
+            {"tipo": "fundo", "fundo": "aldeia", "filtro": "dia"},
+
+            # A manhã: primeiro a febre (motor/febre.py); depois, quem o jogador matou ontem.
+            {"tipo": "se", "morto_ontem": "Yara", "passos": [
+                {"tipo": "fala", "quem": "", "texto": "O corpo de Yara amanheceu coberto com uma esteira."},
+            ]},
+            {"tipo": "se", "morto_ontem": "Mbaé", "passos": [
+                {"tipo": "fala", "quem": "", "texto": "O corpo de Mbaé amanheceu coberto com uma esteira."},
+            ]},
+            {"tipo": "se", "morto_ontem": "Potira", "passos": [
+                {"tipo": "fala", "quem": "", "texto": "O corpo de Potira amanheceu coberto com uma esteira."},
+            ]},
+            {"tipo": "se", "morto_ontem": "Tamandaré-mirim", "passos": [
+                {"tipo": "fala", "quem": "",
+                 "texto": "O corpo de Tamandaré-mirim amanheceu coberto com uma esteira."},
+            ]},
+            {"tipo": "se", "na_oca": "Mbaé", "passos": [
+                {"tipo": "fala", "quem": "", "texto": "Mbaé tossiu a noite toda na oca Yebá Bëló."},
+            ]},
+
+            {"tipo": "aldeia"},
+
+            # A chegada de Iandé. Ninguém comenta nem descreve: o jogador vê e ouve.
+            {"tipo": "fundo", "fundo": "floresta", "filtro": "dia"},
+            {"tipo": "visitante", "visitante": "iande"},
+            {"tipo": "fala", "quem": "Iandé", "texto": "Voltei! Troquei toda a mandioca."},
+            {"tipo": "perguntas", "perguntas": [
+                {"pergunta": "Como estava a vila?",
+                 "resposta": "Todo mundo bem. Tinha festa de santo."},
+            ]},
+            {"tipo": "escolha", "opcoes": [
+                {"texto": "Deixar entrar", "efeitos": {"vivos": 1}, "entra": "Iandé", "passos": [
+                    {"tipo": "fala", "quem": "Iandé", "texto": "Eu sabia! Ninguém fecha a porta para mim."},
+
+                    # Iandé espera na oca Yorixiriamori, com Yara: lá ela conta da viagem.
+                    {"tipo": "visitante", "visitante": None},
+                    {"tipo": "aldeia", "seta": "Esperar a noite",
+                     "dica": "Iandé está na oca Yorixiriamori. Entre para conversar, ou espere a noite.",
+                     "pessoas": [
+                        {"nome": "Iandé", "oca": "oca1", "passos": [
+                            {"tipo": "fundo", "fundo": "oca1", "filtro": "dia"},
+                            {"tipo": "visitante", "visitante": "iande"},
+                            {"tipo": "fala", "quem": "Iandé", "texto": "Senta aqui! Tenho tanta coisa para contar."},
+                            {"tipo": "perguntas", "botao": "Terminar a conversa", "perguntas": conversa_iande()},
+                            {"tipo": "visitante", "visitante": None},
+                        ]},
+                     ]},
+                ]},
+                {"texto": "Não deixar entrar", "passos": [
+                    {"tipo": "fala", "quem": "Iandé", "texto": "Você não me reconhece? Sou eu, Iandé."},
+                ]},
+            ]},
+            {"tipo": "visitante", "visitante": None},
+
+            # O pajé não conta sinal novo (a tábua não muda).
+            {"tipo": "fundo", "fundo": "fogueira_longe", "filtro": "noite"},
+            {"tipo": "visitante", "visitante": "paje"},
+            {"tipo": "fala", "quem": "Pajé", "texto": "O mal anda com quem parece bem. Eu não sei dizer mais que isso."},
 
             {"tipo": "noite"},
         ],

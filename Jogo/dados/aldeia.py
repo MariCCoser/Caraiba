@@ -92,6 +92,8 @@ ONDE_DORME = {
                "espelhar": True},
     # Tamandaré-mirim senta no chão da oca Yebá Bëló, à esquerda da porta.
     "Tamandaré-mirim": {"oca": "oca2", "imagem": "tamandare_sentado", "posicao": (590, 592), "escala": 0.33},
+    # Iandé divide a oca Yorixiriamori com Yara: senta sobre a esteira de dormir, à esquerda.
+    "Iandé": {"oca": "oca1", "imagem": "iande_sentada", "posicao": (470, 578), "escala": 0.3},
 }
 
 # Onde senta, dentro do tapiri, quem o jogador levou para lá (a esteira fica à direita).
@@ -101,6 +103,7 @@ ONDE_DORME_TAPIRI = {
     "Mbaé": {"imagem": "mbae_sentado", "posicao": (1420, 668), "escala": 0.42},
     "Potira": {"imagem": "potira_sentada", "posicao": (1330, 690), "escala": 0.36},
     "Tamandaré-mirim": {"imagem": "tamandare_sentado", "posicao": (1110, 690), "escala": 0.36},
+    "Iandé": {"imagem": "iande_sentada", "posicao": (1000, 690), "escala": 0.36},
 }
 
 # Textos de dentro da oca.
