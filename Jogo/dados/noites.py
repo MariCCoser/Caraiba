@@ -154,8 +154,8 @@ ZONAS_YARA_NOITE_3[1] = {"pergunta": "Olhos",
 # Potira é sã: o olho está cansado, a boca seca de sede. Nada bate com a tábua.
 # Na fogueira, ela senta no chão, à esquerda do pajé (para quem olha), com as costas
 # encostadas no tronco, virada para o fogo. Com ela ali, o pajé chega mais para a esquerda.
-POSICAO_POTIRA, ESCALA_POTIRA = (1275, 612), 0.5
-POSICAO_PAJE_COM_POTIRA = (1475, 560)
+POSICAO_POTIRA, ESCALA_POTIRA = (1285, 600), 0.42
+POSICAO_PAJE_COM_POTIRA = (1510, 560)
 
 ZONAS_POTIRA = [
     {"pergunta": "Testa",
@@ -198,6 +198,16 @@ ZONAS_TAMANDARE = [
     {"pergunta": "Respiração",
      "resposta": "Rouca. Uma tosse seca, de vez em quando."},
 ]
+
+
+# --- Noite 6: as manchas pelo corpo (o 4º sinal da tábua) ---
+# Agora dá para olhar também atrás das orelhas, onde as manchas começam.
+LIBERADAS_NOITE_6 = ["Olhos", "Boca", "Orelhas"]
+
+# Tamandaré-mirim na noite 6: as primeiras manchas atrás da orelha. Três sinais da tábua.
+ZONAS_TAMANDARE_NOITE_6 = [dict(zona) for zona in ZONAS_TAMANDARE]
+ZONAS_TAMANDARE_NOITE_6[2] = {"pergunta": "Orelhas", "sinal": True,
+                              "resposta": "Atrás das orelhas, manchas vermelhas começando a descer."}
 
 
 NOITES = {
@@ -583,6 +593,107 @@ NOITES = {
                     {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa_tamandare()},
                     {"tipo": "exame", "quem": "Tamandaré-mirim", "liberadas": ["Olhos", "Boca"],
                      "texto": TEXTO_EXAME, "zonas": ZONAS_TAMANDARE},
+                    escolha_onde_dorme("Tamandaré-mirim", "Durmo perto da porta. Acordo antes do sol.",
+                                       "Sozinho. Os profetas sempre dormem sozinhos."),
+                    {"tipo": "visitante", "visitante": None},
+                ],
+            },
+        },
+        "fim": [
+            {"tipo": "fala", "quem": "",
+             "texto": "O fogo baixa. A aldeia vai para as redes."},
+        ],
+    },
+
+    6: {
+        "titulo": "Noite 6",
+        # 1 olhar (2 com o machado). Os sinais da tábua já estão nos olhos, na boca e, agora,
+        # atrás das orelhas (as manchas).
+        "energia": 1,
+        "energia_extra": {"machado": 1},
+        "fundo": "fogueira_perto",
+        "amaldicoados": True,
+        "dica": "Clique em quem está perto do fogo para conversar.",
+        "dormir": "Ir dormir",
+        "pessoas": {
+            # O pajé fala das manchas e do padre.
+            "Pajé": {
+                "imagem": "paje_sentado", "posicao": POSICAO_PAJE, "escala": ESCALA_PAJE, "espelhar": True,
+                "posicao_com": {"Potira": POSICAO_PAJE_COM_POTIRA},
+                "passos": [
+                    {"tipo": "visitante", "visitante": "paje"},
+                    {"tipo": "fala", "quem": "Pajé", "texto": "Sente. O homem da cruz voltou, e não sorriu."},
+                    {"tipo": "perguntas", "botao": "Voltar para a fogueira", "perguntas": [
+                        {"pergunta": "O que você viu no sono?",
+                         "resposta": "Manchas pelo corpo. Começam atrás da orelha e descem."},
+                        {"pergunta": "O padre veio avisar?",
+                         "resposta": "Se ele veio avisar, [então já decidiram]."},
+                    ]},
+                    {"tipo": "visitante", "visitante": None},
+                ],
+            },
+
+            "Yara": {
+                "imagem": "yara_sentada", "posicao": POSICAO_YARA, "escala": ESCALA_YARA,
+                "de_fora": True, "uma_vez": True,
+                "passos": [
+                    {"tipo": "visitante", "visitante": "yara"},
+                    {"tipo": "fala", "quem": "Yara", "texto": "O padre voltou. Eu vi da porta."},
+                    {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa_yara()},
+                    {"tipo": "exame", "quem": "Yara", "liberadas": LIBERADAS_NOITE_6,
+                     "texto": TEXTO_EXAME, "zonas": ZONAS_YARA_NOITE_3},
+                    escolha_onde_dorme("Yara", "Mais uma noite, então. Obrigada.",
+                                       "Sozinha, então. Já dormi em lugar pior."),
+                    {"tipo": "visitante", "visitante": None},
+                ],
+            },
+
+            "Mbaé": {
+                "imagem": "mbae_sentado", "posicao": POSICAO_MBAE, "escala": ESCALA_MBAE,
+                "de_fora": True, "uma_vez": True, "obrigatorio": True,
+                "passos": [
+                    {"tipo": "visitante", "visitante": "mbae"},
+                    {"tipo": "fala", "quem": "Mbaé", "texto": "(tosse) Ainda estou aqui."},
+                    {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa_mbae()},
+                    {"tipo": "exame", "quem": "Mbaé", "liberadas": LIBERADAS_NOITE_6,
+                     "texto": TEXTO_EXAME, "zonas": ZONAS_MBAE},
+                    escolha_onde_dorme("Mbaé", "Durmo no canto. Não incomodo ninguém.",
+                                       "Sozinho no escuro. Já passei noite pior na caça."),
+                    {"tipo": "visitante", "visitante": None},
+                ],
+            },
+
+            # Potira: a conversa curta. Não é obrigatório falar com ela.
+            "Potira": {
+                "imagem": "potira_sentada", "posicao": POSICAO_POTIRA, "escala": ESCALA_POTIRA,
+                "espelhar": True,
+                "de_fora": True, "uma_vez": True,
+                "passos": [
+                    {"tipo": "visitante", "visitante": "potira"},
+                    {"tipo": "fala", "quem": "Potira", "texto": "Ajudei a buscar água hoje."},
+                    {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": [
+                        {"pergunta": "Viu gente doente?",
+                         "resposta": "Vi rede vazia pendurada. Não entrei."},
+                    ]},
+                    {"tipo": "exame", "quem": "Potira", "liberadas": LIBERADAS_NOITE_6,
+                     "texto": TEXTO_EXAME, "zonas": ZONAS_POTIRA},
+                    escolha_onde_dorme("Potira", "Durmo na rede de sempre.",
+                                       "Sozinha? Se você manda, eu vou."),
+                    {"tipo": "visitante", "visitante": None},
+                ],
+            },
+
+            # Tamandaré-mirim, se ficou: as manchas começaram atrás das orelhas.
+            "Tamandaré-mirim": {
+                "imagem": "tamandare_sentado", "posicao": POSICAO_TAMANDARE, "escala": ESCALA_TAMANDARE,
+                "de_fora": True, "uma_vez": True, "obrigatorio": True,
+                "passos": [
+                    {"tipo": "visitante", "visitante": "tamandare"},
+                    {"tipo": "fala", "quem": "Tamandaré-mirim",
+                     "texto": "A voz voltou um pouco. Amanhã eu prego de novo."},
+                    {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa_tamandare()},
+                    {"tipo": "exame", "quem": "Tamandaré-mirim", "liberadas": LIBERADAS_NOITE_6,
+                     "texto": TEXTO_EXAME, "zonas": ZONAS_TAMANDARE_NOITE_6},
                     escolha_onde_dorme("Tamandaré-mirim", "Durmo perto da porta. Acordo antes do sol.",
                                        "Sozinho. Os profetas sempre dormem sozinhos."),
                     {"tipo": "visitante", "visitante": None},

@@ -33,6 +33,7 @@
 #                (Yara está no tapiri) ou "na_oca": "Mbaé" (Mbaé está na aldeia, fora do tapiri)
 #                "amaldicoados_ao_menos": 2 / "amaldicoados_menos_de": 2 (quantos amaldiçoados há
 #                na aldeia: os doentes de fora e quem pegou deles)
+#                "levou_alguem": True (o Irmão Aleixo já levou alguém, entregue ou sorteado)
 #   Uma opção de "escolha" com "condicao" só aparece se ela bate: {"dentro": "Yara"}.
 #                "entrega": "Yara" entrega a pessoa ao Irmão Aleixo (ela sai da aldeia).
 #   "aleixo_leva" o Irmão Aleixo leva uma pessoa da aldeia, sorteada (o jogador não escolhe):
@@ -79,16 +80,22 @@ PERGUNTAS_ALEIXO = {
         {"pergunta": "Por que a cruz?",
          "resposta": "Para eu achar o caminho de volta."},
     ],
+    # Dia 6: só o caderno e o que mudou (Textos/Caraíba — Dez Dias, Dez Fogueiras.pdf).
     6: [
+        {"pergunta": "O que tem nesse caderno?",
+         "resposta": "Os nomes dos que levei. Cada um com o seu número.",
+         "efeitos": {"pistas": 1}},
+        {"pergunta": "O que mudou?",
+         "resposta": [
+             "Na vila falam desta aldeia.",
+             "Dizem que aqui se esconde gente que devia estar [sob a lei].",
+         ]},
+    ],
+    9: [
         {"pergunta": "Os que você levou voltam?",
          "resposta": "[Estão bem na vila]. É longe para voltar."},
         {"pergunta": "De onde vem essa maldição?",
          "resposta": "Do pecado. [Na vila, ela sai]."},
-    ],
-    9: [
-        {"pergunta": "O que tem nesse caderno?",
-         "resposta": "Os nomes dos que levei. Cada um com o seu número.",
-         "efeitos": {"pistas": 1}},
     ],
 }
 
@@ -102,16 +109,23 @@ EFEITOS_ENTREGAR = {"entregues": 1, "proximidade_vila": 1, "vivos": -1}
 FALA_ALEIXO_VOLTA = {"tipo": "fala", "quem": ALEIXO, "texto": "Volto daqui a alguns dias."}
 
 
+# O que Aleixo diz de cada um que o jogador entrega (só aparece quem está na aldeia).
+FALA_ENTREGUE = {
+    "Yara": "Na vila ela terá teto e doutrina.",
+    "Mbaé": "Na vila temos onde deitá-lo.",
+    "Potira": "Na vila há comida para quem trabalha.",
+    "Tamandaré-mirim": "Esse eu conheço. Na vila há lugar para ele.",
+}
+
+
 def oferta_aleixo(dia):
     """O pedido de Aleixo: o jogador entrega alguém de fora ou nega. Negando, ele leva alguém
-    sorteado mesmo assim (o passo "aleixo_leva")."""
-    return {"tipo": "escolha", "texto": "Ele quer levar alguém para a vila.", "opcoes": [
-        {"texto": "Entregar Yara", "condicao": {"dentro": "Yara"}, "entrega": "Yara",
-         "efeitos": EFEITOS_ENTREGAR,
-         "passos": [{"tipo": "fala", "quem": ALEIXO, "texto": "Na vila ela terá teto e doutrina."}]},
-        {"texto": "Entregar Mbaé", "condicao": {"dentro": "Mbaé"}, "entrega": "Mbaé",
-         "efeitos": EFEITOS_ENTREGAR,
-         "passos": [{"tipo": "fala", "quem": ALEIXO, "texto": "Na vila temos onde deitá-lo."}]},
+    que ele quer mesmo assim (sorteado: o passo "aleixo_leva")."""
+    entregar = [
+        {"texto": "Entregar " + nome, "condicao": {"dentro": nome}, "entrega": nome,
+         "efeitos": EFEITOS_ENTREGAR, "passos": [{"tipo": "fala", "quem": ALEIXO, "texto": fala}]}
+        for nome, fala in FALA_ENTREGUE.items()]
+    return {"tipo": "escolha", "texto": "Ele quer levar alguém para a vila.", "opcoes": entregar + [
         {"texto": "Negar", "efeitos": {"recusas_aleixo": 1}, "passos": [
             {"tipo": "fala", "quem": ALEIXO, "texto": FALA_ALEIXO_NEGADO[dia]},
             {"tipo": "aleixo_leva",
@@ -448,6 +462,63 @@ DIAS = {
             {"tipo": "visitante", "visitante": "paje"},
             DEUSES_FELIZES,
             DEUSES_INFELIZES,
+
+            {"tipo": "noite"},
+        ],
+    },
+
+    # --- Dia 6: ele para de sorrir (Textos/Caraíba — Dez Dias, Dez Fogueiras.pdf) ---
+    # A segunda visita do Irmão Aleixo. Ele não traz de volta quem levou. As perguntas são só
+    # o caderno e o que mudou. O pedido é o mesmo do dia 3: entregar alguém ou negar (e, negando,
+    # ele leva quem quer). De noite, o pajé conta o 4º sinal: manchas pelo corpo.
+    6: {
+        "titulo": "Dia 6",
+        "passos": [
+            {"tipo": "fundo", "fundo": "aldeia", "filtro": "dia"},
+
+            # A manhã: primeiro a febre (motor/febre.py); depois, quem o jogador matou ontem.
+            {"tipo": "se", "morto_ontem": "Yara", "passos": [
+                {"tipo": "fala", "quem": "", "texto": "O corpo de Yara amanheceu coberto com uma esteira."},
+            ]},
+            {"tipo": "se", "morto_ontem": "Mbaé", "passos": [
+                {"tipo": "fala", "quem": "", "texto": "O corpo de Mbaé amanheceu coberto com uma esteira."},
+            ]},
+            {"tipo": "se", "morto_ontem": "Potira", "passos": [
+                {"tipo": "fala", "quem": "", "texto": "O corpo de Potira amanheceu coberto com uma esteira."},
+            ]},
+            {"tipo": "se", "morto_ontem": "Tamandaré-mirim", "passos": [
+                {"tipo": "fala", "quem": "",
+                 "texto": "O corpo de Tamandaré-mirim amanheceu coberto com uma esteira."},
+            ]},
+            {"tipo": "se", "na_oca": "Mbaé", "passos": [
+                {"tipo": "fala", "quem": "", "texto": "Mbaé tossiu a noite toda na oca Yebá Bëló."},
+            ]},
+
+            {"tipo": "aldeia"},
+
+            # A entrada: Aleixo está ao lado da cruz, e não sorri desta vez.
+            {"tipo": "fundo", "fundo": "floresta", "filtro": "dia"},
+            {"tipo": "fala", "quem": "",
+             "texto": "Ninguém chega pela trilha. O Irmão Aleixo está ao lado da cruz. Desta vez, não sorri."},
+            {"tipo": "se", "levou_alguem": True, "passos": [
+                {"tipo": "fala", "quem": "", "texto": "Ele veio sozinho. Quem foi com ele não voltou."},
+            ]},
+            {"tipo": "visitante", "visitante": "aleixo"},
+            {"tipo": "fala", "quem": ALEIXO, "texto": "Voltei, como disse que voltaria."},
+            {"tipo": "perguntas", "botao": "Seguir", "perguntas": PERGUNTAS_ALEIXO[6]},
+
+            # O pedido, como no dia 3: entregar alguém ou negar.
+            oferta_aleixo(6),
+            FALA_ALEIXO_VOLTA,
+            {"tipo": "visitante", "visitante": None},
+            {"tipo": "fala", "quem": "", "texto": "A cruz fica na entrada."},
+
+            # O sinal do pajé: o 4º risco da tábua.
+            {"tipo": "fundo", "fundo": "fogueira_longe", "filtro": "noite"},
+            {"tipo": "visitante", "visitante": "paje"},
+            {"tipo": "fala", "quem": "Pajé",
+             "texto": "Sonhei com manchas pelo corpo. Começam [atrás da orelha] e descem pela pele."},
+            {"tipo": "sinal", "texto": "Manchas pelo corpo, começando atrás da orelha."},
 
             {"tipo": "noite"},
         ],

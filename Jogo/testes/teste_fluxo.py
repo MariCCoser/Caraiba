@@ -186,7 +186,8 @@ def testar_febre():
     # A oferta do Aleixo: entregar só quem está dentro; negar sempre aparece, e ele fica mais
     # irritado a cada visita.
     from dados.dias import FALA_ALEIXO_NEGADO, oferta_aleixo
-    assert [o["texto"] for o in oferta_aleixo(3)["opcoes"]] == ["Entregar Yara", "Entregar Mbaé", "Negar"]
+    assert [o["texto"] for o in oferta_aleixo(3)["opcoes"]] == [
+        "Entregar Yara", "Entregar Mbaé", "Entregar Potira", "Entregar Tamandaré-mirim", "Negar"]
     assert sorted(FALA_ALEIXO_NEGADO) == [3, 6, 9]
     assert oferta_aleixo(9)["opcoes"][-1]["passos"][0]["texto"] == FALA_ALEIXO_NEGADO[9]
 
@@ -934,7 +935,8 @@ def testar_dia3_e_noite3(jogo):
     clicar_opcao(jogo, "O que você quer?")
     passar_falas(jogo)
     clicar_opcao(jogo, "Seguir")
-    assert textos_dos_botoes(jogo) == ["Entregar Yara", "Entregar Mbaé", "Negar"], textos_dos_botoes(jogo)
+    assert textos_dos_botoes(jogo) == ["Entregar Yara", "Entregar Mbaé", "Entregar Potira", "Negar"], (
+        textos_dos_botoes(jogo))
     clicar_opcao(jogo, "Negar")
     dia.caixa.completar()
     assert dia.caixa.texto == "Ninguém? Então eu escolho.", dia.caixa.texto
@@ -1229,12 +1231,90 @@ def testar_dia5_e_noite5(jogo):
     passar_falas(jogo)
     esperar_transicao(jogo)
     aldeia = jogo.cenas.atual
-    assert nome_cena(jogo) == "Aldeia" and not aldeia.tem_seta, "ainda não há Dia 6"
+    assert nome_cena(jogo) == "Aldeia" and aldeia.tem_seta, "a seta Dormir leva ao Dia 6"
     oca = entrar_na_oca(jogo, "tapiri")
     assert [quem for quem, _ in oca.pessoas] == ["Tamandaré-mirim"]
     rodar(jogo, 5)
     capturar(jogo, "38-noite5-tapiri-tamandare")
     print("ok Dia 5 e Noite 5: Tamandaré-mirim (dois sinais), o pajé e os deuses")
+    jogo.ir_para("menu")
+    esperar_transicao(jogo)
+
+
+def testar_dia6_e_noite6(jogo):
+    """Dia 6 (a 2ª visita do Irmão Aleixo: o caderno, o que mudou, entregar ou negar) e a Noite 6
+    (o 4º sinal: manchas pelo corpo, atrás das orelhas)."""
+    jogo.nova_partida()
+    estado = jogo.estado
+    estado.dia = 5
+    estado.dentro = ["Mbaé", "Potira", "Tamandaré-mirim"]
+    estado.entregues_nomes = ["Yara"]
+    estado.levados = 1
+    estado.vivos = 3
+    estado.tabua = ["Olho vermelho, com o branco raiado.", "Boca com feridas.",
+                    "Pontos brancos por dentro da bochecha."]
+    estado.tabua_noites = [1, 2, 4]
+    jogo.ir_para("aldeia")
+    esperar_transicao(jogo)
+    clicar(jogo, jogo.cenas.atual.rect_seta.center)
+    esperar_transicao(jogo)
+    esperar_transicao(jogo)
+    dia = jogo.cenas.atual
+    assert estado.dia == 6 and dia.titulo == "Dia 6"
+
+    # A entrada: Aleixo veio sozinho (quem ele levou não voltou).
+    passar_falas(jogo, seguir_seta=False)
+    clicar(jogo, jogo.cenas.atual.rect_seta.center)
+    esperar_transicao(jogo)
+    dia = jogo.cenas.atual
+    assert dia.caixa.texto.startswith("Ninguém chega pela trilha"), dia.caixa.texto
+    dia.caixa.completar()
+    clicar(jogo, (800, 300))
+    assert dia.caixa.texto.startswith("Ele veio sozinho"), dia.caixa.texto
+    passar_falas(jogo)
+    assert dia.visitante == "aleixo"
+    assert textos_dos_botoes(jogo) == ["O que tem nesse caderno?", "O que mudou?", "Seguir"], (
+        textos_dos_botoes(jogo))
+    clicar_opcao(jogo, "O que tem nesse caderno?")
+    passar_falas(jogo)
+    assert estado.pistas == 1
+    rodar(jogo, 60)
+    capturar(jogo, "39-dia6-aleixo")
+    clicar_opcao(jogo, "Seguir")
+    assert textos_dos_botoes(jogo) == ["Entregar Mbaé", "Entregar Potira", "Entregar Tamandaré-mirim",
+                                       "Negar"], textos_dos_botoes(jogo)
+    clicar_opcao(jogo, "Entregar Mbaé")
+    dia.caixa.completar()
+    assert dia.acompanhante == "mbae"
+    passar_falas(jogo)
+    assert estado.dentro == ["Potira", "Tamandaré-mirim"] and estado.entregues == 1
+    assert estado.entregues_nomes == ["Yara", "Mbaé"] and estado.proximidade_vila == 1 and estado.vivos == 2
+
+    # O sinal do pajé: o 4º risco da tábua, na noite 6.
+    assert estado.tabua[-1].startswith("Manchas pelo corpo") and estado.tabua_noites == [1, 2, 4, 6]
+    print("ok Dia 6: o Irmão Aleixo volta sozinho (caderno, o que mudou, entregar) e o 4º sinal")
+
+    # A fogueira: pajé, Potira e Tamandaré-mirim. Agora dá para olhar atrás das orelhas.
+    assert dia.titulo == "Noite 6" and dia.modo == "fogueira"
+    assert [p.nome for p in dia.na_fogueira] == ["Pajé", "Potira", "Tamandaré-mirim"]
+    rodar(jogo, 40)
+    capturar(jogo, "40-noite6-fogueira")
+    clicar_pessoa(jogo, "Tamandaré-mirim")
+    passar_falas(jogo)
+    clicar_opcao(jogo, "Examinar o rosto")
+    assert textos_dos_botoes(jogo) == ["Olhos", "Orelhas", "Boca", "Terminar o exame"], textos_dos_botoes(jogo)
+    examinar(jogo, ["Orelhas"])
+    assert dia.sinais["Tamandaré-mirim"] == 1 and dia.energia == 0
+    clicar_opcao(jogo, "Terminar o exame")
+    clicar_opcao(jogo, "Levar ao tapiri")
+    passar_falas(jogo)
+    assert dia.botao_dormir.visivel
+    clicar_botao(jogo, dia.botao_dormir)
+    passar_falas(jogo)
+    esperar_transicao(jogo)
+    aldeia = jogo.cenas.atual
+    assert nome_cena(jogo) == "Aldeia" and not aldeia.tem_seta, "ainda não há Dia 7"
+    print("ok Noite 6: manchas atrás das orelhas, Tamandaré-mirim ao tapiri")
     jogo.ir_para("menu")
     esperar_transicao(jogo)
 
@@ -1404,6 +1484,7 @@ def testar_fluxo():
     testar_dia3_e_noite3(jogo)
     testar_dia4_e_noite4(jogo)
     testar_dia5_e_noite5(jogo)
+    testar_dia6_e_noite6(jogo)
     testar_aldeia_de_dia(jogo)
 
     # 5c. Continuar de onde parou, a tábua de barro e o "Como se joga" do menu

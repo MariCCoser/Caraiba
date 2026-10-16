@@ -213,7 +213,8 @@ class Dia(Cena):
         "na_oca" levam o nome de quem é de fora;
         "amaldicoado" e "sao" levam o nome de um doente de fora (motor/febre.py);
         "amaldicoados_ao_menos": 2 e "amaldicoados_menos_de": 2 contam quantos amaldiçoados há
-        na aldeia (motor/febre.py, quantos_amaldicoados).
+        na aldeia (motor/febre.py, quantos_amaldicoados); "levou_alguem": True (o Irmão Aleixo já
+        levou alguém).
         """
         estado = self.estado
         if "morto_ontem" in item and estado.mortos_quando.get(item["morto_ontem"]) != estado.dia - 1:
@@ -223,6 +224,8 @@ class Dia(Cena):
         if "amaldicoado" in item and not febre.amaldicoado(estado, item["amaldicoado"]):
             return False
         if "sao" in item and febre.amaldicoado(estado, item["sao"]):
+            return False
+        if item.get("levou_alguem") and not estado.entregues_nomes:
             return False
         if "amaldicoados_ao_menos" in item and febre.quantos_amaldicoados(estado) < item["amaldicoados_ao_menos"]:
             return False
