@@ -568,7 +568,7 @@ NOITES = {
                     {"tipo": "fala", "quem": "Potira", "texto": "Não achei nada. Desculpa."},
                     # Na fogueira a conversa é curta: a conversa inteira fica na oca Wanadi.
                     {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": [
-                        {"pergunta": "Viu gente doente?",
+                        {"pergunta": "Viu gente amaldiçoada?",
                          "resposta": "Vi rede vazia pendurada. Não entrei."},
                     ]},
                     {"tipo": "exame", "quem": "Potira", "liberadas": ["Olhos", "Boca"],
@@ -647,7 +647,7 @@ NOITES = {
                     {"tipo": "visitante", "visitante": "potira"},
                     {"tipo": "fala", "quem": "Potira", "texto": "Hoje eu comi. Obrigada."},
                     {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": [
-                        {"pergunta": "Viu gente doente?",
+                        {"pergunta": "Viu gente amaldiçoada?",
                          "resposta": "Vi rede vazia pendurada. Não entrei."},
                     ]},
                     {"tipo": "exame", "quem": "Potira", "liberadas": ["Olhos", "Boca"],
@@ -702,7 +702,7 @@ NOITES = {
                     {"tipo": "perguntas", "botao": "Voltar para a fogueira", "perguntas": [
                         {"pergunta": "O que você viu no sono?",
                          "resposta": "Manchas pelo corpo. Começam atrás da orelha e descem."},
-                        {"pergunta": "O padre veio avisar?",
+                        {"pergunta": "O caraíba veio avisar?",
                          "resposta": "Se ele veio avisar, [então já decidiram]."},
                     ]},
                     {"tipo": "visitante", "visitante": None},
@@ -714,7 +714,7 @@ NOITES = {
                 "de_fora": True, "uma_vez": True,
                 "passos": [
                     {"tipo": "visitante", "visitante": "yara"},
-                    {"tipo": "fala", "quem": "Yara", "texto": "O padre voltou. Eu vi da porta."},
+                    {"tipo": "fala", "quem": "Yara", "texto": "O caraíba voltou. Eu vi da porta."},
                     {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa_yara()},
                     {"tipo": "exame", "quem": "Yara", "liberadas": LIBERADAS_NOITE_6,
                      "texto": TEXTO_EXAME, "zonas": ZONAS_YARA_NOITE_3},
@@ -748,7 +748,7 @@ NOITES = {
                     {"tipo": "visitante", "visitante": "potira"},
                     {"tipo": "fala", "quem": "Potira", "texto": "Ajudei a buscar água hoje."},
                     {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": [
-                        {"pergunta": "Viu gente doente?",
+                        {"pergunta": "Viu gente amaldiçoada?",
                          "resposta": "Vi rede vazia pendurada. Não entrei."},
                     ]},
                     {"tipo": "exame", "quem": "Potira", "liberadas": LIBERADAS_NOITE_6,
@@ -846,7 +846,7 @@ NOITES = {
                     {"tipo": "visitante", "visitante": "potira"},
                     {"tipo": "fala", "quem": "Potira", "texto": "A Iandé voltou rindo. Fazia tempo que ninguém ria."},
                     {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": [
-                        {"pergunta": "Viu gente doente?",
+                        {"pergunta": "Viu gente amaldiçoada?",
                          "resposta": "Vi rede vazia pendurada. Não entrei."},
                     ]},
                     {"tipo": "exame", "quem": "Potira", "liberadas": LIBERADAS_NOITE_6,
@@ -882,7 +882,7 @@ NOITES = {
                     {"tipo": "fala", "quem": "Iandé", "texto": "Que bom estar perto do fogo de casa."},
                     # Na fogueira, só o essencial: a conversa inteira fica na oca.
                     {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": [
-                        {"pergunta": "Viu alguém doente?",
+                        {"pergunta": "Viu alguém amaldiçoado?",
                          "resposta": "Vi uma casa fechada, com uma cruz na porta."},
                     ]},
                     {"tipo": "exame", "quem": "Iandé", "liberadas": LIBERADAS_NOITE_6,
@@ -951,7 +951,7 @@ NOITES = {
                 "de_fora": True, "uma_vez": True,
                 "passos": [
                     {"tipo": "visitante", "visitante": "yara"},
-                    {"tipo": "fala", "quem": "Yara", "texto": "O homem do rio fala como os padres antigos."},
+                    {"tipo": "fala", "quem": "Yara", "texto": "O homem do rio fala como os caraíbas antigos."},
                     {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa_yara()},
                     {"tipo": "exame", "quem": "Yara", "liberadas": LIBERADAS_NOITE_6,
                      "texto": TEXTO_EXAME, "zonas": ZONAS_YARA_NOITE_3},
@@ -984,7 +984,7 @@ NOITES = {
                     {"tipo": "visitante", "visitante": "potira"},
                     {"tipo": "fala", "quem": "Potira", "texto": "Dizem que lá em cima ainda tem roça."},
                     {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": [
-                        {"pergunta": "Viu gente doente?",
+                        {"pergunta": "Viu gente amaldiçoada?",
                          "resposta": "Vi rede vazia pendurada. Não entrei."},
                     ]},
                     {"tipo": "exame", "quem": "Potira", "liberadas": LIBERADAS_NOITE_6,
@@ -1017,7 +1017,7 @@ NOITES = {
                     {"tipo": "visitante", "visitante": "iande"},
                     {"tipo": "fala", "quem": "Iandé", "texto": "Esse homem fala esquisito."},
                     {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": [
-                        {"pergunta": "Viu alguém doente?",
+                        {"pergunta": "Viu alguém amaldiçoado?",
                          "resposta": "Vi uma casa fechada, com uma cruz na porta."},
                     ]},
                     {"tipo": "exame", "quem": "Iandé", "liberadas": LIBERADAS_NOITE_6,
@@ -1080,7 +1080,7 @@ NOITES = {
                 "de_fora": True, "uma_vez": True,
                 "passos": [
                     {"tipo": "visitante", "visitante": "yara"},
-                    {"tipo": "fala", "quem": "Yara", "texto": "O padre não sorriu nem uma vez."},
+                    {"tipo": "fala", "quem": "Yara", "texto": "O caraíba não sorriu nem uma vez."},
                     {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa_yara()},
                     {"tipo": "exame", "quem": "Yara", "liberadas": LIBERADAS_NOITE_9,
                      "texto": TEXTO_EXAME, "zonas": com_pescoco(ZONAS_YARA_NOITE_3)},
@@ -1113,7 +1113,7 @@ NOITES = {
                     {"tipo": "visitante", "visitante": "potira"},
                     {"tipo": "fala", "quem": "Potira", "texto": "Amanhã eu busco mandioca na roça velha."},
                     {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": [
-                        {"pergunta": "Viu gente doente?",
+                        {"pergunta": "Viu gente amaldiçoada?",
                          "resposta": "Vi rede vazia pendurada. Não entrei."},
                     ]},
                     {"tipo": "exame", "quem": "Potira", "liberadas": LIBERADAS_NOITE_9,
@@ -1146,7 +1146,7 @@ NOITES = {
                     {"tipo": "visitante", "visitante": "iande"},
                     {"tipo": "fala", "quem": "Iandé", "texto": "Acordei com dor nas costas. Deve ser da viagem."},
                     {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": [
-                        {"pergunta": "Viu alguém doente?",
+                        {"pergunta": "Viu alguém amaldiçoado?",
                          "resposta": "Vi uma casa fechada, com uma cruz na porta."},
                     ]},
                     {"tipo": "exame", "quem": "Iandé", "liberadas": LIBERADAS_NOITE_9,

@@ -36,9 +36,9 @@ TECLAS_AVANCAR = (pygame.K_SPACE, pygame.K_RETURN, pygame.K_KP_ENTER)
 # Onde fica cada coisa na tela 1600x900
 CENTRO_VISITANTE_X = 500       # a pessoa fica à esquerda
 # Quem o Irmão Aleixo leva fica atrás dele, à esquerda (para quem olha) e menor (mais longe).
-# O que importa é o rosto: ele fica nesta altura x, à esquerda do Aleixo, mesmo que o resto da
-# pessoa (o cesto de Potira, o arco de Mbaé) saia pela borda da tela.
-ROSTO_ACOMPANHANTE_X = 185
+# O que importa é o rosto: ele fica inteiro, centralizado entre a borda da tela e o corpo do
+# Aleixo, mesmo que o resto da pessoa (o cesto de Potira, o arco de Mbaé) saia pela borda.
+MARGEM_ROSTO_ACOMPANHANTE = 16   # espaço mínimo entre o rosto e a borda (ou o Aleixo)
 ESCALA_ACOMPANHANTE = 0.82
 CENTRO_PAINEL_COM_VISITANTE = 1180
 CENTRO_PAINEL_SOZINHO = 800    # sem ninguém na entrada, a fala fica no meio
@@ -216,8 +216,8 @@ class Dia(Cena):
         "amaldicoado" e "sao" levam o nome de um doente de fora (motor/febre.py);
         "amaldicoados_ao_menos": 2 e "amaldicoados_menos_de": 2 contam quantos amaldiçoados há
         na aldeia (motor/febre.py, quantos_amaldicoados); "levou_alguem": True (o Irmão Aleixo já
-        levou alguém); "ao_menos": {"krenan_volta": 1} (variáveis do estado.py com pelo menos esse
-        valor).
+        levou alguém); "entregue": "Yara" (o Irmão Aleixo levou essa pessoa, entregue ou não);
+        "ao_menos": {"krenan_volta": 1} (variáveis do estado.py com pelo menos esse valor).
         """
         estado = self.estado
         if "morto_ontem" in item and estado.mortos_quando.get(item["morto_ontem"]) != estado.dia - 1:
@@ -229,6 +229,8 @@ class Dia(Cena):
         if "sao" in item and febre.amaldicoado(estado, item["sao"]):
             return False
         if item.get("levou_alguem") and not estado.entregues_nomes:
+            return False
+        if "entregue" in item and item["entregue"] not in estado.entregues_nomes:
             return False
         for nome, valor in item.get("ao_menos", {}).items():
             if getattr(estado, nome) < valor:
@@ -718,18 +720,40 @@ class Dia(Cena):
 
     def _desenhar_acompanhante(self, tela, filtro):
         """Quem o Irmão Aleixo leva: atrás dele, menor, aparecendo aos poucos."""
-        chave = (self.acompanhante, filtro)
-        if getattr(self, "_imagem_acompanhante", (None, None))[0] != chave:
+        chave = (self.acompanhante, self.visitante, filtro)
+        if getattr(self, "_imagem_acompanhante", (None, None, None))[0] != chave:
             original = imagens.personagem(self.acompanhante, filtro)
             tamanho = (round(original.get_width() * ESCALA_ACOMPANHANTE),
                        round(original.get_height() * ESCALA_ACOMPANHANTE))
-            self._imagem_acompanhante = (chave, pygame.transform.smoothscale(original, tamanho))
-        imagem = self._imagem_acompanhante[1]
-        vazio = round(imagens.vazio_embaixo(self.acompanhante) * ESCALA_ACOMPANHANTE)
-        rect = imagem.get_rect(bottom=config.ALTURA + vazio)
-        rect.x = ROSTO_ACOMPANHANTE_X - _meio_do_rosto(imagem)
+            imagem = pygame.transform.smoothscale(original, tamanho)
+            vazio = round(imagens.vazio_embaixo(self.acompanhante) * ESCALA_ACOMPANHANTE)
+            rect = imagem.get_rect(bottom=config.ALTURA + vazio)
+            # O rosto (na tela) fica no meio do espaço livre entre a borda e o corpo do visitante.
+            esquerda, direita, topo, baixo = _caixa_do_rosto(imagem)
+            limite = self._borda_esquerda_visitante(rect.top + topo, rect.top + baixo, filtro)
+            livre_esquerda = MARGEM_ROSTO_ACOMPANHANTE
+            livre_direita = limite - MARGEM_ROSTO_ACOMPANHANTE
+            rect.x = (livre_esquerda + livre_direita) // 2 - (esquerda + direita) // 2
+            # Se o rosto não couber no espaço, ele nunca sai pela borda da tela.
+            rect.x = max(rect.x, livre_esquerda - esquerda)
+            self._imagem_acompanhante = (chave, imagem, rect)
+        _, imagem, rect = self._imagem_acompanhante
         imagem.set_alpha(int(255 * min(1.0, self.tempo_acompanhante / DURACAO_CHEGADA)))
         tela.blit(imagem, rect)
+
+    def _borda_esquerda_visitante(self, topo, baixo, filtro):
+        """O x mais à esquerda do corpo do visitante (já parado) entre as alturas topo e baixo."""
+        pessoa = imagens.personagem(self.visitante, filtro)
+        rect = pessoa.get_rect(midbottom=(CENTRO_VISITANTE_X,
+                                          config.ALTURA + imagens.vazio_embaixo(self.visitante)))
+        mascara = pygame.mask.from_surface(pessoa).connected_component()
+        menor = rect.right
+        for y in range(max(topo, rect.top), min(baixo, rect.bottom)):
+            for x in range(pessoa.get_width()):
+                if mascara.get_at((x, y - rect.top)):
+                    menor = min(menor, rect.left + x)
+                    break
+        return menor
 
     def desenhar_interface(self, tela):
         ui.texto_simples(tela, self.titulo, (40, 60), config.TAMANHO_PEQUENO,
@@ -782,13 +806,34 @@ class Dia(Cena):
         self.tabua.desenhar(tela)
 
 
-def _meio_do_rosto(imagem):
-    """Onde fica o rosto na imagem (x): o meio do que está desenhado no alto (a cabeça)."""
-    mascara = pygame.mask.from_surface(imagem)
+def _caixa_do_rosto(imagem):
+    """Onde fica a cabeça na imagem: (esquerda, direita, topo, baixo).
+
+    Só conta a parte principal do desenho (fiapos soltos do recorte ficam de fora). O meio da
+    cabeça é a faixa mais cheia do alto da pessoa: um arco ou um cesto é fino perto dela. A
+    largura é a parte desenhada em volta desse meio, linha a linha, até o queixo."""
+    mascara = pygame.mask.from_surface(imagem).connected_component()
     caixa = mascara.get_bounding_rects()[0]
-    xs = [x for y in range(caixa.top, caixa.top + caixa.height // 8)
-          for x in range(caixa.left, caixa.right) if mascara.get_at((x, y))]
-    return sum(xs) // len(xs) if xs else imagem.get_width() // 2
+    topo, baixo = caixa.top, caixa.top + caixa.height // 6
+    limite = caixa.height // 9       # a cabeça nunca é mais larga que isso para cada lado
+    colunas = [sum(mascara.get_at((x, y)) for y in range(topo, baixo, 2))
+               for x in range(imagem.get_width())]
+    janela = limite
+    somas = [sum(colunas[x - janela:x + janela]) for x in range(janela, imagem.get_width() - janela)]
+    meio = janela + somas.index(max(somas)) if somas else imagem.get_width() // 2
+    esquerda, direita = meio, meio
+    for y in range(topo, baixo):
+        if not mascara.get_at((meio, y)):
+            continue
+        x = meio
+        while x > max(meio - limite, 0) and mascara.get_at((x - 1, y)):
+            x -= 1
+        esquerda = min(esquerda, x)
+        x = meio
+        while x < min(meio + limite, imagem.get_width() - 1) and mascara.get_at((x + 1, y)):
+            x += 1
+        direita = max(direita, x)
+    return esquerda, direita, topo, baixo
 
 
 def _itens(passo):

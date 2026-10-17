@@ -758,7 +758,7 @@ def testar_dia2_e_noite2(jogo):
     dia = jogo.cenas.atual
     rodar(jogo, 60)
     capturar(jogo, "19-dia2-mbae")
-    clicar_opcao(jogo, "Você está doente?")
+    clicar_opcao(jogo, "Você está amaldiçoado?")
     passar_falas(jogo)
     clicar_opcao(jogo, "Decidir")
     clicar_opcao(jogo, "Deixar entrar")
@@ -1056,7 +1056,7 @@ def testar_dia4_e_noite4(jogo):
     capturar(jogo, "31-dia4-potira-na-oca")
     clicar_pessoa(jogo, "Potira")
     passar_falas(jogo)
-    assert textos_dos_botoes(jogo) == ["Viu gente doente?", "Por que foi sozinha?",
+    assert textos_dos_botoes(jogo) == ["Viu gente amaldiçoada?", "Por que foi sozinha?",
                                        "Conte de antes.", "Terminar a conversa"], textos_dos_botoes(jogo)
     clicar_opcao(jogo, "Conte de antes.")
     passar_falas(jogo)
@@ -1094,7 +1094,7 @@ def testar_dia4_e_noite4(jogo):
     # Potira é sã: nada bate com a tábua. Na fogueira, a conversa dela é curta.
     clicar_pessoa(jogo, "Potira")
     passar_falas(jogo)
-    assert textos_dos_botoes(jogo) == ["Viu gente doente?", "Examinar o rosto"], textos_dos_botoes(jogo)
+    assert textos_dos_botoes(jogo) == ["Viu gente amaldiçoada?", "Examinar o rosto"], textos_dos_botoes(jogo)
     clicar_opcao(jogo, "Examinar o rosto")
     assert textos_dos_botoes(jogo) == ["Olhos", "Boca", "Terminar o exame"], textos_dos_botoes(jogo)
     # A boca: os lábios rachados, e ela se justifica (o frio, longe da fogueira).
@@ -1278,11 +1278,21 @@ def testar_dia6_e_noite6(jogo):
     assert dia.caixa.texto.startswith("Ele veio sozinho"), dia.caixa.texto
     passar_falas(jogo)
     assert dia.visitante == "aleixo"
-    assert textos_dos_botoes(jogo) == ["O que tem nesse caderno?", "O que mudou?", "Seguir"], (
-        textos_dos_botoes(jogo))
+    # Ele levou Yara no dia 3: dá para perguntar se ela está curada e onde está (só dela).
+    assert textos_dos_botoes(jogo) == ["O que tem nesse caderno?", "O que mudou?",
+                                       "Yara está curada da maldição?", "Onde Yara está?",
+                                       "Seguir"], textos_dos_botoes(jogo)
     clicar_opcao(jogo, "O que tem nesse caderno?")
     passar_falas(jogo)
     assert estado.pistas == 1
+    clicar_opcao(jogo, "Yara está curada da maldição?")
+    dia.caixa.completar()
+    assert dia.caixa.texto.startswith("Ela reza todos os dias"), dia.caixa.texto
+    passar_falas(jogo)
+    clicar_opcao(jogo, "Onde Yara está?")
+    dia.caixa.completar()
+    assert dia.caixa.texto.startswith("Na casa da botica"), dia.caixa.texto
+    passar_falas(jogo)
     rodar(jogo, 60)
     capturar(jogo, "39-dia6-aleixo")
     clicar_opcao(jogo, "Seguir")
@@ -1297,7 +1307,7 @@ def testar_dia6_e_noite6(jogo):
 
     # O sinal do pajé: o 4º risco da tábua, na noite 6.
     assert estado.tabua[-1] == "Manchas brancas atrás da orelha." and estado.tabua_noites == [1, 2, 4, 6]
-    print("ok Dia 6: o Irmão Aleixo volta sozinho (caderno, o que mudou, entregar) e o 4º sinal")
+    print("ok Dia 6: o Irmão Aleixo volta sozinho (caderno, o que mudou, onde está Yara, entregar) e o 4º sinal")
 
     # A fogueira: pajé, Potira e Tamandaré-mirim. Agora dá para olhar atrás das orelhas.
     assert dia.titulo == "Noite 6" and dia.modo == "fogueira"
@@ -1361,9 +1371,9 @@ def testar_dia7_e_noite7(jogo):
     capturar(jogo, "42-dia7-iande-na-oca")
     clicar_pessoa(jogo, "Iandé")
     passar_falas(jogo)
-    assert textos_dos_botoes(jogo) == ["Como estava a vila?", "Viu alguém doente?", "Que conta é essa no pulso?",
+    assert textos_dos_botoes(jogo) == ["Como estava a vila?", "Viu alguém amaldiçoado?", "Que conta é essa no pulso?",
                                        "Conte da viagem.", "Terminar a conversa"], textos_dos_botoes(jogo)
-    clicar_opcao(jogo, "Viu alguém doente?")
+    clicar_opcao(jogo, "Viu alguém amaldiçoado?")
     dia = jogo.cenas.atual
     dia.caixa.completar()
     assert dia.caixa.texto == "Vi uma casa fechada, com uma cruz na porta.", dia.caixa.texto
@@ -1394,7 +1404,7 @@ def testar_dia7_e_noite7(jogo):
     clicar_opcao(jogo, "Voltar para a fogueira")
     clicar_pessoa(jogo, "Iandé")
     passar_falas(jogo)
-    assert textos_dos_botoes(jogo) == ["Viu alguém doente?", "Examinar o rosto"], textos_dos_botoes(jogo)
+    assert textos_dos_botoes(jogo) == ["Viu alguém amaldiçoado?", "Examinar o rosto"], textos_dos_botoes(jogo)
     clicar_opcao(jogo, "Examinar o rosto")
     assert textos_dos_botoes(jogo) == ["Olhos", "Orelhas", "Boca", "Terminar o exame"], textos_dos_botoes(jogo)
     examinar(jogo, ["Orelhas"])

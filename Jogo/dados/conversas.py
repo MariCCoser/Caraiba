@@ -20,13 +20,13 @@ def conversa_yara():
          "historia": "aldeia_yara", "efeitos": {"memoria": 1}},
         {"pergunta": "Por que saiu de lá?",
          "resposta": [
-             "Os padres levaram muita gente para perto da vila. Minha mãe foi.",
+             "Os caraíbas levaram muita gente para perto da vila. Minha mãe foi.",
              "Eu não fui. Vou para o sul, onde mora [a gente do meu pai].",
          ]},
         {"pergunta": "A febre chegou lá?",
          "resposta": [
-             "Chegou com as chuvas. Quem cuidava dos doentes caía depois.",
-             "Eu saí antes. [Não estou doente].",
+             "Chegou com as chuvas. Quem cuidava dos amaldiçoados caía depois.",
+             "Eu saí antes. [Não estou amaldiçoada].",
          ]},
     ]
 
@@ -50,7 +50,7 @@ def conversa_potira():
     aldeia, a conversa é mais curta (dados/dias.py, Dia 4). Não há pergunta sobre comida:
     ela já começa a conversa dizendo que não achou nada."""
     return [
-        {"pergunta": "Viu gente doente?",
+        {"pergunta": "Viu gente amaldiçoada?",
          "resposta": "Vi rede vazia pendurada. Não entrei."},
         {"pergunta": "Por que foi sozinha?",
          "resposta": "Quem ia comigo está na rede, com a maldição. Alguém tinha que ir."},
@@ -90,14 +90,14 @@ def conversa_iande():
     return [
         {"pergunta": "Como estava a vila?",
          "resposta": "Todo mundo bem. Tinha festa de santo."},
-        {"pergunta": "Viu alguém doente?",
+        {"pergunta": "Viu alguém amaldiçoado?",
          "resposta": "Vi uma casa fechada, com uma cruz na porta."},
         {"pergunta": "Que conta é essa no pulso?",
          "resposta": "Ganhei na festa. É de vidro, brilha no sol."},
         {"pergunta": "Conte da viagem.",
          "resposta": [
              "Fui com o cesto cheio de mandioca. Voltei com ele vazio, e com sal.",
-             "Na vila, um padre jogou água na minha cabeça. Disse que agora eu tenho outro nome.",
+             "Na vila, um caraíba jogou água na minha cabeça. Disse que agora eu tenho outro nome.",
          ],
          "historia": "viagem_iande", "efeitos": {"memoria": 1}},
     ]

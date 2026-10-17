@@ -34,6 +34,7 @@
 #                "amaldicoados_ao_menos": 2 / "amaldicoados_menos_de": 2 (quantos amaldiçoados há
 #                na aldeia: os doentes de fora e quem pegou deles)
 #                "levou_alguem": True (o Irmão Aleixo já levou alguém, entregue ou sorteado)
+#                "entregue": "Yara" (o Irmão Aleixo levou Yara, entregue ou sorteada)
 #   Uma opção de "escolha" com "condicao" só aparece se ela bate: {"dentro": "Yara"}.
 #                "entrega": "Yara" entrega a pessoa ao Irmão Aleixo (ela sai da aldeia).
 #   "aleixo_leva" o Irmão Aleixo leva uma pessoa da aldeia, sorteada (o jogador não escolhe):
@@ -111,6 +112,34 @@ PERGUNTAS_ALEIXO = {
          "efeitos": {"pistas": 1}},
     ],
 }
+
+# Sobre quem ele já levou (entregue ou à força): se está curado da maldição e onde está.
+# Cada pessoa tem as duas perguntas, que só aparecem se o Aleixo a levou numa visita anterior.
+# Ele nunca mente de propósito: responde do jeito dele, e desvia.
+SOBRE_OS_LEVADOS = {
+    "Yara": ("Yara está curada da maldição?", "Ela reza todos os dias. [Deus vai curá-la].",
+             "Onde Yara está?", "Na casa da botica. Dorme numa esteira, perto do altar."),
+    "Mbaé": ("Mbaé está curado da maldição?", "A tosse ainda não passou. [Está nas mãos de Deus].",
+             "Onde Mbaé está?", "Na enfermaria da vila, com os outros que tossem."),
+    "Potira": ("Potira está curada da maldição?", "Ela nunca teve a maldição. [Trabalha bem].",
+               "Onde Potira está?", "Na roça dos padres. Planta mandioca para a vila."),
+    "Tamandaré-mirim": ("Tamandaré-mirim está curado da maldição?",
+                        "O corpo melhora. A língua, não. [Ainda prega contra nós].",
+                        "Onde Tamandaré-mirim está?", "Na casa da câmara, até aprender a calar."),
+    "Iandé": ("Iandé está curada da maldição?",
+              "Agora ela tem nome cristão. [A maldição não fica em quem é batizado].",
+              "Onde Iandé está?", "Na casa das moças, aprendendo a fiar e a rezar."),
+}
+
+
+def perguntas_sobre_os_levados():
+    """As perguntas sobre cada um que o Aleixo já levou (dias 6 e 9)."""
+    perguntas = []
+    for nome, (curado, resposta_curado, onde, resposta_onde) in SOBRE_OS_LEVADOS.items():
+        perguntas.append({"pergunta": curado, "resposta": resposta_curado, "entregue": nome})
+        perguntas.append({"pergunta": onde, "resposta": resposta_onde, "entregue": nome})
+    return perguntas
+
 
 # O que Aleixo diz quando o jogador nega, visita a visita: cada vez mais irritado.
 FALA_ALEIXO_NEGADO = {
@@ -259,7 +288,7 @@ DIAS = {
             {"tipo": "perguntas", "perguntas": [
                 {"pergunta": "De onde você vem?",
                  "resposta": "Do outro lado do rio. Meu povo caça onde o seu não vai."},
-                {"pergunta": "Você está doente?",
+                {"pergunta": "Você está amaldiçoado?",
                  "resposta": "[Não]. Dormi no sereno, e a tosse veio junto."},
             ]},
             {"tipo": "escolha", "opcoes": [
@@ -521,7 +550,8 @@ DIAS = {
             ]},
             {"tipo": "visitante", "visitante": "aleixo"},
             {"tipo": "fala", "quem": ALEIXO, "texto": "Voltei, como disse que voltaria."},
-            {"tipo": "perguntas", "botao": "Seguir", "perguntas": PERGUNTAS_ALEIXO[6]},
+            {"tipo": "perguntas", "botao": "Seguir",
+             "perguntas": PERGUNTAS_ALEIXO[6] + perguntas_sobre_os_levados()},
 
             # O pedido, como no dia 3: entregar alguém ou negar.
             oferta_aleixo(6),
@@ -712,7 +742,8 @@ DIAS = {
             {"tipo": "visitante", "visitante": "aleixo"},
             {"tipo": "fala", "quem": ALEIXO, "texto": "Esta é a última vez que consigo ficar aqui."},
             {"tipo": "fala", "quem": ALEIXO, "texto": "Depois disso, não depende mais de mim."},
-            {"tipo": "perguntas", "botao": "Seguir", "perguntas": PERGUNTAS_ALEIXO[9]},
+            {"tipo": "perguntas", "botao": "Seguir",
+             "perguntas": PERGUNTAS_ALEIXO[9] + perguntas_sobre_os_levados()},
 
             # O pedido, como nas outras visitas: entregar alguém ou negar.
             oferta_aleixo(9),

@@ -81,9 +81,9 @@ ABERTAS_POR_NOITE = {
 }
 
 ONDE_DORME = {
-    # Yara senta no chão, encostada na parede do fundo, ao lado da esteira de dormir. Ocupa
-    # metade da altura da parede (a parede vai de y 215 a 515: uns 300; Yara, uns 150).
-    "Yara": {"oca": "oca1", "imagem": "yara_sentada", "posicao": (1115, 522), "escala": 0.27},
+    # Yara senta sobre a cama (a esteira grande do meio), com os pés na beirada da frente.
+    # Ocupa quase toda a altura da parede (a parede vai de y 215 a 515: uns 300; Yara, uns 265).
+    "Yara": {"oca": "oca1", "imagem": "yara_sentada", "posicao": (700, 600), "escala": 0.5},
     # Mbaé senta sobre a cama (o estrado da direita), na mesma pose da fogueira. Ocupa um pouco
     # mais que a metade da altura da parede (a parede vai de y 235 a 570: uns 335; Mbaé, uns 195).
     "Mbaé": {"oca": "oca2", "imagem": "mbae_sentado", "posicao": (1290, 570), "escala": 0.31},
@@ -97,14 +97,16 @@ ONDE_DORME = {
     "Iandé": {"oca": "oca1", "imagem": "iande_sentada", "posicao": (1327, 765), "escala": 0.38},
 }
 
-# Onde senta, dentro do tapiri, quem o jogador levou para lá (a esteira fica à direita).
-# A parede do tapiri vai de y 220 a 610 (uns 390): cada um ocupa pouco mais que a metade.
+# Onde senta, dentro do tapiri, quem o jogador levou para lá: no mesmo lugar, sobre a esteira
+# trançada da direita (só cabe um por vez: TAPIRI["vagas"]). A "escala" de cada um deixa todos
+# com a mesma altura na tela (uns 235, pouco mais que a metade da parede, que tem uns 390),
+# porque os desenhos sentados têm tamanhos diferentes.
 ONDE_DORME_TAPIRI = {
-    "Yara": {"imagem": "yara_sentada", "posicao": (1235, 690), "escala": 0.36},
-    "Mbaé": {"imagem": "mbae_sentado", "posicao": (1420, 668), "escala": 0.42},
-    "Potira": {"imagem": "potira_sentada", "posicao": (1330, 690), "escala": 0.36},
-    "Tamandaré-mirim": {"imagem": "tamandare_sentado", "posicao": (1110, 690), "escala": 0.36},
-    "Iandé": {"imagem": "iande_sentada", "posicao": (1000, 690), "escala": 0.36},
+    "Yara": {"imagem": "yara_sentada", "posicao": (1225, 668), "escala": 0.44},
+    "Mbaé": {"imagem": "mbae_sentado", "posicao": (1225, 668), "escala": 0.446},
+    "Potira": {"imagem": "potira_sentada", "posicao": (1225, 668), "escala": 0.42},
+    "Tamandaré-mirim": {"imagem": "tamandare_sentado", "posicao": (1225, 668), "escala": 0.453},
+    "Iandé": {"imagem": "iande_sentada", "posicao": (1225, 668), "escala": 0.428},
 }
 
 # Textos de dentro da oca.
