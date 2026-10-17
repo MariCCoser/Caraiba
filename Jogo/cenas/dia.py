@@ -216,7 +216,8 @@ class Dia(Cena):
         "amaldicoado" e "sao" levam o nome de um doente de fora (motor/febre.py);
         "amaldicoados_ao_menos": 2 e "amaldicoados_menos_de": 2 contam quantos amaldiçoados há
         na aldeia (motor/febre.py, quantos_amaldicoados); "levou_alguem": True (o Irmão Aleixo já
-        levou alguém).
+        levou alguém); "ao_menos": {"krenan_volta": 1} (variáveis do estado.py com pelo menos esse
+        valor).
         """
         estado = self.estado
         if "morto_ontem" in item and estado.mortos_quando.get(item["morto_ontem"]) != estado.dia - 1:
@@ -229,6 +230,9 @@ class Dia(Cena):
             return False
         if item.get("levou_alguem") and not estado.entregues_nomes:
             return False
+        for nome, valor in item.get("ao_menos", {}).items():
+            if getattr(estado, nome) < valor:
+                return False
         if "amaldicoados_ao_menos" in item and febre.quantos_amaldicoados(estado) < item["amaldicoados_ao_menos"]:
             return False
         if "amaldicoados_menos_de" in item and febre.quantos_amaldicoados(estado) >= item["amaldicoados_menos_de"]:
@@ -267,6 +271,9 @@ class Dia(Cena):
                 continue
             # Quem só vem se o jogador o chamou para a fogueira (Krenan).
             if pessoa.get("convidado") and nome not in estado.convidados:
+                continue
+            # Quem só vem se a "condicao" bate (ex.: Krenan volta na noite 9).
+            if "condicao" in pessoa and not self._condicao(pessoa["condicao"]):
                 continue
             # Quem morreu ou foi levado pelo Aleixo também não vem.
             if nome in estado.mortos_nomes or nome in estado.entregues_nomes:

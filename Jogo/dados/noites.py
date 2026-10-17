@@ -266,6 +266,26 @@ def oferta_krenan():
     ]}
 
 
+# --- Noite 9: o pescoço (o 5º sinal da tábua) ---
+# Agora dá para olhar também o pescoço. Tamandaré-mirim tem as manchas descendo até lá; Iandé,
+# que parecia perfeita, mostra as primeiras manchas brancas no pescoço.
+LIBERADAS_NOITE_9 = ["Olhos", "Boca", "Orelhas", "Pescoço"]
+PESCOCO_LIMPO = {"pergunta": "Pescoço", "resposta": "Nada no pescoço. A pele está lisa."}
+
+
+def com_pescoco(zonas, pescoco=PESCOCO_LIMPO):
+    """As zonas do rosto e mais o pescoço (a zona nova da noite 9)."""
+    return [dict(zona) for zona in zonas] + [pescoco]
+
+
+ZONAS_TAMANDARE_NOITE_9 = com_pescoco(ZONAS_TAMANDARE_NOITE_6, {
+    "pergunta": "Pescoço", "sinal": True,
+    "resposta": "As manchas brancas já desceram até o pescoço."})
+ZONAS_IANDE_NOITE_9 = com_pescoco(ZONAS_IANDE, {
+    "pergunta": "Pescoço", "sinal": True,
+    "resposta": ["Do lado do pescoço, umas manchas brancas, pequenas.", "[É da alça do cesto]."]})
+
+
 NOITES = {
     1: {
         "titulo": "Noite 1",
@@ -1003,6 +1023,135 @@ NOITES = {
                     {"tipo": "exame", "quem": "Iandé", "liberadas": LIBERADAS_NOITE_6,
                      "texto": TEXTO_EXAME, "zonas": ZONAS_IANDE},
                     escolha_onde_dorme("Iandé", "Na minha rede de sempre. Que saudade.",
+                                       "Sozinha? O que foi que eu fiz?"),
+                    {"tipo": "visitante", "visitante": None},
+                ],
+            },
+        },
+        "fim": [
+            {"tipo": "fala", "quem": "",
+             "texto": "O fogo baixa. A aldeia vai para as redes."},
+        ],
+    },
+
+    9: {
+        "titulo": "Noite 9",
+        # 1 olhar (2 com o machado); os olhos, a boca, atrás das orelhas e, agora, o pescoço.
+        "energia": 1,
+        "energia_extra": {"machado": 1},
+        "fundo": "fogueira_perto",
+        "amaldicoados": True,
+        "dica": "Clique em quem está perto do fogo para conversar.",
+        "dormir": "Ir dormir",
+        "pessoas": {
+            "Pajé": {
+                "imagem": "paje_sentado", "posicao": POSICAO_PAJE, "escala": ESCALA_PAJE, "espelhar": True,
+                "posicao_com": {"Potira": POSICAO_PAJE_COM_POTIRA},
+                "passos": [
+                    {"tipo": "visitante", "visitante": "paje"},
+                    {"tipo": "fala", "quem": "Pajé", "texto": "Sente. O homem da cruz não volta mais."},
+                    {"tipo": "perguntas", "botao": "Voltar para a fogueira", "perguntas": [
+                        {"pergunta": "O que você viu no sono?",
+                         "resposta": "Um pescoço marcado. Manchas brancas, pequenas, todas juntas."},
+                        {"pergunta": "Como eu vejo isso?",
+                         "resposta": "Olhe a pele de perto. O fogo engana."},
+                    ]},
+                    {"tipo": "visitante", "visitante": None},
+                ],
+            },
+
+            # Krenan volta, se na noite 8 levou alguém são: o mesmo pedido.
+            "Krenan": {
+                "imagem": "krenan_sentado", "posicao": POSICAO_KRENAN, "escala": ESCALA_KRENAN,
+                "condicao": {"ao_menos": {"krenan_volta": 1}},
+                "uma_vez": True, "obrigatorio": True, "atras": True,
+                "passos": [
+                    {"tipo": "visitante", "visitante": "krenan"},
+                    {"tipo": "fala", "quem": "Krenan", "texto": "Tornei, como vos disse. A canoa aguarda na margem."},
+                    {"tipo": "fala", "quem": "Krenan",
+                     "texto": "Se vos aprouver, levarei comigo quem houver de subir. Mo concedeis?"},
+                    oferta_krenan(),
+                    {"tipo": "visitante", "visitante": None},
+                ],
+            },
+
+            "Yara": {
+                "imagem": "yara_sentada", "posicao": POSICAO_YARA, "escala": ESCALA_YARA,
+                "de_fora": True, "uma_vez": True,
+                "passos": [
+                    {"tipo": "visitante", "visitante": "yara"},
+                    {"tipo": "fala", "quem": "Yara", "texto": "O padre não sorriu nem uma vez."},
+                    {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa_yara()},
+                    {"tipo": "exame", "quem": "Yara", "liberadas": LIBERADAS_NOITE_9,
+                     "texto": TEXTO_EXAME, "zonas": com_pescoco(ZONAS_YARA_NOITE_3)},
+                    escolha_onde_dorme("Yara", "Mais uma noite, então. Obrigada.",
+                                       "Sozinha, então. Já dormi em lugar pior."),
+                    {"tipo": "visitante", "visitante": None},
+                ],
+            },
+
+            "Mbaé": {
+                "imagem": "mbae_sentado", "posicao": POSICAO_MBAE, "escala": ESCALA_MBAE,
+                "de_fora": True, "uma_vez": True, "obrigatorio": True,
+                "passos": [
+                    {"tipo": "visitante", "visitante": "mbae"},
+                    {"tipo": "fala", "quem": "Mbaé", "texto": "(tosse) Ainda respiro."},
+                    {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa_mbae()},
+                    {"tipo": "exame", "quem": "Mbaé", "liberadas": LIBERADAS_NOITE_9,
+                     "texto": TEXTO_EXAME, "zonas": com_pescoco(ZONAS_MBAE)},
+                    escolha_onde_dorme("Mbaé", "Durmo no canto. Não incomodo ninguém.",
+                                       "Sozinho no escuro. Já passei noite pior na caça."),
+                    {"tipo": "visitante", "visitante": None},
+                ],
+            },
+
+            "Potira": {
+                "imagem": "potira_sentada", "posicao": POSICAO_POTIRA, "escala": ESCALA_POTIRA,
+                "espelhar": True,
+                "de_fora": True, "uma_vez": True,
+                "passos": [
+                    {"tipo": "visitante", "visitante": "potira"},
+                    {"tipo": "fala", "quem": "Potira", "texto": "Amanhã eu busco mandioca na roça velha."},
+                    {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": [
+                        {"pergunta": "Viu gente doente?",
+                         "resposta": "Vi rede vazia pendurada. Não entrei."},
+                    ]},
+                    {"tipo": "exame", "quem": "Potira", "liberadas": LIBERADAS_NOITE_9,
+                     "texto": TEXTO_EXAME, "zonas": com_pescoco(ZONAS_POTIRA)},
+                    escolha_onde_dorme("Potira", "Durmo na rede de sempre.",
+                                       "Sozinha? Se você manda, eu vou."),
+                    {"tipo": "visitante", "visitante": None},
+                ],
+            },
+
+            "Tamandaré-mirim": {
+                "imagem": "tamandare_sentado", "posicao": POSICAO_TAMANDARE, "escala": ESCALA_TAMANDARE,
+                "de_fora": True, "uma_vez": True, "obrigatorio": True,
+                "passos": [
+                    {"tipo": "visitante", "visitante": "tamandare"},
+                    {"tipo": "fala", "quem": "Tamandaré-mirim", "texto": "A pele arde. Deve ser a terra sem mal chegando."},
+                    {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa_tamandare()},
+                    {"tipo": "exame", "quem": "Tamandaré-mirim", "liberadas": LIBERADAS_NOITE_9,
+                     "texto": TEXTO_EXAME, "zonas": ZONAS_TAMANDARE_NOITE_9},
+                    escolha_onde_dorme("Tamandaré-mirim", "Durmo perto da porta. Acordo antes do sol.",
+                                       "Sozinho. Os profetas sempre dormem sozinhos."),
+                    {"tipo": "visitante", "visitante": None},
+                ],
+            },
+
+            "Iandé": {
+                "imagem": "iande_sentada", "posicao": POSICAO_IANDE, "escala": ESCALA_IANDE,
+                "de_fora": True, "uma_vez": True, "obrigatorio": True,
+                "passos": [
+                    {"tipo": "visitante", "visitante": "iande"},
+                    {"tipo": "fala", "quem": "Iandé", "texto": "Acordei com dor nas costas. Deve ser da viagem."},
+                    {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": [
+                        {"pergunta": "Viu alguém doente?",
+                         "resposta": "Vi uma casa fechada, com uma cruz na porta."},
+                    ]},
+                    {"tipo": "exame", "quem": "Iandé", "liberadas": LIBERADAS_NOITE_9,
+                     "texto": TEXTO_EXAME, "zonas": ZONAS_IANDE_NOITE_9},
+                    escolha_onde_dorme("Iandé", "Na minha rede de sempre.",
                                        "Sozinha? O que foi que eu fiz?"),
                     {"tipo": "visitante", "visitante": None},
                 ],

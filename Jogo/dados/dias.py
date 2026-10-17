@@ -93,11 +93,22 @@ PERGUNTAS_ALEIXO = {
              "Dizem que aqui se esconde gente que devia estar [sob a lei].",
          ]},
     ],
+    # Dia 9: tudo o que ele ainda não disse, e o cordão (o da Iandé, que ele batizou).
     9: [
         {"pergunta": "Os que você levou voltam?",
          "resposta": "[Estão bem na vila]. É longe para voltar."},
         {"pergunta": "De onde vem essa maldição?",
          "resposta": "Do pecado. [Na vila, ela sai]."},
+        {"pergunta": "Isso é ameaça?",
+         "resposta": "É aviso. Eu gosto de vocês. Por isso vim antes dos outros."},
+        {"pergunta": "Quem são os outros?",
+         "resposta": "Homens com ordem do governador. Não dependem de mim."},
+        {"pergunta": "Que cordão é esse no seu pescoço?",
+         "resposta": [
+             "Uma moça me deu, no domingo em que a batizei. Iandé, do seu povo.",
+             "Pediu que eu rezasse por ela. [Eu rezo].",
+         ],
+         "efeitos": {"pistas": 1}},
     ],
 }
 
@@ -655,6 +666,66 @@ DIAS = {
             {"tipo": "visitante", "visitante": "paje"},
             {"tipo": "fala", "quem": "Pajé",
              "texto": "Sonhei com a minha própria mãe na porta. Não soube o que fazer."},
+
+            {"tipo": "noite"},
+        ],
+    },
+
+    # --- Dia 9: a última vez que ele vem (Textos/Caraíba — Dez Dias, Dez Fogueiras.pdf) ---
+    # A terceira e última visita do Irmão Aleixo. Ele diz tudo o que ainda não tinha dito,
+    # e o cordão no pescoço dele é o de Iandé. O pedido é o mesmo: entregar alguém ou negar.
+    # De noite, o pajé conta o 5º sinal: manchas brancas no pescoço.
+    9: {
+        "titulo": "Dia 9",
+        "passos": [
+            {"tipo": "fundo", "fundo": "aldeia", "filtro": "dia"},
+
+            # A manhã: primeiro a febre (motor/febre.py); depois, quem o jogador matou ontem.
+            {"tipo": "se", "morto_ontem": "Yara", "passos": [
+                {"tipo": "fala", "quem": "", "texto": "O corpo de Yara amanheceu coberto com uma esteira."},
+            ]},
+            {"tipo": "se", "morto_ontem": "Mbaé", "passos": [
+                {"tipo": "fala", "quem": "", "texto": "O corpo de Mbaé amanheceu coberto com uma esteira."},
+            ]},
+            {"tipo": "se", "morto_ontem": "Potira", "passos": [
+                {"tipo": "fala", "quem": "", "texto": "O corpo de Potira amanheceu coberto com uma esteira."},
+            ]},
+            {"tipo": "se", "morto_ontem": "Tamandaré-mirim", "passos": [
+                {"tipo": "fala", "quem": "", "texto": "O corpo de Tamandaré-mirim amanheceu coberto com uma esteira."},
+            ]},
+            {"tipo": "se", "morto_ontem": "Iandé", "passos": [
+                {"tipo": "fala", "quem": "", "texto": "O corpo de Iandé amanheceu coberto com uma esteira."},
+            ]},
+            {"tipo": "se", "na_oca": "Mbaé", "passos": [
+                {"tipo": "fala", "quem": "", "texto": "Mbaé tossiu a noite toda na oca Yebá Bëló."},
+            ]},
+
+            {"tipo": "aldeia"},
+
+            # A entrada: Aleixo, pela última vez.
+            {"tipo": "fundo", "fundo": "floresta", "filtro": "dia"},
+            {"tipo": "fala", "quem": "",
+             "texto": "O Irmão Aleixo está ao lado da cruz, com o caderno aberto e a pena na mão."},
+            {"tipo": "se", "levou_alguem": True, "passos": [
+                {"tipo": "fala", "quem": "", "texto": "Ele veio sozinho de novo."},
+            ]},
+            {"tipo": "visitante", "visitante": "aleixo"},
+            {"tipo": "fala", "quem": ALEIXO, "texto": "Esta é a última vez que consigo ficar aqui."},
+            {"tipo": "fala", "quem": ALEIXO, "texto": "Depois disso, não depende mais de mim."},
+            {"tipo": "perguntas", "botao": "Seguir", "perguntas": PERGUNTAS_ALEIXO[9]},
+
+            # O pedido, como nas outras visitas: entregar alguém ou negar.
+            oferta_aleixo(9),
+            {"tipo": "fala", "quem": ALEIXO, "texto": "Que Deus guarde esta aldeia. Eu não posso mais."},
+            {"tipo": "visitante", "visitante": None},
+            {"tipo": "fala", "quem": "", "texto": "A cruz fica na entrada."},
+
+            # O sinal do pajé: o 5º risco da tábua.
+            {"tipo": "fundo", "fundo": "fogueira_longe", "filtro": "noite"},
+            {"tipo": "visitante", "visitante": "paje"},
+            {"tipo": "fala", "quem": "Pajé",
+             "texto": "Sonhei com um pescoço marcado. O mal deixa [manchas brancas no pescoço]."},
+            {"tipo": "sinal", "texto": "Manchas brancas no pescoço."},
 
             {"tipo": "noite"},
         ],

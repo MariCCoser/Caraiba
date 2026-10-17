@@ -1484,6 +1484,80 @@ def testar_dia8_e_noite8(jogo):
     esperar_transicao(jogo)
 
 
+def testar_dia9_e_noite9(jogo):
+    """Dia 9 (a última visita do Irmão Aleixo: tudo o que faltava, o cordão de Iandé, entregar ou
+    negar) e a Noite 9 (o 5º sinal: manchas brancas no pescoço; Krenan volta)."""
+    jogo.nova_partida()
+    estado = jogo.estado
+    estado.dia = 8
+    estado.dentro = ["Tamandaré-mirim", "Iandé"]
+    estado.vivos = 2
+    estado.krenan_volta = 1
+    estado.rio_acima, estado.rio_acima_nomes = 1, ["Yara"]
+    estado.tabua = ["Olho vermelho, com o branco raiado.", "Boca com feridas.",
+                    "Pontos brancos por dentro da bochecha.", "Manchas brancas atrás da orelha."]
+    estado.tabua_noites = [1, 2, 4, 6]
+    jogo.ir_para("aldeia")
+    esperar_transicao(jogo)
+    clicar(jogo, jogo.cenas.atual.rect_seta.center)
+    esperar_transicao(jogo)
+    esperar_transicao(jogo)
+    assert estado.dia == 9
+
+    # Na entrada: Aleixo, pela última vez, com tudo o que faltava dizer.
+    passar_falas(jogo)
+    dia = jogo.cenas.atual
+    assert dia.visitante == "aleixo"
+    assert textos_dos_botoes(jogo) == ["Os que você levou voltam?", "De onde vem essa maldição?",
+                                       "Isso é ameaça?", "Quem são os outros?",
+                                       "Que cordão é esse no seu pescoço?", "Seguir"], textos_dos_botoes(jogo)
+    clicar_opcao(jogo, "Que cordão é esse no seu pescoço?")
+    dia.caixa.completar()
+    assert "Iandé" in dia.caixa.texto, dia.caixa.texto
+    passar_falas(jogo)
+    assert estado.pistas == 1
+    rodar(jogo, 60)
+    capturar(jogo, "46-dia9-aleixo")
+    clicar_opcao(jogo, "Seguir")
+    assert textos_dos_botoes(jogo) == ["Entregar Tamandaré-mirim", "Entregar Iandé", "Negar"], textos_dos_botoes(jogo)
+    estado.semente = next(n for n in range(1000)
+                          if random.Random("%s:aleixo:9" % n).choice(estado.dentro) == "Tamandaré-mirim")
+    clicar_opcao(jogo, "Negar")
+    dia.caixa.completar()
+    assert dia.caixa.texto == "Chega. Eu levo quem eu quiser.", dia.caixa.texto
+    passar_falas(jogo)
+    assert estado.dentro == ["Iandé"] and estado.energia_hoje == 1
+
+    # O sinal do pajé: o 5º risco da tábua.
+    assert estado.tabua[-1] == "Manchas brancas no pescoço." and estado.tabua_noites[-1] == 9
+    print("ok Dia 9: a última visita do Irmão Aleixo (tudo o que faltava, o cordão) e o 5º sinal")
+
+    # A fogueira: Krenan voltou. Iandé, que parecia perfeita, tem as manchas no pescoço.
+    assert dia.titulo == "Noite 9" and dia.modo == "fogueira" and dia.energia == 2
+    assert [p.nome for p in dia.na_fogueira] == ["Krenan", "Pajé", "Iandé"]
+    rodar(jogo, 40)
+    capturar(jogo, "47-noite9-fogueira")
+    clicar_pessoa(jogo, "Iandé")
+    passar_falas(jogo)
+    clicar_opcao(jogo, "Examinar o rosto")
+    assert textos_dos_botoes(jogo) == ["Olhos", "Orelhas", "Boca", "Pescoço", "Terminar o exame"], (
+        textos_dos_botoes(jogo))
+    examinar(jogo, ["Pescoço"])
+    assert dia.sinais["Iandé"] == 1
+    clicar_opcao(jogo, "Terminar o exame")
+    clicar_opcao(jogo, "Levar ao tapiri")
+    passar_falas(jogo)
+    clicar_pessoa(jogo, "Krenan")
+    passar_falas(jogo)
+    assert textos_dos_botoes(jogo) == ["Deixar levar alguém", "Não deixar"], textos_dos_botoes(jogo)
+    clicar_opcao(jogo, "Não deixar")
+    passar_falas(jogo)
+    assert dia.botao_dormir.visivel
+    print("ok Noite 9: manchas no pescoço de Iandé, e Krenan de volta")
+    jogo.ir_para("menu")
+    esperar_transicao(jogo)
+
+
 def testar_continuar_tabua_tutorial(jogo):
     from dados.dias import DIAS
     perguntas = next(p for p in DIAS[1]["passos"] if p["tipo"] == "perguntas")["perguntas"]
@@ -1652,6 +1726,7 @@ def testar_fluxo():
     testar_dia6_e_noite6(jogo)
     testar_dia7_e_noite7(jogo)
     testar_dia8_e_noite8(jogo)
+    testar_dia9_e_noite9(jogo)
     testar_aldeia_de_dia(jogo)
 
     # 5c. Continuar de onde parou, a tábua de barro e o "Como se joga" do menu
