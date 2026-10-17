@@ -50,8 +50,12 @@ def calcular_na_manha(estado):
 
 
 def fim_da_noite(estado):
-    """No fim da noite: o jogo acaba antes do dia 10? Na noite 10, é o final calculado de manhã."""
+    """No fim da noite: o jogo acaba antes do dia 10? Na noite 10, é o final calculado de manhã
+    (menos um final "ultima_noite" que já bate: a escolha feita nesta noite)."""
     if estado.dia >= DIA_DO_CALCULO:
+        for final in FINAIS:
+            if final.get("ultima_noite") and condicao_bate(estado, final):
+                return final
         return por_id(estado.final_calculado) if estado.final_calculado else escolher(estado)
     for final in FINAIS:
         if final.get("antecipado") and condicao_bate(estado, final):

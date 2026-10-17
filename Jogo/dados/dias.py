@@ -35,6 +35,8 @@
 #                na aldeia: os doentes de fora e quem pegou deles)
 #                "levou_alguem": True (o Irmão Aleixo já levou alguém, entregue ou sorteado)
 #                "entregue": "Yara" (o Irmão Aleixo levou Yara, entregue ou sorteada)
+#                "ao_menos" / "no_maximo": {"recusas_aleixo": 1} (variáveis do estado.py com
+#                pelo menos / no máximo esse valor)
 #   Uma opção de "escolha" com "condicao" só aparece se ela bate: {"dentro": "Yara"}.
 #                "entrega": "Yara" entrega a pessoa ao Irmão Aleixo (ela sai da aldeia).
 #   "aleixo_leva" o Irmão Aleixo leva uma pessoa da aldeia, sorteada (o jogador não escolhe):
@@ -57,8 +59,9 @@ from dados.conversas import (conversa_araci, conversa_iande, conversa_mbae, conv
 #
 # Em cada visita, ele pede alguém (oferta_aleixo):
 #   Entregar alguém de fora: entregues +1, proximidade_vila +1, vivos -1. A pessoa sai da aldeia.
-#   Negar:                   recusas_aleixo +1. Mesmo assim ele leva alguém, sorteado entre
-#                            quem é de fora: levados +1, vivos -1. Sem ninguém, vai embora só.
+#   Negar:                   recusas_aleixo +1. No dia 3 (a 1ª visita), ele vai embora sem
+#                            levar ninguém. Nos dias 6 e 9, leva alguém mesmo assim, sorteado
+#                            entre quem é de fora: levados +1, vivos -1. Sem ninguém, vai embora só.
 #                            A cada visita, ele fica mais irritado (FALA_ALEIXO_NEGADO).
 #                            Negar dá mais energia na noite (ENERGIA_POR_NEGAR).
 # Negar nas três visitas é o "nenhuma entrega" (entregues == 0) dos finais.
@@ -98,8 +101,11 @@ PERGUNTAS_ALEIXO = {
     9: [
         {"pergunta": "Os que você levou voltam?",
          "resposta": "[Estão bem na vila]. É longe para voltar."},
-        {"pergunta": "De onde vem essa maldição?",
-         "resposta": "Do pecado. [Na vila, ela sai]."},
+        # Sobre quem ele já levou: no dia 9, sem repetir as perguntas de cada um (dia 6).
+        {"pergunta": "Os meus estão curados?", "levou_alguem": True,
+         "resposta": "Rezam todos os dias. [Deus vai curá-los]."},
+        {"pergunta": "Onde os meus estão?", "levou_alguem": True,
+         "resposta": "Na vila, cada um no seu lugar. [Lá cuidam deles]."},
         {"pergunta": "Isso é ameaça?",
          "resposta": "É aviso. Eu gosto de vocês. Por isso vim antes dos outros."},
         {"pergunta": "Quem são os outros?",
@@ -133,7 +139,7 @@ SOBRE_OS_LEVADOS = {
 
 
 def perguntas_sobre_os_levados():
-    """As perguntas sobre cada um que o Aleixo já levou (dias 6 e 9)."""
+    """As perguntas sobre cada um que o Aleixo já levou (dia 6)."""
     perguntas = []
     for nome, (curado, resposta_curado, onde, resposta_onde) in SOBRE_OS_LEVADOS.items():
         perguntas.append({"pergunta": curado, "resposta": resposta_curado, "entregue": nome})
@@ -143,11 +149,28 @@ def perguntas_sobre_os_levados():
 
 # O que Aleixo diz quando o jogador nega, visita a visita: cada vez mais irritado.
 FALA_ALEIXO_NEGADO = {
-    3: "Ninguém? Então eu escolho.",
+    3: "Ninguém? Desta vez eu vou sozinho.",
     6: "De novo, não? A vila não espera. Eu escolho.",
     9: "Chega. Eu levo quem eu quiser.",
 }
+# No dia 6, se é a primeira vez que o jogador nega (no dia 3 ele entregou alguém).
+FALA_ALEIXO_NEGADO_PRIMEIRA = {
+    6: ["Sério, não? Pois levo do mesmo jeito.", "Eu escolho."],
+}
+
+
+def falas_aleixo_negado(dia):
+    """O que Aleixo diz ao ser negado. Os efeitos da opção já contaram esta recusa: com
+    recusas_aleixo == 1, é a primeira vez."""
+    fala = {"tipo": "fala", "quem": ALEIXO, "texto": FALA_ALEIXO_NEGADO[dia]}
+    if dia not in FALA_ALEIXO_NEGADO_PRIMEIRA:
+        return [fala]
+    primeira = [{"tipo": "fala", "quem": ALEIXO, "texto": texto} for texto in FALA_ALEIXO_NEGADO_PRIMEIRA[dia]]
+    return [{"tipo": "se", "no_maximo": {"recusas_aleixo": 1}, "passos": primeira},
+            {"tipo": "se", "ao_menos": {"recusas_aleixo": 2}, "passos": [fala]}]
 EFEITOS_ENTREGAR = {"entregues": 1, "proximidade_vila": 1, "vivos": -1}
+# Na 1ª visita, negar não faz ele levar ninguém (A Honra precisa de gente viva no dia 10).
+DIAS_SEM_LEVAR = [3]
 # Negar o pedido do Aleixo dá energia a mais na noite do mesmo dia (olhares na fogueira).
 ENERGIA_POR_NEGAR = 1
 FALA_ALEIXO_VOLTA = {"tipo": "fala", "quem": ALEIXO, "texto": "Volto daqui a alguns dias."}
@@ -165,18 +188,19 @@ FALA_ENTREGUE = {
 
 def oferta_aleixo(dia):
     """O pedido de Aleixo: o jogador entrega alguém de fora ou nega. Negando, ele leva alguém
-    que ele quer mesmo assim (sorteado: o passo "aleixo_leva")."""
+    que ele quer mesmo assim (sorteado: o passo "aleixo_leva"), menos nos DIAS_SEM_LEVAR."""
     entregar = [
         {"texto": "Entregar " + nome, "condicao": {"dentro": nome}, "entrega": nome,
          "efeitos": EFEITOS_ENTREGAR, "passos": [{"tipo": "fala", "quem": ALEIXO, "texto": fala}]}
         for nome, fala in FALA_ENTREGUE.items()]
     return {"tipo": "escolha", "texto": "Ele quer levar alguém para a vila.", "opcoes": entregar + [
         {"texto": "Negar", "efeitos": {"recusas_aleixo": 1, "energia_hoje": ENERGIA_POR_NEGAR}, "passos": [
-            {"tipo": "fala", "quem": ALEIXO, "texto": FALA_ALEIXO_NEGADO[dia]},
+            *falas_aleixo_negado(dia),
+        ] + ([] if dia in DIAS_SEM_LEVAR else [
             {"tipo": "aleixo_leva",
              "de_fora": "Ele leva %s pela trilha. Ninguém consegue impedir.",
              "ninguem": "Ele olha as redes, não acha quem levar e fecha o caderno."},
-        ]},
+        ])},
     ]}
 
 
@@ -743,7 +767,7 @@ DIAS = {
             {"tipo": "fala", "quem": ALEIXO, "texto": "Esta é a última vez que consigo ficar aqui."},
             {"tipo": "fala", "quem": ALEIXO, "texto": "Depois disso, não depende mais de mim."},
             {"tipo": "perguntas", "botao": "Seguir",
-             "perguntas": PERGUNTAS_ALEIXO[9] + perguntas_sobre_os_levados()},
+             "perguntas": PERGUNTAS_ALEIXO[9]},
 
             # O pedido, como nas outras visitas: entregar alguém ou negar.
             oferta_aleixo(9),

@@ -19,7 +19,8 @@ class Estado:
         self.levados = 0               # pessoas que o Irmão Aleixo levou mesmo negando (sorteadas)
         self.proximidade_vila = 0      # machado, entregas, doente mandado seguir de dia
         self.rio_acima = 0             # pessoas mandadas para a cabeceira (com Krenan)
-        self.krenan_volta = 0          # 1 se Krenan volta na noite 9 (levou alguém são na noite 8)
+        self.krenan_volta = 0          # 1 se Krenan volta na noite 10 (levou alguém na noite 8)
+        self.subiu_o_rio = 0           # 1 se, na noite 10, a aldeia inteira subiu o rio com Krenan
         self.memoria = 0               # histórias ouvidas
         self.recusas_aleixo = 0        # vezes que você recusou uma oferta
         self.pistas = 0                # caderno de Aleixo, colar, notícia (máximo 3)

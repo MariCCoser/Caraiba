@@ -72,6 +72,7 @@ class Dia(Cena):
         self.energia = None       # olhares que sobram na noite (None durante o dia)
         self.energia_max = 0      # olhares da noite inteira (os pontos da tela)
         self.sinais = {}          # quantos sinais o exame achou em cada pessoa, nesta noite
+        self.acusado = None       # quem o pajé acusou pelo nome nesta noite (A Água do Batismo)
 
         self.fundo = ("aldeia", "dia")
         self.fundo_anterior = None
@@ -217,7 +218,8 @@ class Dia(Cena):
         "amaldicoados_ao_menos": 2 e "amaldicoados_menos_de": 2 contam quantos amaldiçoados há
         na aldeia (motor/febre.py, quantos_amaldicoados); "levou_alguem": True (o Irmão Aleixo já
         levou alguém); "entregue": "Yara" (o Irmão Aleixo levou essa pessoa, entregue ou não);
-        "ao_menos": {"krenan_volta": 1} (variáveis do estado.py com pelo menos esse valor).
+        "ao_menos": {"krenan_volta": 1} (variáveis do estado.py com pelo menos esse valor);
+        "no_maximo": {"recusas_aleixo": 1} (variáveis do estado.py com no máximo esse valor).
         """
         estado = self.estado
         if "morto_ontem" in item and estado.mortos_quando.get(item["morto_ontem"]) != estado.dia - 1:
@@ -234,6 +236,9 @@ class Dia(Cena):
             return False
         for nome, valor in item.get("ao_menos", {}).items():
             if getattr(estado, nome) < valor:
+                return False
+        for nome, valor in item.get("no_maximo", {}).items():
+            if getattr(estado, nome) > valor:
                 return False
         if "amaldicoados_ao_menos" in item and febre.quantos_amaldicoados(estado) < item["amaldicoados_ao_menos"]:
             return False
@@ -254,6 +259,7 @@ class Dia(Cena):
     def _comecar_noite(self):
         """A noite de dados/noites.py: todos sentam em volta do fogo e o jogador escolhe com quem falar."""
         self.noite = NOITES[self.estado.dia]
+        self.acusado = None
         self._liberar_tapiri()
         self.titulo = self.noite["titulo"]
         # "energia_extra": +1 olhar para cada variável do estado.py que já chegou ao valor pedido.
@@ -274,7 +280,7 @@ class Dia(Cena):
             # Quem só vem se o jogador o chamou para a fogueira (Krenan).
             if pessoa.get("convidado") and nome not in estado.convidados:
                 continue
-            # Quem só vem se a "condicao" bate (ex.: Krenan volta na noite 9).
+            # Quem só vem se a "condicao" bate (ex.: Krenan volta na noite 10).
             if "condicao" in pessoa and not self._condicao(pessoa["condicao"]):
                 continue
             # Quem morreu ou foi levado pelo Aleixo também não vem.
@@ -430,17 +436,18 @@ class Dia(Cena):
                 continue
             if not self._condicao(item):
                 continue
+            if "acusa" in item and not self._acusado_da_pergunta(item):
+                continue
             if (id(passo), i) not in self.perguntas_feitas:
                 opcoes.append((item["pergunta"], lambda i=i, item=item: self._perguntar(passo, i, item)))
         botao = passo.get("botao", DIA["terminar_exame"] if exame else DIA["decidir"])
         opcoes.append((botao, self._decidir))
         self._criar_blocos(opcoes)
-        if exame:
-            # Zona que custa mais energia do que sobrou fica apagada: no fim, só dá para terminar.
-            itens = {item["pergunta"]: item for item in _itens(passo)}
-            for bloco, _ in self.botoes[:-1]:
-                if itens[bloco.texto].get("custo", 1) > (self.energia or 0):
-                    bloco.habilitado = False
+        # Zona (ou pergunta com "custo") que custa mais energia do que sobrou fica apagada.
+        itens = {item["pergunta"]: item for item in _itens(passo)}
+        for bloco, _ in self.botoes[:-1]:
+            if _custo(passo, itens[bloco.texto]) > (self.energia or 0):
+                bloco.habilitado = False
 
     def _apresentar(self, passo):
         """Exame ou escolha com "texto": na primeira vez, ele aparece no painel (sem nome em cima)."""
@@ -459,19 +466,30 @@ class Dia(Cena):
             self._aplicar(item.get("efeitos"))
             if historia:
                 self.estado.historias.append(historia)
-        if passo["tipo"] == "exame":
-            self.energia -= item.get("custo", 1)
-            if item.get("sinal"):
-                self.sinais[passo["quem"]] = self.sinais.get(passo["quem"], 0) + 1
+        if _custo(passo, item):
+            self.energia -= _custo(passo, item)
+        if passo["tipo"] == "exame" and item.get("sinal"):
+            self.sinais[passo["quem"]] = self.sinais.get(passo["quem"], 0) + 1
+        resposta = item.get("resposta")
+        if "acusa" in item:
+            # O pajé acusa pelo nome: levar essa pessoa ao tapiri nesta noite é seguir o pajé.
+            self.acusado, resposta = self._acusado_da_pergunta(item)
         # Uma resposta pode ter várias frases: a primeira aparece agora, as outras em seguida.
         # Depois da resposta, volta para as perguntas que sobraram.
-        resposta = item["resposta"]
         frases = [resposta] if isinstance(resposta, str) else list(resposta)
         quem = passo.get("quem", self.quem)
         self.fila[0:0] = [{"tipo": "fala", "quem": quem, "texto": frase} for frase in frases[1:]] + [passo]
         self.botoes = []
         # Zona com "imagem": o jogador vê (o olho de perto), em vez de ler uma descrição.
         self._mostrar_fala(quem, frases[0], pergunta=item["pergunta"], imagem=item.get("imagem"))
+
+    def _acusado_da_pergunta(self, item):
+        """Pergunta com "acusa": [(nome, resposta), ...]: o pajé acusa o primeiro da lista que
+        está na fogueira (na aldeia, fora do tapiri). Devolve (nome, resposta), ou None."""
+        for nome, resposta in item["acusa"]:
+            if nome in self.estado.dentro and nome not in self.estado.tapiri:
+                return nome, resposta
+        return None
 
     def _decidir(self):
         self._registrar(["decidir"])
@@ -506,6 +524,11 @@ class Dia(Cena):
             nome = opcao["tapiri"]
             if nome in DOENTES:
                 self.estado.tapiri_usos += 1
+            if nome == self.acusado:
+                # Seguiu o pajé (A Água do Batismo). Se a pessoa era sã, é um inocente.
+                self.estado.seguiu_paje += 1
+                if nome not in DOENTES:
+                    self.estado.inocentes += 1
             self.estado.tapiri.append(nome)
             self.estado.tapiri_desde[nome] = self.estado.dia
         if opcao.get("convida"):
@@ -544,16 +567,15 @@ class Dia(Cena):
         self._mostrar_fala("", passo["de_fora"] % nome)
 
     def _subir_o_rio(self, nome):
-        """Krenan leva a pessoa rio acima: ela sai da aldeia, viva. Se ela é amaldiçoada (traz a
-        febre ou pegou), Krenan não volta mais; se é sã, ele volta na noite seguinte para levar mais."""
+        """Krenan leva a pessoa rio acima: ela sai da aldeia, viva. Sã ou amaldiçoada, ele volta
+        na noite 10 para levar mais."""
         estado = self.estado
-        amaldicoada = febre.amaldicoado(estado, nome) or any(e.get("nome") == nome for e in estado.febre)
         self._sair_da_aldeia(nome)
         estado.febre = [e for e in estado.febre if e.get("nome") != nome]
         estado.rio_acima_nomes.append(nome)
         estado.rio_acima += 1
         estado.vivos -= 1
-        estado.krenan_volta = 0 if amaldicoada else 1
+        estado.krenan_volta = 1
 
     def _acompanhar(self, nome):
         """A pessoa que o Irmão Aleixo leva aparece em pé, atrás dele."""
@@ -834,6 +856,12 @@ def _caixa_do_rosto(imagem):
             x += 1
         direita = max(direita, x)
     return esquerda, direita, topo, baixo
+
+
+def _custo(passo, item):
+    """Olhares que a pergunta gasta: cada zona do exame gasta 1 (ou o seu "custo"); uma
+    pergunta da conversa só gasta se tiver "custo" (ex.: o barulho na mata, Anhangá)."""
+    return item.get("custo", 1 if passo["tipo"] == "exame" else 0)
 
 
 def _itens(passo):

@@ -136,6 +136,32 @@ def escolha_onde_dorme(quem, fala_oca, fala_tapiri):
     ]}
 
 
+# --- O pajé acusa pelo nome (A Água do Batismo) ---
+# O pajé desconfia de quem é de outro povo: Mbaé (do outro lado do rio), Tamandaré-mirim (o
+# pregador que veio de longe) e Yara (da aldeia que trocava com os barcos). Potira, Iandé e
+# Araci não entram: Potira e Iandé são da aldeia, e Araci só chega no último dia.
+# Ele acusa o primeiro da lista que está na fogueira. Levar o acusado ao tapiri nessa noite é
+# "seguir o pajé" (seguiu_paje +1); se a pessoa era sã (Yara), é um inocente (inocentes +1).
+# Na noite 3 ele desconfia do Irmão Aleixo e, na noite 8, de Krenan: nenhum dos dois vai ao tapiri.
+ACUSACAO = {"pergunta": "De quem você desconfia?", "acusa": [
+    ("Mbaé", ["Mbaé. O povo dele caça do outro lado do rio.",
+              "O mal veio de lá. [Leve-o para o tapiri]."]),
+    ("Tamandaré-mirim", ["Tamandaré-mirim. Ele não é daqui: prega a terra dos outros.",
+                         "Quem fala tanto de outra terra traz o mal dela. [Leve-o para o tapiri]."]),
+    ("Yara", ["Yara. A aldeia dela trocava pau de tinta com os barcos.",
+              "Quem anda com os caraíbas traz o que é deles. [Leve-a para o tapiri]."]),
+]}
+
+# --- O barulho na mata (Anhangá) ---
+# Nas noites 2, 5 e 8, o jogador pode perguntar ao pajé sobre um barulho na mata. Custa 1
+# olhar. O pajé mostra de onde vem: o veado branco, o Anhangá (viu_anhanga +1). O final
+# Anhangá pede as três noites.
+def barulho_na_mata(resposta):
+    return {"pergunta": "Que barulho é esse na mata?", "custo": 1, "efeitos": {"viu_anhanga": 1},
+            "resposta": ["O pajé não responde. Levanta e aponta para as árvores, para o escuro.",
+                         resposta]}
+
+
 # --- Noite 3: a fogueira da aldeia e os amaldiçoados (Textos/Amaldiçoados.txt) ---
 # Ninguém novo chegou. Em volta do fogo: o pajé e quem é de fora (Yara e Mbaé, se ficaram).
 # Mbaé é o amaldiçoado que trouxe a febre; quem pegou dele também passa adiante, mesmo sem
@@ -235,13 +261,26 @@ ZONAS_IANDE = [
 # --- Noite 8: Krenan e a oferta de subir o rio ---
 # Krenan não é de fora da aldeia: não dorme nela nem é examinado. Ele avisa e pede para levar
 # alguém rio acima. Se o jogador deixa, escolhe quem vai ("rio_acima": a pessoa sai viva).
-# Se quem foi é amaldiçoado, Krenan não volta mais; se é são, ele volta na noite 9 para levar
-# mais gente (estado.krenan_volta). Se o jogador nega, Krenan só vai embora.
+# Na noite 9 ele não está na aldeia. Se o jogador deixou levar alguém (são ou amaldiçoado),
+# ele volta na noite 10 para levar mais gente (estado.krenan_volta). Se negou, não volta.
 # Ele fala um português antigo, rebuscado e duro. Na fogueira, senta no tronco da esquerda.
 POSICAO_KRENAN, ESCALA_KRENAN = (140, 462), 0.45
 QUEM_SOBE = ["Yara", "Mbaé", "Potira", "Tamandaré-mirim", "Iandé"]
 FALA_KRENAN_VAI = {"tipo": "fala", "quem": "Krenan",
                    "texto": "Assim seja. Se a lua mo consentir, tornarei a este fogo."}
+
+
+def oferta_krenan_todos():
+    """Noite 10: Krenan chama a aldeia inteira rio acima, e o jogador vai junto (Rio Acima)."""
+    return {"tipo": "escolha", "quem": "Krenan", "texto": "Krenan chama a aldeia inteira rio acima.", "opcoes": [
+        {"texto": "Subir o rio com todos", "efeitos": {"subiu_o_rio": 1}, "passos": [
+            {"tipo": "fala", "quem": "Krenan", "texto": "Assim seja. Apagai o fogo, que a canoa não espera."},
+            {"tipo": "fala", "quem": "", "texto": "A aldeia junta as redes. Você desce por último até a margem."},
+        ]},
+        {"texto": "Ficar na aldeia", "passos": [
+            {"tipo": "fala", "quem": "Krenan", "texto": "Seja. Ficai-vos com a vossa sorte, que eu me vou com a minha."},
+        ]},
+    ]}
 
 
 def oferta_krenan():
@@ -287,26 +326,22 @@ ZONAS_IANDE_NOITE_9 = com_pescoco(ZONAS_IANDE, {
 
 
 # --- Noite 10: Araci, a última porta ---
-# Pela primeira vez não falta informação: tudo o que o pajé contou está no rosto dela, menos
-# nas mãos. Na fogueira, só o pajé e Araci; ela senta em cima do tronco de baixo, à esquerda.
+# Pela primeira vez não falta informação: tudo o que o pajé contou está no rosto dela.
+# Na fogueira, o pajé e Araci (e Krenan, se voltou); ela senta em cima do tronco de baixo,
+# à esquerda.
 # O final já foi calculado de manhã (motor/finais.py): nenhuma das decisões é recompensada.
 # A linha escolhida aparece e, no fim da noite, vem a tela do final.
 POSICAO_ARACI, ESCALA_ARACI = (290, 700), 0.62
-LIBERADAS_NOITE_10 = ["Testa", "Olhos", "Orelhas", "Boca", "Mãos", "Respiração", "Pescoço"]
+# Como nas outras noites, só os olhos, a boca, atrás das orelhas e o pescoço.
+LIBERADAS_NOITE_10 = LIBERADAS_NOITE_9
 
 ZONAS_ARACI = [
-    {"pergunta": "Testa", "sinal": True,
-     "resposta": "Quente. Manchas descendo do rosto, com o brilho da maldição."},
     {"pergunta": "Olhos", "sinal": True,
      "resposta": "Vermelhos e fundos."},
     {"pergunta": "Orelhas", "sinal": True,
      "resposta": "Atrás das orelhas, manchas que já desceram."},
     {"pergunta": "Boca", "sinal": True,
      "resposta": "Seca. Por dentro da bochecha, os pontos brancos já sumindo."},
-    {"pergunta": "Mãos",
-     "resposta": "Segurando a barriga. Não soltam."},
-    {"pergunta": "Respiração",
-     "resposta": "Curta. A barriga sobe e desce depressa."},
     {"pergunta": "Pescoço", "sinal": True,
      "resposta": "Manchas no pescoço, pequenas, todas juntas."},
 ]
@@ -357,6 +392,7 @@ NOITES = {
                              "Então a decisão é sua. Há quem tire a vida para salvar a aldeia.",
                              "Mas quem faz isso carrega o peso. Eu vi homens que não dormiram mais.",
                          ]},
+                        ACUSACAO,
                     ]},
                     {"tipo": "visitante", "visitante": None},
                 ],
@@ -412,6 +448,8 @@ NOITES = {
                          ]},
                         {"pergunta": "O tapiri tem lugar?",
                          "resposta": "Um lugar só. Quem entra fica três noites, longe de todos."},
+                        ACUSACAO,
+                        barulho_na_mata("Entre os troncos, um veado branco olha para o fogo. Depois some."),
                     ]},
                     {"tipo": "visitante", "visitante": None},
                 ],
@@ -562,6 +600,7 @@ NOITES = {
                          ]},
                         {"pergunta": "E a Potira?", "se_dentro": "Potira",
                          "resposta": "Essa eu vi nascer. Senta perto do fogo, menina."},
+                        ACUSACAO,
                     ]},
                     {"tipo": "visitante", "visitante": None},
                 ],
@@ -690,6 +729,8 @@ NOITES = {
                     {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": [
                         {"pergunta": "Viu gente amaldiçoada?",
                          "resposta": "Vi rede vazia pendurada. Não entrei."},
+                        ACUSACAO,
+                        barulho_na_mata("O veado branco de novo, mais perto. Ele não foge da luz."),
                     ]},
                     {"tipo": "exame", "quem": "Potira", "liberadas": ["Olhos", "Boca"],
                      "texto": TEXTO_EXAME, "zonas": ZONAS_POTIRA},
@@ -745,6 +786,7 @@ NOITES = {
                          "resposta": "Manchas pelo corpo. Começam atrás da orelha e descem."},
                         {"pergunta": "O caraíba veio avisar?",
                          "resposta": "Se ele veio avisar, [então já decidiram]."},
+                        ACUSACAO,
                     ]},
                     {"tipo": "visitante", "visitante": None},
                 ],
@@ -844,6 +886,7 @@ NOITES = {
                          "resposta": "O mal anda com quem parece bem. Eu não sei dizer mais que isso."},
                         {"pergunta": "E a Iandé?", "se_dentro": "Iandé",
                          "resposta": "Ela é nossa."},
+                        ACUSACAO,
                     ]},
                     {"tipo": "visitante", "visitante": None},
                 ],
@@ -959,8 +1002,11 @@ NOITES = {
                     {"tipo": "perguntas", "botao": "Voltar para a fogueira", "perguntas": [
                         {"pergunta": "O que você viu no sono?",
                          "resposta": "A minha própria mãe na porta. Não soube o que fazer."},
+                        # O pajé desconfia de Krenan: é de outro povo, e quer levar gente embora.
                         {"pergunta": "E o Krenan?",
-                         "resposta": "Ele lembra o que a gente esqueceu. Escute."},
+                         "resposta": ["Krenan. A gente dele é de outro rio.",
+                                      "Ele lembra o que a gente esqueceu. Mas [quem leva a aldeia embora não é da aldeia]."]},
+                        barulho_na_mata("O veado branco está na beira da trilha. Ele olha para você, e só para você."),
                     ]},
                     {"tipo": "visitante", "visitante": None},
                 ],
@@ -977,7 +1023,7 @@ NOITES = {
                         {"pergunta": "Avisar sobre o quê?",
                          "resposta": [
                              "A minha gente subiu o rio há já duas luas, e não há de tornar a descer.",
-                             "Quem desce, ou torna com a febre, ou não torna de todo.",
+                             "Quem desce, ou torna amaldiçoado, ou não torna de todo.",
                          ]},
                     ]},
                     {"tipo": "fala", "quem": "Krenan",
@@ -1096,22 +1142,8 @@ NOITES = {
                          "resposta": "Um pescoço marcado. Manchas brancas, pequenas, todas juntas."},
                         {"pergunta": "Como eu vejo isso?",
                          "resposta": "Olhe a pele de perto. O fogo engana."},
+                        ACUSACAO,
                     ]},
-                    {"tipo": "visitante", "visitante": None},
-                ],
-            },
-
-            # Krenan volta, se na noite 8 levou alguém são: o mesmo pedido.
-            "Krenan": {
-                "imagem": "krenan_sentado", "posicao": POSICAO_KRENAN, "escala": ESCALA_KRENAN,
-                "condicao": {"ao_menos": {"krenan_volta": 1}},
-                "uma_vez": True, "obrigatorio": True, "atras": True,
-                "passos": [
-                    {"tipo": "visitante", "visitante": "krenan"},
-                    {"tipo": "fala", "quem": "Krenan", "texto": "Tornei, como vos disse. A canoa aguarda na margem."},
-                    {"tipo": "fala", "quem": "Krenan",
-                     "texto": "Se vos aprouver, levarei comigo quem houver de subir. Mo concedeis?"},
-                    oferta_krenan(),
                     {"tipo": "visitante", "visitante": None},
                 ],
             },
@@ -1206,7 +1238,7 @@ NOITES = {
 
     10: {
         "titulo": "Noite 10",
-        # 2 olhares (3 com o machado): tudo pode ser olhado.
+        # 2 olhares (3 com o machado): os olhos, a boca, atrás das orelhas e o pescoço.
         "energia": 2,
         "energia_extra": {"machado": 1},
         "fundo": "fogueira_perto",
@@ -1229,6 +1261,21 @@ NOITES = {
                 ],
             },
 
+            # Krenan volta, se na noite 8 levou alguém (são ou amaldiçoado), e chama a aldeia inteira.
+            "Krenan": {
+                "imagem": "krenan_sentado", "posicao": POSICAO_KRENAN, "escala": ESCALA_KRENAN,
+                "condicao": {"ao_menos": {"krenan_volta": 1}},
+                "uma_vez": True, "obrigatorio": True, "atras": True,
+                "passos": [
+                    {"tipo": "visitante", "visitante": "krenan"},
+                    {"tipo": "fala", "quem": "Krenan", "texto": "Tornei, como vos disse. A canoa aguarda na margem."},
+                    {"tipo": "fala", "quem": "Krenan",
+                     "texto": "Desta vez não levo um só. Vinde todos, e vós também, antes que a vila suba o rio."},
+                    oferta_krenan_todos(),
+                    {"tipo": "visitante", "visitante": None},
+                ],
+            },
+
             # Araci, em cima do tronco de baixo, à esquerda. Obrigatório: decidir onde dorme.
             "Araci": {
                 "imagem": "araci_sentada", "posicao": POSICAO_ARACI, "escala": ESCALA_ARACI,
@@ -1237,7 +1284,7 @@ NOITES = {
                 "passos": [
                     {"tipo": "visitante", "visitante": "araci"},
                     {"tipo": "fala", "quem": "Araci", "texto": "A criança nasce antes da lua cheia."},
-                    {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa_araci()},
+                    {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa_araci(na_oca=False)},
                     {"tipo": "exame", "quem": "Araci", "liberadas": LIBERADAS_NOITE_10,
                      "texto": TEXTO_EXAME, "zonas": ZONAS_ARACI},
                     ESCOLHA_ARACI,

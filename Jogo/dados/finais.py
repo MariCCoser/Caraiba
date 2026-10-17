@@ -9,6 +9,8 @@
 # - Na manhã do dia 10 (DIA_DO_CALCULO), antes de Araci chegar, o jogo testa a fila inteira
 #   e fica com o primeiro final que bater. O Vazio, o último, sempre bate. O final aparece
 #   no fim da noite 10, e nada do que o jogador faz com Araci o muda.
+# - A exceção é quem tem "ultima_noite": True (Rio Acima): ele é testado no fim da noite 10,
+#   antes do final calculado de manhã. É a escolha de subir o rio com Krenan, nessa noite.
 #
 # A "condicao" é uma lista de jeitos de chegar ao final (basta UM deles). Cada jeito é um
 # dicionário com as variáveis do estado.py e a conta que elas precisam passar; todas as
@@ -69,8 +71,10 @@ FINAIS = [
         "id": "rio_acima",
         "nome": "Rio Acima",
         "povo": "Aimoré, hoje Krenak",
-        "condicao": [{"rio_acima": ">= 4", "entregues": "== 0"}],
-        "antecipado": True,
+        # Na noite 10, Krenan (se voltou) chama a aldeia inteira, e o jogador vai junto.
+        "condicao": [{"subiu_o_rio": ">= 1"}],
+        "antecipado": False,
+        "ultima_noite": True,
         "cena": "A aldeia sobe o rio atrás de Krenan. As ocas ficam vazias para trás.",
         "fato": "A carta régia de 13 de maio de 1808 declarou guerra oficial contra os Aimoré, "
                 "chamados de Botocudos. Os descendentes incluem os Krenak, que vivem no Vale do "

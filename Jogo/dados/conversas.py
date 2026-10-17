@@ -23,7 +23,7 @@ def conversa_yara():
              "Os caraíbas levaram muita gente para perto da vila. Minha mãe foi.",
              "Eu não fui. Vou para o sul, onde mora [a gente do meu pai].",
          ]},
-        {"pergunta": "A febre chegou lá?",
+        {"pergunta": "A maldição chegou lá?",
          "resposta": [
              "Chegou com as chuvas. Quem cuidava dos amaldiçoados caía depois.",
              "Eu saí antes. [Não estou amaldiçoada].",
@@ -103,27 +103,31 @@ def conversa_iande():
     ]
 
 
-def conversa_araci():
-    """As perguntas de sempre para Araci (a conversa dela na oca Wanadi e na fogueira).
-    Na entrada da aldeia, só as duas primeiras (dados/dias.py, Dia 10)."""
-    return [
+def conversa_araci(na_oca=True):
+    """As perguntas de sempre para Araci. Na oca Wanadi, a conversa inteira; na fogueira, sem
+    as perguntas da criança (o nome e o pai). Na entrada da aldeia, só as duas primeiras
+    (dados/dias.py, Dia 10)."""
+    perguntas = [
         {"pergunta": "De onde você vem?",
-         "resposta": "De onde o mar bate. Não tem mais ninguém lá."},
-        {"pergunta": "Desde quando as manchas?",
-         "resposta": "Desde que desceram do rosto. Dois dias."},
-        {"pergunta": "Como ela vai se chamar?",
          "resposta": [
-             "Se for menina, Jaci.",
-             "Se for menino, eu não pensei ainda.",
-         ],
-         "historia": "filho_araci", "efeitos": {"memoria": 1}},
-        {"pergunta": "Por que sua aldeia fugiu?",
-         "resposta": [
-             "Os caraíbas chegaram com a cruz e com a tosse.",
+             "De onde o mar bate. Não tem mais ninguém lá.",
+             "Os caraíbas chegaram com a cruz e com a tosse. A aldeia fugiu.",
              "Quem ficou, ficou nas redes.",
          ]},
-        {"pergunta": "Onde está o pai da criança?",
-         "resposta": "Ficou na trilha, dois dias atrás. [Ele vem depois]."},
-        {"pergunta": "Você sente dor?",
-         "resposta": "Nas costas. A criança chuta de noite."},
+        {"pergunta": "Desde quando as manchas?",
+         "resposta": "Desde que desceram do rosto. Dois dias."},
     ]
+    if na_oca:
+        perguntas += [
+            {"pergunta": "Como ela vai se chamar?",
+             "resposta": [
+                 "Se for menina, Jaci.",
+                 "Se for menino, eu não pensei ainda.",
+             ],
+             "historia": "filho_araci", "efeitos": {"memoria": 1}},
+            {"pergunta": "Onde está o pai da criança?",
+             "resposta": "Ficou na trilha, dois dias atrás. [Ele vem depois]."},
+        ]
+    perguntas.append({"pergunta": "Você sente dor?",
+                      "resposta": "Nas costas. A criança chuta de noite."})
+    return perguntas
