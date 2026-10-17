@@ -162,7 +162,7 @@ DIAS = {
             {"tipo": "fala", "quem": "Pajé",
              "texto": "O cacique foi para a mata. Enquanto ele não volta, a entrada é sua."},
             {"tipo": "fala", "quem": "Pajé",
-             "texto": "Éramos quarenta antes da febre. Hoje somos dois. Cada rede vazia tem um nome."},
+             "texto": "Éramos quarenta antes da maldição. Hoje somos dois. Cada rede vazia tem um nome."},
             {"tipo": "fala", "quem": "Pajé",
              "texto": "Quem chegar pela trilha, escute. Depois decida se entra ou se segue caminho."},
             {"tipo": "fala", "quem": "Pajé",

@@ -21,7 +21,7 @@ MENU = {
     "titulo": "CARAÍBA",
     "subtitulo": "Dez Dias, Dez Fogueiras",
     # Frase do título da Proposta, menor, embaixo do subtítulo.
-    "chamada": "A entrada da aldeia, a febre e quem decide quem entra.",
+    "chamada": "A entrada da aldeia, a maldição e quem decide quem entra.",
     "continuar": "Continuar",
     "comecar": "Começar",
     "tutorial": "Como se joga",
@@ -84,29 +84,45 @@ INTRODUCAO = {
             "filtro": "noite",
         },
         {
-            "texto": "Litoral do Brasil, 1562.",
+            "texto": "Litoral do Brasil, por volta de 1562.",
             "fundo": "aldeia",
             "filtro": "dia",
         },
         {
-            "texto": "Uma [febre] que veio com os estrangeiros está esvaziando as aldeias da costa.",
+            "texto": "Um dia, no horizonte, você vê eles vindo junto ao [deus sol].",
             "fundo": "aldeia",
             "filtro": "dia",
         },
         {
-            "texto": "A sua aldeia, entre a mata e o rio, tinha cerca de quarenta pessoas. "
-                     "[Restam você e o pajé].",
-            "fundo": "aldeia",
-            "filtro": "dia",
-        },
-        {
-            "texto": "O cacique saiu para a mata. O [pajé] ficou, e é a única autoridade que resta.",
+            "texto": "Depois de chegarem, uma [maldição] se iniciou.",
             "fundo": "fogueira_perto",
             "filtro": "noite",
         },
         {
-            "texto": "A [entrada da aldeia] ficou sob a sua guarda. "
-                     "A cada dia, alguém vai chegar.",
+            "texto": "Alguns de nós, que não gostaram muito dos novos escolhidos, "
+                     "começaram a [apodrecer de dentro para fora], igual às lendas…",
+            "fundo": "fogueira_perto",
+            "filtro": "noite",
+        },
+        {
+            "texto": "Vi muitos amigos serem expulsos por pensarem como os [amaldiçoados], "
+                     "restando o cacique, o pajé e eu.",
+            "fundo": "fogueira_perto",
+            "filtro": "noite",
+        },
+        {
+            "texto": "Mas o cacique está certo de tudo. Afinal, ele é o mais próximo dos deuses; "
+                     "não devemos questioná-lo.",
+            "fundo": "fogueira_perto",
+            "filtro": "noite",
+        },
+        {
+            "texto": "Ele precisou ir à mata e deixou sob meu comando a [entrada da aldeia].",
+            "fundo": "aldeia",
+            "filtro": "noite",
+        },
+        {
+            "texto": "Assim, ele foi, e eu fiquei com meu arco e flecha, guardando quem entraria…",
             "fundo": "aldeia",
             "filtro": "noite",
         },
