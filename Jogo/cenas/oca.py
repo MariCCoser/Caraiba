@@ -94,7 +94,11 @@ class Oca(Cena):
     def _sentada(self, nome):
         """A pessoa no lugar dela dentro da oca (dados/aldeia.py, ONDE_DORME ou ONDE_DORME_TAPIRI)."""
         lugar = self.lugares[nome]
-        return PessoaNoCenario(nome, lugar["imagem"], lugar["posicao"], lugar["escala"], self.filtro,
+        # "posicao_com": {"Araci": (x, y)}: com essa pessoa na mesma oca, senta em outro lugar.
+        juntos = [quem for quem, _ in self.pessoas] + [pessoa.nome for pessoa in self.na_oca]
+        posicao = next((outra for quem, outra in lugar.get("posicao_com", {}).items() if quem in juntos),
+                       lugar["posicao"])
+        return PessoaNoCenario(nome, lugar["imagem"], posicao, lugar["escala"], self.filtro,
                                espelhar=lugar.get("espelhar", False))
 
     def _posicionar(self):

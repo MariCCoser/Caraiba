@@ -101,3 +101,29 @@ def conversa_iande():
          ],
          "historia": "viagem_iande", "efeitos": {"memoria": 1}},
     ]
+
+
+def conversa_araci():
+    """As perguntas de sempre para Araci (a conversa dela na oca Wanadi e na fogueira).
+    Na entrada da aldeia, só as duas primeiras (dados/dias.py, Dia 10)."""
+    return [
+        {"pergunta": "De onde você vem?",
+         "resposta": "De onde o mar bate. Não tem mais ninguém lá."},
+        {"pergunta": "Desde quando as manchas?",
+         "resposta": "Desde que desceram do rosto. Dois dias."},
+        {"pergunta": "Como ela vai se chamar?",
+         "resposta": [
+             "Se for menina, Jaci.",
+             "Se for menino, eu não pensei ainda.",
+         ],
+         "historia": "filho_araci", "efeitos": {"memoria": 1}},
+        {"pergunta": "Por que sua aldeia fugiu?",
+         "resposta": [
+             "Os caraíbas chegaram com a cruz e com a tosse.",
+             "Quem ficou, ficou nas redes.",
+         ]},
+        {"pergunta": "Onde está o pai da criança?",
+         "resposta": "Ficou na trilha, dois dias atrás. [Ele vem depois]."},
+        {"pergunta": "Você sente dor?",
+         "resposta": "Nas costas. A criança chuta de noite."},
+    ]

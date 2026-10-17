@@ -12,7 +12,8 @@
 # - ONDE_DORME: em que oca fica cada pessoa de fora que o jogador deixou entrar, e o
 #   apelido da imagem dela (dados/arte.py), sentada, e onde ela senta dentro da oca
 #   ("posicao": o meio da borda de baixo da imagem; "escala": o tamanho; "espelhar": True
-#   vira a pessoa para o outro lado).
+#   vira a pessoa para o outro lado; "posicao_com": {"Araci": (x, y)} é outro lugar, quando
+#   essa pessoa está na mesma oca).
 # - ONDE_DORME_TAPIRI: o mesmo, dentro do tapiri, para quem o jogador levou para lá.
 
 ALDEIA = {
@@ -88,13 +89,17 @@ ONDE_DORME = {
     # mais que a metade da altura da parede (a parede vai de y 235 a 570: uns 335; Mbaé, uns 195).
     "Mbaé": {"oca": "oca2", "imagem": "mbae_sentado", "posicao": (1290, 570), "escala": 0.31},
     # Potira senta sobre a cama da oca Wanadi (a cama fica à direita), virada para o fogo.
+    # Com Araci na mesma oca (dia 10), Potira desce para a esteira ao lado da cama
+    # ("posicao_com": com essa pessoa junto, senta em outro lugar).
     "Potira": {"oca": "oca3", "imagem": "potira_sentada", "posicao": (1240, 652), "escala": 0.33,
-               "espelhar": True},
+               "espelhar": True, "posicao_com": {"Araci": (1075, 655)}},
     # Tamandaré-mirim senta no chão da oca Yebá Bëló, à esquerda da porta.
     "Tamandaré-mirim": {"oca": "oca2", "imagem": "tamandare_sentado", "posicao": (590, 592), "escala": 0.33},
     # Iandé divide a oca Yorixiriamori com Yara: senta no chão com as costas no poste do meio,
     # de frente para o fogo (à direita).
     "Iandé": {"oca": "oca1", "imagem": "iande_sentada", "posicao": (1327, 765), "escala": 0.38},
+    # Araci senta no meio da cama da oca Wanadi, com as mãos na barriga (dia 10).
+    "Araci": {"oca": "oca3", "imagem": "araci_sentada", "posicao": (1240, 655), "escala": 0.46},
 }
 
 # Onde senta, dentro do tapiri, quem o jogador levou para lá: no mesmo lugar, sobre a esteira
@@ -107,6 +112,7 @@ ONDE_DORME_TAPIRI = {
     "Potira": {"imagem": "potira_sentada", "posicao": (1225, 668), "escala": 0.42},
     "Tamandaré-mirim": {"imagem": "tamandare_sentado", "posicao": (1225, 668), "escala": 0.453},
     "Iandé": {"imagem": "iande_sentada", "posicao": (1225, 668), "escala": 0.428},
+    "Araci": {"imagem": "araci_sentada", "posicao": (1225, 668), "escala": 0.511},
 }
 
 # Textos de dentro da oca.

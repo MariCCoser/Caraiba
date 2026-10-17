@@ -65,7 +65,7 @@
 #
 # Quem é de fora tem a mesma conversa em todas as noites (dados/conversas.py).
 
-from dados.conversas import conversa_mbae, conversa_tamandare, conversa_yara
+from dados.conversas import conversa_araci, conversa_mbae, conversa_tamandare, conversa_yara
 from dados.dias import DEUSES_FELIZES, DEUSES_INFELIZES
 
 # O que acontece quando o jogador mata alguém (a Proposta: mostra o corpo com nome no dia
@@ -284,6 +284,47 @@ ZONAS_TAMANDARE_NOITE_9 = com_pescoco(ZONAS_TAMANDARE_NOITE_6, {
 ZONAS_IANDE_NOITE_9 = com_pescoco(ZONAS_IANDE, {
     "pergunta": "Pescoço", "sinal": True,
     "resposta": ["Do lado do pescoço, umas manchas brancas, pequenas.", "[É da alça do cesto]."]})
+
+
+# --- Noite 10: Araci, a última porta ---
+# Pela primeira vez não falta informação: tudo o que o pajé contou está no rosto dela, menos
+# nas mãos. Na fogueira, só o pajé e Araci; ela senta em cima do tronco de baixo, à esquerda.
+# O final já foi calculado de manhã (motor/finais.py): nenhuma das decisões é recompensada.
+# A linha escolhida aparece e, no fim da noite, vem a tela do final.
+POSICAO_ARACI, ESCALA_ARACI = (290, 700), 0.62
+LIBERADAS_NOITE_10 = ["Testa", "Olhos", "Orelhas", "Boca", "Mãos", "Respiração", "Pescoço"]
+
+ZONAS_ARACI = [
+    {"pergunta": "Testa", "sinal": True,
+     "resposta": "Quente. Manchas descendo do rosto, com o brilho da maldição."},
+    {"pergunta": "Olhos", "sinal": True,
+     "resposta": "Vermelhos e fundos."},
+    {"pergunta": "Orelhas", "sinal": True,
+     "resposta": "Atrás das orelhas, manchas que já desceram."},
+    {"pergunta": "Boca", "sinal": True,
+     "resposta": "Seca. Por dentro da bochecha, os pontos brancos já sumindo."},
+    {"pergunta": "Mãos",
+     "resposta": "Segurando a barriga. Não soltam."},
+    {"pergunta": "Respiração",
+     "resposta": "Curta. A barriga sobe e desce depressa."},
+    {"pergunta": "Pescoço", "sinal": True,
+     "resposta": "Manchas no pescoço, pequenas, todas juntas."},
+]
+
+# O que fazer com Araci: as linhas do roteiro, e nenhuma é recompensada.
+ESCOLHA_ARACI = {"tipo": "escolha", "quem": "Araci", "texto": "Onde Araci dorme esta noite?", "opcoes": [
+    {"texto": "Deixar na oca", "oca": True, "passos": [
+        {"tipo": "fala", "quem": "",
+         "texto": "Araci teve a criança dentro da oca. A maldição chegou na rede ao lado."},
+    ]},
+    {"texto": "Levar ao tapiri", "tapiri": "Araci", "passos": [
+        {"tipo": "fala", "quem": "",
+         "texto": "Araci teve a criança no tapiri, sozinha, com você do lado de fora da palha."},
+    ]},
+    {"texto": "Matar", "morre": "Araci", "efeitos": EFEITOS_MATAR, "passos": [
+        {"tipo": "fala", "quem": "", "texto": "Araci. Duas."},
+    ]},
+]}
 
 
 NOITES = {
@@ -1160,6 +1201,53 @@ NOITES = {
         "fim": [
             {"tipo": "fala", "quem": "",
              "texto": "O fogo baixa. A aldeia vai para as redes."},
+        ],
+    },
+
+    10: {
+        "titulo": "Noite 10",
+        # 2 olhares (3 com o machado): tudo pode ser olhado.
+        "energia": 2,
+        "energia_extra": {"machado": 1},
+        "fundo": "fogueira_perto",
+        "dica": "Clique em quem está perto do fogo para conversar.",
+        "dormir": "Ir dormir",
+        "dormir_bloqueado": "Ir dormir · antes, fale com %s",
+        "pessoas": {
+            "Pajé": {
+                "imagem": "paje_sentado", "posicao": POSICAO_PAJE, "escala": ESCALA_PAJE, "espelhar": True,
+                "passos": [
+                    {"tipo": "visitante", "visitante": "paje"},
+                    {"tipo": "fala", "quem": "Pajé", "texto": "Sente. É a última fogueira antes do cacique voltar."},
+                    {"tipo": "perguntas", "botao": "Voltar para a fogueira", "perguntas": [
+                        {"pergunta": "O que você viu no sono?",
+                         "resposta": "Nada. Pela primeira vez, não sonhei."},
+                        {"pergunta": "Araci tem a maldição?", "se_dentro": "Araci",
+                         "resposta": "Olhe para ela. Hoje o fogo não engana ninguém."},
+                    ]},
+                    {"tipo": "visitante", "visitante": None},
+                ],
+            },
+
+            # Araci, em cima do tronco de baixo, à esquerda. Obrigatório: decidir onde dorme.
+            "Araci": {
+                "imagem": "araci_sentada", "posicao": POSICAO_ARACI, "escala": ESCALA_ARACI,
+                "espelhar": True,
+                "de_fora": True, "uma_vez": True, "obrigatorio": True,
+                "passos": [
+                    {"tipo": "visitante", "visitante": "araci"},
+                    {"tipo": "fala", "quem": "Araci", "texto": "A criança nasce antes da lua cheia."},
+                    {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa_araci()},
+                    {"tipo": "exame", "quem": "Araci", "liberadas": LIBERADAS_NOITE_10,
+                     "texto": TEXTO_EXAME, "zonas": ZONAS_ARACI},
+                    ESCOLHA_ARACI,
+                    {"tipo": "visitante", "visitante": None},
+                ],
+            },
+        },
+        "fim": [
+            {"tipo": "fala", "quem": "",
+             "texto": "O fogo baixa. É a última noite."},
         ],
     },
 }

@@ -96,7 +96,8 @@ def testar_estado_inicial():
                 "pistas": 0, "sanidade": 10, "tapiri_usos": 0, "viu_anhanga": 0, "seguiu_paje": 0,
                 "inocentes": 0, "machado": 0, "energia_hoje": 0, "krenan_volta": 0, "rio_acima_nomes": [], "convidados": [], "dentro": [], "tapiri": [], "tapiri_desde": {}, "febre": [], "manha": [],
                 "historias": [], "entregues_nomes": [],
-                "mortos_nomes": [], "mortos_quando": {}, "tabua": [], "tabua_noites": [], "final": None}
+                "mortos_nomes": [], "mortos_quando": {}, "tabua": [], "tabua_noites": [],
+                "final_calculado": None, "final": None}
     dados = estado.para_dicionario()
     assert isinstance(dados.pop("semente"), int), "cada partida tem a sua sorte"
     assert dados == esperado, dados
@@ -1568,6 +1569,96 @@ def testar_dia9_e_noite9(jogo):
     esperar_transicao(jogo)
 
 
+def testar_dia10_e_noite10(jogo):
+    """Dia 10 (Araci: duas perguntas na entrada, a conversa inteira na oca Wanadi, no meio da
+    cama) e a Noite 10 (o pajé e Araci na fogueira; o final calculado de manhã não muda)."""
+    from motor import finais
+    jogo.nova_partida()
+    estado = jogo.estado
+    estado.dia = 9
+    estado.dentro = ["Potira"]
+    estado.vivos = 1
+    # Já matou dois: se o final fosse calculado depois de matar Araci, seria A Loucura.
+    estado.mortos = estado.mortos_por_sua_mao = 2
+    estado.tabua = ["Olho vermelho, com o branco raiado.", "Boca com feridas.",
+                    "Pontos brancos por dentro da bochecha.", "Manchas brancas atrás da orelha.",
+                    "Manchas brancas no pescoço."]
+    estado.tabua_noites = [1, 2, 4, 6, 9]
+    jogo.ir_para("aldeia")
+    esperar_transicao(jogo)
+    assert jogo.cenas.atual.tem_seta, "a noite 9 tem a seta de dormir: existe o Dia 10"
+    clicar(jogo, jogo.cenas.atual.rect_seta.center)
+    esperar_transicao(jogo)
+    esperar_transicao(jogo)
+    assert estado.dia == 10
+    assert estado.final_calculado == finais.escolher(estado)["id"] != "loucura", estado.final_calculado
+
+    # Na entrada: a cruz sem o Aleixo, e Araci com só duas perguntas.
+    passar_falas(jogo)
+    dia = jogo.cenas.atual
+    assert dia.titulo == "Dia 10" and dia.visitante == "araci"
+    assert textos_dos_botoes(jogo) == ["De onde você vem?", "Desde quando as manchas?", "Decidir"], (
+        textos_dos_botoes(jogo))
+    rodar(jogo, 60)
+    capturar(jogo, "48-dia10-araci")
+    clicar_opcao(jogo, "Decidir")
+    clicar_opcao(jogo, "Deixar entrar")
+    passar_falas(jogo, seguir_seta=False)
+    assert estado.dentro == ["Potira", "Araci"] and estado.vivos == 2
+
+    # Na oca Wanadi: Araci no meio da cama; Potira desce para a esteira ao lado.
+    oca = entrar_na_oca(jogo, "oca3")
+    assert [p.nome for p in oca.na_oca] == ["Araci"] and oca.na_oca[0].rect.centerx == 1240
+    assert oca.pessoas == [("Potira", "potira_sentada")] and oca.paradas[0].rect.centerx == 1075
+    rodar(jogo, 20)
+    capturar(jogo, "49-dia10-araci-na-oca")
+    clicar_pessoa(jogo, "Araci")
+    passar_falas(jogo)
+    assert textos_dos_botoes(jogo) == ["De onde você vem?", "Desde quando as manchas?",
+                                       "Como ela vai se chamar?", "Por que sua aldeia fugiu?",
+                                       "Onde está o pai da criança?", "Você sente dor?",
+                                       "Terminar a conversa"], textos_dos_botoes(jogo)
+    clicar_opcao(jogo, "Como ela vai se chamar?")
+    passar_falas(jogo)
+    assert estado.memoria == 1
+    clicar_opcao(jogo, "Terminar a conversa")
+    esperar_transicao(jogo)
+    clicar_botao(jogo, jogo.cenas.atual.botao_sair)
+    esperar_transicao(jogo)
+    print("ok Dia 10: Araci (duas perguntas na entrada, a conversa inteira na oca Wanadi)")
+
+    # A fogueira: o pajé e Araci, em cima do tronco de baixo, à esquerda. 2 olhares.
+    passar_falas(jogo)
+    dia = jogo.cenas.atual
+    assert dia.titulo == "Noite 10" and dia.modo == "fogueira" and dia.energia == 2
+    assert [p.nome for p in dia.na_fogueira] == ["Pajé", "Araci"], [p.nome for p in dia.na_fogueira]
+    assert not dia.botao_dormir.visivel, "antes, é preciso falar com Araci"
+    rodar(jogo, 40)
+    capturar(jogo, "50-noite10-fogueira")
+    clicar_pessoa(jogo, "Araci")
+    passar_falas(jogo)
+    clicar_opcao(jogo, "Examinar o rosto")
+    assert textos_dos_botoes(jogo) == ["Testa", "Olhos", "Orelhas", "Boca", "Mãos", "Respiração",
+                                       "Pescoço", "Terminar o exame"], textos_dos_botoes(jogo)
+    examinar(jogo, ["Olhos", "Mãos"])
+    assert dia.sinais["Araci"] == 1 and dia.energia == 0
+    clicar_opcao(jogo, "Terminar o exame")
+    assert textos_dos_botoes(jogo) == ["Deixar na oca", "Levar ao tapiri", "Matar"], textos_dos_botoes(jogo)
+    clicar_opcao(jogo, "Matar")
+    dia.caixa.completar()
+    assert dia.caixa.texto == "Araci. Duas.", dia.caixa.texto
+    passar_falas(jogo)
+    assert dia.botao_dormir.visivel and estado.mortos_por_sua_mao == 3
+    clicar_botao(jogo, dia.botao_dormir)
+    passar_falas(jogo)
+    esperar_transicao(jogo)
+    assert nome_cena(jogo) == "Final" and estado.final == estado.final_calculado != "loucura", (
+        nome_cena(jogo), estado.final)
+    print("ok Noite 10: o pajé e Araci na fogueira; o final é o da manhã, mesmo matando Araci")
+    jogo.ir_para("menu")
+    esperar_transicao(jogo)
+
+
 def testar_continuar_tabua_tutorial(jogo):
     from dados.dias import DIAS
     perguntas = next(p for p in DIAS[1]["passos"] if p["tipo"] == "perguntas")["perguntas"]
@@ -1737,6 +1828,7 @@ def testar_fluxo():
     testar_dia7_e_noite7(jogo)
     testar_dia8_e_noite8(jogo)
     testar_dia9_e_noite9(jogo)
+    testar_dia10_e_noite10(jogo)
     testar_aldeia_de_dia(jogo)
 
     # 5c. Continuar de onde parou, a tábua de barro e o "Como se joga" do menu

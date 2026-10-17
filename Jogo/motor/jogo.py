@@ -4,7 +4,7 @@ import pygame
 
 import config
 from estado import Estado
-from motor import cursor, efeitos, febre, fontes, imagens, preferencias, progresso, ui
+from motor import cursor, efeitos, febre, finais, fontes, imagens, preferencias, progresso, ui
 from motor.cena import GerenciadorCenas
 
 # Todas as cenas do jogo, pelo nome. Para criar uma cena nova:
@@ -164,6 +164,9 @@ class Jogo:
     def amanhecer(self):
         """Da aldeia de noite ("Dormir"): começa o dia seguinte (e a febre anda, motor/febre.py)."""
         febre.amanhecer(self.estado)
+        # Na manhã do dia 10, depois das mortes e antes de Araci chegar, o final é calculado
+        # (o jogador não vê): ele aparece no fim da noite 10 (motor/finais.py).
+        finais.calcular_na_manha(self.estado)
         self.ir_para("dia")
 
     def sair(self):

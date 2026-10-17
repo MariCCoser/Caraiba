@@ -2,7 +2,9 @@
 #
 # - fim_da_noite(estado): no fim de cada noite. Devolve o final se o jogo já acabou ali
 #   (um final "antecipado" que já bate, ou a aldeia esvaziou), ou None para seguir jogando.
-# - escolher(estado): na manhã do dia 10. Devolve sempre um final (o primeiro da fila que bate).
+# - calcular_na_manha(estado): na manhã do dia 10, antes de Araci chegar, guarda o final em
+#   estado.final_calculado. Nada do que o jogador faz depois (Araci) muda o final.
+# - escolher(estado): devolve sempre um final (o primeiro da fila que bate).
 
 from dados.finais import DIA_DO_CALCULO, FINAIS
 
@@ -41,10 +43,16 @@ def escolher(estado):
     return FINAIS[-1]
 
 
+def calcular_na_manha(estado):
+    """Na manhã do dia 10 (depois das mortes, antes de Araci): o final fica guardado."""
+    if estado.dia == DIA_DO_CALCULO:
+        estado.final_calculado = escolher(estado)["id"]
+
+
 def fim_da_noite(estado):
-    """No fim da noite: o jogo acaba antes do dia 10?"""
+    """No fim da noite: o jogo acaba antes do dia 10? Na noite 10, é o final calculado de manhã."""
     if estado.dia >= DIA_DO_CALCULO:
-        return escolher(estado)
+        return por_id(estado.final_calculado) if estado.final_calculado else escolher(estado)
     for final in FINAIS:
         if final.get("antecipado") and condicao_bate(estado, final):
             return final

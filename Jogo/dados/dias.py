@@ -47,8 +47,8 @@
 #
 # Quem é de fora tem a mesma conversa na oca e em todas as noites (dados/conversas.py).
 
-from dados.conversas import (conversa_iande, conversa_mbae, conversa_potira, conversa_tamandare,
-                             conversa_yara)
+from dados.conversas import (conversa_araci, conversa_iande, conversa_mbae, conversa_potira,
+                             conversa_tamandare, conversa_yara)
 
 # --- Dia 3: a primeira das três visitas do Irmão Aleixo (dias 3, 6 e 9) ---
 # Ninguém chega pela trilha: Aleixo vem até a entrada e finca uma cruz. Ele não traz cura:
@@ -757,6 +757,78 @@ DIAS = {
             {"tipo": "fala", "quem": "Pajé",
              "texto": "Sonhei com um pescoço marcado. O mal deixa [manchas brancas no pescoço]."},
             {"tipo": "sinal", "texto": "Manchas brancas no pescoço."},
+
+            {"tipo": "noite"},
+        ],
+    },
+
+    # --- Dia 10: a última porta (Textos/Caraíba — Dez Dias, Dez Fogueiras.pdf) ---
+    # Araci, 19 anos, de uma aldeia que fugiu da costa. Grávida, com a maldição (sarampo, no
+    # fim): pela primeira vez, tudo está à vista. Na entrada, só duas perguntas; a conversa
+    # inteira é na oca Wanadi, sentada no meio da cama (dados/conversas.py).
+    # O final já foi calculado nesta manhã, antes de ela chegar (motor/finais.py): nada do que
+    # o jogador faz com Araci muda o final. Ele aparece depois da noite 10.
+    10: {
+        "titulo": "Dia 10",
+        "passos": [
+            {"tipo": "fundo", "fundo": "aldeia", "filtro": "dia"},
+
+            # A manhã: primeiro a febre (motor/febre.py); depois, quem o jogador matou ontem.
+            {"tipo": "se", "morto_ontem": "Yara", "passos": [
+                {"tipo": "fala", "quem": "", "texto": "O corpo de Yara amanheceu coberto com uma esteira."},
+            ]},
+            {"tipo": "se", "morto_ontem": "Mbaé", "passos": [
+                {"tipo": "fala", "quem": "", "texto": "O corpo de Mbaé amanheceu coberto com uma esteira."},
+            ]},
+            {"tipo": "se", "morto_ontem": "Potira", "passos": [
+                {"tipo": "fala", "quem": "", "texto": "O corpo de Potira amanheceu coberto com uma esteira."},
+            ]},
+            {"tipo": "se", "morto_ontem": "Tamandaré-mirim", "passos": [
+                {"tipo": "fala", "quem": "", "texto": "O corpo de Tamandaré-mirim amanheceu coberto com uma esteira."},
+            ]},
+            {"tipo": "se", "morto_ontem": "Iandé", "passos": [
+                {"tipo": "fala", "quem": "", "texto": "O corpo de Iandé amanheceu coberto com uma esteira."},
+            ]},
+            {"tipo": "se", "na_oca": "Mbaé", "passos": [
+                {"tipo": "fala", "quem": "", "texto": "Mbaé tossiu a noite toda na oca Yebá Bëló."},
+            ]},
+
+            {"tipo": "aldeia"},
+
+            # A entrada: a cruz ficou, o Aleixo não. Chega Araci, grávida, apoiada num pau.
+            {"tipo": "fundo", "fundo": "floresta", "filtro": "dia"},
+            {"tipo": "fala", "quem": "", "texto": "A cruz ficou. O Aleixo, não."},
+            {"tipo": "visitante", "visitante": "araci"},
+            {"tipo": "fala", "quem": "Araci", "texto": "A criança nasce antes da lua cheia."},
+            {"tipo": "perguntas", "perguntas": conversa_araci()[:2]},
+            {"tipo": "escolha", "opcoes": [
+                {"texto": "Deixar entrar", "efeitos": {"vivos": 1}, "entra": "Araci", "passos": [
+                    {"tipo": "fala", "quem": "Araci", "texto": "Obrigada. Eu não ando mais muito longe."},
+
+                    # Araci espera na oca Wanadi, no meio da cama: lá ela conversa mais.
+                    {"tipo": "visitante", "visitante": None},
+                    {"tipo": "aldeia", "seta": "Esperar a noite",
+                     "dica": "Araci está na oca Wanadi. Entre para conversar, ou espere a noite.",
+                     "pessoas": [
+                        {"nome": "Araci", "oca": "oca3", "passos": [
+                            {"tipo": "fundo", "fundo": "oca3_dia", "filtro": "dia"},
+                            {"tipo": "visitante", "visitante": "araci"},
+                            {"tipo": "fala", "quem": "Araci", "texto": "A cama é macia. Faz tempo que eu não deito."},
+                            {"tipo": "perguntas", "botao": "Terminar a conversa", "perguntas": conversa_araci()},
+                            {"tipo": "visitante", "visitante": None},
+                        ]},
+                     ]},
+                ]},
+                {"texto": "Não deixar entrar", "passos": [
+                    {"tipo": "fala", "quem": "", "texto": "Araci se deitou na trilha. Você ouviu até de manhã."},
+                ]},
+            ]},
+            {"tipo": "visitante", "visitante": None},
+
+            # O pajé não conta sinal novo: tudo o que havia para contar já está na tábua.
+            {"tipo": "fundo", "fundo": "fogueira_longe", "filtro": "noite"},
+            {"tipo": "visitante", "visitante": "paje"},
+            {"tipo": "fala", "quem": "Pajé", "texto": "Esta noite eu não sonhei. O que há para ver, você já sabe."},
 
             {"tipo": "noite"},
         ],

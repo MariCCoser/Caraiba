@@ -7,7 +7,8 @@
 # - No fim de CADA noite, o jogo testa os finais que têm "antecipado": True, na ordem da
 #   fila. Se a condição de um deles já bate, o jogo acaba ali (pode ser na noite 4, na 6...).
 # - Na manhã do dia 10 (DIA_DO_CALCULO), antes de Araci chegar, o jogo testa a fila inteira
-#   e fica com o primeiro final que bater. O Vazio, o último, sempre bate.
+#   e fica com o primeiro final que bater. O Vazio, o último, sempre bate. O final aparece
+#   no fim da noite 10, e nada do que o jogador faz com Araci o muda.
 #
 # A "condicao" é uma lista de jeitos de chegar ao final (basta UM deles). Cada jeito é um
 # dicionário com as variáveis do estado.py e a conta que elas precisam passar; todas as

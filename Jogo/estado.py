@@ -58,6 +58,8 @@ class Estado:
         # Os sinais que o pajé contou (a tábua de barro do jogador) e em que noite cada um
         self.tabua = []
         self.tabua_noites = []
+        # O final calculado na manhã do dia 10, antes de Araci chegar (motor/finais.py), ou None
+        self.final_calculado = None
         # O final da partida, quando ela acaba (o "id" de dados/finais.py), ou None
         self.final = None
 
