@@ -34,3 +34,6 @@ desktop.ini
 .idea/
 *.swp
 *.tmp
+
+# Arquivos temporários (resultados de simulação, backups)
+.tmp/
