@@ -600,4 +600,63 @@ DIAS = {
             {"tipo": "noite"},
         ],
     },
+
+    # --- Dia 8: a saída (Textos/Caraíba — Dez Dias, Dez Fogueiras.pdf, Ubiratã) ---
+    # Krenan, da gente que subiu o rio, chega de canoa. Não pede teto: pede fogo para conversar.
+    # A oferta é na fogueira (dados/noites.py, Noite 8), se o jogador o chama para lá ("convida":
+    # ele não entra na aldeia, só senta ao fogo). Se o jogador não o deixa entrar, ele vai embora.
+    # Ele fala um português antigo e duro.
+    8: {
+        "titulo": "Dia 8",
+        "passos": [
+            {"tipo": "fundo", "fundo": "aldeia", "filtro": "dia"},
+
+            # A manhã: primeiro a febre (motor/febre.py); depois, quem o jogador matou ontem.
+            {"tipo": "se", "morto_ontem": "Yara", "passos": [
+                {"tipo": "fala", "quem": "", "texto": "O corpo de Yara amanheceu coberto com uma esteira."},
+            ]},
+            {"tipo": "se", "morto_ontem": "Mbaé", "passos": [
+                {"tipo": "fala", "quem": "", "texto": "O corpo de Mbaé amanheceu coberto com uma esteira."},
+            ]},
+            {"tipo": "se", "morto_ontem": "Potira", "passos": [
+                {"tipo": "fala", "quem": "", "texto": "O corpo de Potira amanheceu coberto com uma esteira."},
+            ]},
+            {"tipo": "se", "morto_ontem": "Tamandaré-mirim", "passos": [
+                {"tipo": "fala", "quem": "",
+                 "texto": "O corpo de Tamandaré-mirim amanheceu coberto com uma esteira."},
+            ]},
+            {"tipo": "se", "morto_ontem": "Iandé", "passos": [
+                {"tipo": "fala", "quem": "", "texto": "O corpo de Iandé amanheceu coberto com uma esteira."},
+            ]},
+            {"tipo": "se", "na_oca": "Mbaé", "passos": [
+                {"tipo": "fala", "quem": "", "texto": "Mbaé tossiu a noite toda na oca Yebá Bëló."},
+            ]},
+
+            {"tipo": "aldeia"},
+
+            # A chegada de Krenan, de canoa, rio abaixo.
+            {"tipo": "fundo", "fundo": "floresta", "filtro": "dia"},
+            {"tipo": "visitante", "visitante": "krenan"},
+            {"tipo": "fala", "quem": "Krenan",
+             "texto": "Não vim a pedir pousada. Venho a dar-vos aviso, e há de ser ao pé do fogo."},
+            {"tipo": "escolha", "opcoes": [
+                {"texto": "Chamar para a fogueira", "convida": "Krenan", "passos": [
+                    {"tipo": "fala", "quem": "Krenan", "texto": "Pois lá vos aguardarei, quando a luz se for."},
+                ]},
+                {"texto": "Não deixar entrar", "passos": [
+                    {"tipo": "fala", "quem": "Krenan",
+                     "texto": "Guardai, pois, a vossa porta. O rio não carece de vós, nem vós dele, ao que parece."},
+                ]},
+            ]},
+            {"tipo": "visitante", "visitante": None},
+
+            # O pajé não conta sinal novo.
+            {"tipo": "fundo", "fundo": "fogueira_longe", "filtro": "noite"},
+            {"tipo": "visitante", "visitante": "paje"},
+            {"tipo": "fala", "quem": "Pajé",
+             "texto": "Sonhei com a minha própria mãe na porta. Não soube o que fazer."},
+
+            {"tipo": "noite"},
+        ],
+    },
 }

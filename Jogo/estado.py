@@ -18,7 +18,8 @@ class Estado:
         self.entregues = 0             # pessoas entregues a Aleixo numa oferta
         self.levados = 0               # pessoas que o Irmão Aleixo levou mesmo negando (sorteadas)
         self.proximidade_vila = 0      # machado, entregas, doente mandado seguir de dia
-        self.rio_acima = 0             # pessoas mandadas para a cabeceira
+        self.rio_acima = 0             # pessoas mandadas para a cabeceira (com Krenan)
+        self.krenan_volta = 0          # 1 se Krenan volta na noite 9 (levou alguém são na noite 8)
         self.memoria = 0               # histórias ouvidas
         self.recusas_aleixo = 0        # vezes que você recusou uma oferta
         self.pistas = 0                # caderno de Aleixo, colar, notícia (máximo 3)
@@ -40,6 +41,10 @@ class Estado:
         self.febre = []
         # As histórias já ouvidas (dados/conversas.py): a memória sobe uma vez por história
         self.historias = []
+        # Quem o jogador chamou para a fogueira sem deixar entrar na aldeia (ex.: Krenan)
+        self.convidados = []
+        # Quem subiu o rio com Krenan (nomes)
+        self.rio_acima_nomes = []
         # Quem de fora foi com o Irmão Aleixo para a vila, entregue ou sorteado (nomes)
         self.entregues_nomes = []
         # As frases da manhã de hoje (quem acordou com febre, quem morreu dela)

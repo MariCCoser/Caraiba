@@ -265,6 +265,9 @@ class Dia(Cena):
         for nome, pessoa in self.noite["pessoas"].items():
             if pessoa.get("de_fora") and (nome not in estado.dentro or nome in estado.tapiri):
                 continue
+            # Quem só vem se o jogador o chamou para a fogueira (Krenan).
+            if pessoa.get("convidado") and nome not in estado.convidados:
+                continue
             # Quem morreu ou foi levado pelo Aleixo também não vem.
             if nome in estado.mortos_nomes or nome in estado.entregues_nomes:
                 continue
@@ -496,6 +499,10 @@ class Dia(Cena):
                 self.estado.tapiri_usos += 1
             self.estado.tapiri.append(nome)
             self.estado.tapiri_desde[nome] = self.estado.dia
+        if opcao.get("convida"):
+            self.estado.convidados.append(opcao["convida"])
+        if opcao.get("rio_acima"):
+            self._subir_o_rio(opcao["rio_acima"])
         if opcao.get("entrega"):
             # Entregue ao Aleixo: sai da aldeia (da oca ou do tapiri) e vai para a vila.
             nome = opcao["entrega"]
@@ -526,6 +533,18 @@ class Dia(Cena):
         estado.entregues_nomes.append(nome)
         self._acompanhar(nome)
         self._mostrar_fala("", passo["de_fora"] % nome)
+
+    def _subir_o_rio(self, nome):
+        """Krenan leva a pessoa rio acima: ela sai da aldeia, viva. Se ela é amaldiçoada (traz a
+        febre ou pegou), Krenan não volta mais; se é sã, ele volta na noite seguinte para levar mais."""
+        estado = self.estado
+        amaldicoada = febre.amaldicoado(estado, nome) or any(e.get("nome") == nome for e in estado.febre)
+        self._sair_da_aldeia(nome)
+        estado.febre = [e for e in estado.febre if e.get("nome") != nome]
+        estado.rio_acima_nomes.append(nome)
+        estado.rio_acima += 1
+        estado.vivos -= 1
+        estado.krenan_volta = 0 if amaldicoada else 1
 
     def _acompanhar(self, nome):
         """A pessoa que o Irmão Aleixo leva aparece em pé, atrás dele."""

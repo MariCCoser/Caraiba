@@ -94,7 +94,7 @@ def testar_estado_inicial():
     esperado = {"dia": 1, "vivos": 0, "mortos": 0, "mortos_por_sua_mao": 0, "entregues": 0,
                 "proximidade_vila": 0, "rio_acima": 0, "memoria": 0, "recusas_aleixo": 0, "levados": 0,
                 "pistas": 0, "sanidade": 10, "tapiri_usos": 0, "viu_anhanga": 0, "seguiu_paje": 0,
-                "inocentes": 0, "machado": 0, "energia_hoje": 0, "dentro": [], "tapiri": [], "tapiri_desde": {}, "febre": [], "manha": [],
+                "inocentes": 0, "machado": 0, "energia_hoje": 0, "krenan_volta": 0, "rio_acima_nomes": [], "convidados": [], "dentro": [], "tapiri": [], "tapiri_desde": {}, "febre": [], "manha": [],
                 "historias": [], "entregues_nomes": [],
                 "mortos_nomes": [], "mortos_quando": {}, "tabua": [], "tabua_noites": [], "final": None}
     dados = estado.para_dicionario()
@@ -1409,8 +1409,77 @@ def testar_dia7_e_noite7(jogo):
     # Iandé dormiu na oca: ela é amaldiçoada, e Yara (na mesma aldeia) pode pegar.
     assert all(e["de"] == "Iandé" and e["nome"] == "Yara" for e in estado.febre), estado.febre
     aldeia = jogo.cenas.atual
-    assert nome_cena(jogo) == "Aldeia" and not aldeia.tem_seta, "ainda não há Dia 8"
+    assert nome_cena(jogo) == "Aldeia" and aldeia.tem_seta, "a seta Dormir leva ao Dia 8"
     print("ok Noite 7: Iandé sem nenhum sinal, e mesmo assim amaldiçoada")
+    jogo.ir_para("menu")
+    esperar_transicao(jogo)
+
+
+def testar_dia8_e_noite8(jogo):
+    """Dia 8 (Krenan chega e é chamado para a fogueira) e a Noite 8 (a oferta de subir o rio)."""
+    jogo.nova_partida()
+    estado = jogo.estado
+    estado.dia = 7
+    estado.dentro = ["Yara", "Iandé"]
+    estado.vivos = 2
+    estado.tabua = ["Olho vermelho, com o branco raiado.", "Boca com feridas.",
+                    "Pontos brancos por dentro da bochecha.", "Manchas brancas atrás da orelha."]
+    estado.tabua_noites = [1, 2, 4, 6]
+    jogo.ir_para("aldeia")
+    esperar_transicao(jogo)
+    clicar(jogo, jogo.cenas.atual.rect_seta.center)
+    esperar_transicao(jogo)
+    esperar_transicao(jogo)
+    assert estado.dia == 8
+
+    # Na entrada: Krenan não pede teto. Só dá para chamá-lo para a fogueira.
+    passar_falas(jogo)
+    dia = jogo.cenas.atual
+    assert dia.visitante == "krenan" and textos_dos_botoes(jogo) == ["Chamar para a fogueira",
+                                                                      "Não deixar entrar"], (
+        dia.visitante, textos_dos_botoes(jogo))
+    rodar(jogo, 60)
+    capturar(jogo, "44-dia8-krenan")
+    clicar_opcao(jogo, "Chamar para a fogueira")
+    passar_falas(jogo)
+    assert estado.dentro == ["Yara", "Iandé"] and len(estado.tabua) == 4 and estado.convidados == ["Krenan"]
+    print("ok Dia 8: Krenan chega e é chamado para a fogueira")
+
+    # A fogueira: Krenan é obrigatório e não é examinado.
+    assert dia.titulo == "Noite 8" and dia.modo == "fogueira"
+    assert [p.nome for p in dia.na_fogueira] == ["Krenan", "Pajé", "Yara", "Iandé"]
+    rodar(jogo, 40)
+    capturar(jogo, "45-noite8-fogueira")
+    clicar_pessoa(jogo, "Krenan")
+    passar_falas(jogo)
+    assert textos_dos_botoes(jogo) == ["Avisar sobre o quê?", "Ouvir o pedido"], textos_dos_botoes(jogo)
+    clicar_opcao(jogo, "Avisar sobre o quê?")
+    passar_falas(jogo)
+    clicar_opcao(jogo, "Ouvir o pedido")
+    passar_falas(jogo)
+    assert textos_dos_botoes(jogo) == ["Deixar levar alguém", "Não deixar"], textos_dos_botoes(jogo)
+    clicar_opcao(jogo, "Deixar levar alguém")
+    passar_falas(jogo)
+    assert textos_dos_botoes(jogo) == ["Yara", "Iandé", "Ninguém, afinal"], textos_dos_botoes(jogo)
+    # Yara é sã: Krenan volta na noite 9 para levar mais.
+    clicar_opcao(jogo, "Yara")
+    passar_falas(jogo)
+    assert estado.dentro == ["Iandé"] and estado.rio_acima == 1 and estado.rio_acima_nomes == ["Yara"]
+    assert estado.vivos == 1 and estado.krenan_volta == 1
+    assert [p.nome for p in dia.na_fogueira] == ["Pajé", "Iandé"]
+
+    # Se quem sobe é amaldiçoado (Iandé traz a febre), Krenan não volta mais.
+    estado.krenan_volta = 1
+    dia._subir_o_rio("Iandé")
+    assert estado.krenan_volta == 0 and estado.dentro == [] and estado.rio_acima == 2
+    estado.dentro, estado.rio_acima, estado.vivos = ["Iandé"], 1, 1
+    estado.rio_acima_nomes = ["Yara"]
+    estado.krenan_volta = 1
+    # Sem o convite (o jogador não deixou entrar), Krenan não aparece na fogueira.
+    estado.convidados = []
+    dia._comecar_noite()
+    assert "Krenan" not in [p.nome for p in dia.na_fogueira]
+    print("ok Noite 8: Krenan leva quem o jogador escolhe rio acima (e volta só se era são)")
     jogo.ir_para("menu")
     esperar_transicao(jogo)
 
@@ -1582,6 +1651,7 @@ def testar_fluxo():
     testar_dia5_e_noite5(jogo)
     testar_dia6_e_noite6(jogo)
     testar_dia7_e_noite7(jogo)
+    testar_dia8_e_noite8(jogo)
     testar_aldeia_de_dia(jogo)
 
     # 5c. Continuar de onde parou, a tábua de barro e o "Como se joga" do menu

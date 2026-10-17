@@ -23,6 +23,7 @@
 #       "escala"       o tamanho (1 = o tamanho de quem fala)
 #       "espelhar"     True: vira a pessoa para o outro lado (o pajé olha para o fogo)
 #       "atras"        True: senta atrás dos outros (é desenhada antes, os outros na frente)
+#       "convidado"    True: só aparece se o jogador a chamou para a fogueira (sem entrar na aldeia)
 #       "posicao_com"  {"Potira": (x, y)}: outra posição, quando essa pessoa está na fogueira
 #                      nesta noite (ex.: o pajé chega para o lado quando Potira senta perto)
 #       "de_fora"      True: só aparece se o jogador a deixou entrar (e se não está no tapiri,
@@ -229,6 +230,40 @@ ZONAS_IANDE = [
     {"pergunta": "Respiração",
      "resposta": "Respira fundo, sem tosse."},
 ]
+
+
+# --- Noite 8: Krenan e a oferta de subir o rio ---
+# Krenan não é de fora da aldeia: não dorme nela nem é examinado. Ele avisa e pede para levar
+# alguém rio acima. Se o jogador deixa, escolhe quem vai ("rio_acima": a pessoa sai viva).
+# Se quem foi é amaldiçoado, Krenan não volta mais; se é são, ele volta na noite 9 para levar
+# mais gente (estado.krenan_volta). Se o jogador nega, Krenan só vai embora.
+# Ele fala um português antigo, rebuscado e duro. Na fogueira, senta no tronco da esquerda.
+POSICAO_KRENAN, ESCALA_KRENAN = (140, 462), 0.45
+QUEM_SOBE = ["Yara", "Mbaé", "Potira", "Tamandaré-mirim", "Iandé"]
+FALA_KRENAN_VAI = {"tipo": "fala", "quem": "Krenan",
+                   "texto": "Assim seja. Se a lua mo consentir, tornarei a este fogo."}
+
+
+def oferta_krenan():
+    """Krenan pede para levar alguém rio acima: deixar (e escolher quem) ou negar."""
+    quem = {"tipo": "escolha", "quem": "Krenan", "texto": "Quem sobe o rio com Krenan?", "opcoes": [
+        {"texto": nome, "condicao": {"dentro": nome}, "rio_acima": nome,
+         "passos": [{"tipo": "fala", "quem": "", "texto": "%s desce até a canoa de Krenan." % nome},
+                    FALA_KRENAN_VAI]}
+        for nome in QUEM_SOBE] + [
+        {"texto": "Ninguém, afinal", "passos": [
+            {"tipo": "fala", "quem": "Krenan", "texto": "Mudais de vontade como o rio de cor. Ide com Deus, se o tendes."},
+        ]},
+    ]}
+    return {"tipo": "escolha", "quem": "Krenan", "texto": "Krenan quer levar alguém rio acima.", "opcoes": [
+        {"texto": "Deixar levar alguém", "passos": [
+            {"tipo": "fala", "quem": "Krenan", "texto": "Dizei-me, pois, qual há de ser o que me acompanha."},
+            quem,
+        ]},
+        {"texto": "Não deixar", "passos": [
+            {"tipo": "fala", "quem": "Krenan", "texto": "Seja. Ficai-vos com a vossa sorte, que eu me vou com a minha."},
+        ]},
+    ]}
 
 
 NOITES = {
@@ -826,6 +861,141 @@ NOITES = {
                     {"tipo": "visitante", "visitante": "iande"},
                     {"tipo": "fala", "quem": "Iandé", "texto": "Que bom estar perto do fogo de casa."},
                     # Na fogueira, só o essencial: a conversa inteira fica na oca.
+                    {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": [
+                        {"pergunta": "Viu alguém doente?",
+                         "resposta": "Vi uma casa fechada, com uma cruz na porta."},
+                    ]},
+                    {"tipo": "exame", "quem": "Iandé", "liberadas": LIBERADAS_NOITE_6,
+                     "texto": TEXTO_EXAME, "zonas": ZONAS_IANDE},
+                    escolha_onde_dorme("Iandé", "Na minha rede de sempre. Que saudade.",
+                                       "Sozinha? O que foi que eu fiz?"),
+                    {"tipo": "visitante", "visitante": None},
+                ],
+            },
+        },
+        "fim": [
+            {"tipo": "fala", "quem": "",
+             "texto": "O fogo baixa. A aldeia vai para as redes."},
+        ],
+    },
+
+    8: {
+        "titulo": "Noite 8",
+        # 1 olhar (2 com o machado); os olhos, a boca e atrás das orelhas.
+        "energia": 1,
+        "energia_extra": {"machado": 1},
+        "fundo": "fogueira_perto",
+        "amaldicoados": True,
+        "dica": "Clique em quem está perto do fogo para conversar.",
+        "dormir": "Ir dormir",
+        "pessoas": {
+            "Pajé": {
+                "imagem": "paje_sentado", "posicao": POSICAO_PAJE, "escala": ESCALA_PAJE, "espelhar": True,
+                "posicao_com": {"Potira": POSICAO_PAJE_COM_POTIRA},
+                "passos": [
+                    {"tipo": "visitante", "visitante": "paje"},
+                    {"tipo": "fala", "quem": "Pajé", "texto": "Sente. Hoje há um homem do rio no nosso fogo."},
+                    {"tipo": "perguntas", "botao": "Voltar para a fogueira", "perguntas": [
+                        {"pergunta": "O que você viu no sono?",
+                         "resposta": "A minha própria mãe na porta. Não soube o que fazer."},
+                        {"pergunta": "E o Krenan?",
+                         "resposta": "Ele lembra o que a gente esqueceu. Escute."},
+                    ]},
+                    {"tipo": "visitante", "visitante": None},
+                ],
+            },
+
+            # Krenan: o aviso e o pedido. Não é examinado e não dorme na aldeia.
+            "Krenan": {
+                "imagem": "krenan_sentado", "posicao": POSICAO_KRENAN, "escala": ESCALA_KRENAN,
+                "convidado": True, "uma_vez": True, "obrigatorio": True, "atras": True,
+                "passos": [
+                    {"tipo": "visitante", "visitante": "krenan"},
+                    {"tipo": "fala", "quem": "Krenan", "texto": "Eis-me ao vosso fogo, como vos disse."},
+                    {"tipo": "perguntas", "botao": "Ouvir o pedido", "perguntas": [
+                        {"pergunta": "Avisar sobre o quê?",
+                         "resposta": [
+                             "A minha gente subiu o rio há já duas luas, e não há de tornar a descer.",
+                             "Quem desce, ou torna com a febre, ou não torna de todo.",
+                         ]},
+                    ]},
+                    {"tipo": "fala", "quem": "Krenan",
+                     "texto": "Se vos aprouver, levarei comigo quem houver de subir. Mo concedeis?"},
+                    oferta_krenan(),
+                    {"tipo": "visitante", "visitante": None},
+                ],
+            },
+
+            "Yara": {
+                "imagem": "yara_sentada", "posicao": POSICAO_YARA, "escala": ESCALA_YARA,
+                "de_fora": True, "uma_vez": True,
+                "passos": [
+                    {"tipo": "visitante", "visitante": "yara"},
+                    {"tipo": "fala", "quem": "Yara", "texto": "O homem do rio fala como os padres antigos."},
+                    {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa_yara()},
+                    {"tipo": "exame", "quem": "Yara", "liberadas": LIBERADAS_NOITE_6,
+                     "texto": TEXTO_EXAME, "zonas": ZONAS_YARA_NOITE_3},
+                    escolha_onde_dorme("Yara", "Mais uma noite, então. Obrigada.",
+                                       "Sozinha, então. Já dormi em lugar pior."),
+                    {"tipo": "visitante", "visitante": None},
+                ],
+            },
+
+            "Mbaé": {
+                "imagem": "mbae_sentado", "posicao": POSICAO_MBAE, "escala": ESCALA_MBAE,
+                "de_fora": True, "uma_vez": True, "obrigatorio": True,
+                "passos": [
+                    {"tipo": "visitante", "visitante": "mbae"},
+                    {"tipo": "fala", "quem": "Mbaé", "texto": "(tosse) O rio acima é frio."},
+                    {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa_mbae()},
+                    {"tipo": "exame", "quem": "Mbaé", "liberadas": LIBERADAS_NOITE_6,
+                     "texto": TEXTO_EXAME, "zonas": ZONAS_MBAE},
+                    escolha_onde_dorme("Mbaé", "Durmo no canto. Não incomodo ninguém.",
+                                       "Sozinho no escuro. Já passei noite pior na caça."),
+                    {"tipo": "visitante", "visitante": None},
+                ],
+            },
+
+            "Potira": {
+                "imagem": "potira_sentada", "posicao": POSICAO_POTIRA, "escala": ESCALA_POTIRA,
+                "espelhar": True,
+                "de_fora": True, "uma_vez": True,
+                "passos": [
+                    {"tipo": "visitante", "visitante": "potira"},
+                    {"tipo": "fala", "quem": "Potira", "texto": "Dizem que lá em cima ainda tem roça."},
+                    {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": [
+                        {"pergunta": "Viu gente doente?",
+                         "resposta": "Vi rede vazia pendurada. Não entrei."},
+                    ]},
+                    {"tipo": "exame", "quem": "Potira", "liberadas": LIBERADAS_NOITE_6,
+                     "texto": TEXTO_EXAME, "zonas": ZONAS_POTIRA},
+                    escolha_onde_dorme("Potira", "Durmo na rede de sempre.",
+                                       "Sozinha? Se você manda, eu vou."),
+                    {"tipo": "visitante", "visitante": None},
+                ],
+            },
+
+            "Tamandaré-mirim": {
+                "imagem": "tamandare_sentado", "posicao": POSICAO_TAMANDARE, "escala": ESCALA_TAMANDARE,
+                "de_fora": True, "uma_vez": True, "obrigatorio": True,
+                "passos": [
+                    {"tipo": "visitante", "visitante": "tamandare"},
+                    {"tipo": "fala", "quem": "Tamandaré-mirim", "texto": "A terra sem mal fica rio acima? Talvez."},
+                    {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa_tamandare()},
+                    {"tipo": "exame", "quem": "Tamandaré-mirim", "liberadas": LIBERADAS_NOITE_6,
+                     "texto": TEXTO_EXAME, "zonas": ZONAS_TAMANDARE_NOITE_6},
+                    escolha_onde_dorme("Tamandaré-mirim", "Durmo perto da porta. Acordo antes do sol.",
+                                       "Sozinho. Os profetas sempre dormem sozinhos."),
+                    {"tipo": "visitante", "visitante": None},
+                ],
+            },
+
+            "Iandé": {
+                "imagem": "iande_sentada", "posicao": POSICAO_IANDE, "escala": ESCALA_IANDE,
+                "de_fora": True, "uma_vez": True, "obrigatorio": True,
+                "passos": [
+                    {"tipo": "visitante", "visitante": "iande"},
+                    {"tipo": "fala", "quem": "Iandé", "texto": "Esse homem fala esquisito."},
                     {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": [
                         {"pergunta": "Viu alguém doente?",
                          "resposta": "Vi uma casa fechada, com uma cruz na porta."},
