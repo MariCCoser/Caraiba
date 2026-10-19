@@ -466,8 +466,8 @@ def testar_finais():
         ({"rio_acima": 4}, "vazio"),                                     # levar gente com Krenan não basta
         ({"viu_anhanga": 3, "memoria": 5, "vivos": 5}, "anhanga"),     # Anhangá antes da Honra
         ({"viu_anhanga": 3, "mortos_por_sua_mao": 1}, "vazio"),
-        ({"memoria": 5, "vivos": 3}, "honra"),
-        ({"memoria": 5, "vivos": 2}, "vazio"),
+        ({"memoria": 5, "vivos": 2}, "honra"),
+        ({"memoria": 5, "vivos": 1}, "vazio"),
         ({"memoria": 4, "vivos": 5, "tapiri_usos": 3}, "tapiri"),
         ({"tapiri_usos": 3, "vivos": 1}, "vazio"),
         ({}, "vazio"),

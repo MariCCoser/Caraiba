@@ -97,7 +97,7 @@ FINAIS = [
         "id": "honra",
         "nome": "A Honra",
         "povo": "Tupinambá",
-        "condicao": [{"vivos": ">= 3", "memoria": ">= 5", "mortos_por_sua_mao": "== 0",
+        "condicao": [{"vivos": ">= 2", "memoria": ">= 5", "mortos_por_sua_mao": "== 0",
                       "entregues": "== 0"}],
         "antecipado": False,
         "cena": "A aldeia chega ao fim da febre com as histórias de quem entrou guardadas.",
