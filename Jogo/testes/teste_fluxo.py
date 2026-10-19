@@ -1630,13 +1630,17 @@ def testar_dia10_e_noite10(jogo):
     passar_falas(jogo)
     dia = jogo.cenas.atual
     assert dia.titulo == "Noite 10" and dia.modo == "fogueira" and dia.energia == 2
-    # Krenan levou alguém na noite 8: volta e chama a aldeia inteira (Rio Acima). Aqui, fica.
+    # Krenan levou alguém na noite 8: volta e faz o mesmo pedido. Aqui, ninguém vai.
     assert [p.nome for p in dia.na_fogueira] == ["Krenan", "Pajé", "Araci"], [p.nome for p in dia.na_fogueira]
     assert not dia.botao_dormir.visivel, "antes, é preciso falar com Araci e com Krenan"
     clicar_pessoa(jogo, "Krenan")
     passar_falas(jogo)
-    assert textos_dos_botoes(jogo) == ["Subir o rio com todos", "Ficar na aldeia"], textos_dos_botoes(jogo)
-    clicar_opcao(jogo, "Ficar na aldeia")
+    # O mesmo pedido da noite 8, e agora o jogador também pode ir com ele (Rio Acima).
+    assert textos_dos_botoes(jogo) == ["Deixar levar alguém", "Não deixar"], textos_dos_botoes(jogo)
+    clicar_opcao(jogo, "Deixar levar alguém")
+    passar_falas(jogo)
+    assert textos_dos_botoes(jogo)[-2:] == ["Ir com ele", "Ninguém, afinal"], textos_dos_botoes(jogo)
+    clicar_opcao(jogo, "Ninguém, afinal")
     passar_falas(jogo)
     assert estado.subiu_o_rio == 0
     rodar(jogo, 40)

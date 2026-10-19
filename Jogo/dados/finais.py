@@ -10,7 +10,7 @@
 #   e fica com o primeiro final que bater. O Vazio, o último, sempre bate. O final aparece
 #   no fim da noite 10, e nada do que o jogador faz com Araci o muda.
 # - A exceção é quem tem "ultima_noite": True (Rio Acima): ele é testado no fim da noite 10,
-#   antes do final calculado de manhã. É a escolha de subir o rio com Krenan, nessa noite.
+#   antes do final calculado de manhã. É a escolha "Ir com ele", quando Krenan volta nessa noite.
 #
 # A "condicao" é uma lista de jeitos de chegar ao final (basta UM deles). Cada jeito é um
 # dicionário com as variáveis do estado.py e a conta que elas precisam passar; todas as
@@ -71,7 +71,7 @@ FINAIS = [
         "id": "rio_acima",
         "nome": "Rio Acima",
         "povo": "Aimoré, hoje Krenak",
-        # Na noite 10, Krenan (se voltou) chama a aldeia inteira, e o jogador vai junto.
+        # Na noite 10, Krenan (se voltou) faz o mesmo pedido, e o jogador escolhe ir com ele.
         "condicao": [{"subiu_o_rio": ">= 1"}],
         "antecipado": False,
         "ultima_noite": True,

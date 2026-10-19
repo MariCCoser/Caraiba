@@ -270,26 +270,21 @@ FALA_KRENAN_VAI = {"tipo": "fala", "quem": "Krenan",
                    "texto": "Assim seja. Se a lua mo consentir, tornarei a este fogo."}
 
 
-def oferta_krenan_todos():
-    """Noite 10: Krenan chama a aldeia inteira rio acima, e o jogador vai junto (Rio Acima)."""
-    return {"tipo": "escolha", "quem": "Krenan", "texto": "Krenan chama a aldeia inteira rio acima.", "opcoes": [
-        {"texto": "Subir o rio com todos", "efeitos": {"subiu_o_rio": 1}, "passos": [
-            {"tipo": "fala", "quem": "Krenan", "texto": "Assim seja. Apagai o fogo, que a canoa não espera."},
-            {"tipo": "fala", "quem": "", "texto": "A aldeia junta as redes. Você desce por último até a margem."},
-        ]},
-        {"texto": "Ficar na aldeia", "passos": [
-            {"tipo": "fala", "quem": "Krenan", "texto": "Seja. Ficai-vos com a vossa sorte, que eu me vou com a minha."},
-        ]},
-    ]}
+# Na noite 10, além de quem está na aldeia, o jogador pode ir com ele: é o final Rio Acima.
+IR_COM_KRENAN = {"texto": "Ir com ele", "efeitos": {"subiu_o_rio": 1}, "passos": [
+    {"tipo": "fala", "quem": "Krenan", "texto": "Assim seja. Apagai o fogo, que a canoa não espera."},
+    {"tipo": "fala", "quem": "", "texto": "Você deixa a aldeia para trás e desce até a margem com Krenan."},
+]}
 
 
-def oferta_krenan():
-    """Krenan pede para levar alguém rio acima: deixar (e escolher quem) ou negar."""
+def oferta_krenan(ir_junto=False):
+    """Krenan pede para levar alguém rio acima: deixar (e escolher quem) ou negar.
+    Com ir_junto (noite 10), o jogador também pode ir com ele."""
     quem = {"tipo": "escolha", "quem": "Krenan", "texto": "Quem sobe o rio com Krenan?", "opcoes": [
         {"texto": nome, "condicao": {"dentro": nome}, "rio_acima": nome,
          "passos": [{"tipo": "fala", "quem": "", "texto": "%s desce até a canoa de Krenan." % nome},
                     FALA_KRENAN_VAI]}
-        for nome in QUEM_SOBE] + [
+        for nome in QUEM_SOBE] + ([IR_COM_KRENAN] if ir_junto else []) + [
         {"texto": "Ninguém, afinal", "passos": [
             {"tipo": "fala", "quem": "Krenan", "texto": "Mudais de vontade como o rio de cor. Ide com Deus, se o tendes."},
         ]},
@@ -1261,7 +1256,8 @@ NOITES = {
                 ],
             },
 
-            # Krenan volta, se na noite 8 levou alguém (são ou amaldiçoado), e chama a aldeia inteira.
+            # Krenan volta, se na noite 8 levou alguém (são ou amaldiçoado), e faz o mesmo pedido.
+            # Agora o jogador também pode ir com ele (Rio Acima).
             "Krenan": {
                 "imagem": "krenan_sentado", "posicao": POSICAO_KRENAN, "escala": ESCALA_KRENAN,
                 "condicao": {"ao_menos": {"krenan_volta": 1}},
@@ -1270,8 +1266,8 @@ NOITES = {
                     {"tipo": "visitante", "visitante": "krenan"},
                     {"tipo": "fala", "quem": "Krenan", "texto": "Tornei, como vos disse. A canoa aguarda na margem."},
                     {"tipo": "fala", "quem": "Krenan",
-                     "texto": "Desta vez não levo um só. Vinde todos, e vós também, antes que a vila suba o rio."},
-                    oferta_krenan_todos(),
+                     "texto": "Há lugar na canoa para mais um. E para vós também, antes que a vila suba o rio."},
+                    oferta_krenan(ir_junto=True),
                     {"tipo": "visitante", "visitante": None},
                 ],
             },

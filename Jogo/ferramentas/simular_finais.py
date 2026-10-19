@@ -79,10 +79,12 @@ ESTRATEGIAS = {
     "honra": {"historias": True,
               "preferir": lambda dia: ["Deixar entrar", "Negar", "Não deixar", "Ficar na aldeia"]
               + _onde_dorme_tapiri(dia)},
-    # A aldeia precisa chegar viva à noite 10: doentes no tapiri, e um doente sobe com Krenan.
+    # A aldeia precisa chegar viva à noite 10: doentes no tapiri, um doente sobe com Krenan na noite 8
+    # e, na noite 10, o jogador vai com ele.
     "rio_acima": {"preferir": lambda dia: ["Deixar entrar", "Negar", "Chamar para a fogueira",
-                                           "Deixar levar alguém", "Subir o rio com todos"]
-                  + DOENTES + QUEM_SOBE + _onde_dorme_tapiri(dia)},
+                                           "Deixar levar alguém"]
+                  + (["Ir com ele"] if dia.estado.dia >= 10 else DOENTES + QUEM_SOBE)
+                  + _onde_dorme_tapiri(dia)},
     "batismo": {"perguntar": ["De quem você desconfia?"], "paje_primeiro": True,
                 "preferir": lambda dia: ["Deixar entrar", "Negar", "Não deixar"] + _seguir_o_paje(dia)},
     "anhanga": {"perguntar": ["Que barulho é esse na mata?"], "paje_primeiro": True,
