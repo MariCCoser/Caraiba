@@ -5,8 +5,15 @@
 # - calcular_na_manha(estado): na manhã do dia 10, antes de Araci chegar, guarda o final em
 #   estado.final_calculado. Nada do que o jogador faz depois (Araci) muda o final.
 # - escolher(estado): devolve sempre um final (o primeiro da fila que bate).
+# - vistos() e marcar_visto(id): os finais que o jogador já viu, em qualquer partida (ficam
+#   guardados à parte, como as preferências: começar uma partida nova não apaga). O menu mostra
+#   o botão "Finais" depois do primeiro, para ler de novo o que estava escrito.
+# - numero(id): a posição do final na fila (1 a 8) e quantos finais há.
 
 from dados.finais import DIA_DO_CALCULO, FINAIS
+from motor import salvamento
+
+NOME_VISTOS = "finais_vistos"
 
 OPERACOES = {
     ">=": lambda valor, alvo: valor >= alvo,
@@ -33,6 +40,24 @@ def condicao_bate(estado, final):
 
 def por_id(identificador):
     return next(final for final in FINAIS if final["id"] == identificador)
+
+
+def numero(identificador):
+    """(posição na fila, contando de 1, total de finais): ex.: (5, 8)."""
+    ids = [final["id"] for final in FINAIS]
+    return ids.index(identificador) + 1, len(ids)
+
+
+def vistos():
+    """Os ids dos finais já vistos, na ordem da fila."""
+    dados = salvamento.carregar(NOME_VISTOS)
+    guardados = set(dados) if isinstance(dados, list) else set()
+    return [final["id"] for final in FINAIS if final["id"] in guardados]
+
+
+def marcar_visto(identificador):
+    if identificador not in vistos():
+        salvamento.salvar(NOME_VISTOS, vistos() + [identificador])
 
 
 def escolher(estado):

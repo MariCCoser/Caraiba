@@ -18,6 +18,7 @@ from cenas.tutorial import Tutorial
 from cenas.aldeia import Aldeia
 from cenas.oca import Oca
 from cenas.final import Final
+from cenas.finais import Finais
 
 CENAS = {
     "menu": Menu,
@@ -28,6 +29,7 @@ CENAS = {
     "aldeia": Aldeia,
     "oca": Oca,
     "final": Final,
+    "finais": Finais,
 }
 
 # Tamanhos de janela tentados, do maior para o menor (todos 16:9).
@@ -58,6 +60,8 @@ class Jogo:
         self.oca_atual = None
         # O Dia que está esperando o jogador andar pela aldeia (None = aldeia de noite).
         self.dia_pausado = None
+        # O final que a tela "Finais" do menu pediu para ler de novo (cenas/final.py), ou None.
+        self.final_revendo = None
         self.relogio = pygame.time.Clock()
         self.mouse = (0, 0)       # posição do mouse já em coordenadas 1600x900
         self.rodando = True

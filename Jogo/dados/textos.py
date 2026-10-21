@@ -25,6 +25,7 @@ MENU = {
     "continuar": "Continuar",
     "comecar": "Começar",
     "tutorial": "Como se joga",
+    "finais": "Finais",   # só aparece depois do primeiro final visto
     "opcoes": "Opções",
     "sair": "Sair",
     "rodape": "Projeto de História · 2º DSN",

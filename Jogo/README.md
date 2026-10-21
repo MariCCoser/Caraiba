@@ -57,7 +57,8 @@ Todo o texto do jogo fica na pasta **`dados/`**. Abra com qualquer editor de tex
 | Os cartões da introdução (e o cenário de cada um) | `dados/textos.py`, parte `INTRODUCAO` |
 | O que acontece em cada dia: falas do pajé, visitante, perguntas, escolhas, sinal | `dados/dias.py` (as instruções estão no topo do arquivo) |
 | O que acontece em cada noite, na fogueira: conversa, zonas do exame, energia, decisão | `dados/noites.py` (as instruções estão no topo do arquivo) |
-| Os finais: a fila, as condições e os textos das três telas | `dados/finais.py` (as contas: `Textos/Caraiba_Contas_dos_Finais.md`) |
+| Os finais: a fila, as condições, os textos das três telas e a chance de cada um ("Final 5/8") | `dados/finais.py` (as contas: `Textos/Caraiba_Contas_dos_Finais.md`; as chances: `Textos/Caraiba_Porcentagens_dos_Finais.md`) |
+| A tela "Finais" do menu (ler de novo os finais já vistos) | `dados/finais.py`, parte `LISTA_FINAIS` |
 | Quem está doente de verdade e quantos pegam a febre na oca (sorteio) | `dados/febre.py` |
 | Qual arquivo de imagem é cada cenário | `dados/arte.py` |
 | Cores, tamanhos de letra, velocidade do texto | `config.py` |
@@ -132,7 +133,7 @@ Jogo/
 │   ├── ui.py            Botao, CaixaTexto (palavras marcadas, letra a letra), painéis arredondados
 │   ├── tabua.py         a tábua de barro (ícone no canto e sinais do pajé)
 │   ├── pessoas.py       gente desenhada no cenário, clicável (aldeia de dia e fogueira)
-│   ├── finais.py        escolhe o final (a fila de dados/finais.py)
+│   ├── finais.py        escolhe o final (a fila de dados/finais.py) e guarda os já vistos
 │   ├── febre.py         a febre que passa na oca: sorteio, febre no dia seguinte, morte no 2º dia
 │   ├── cursor.py        o cursor do mouse: uma tocha (a chama cresce sobre o que é clicável)
 │   ├── progresso.py     guarda a partida para o botão "Continuar"

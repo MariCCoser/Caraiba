@@ -1600,6 +1600,39 @@ def testar_dia9_e_noite9(jogo):
     esperar_transicao(jogo)
 
 
+def testar_rever_finais(jogo):
+    """Depois do primeiro final visto, o menu tem "Finais": ler de novo, com "Final N/8" e a chance."""
+    from motor import finais
+    vistos = finais.vistos()
+    assert vistos, "a noite 10 acabou num final: ele fica guardado como visto"
+    menu = jogo.cenas.atual
+    assert nome_cena(jogo) == "Menu" and menu.botao_finais.visivel
+    clicar_botao(jogo, menu.botao_finais)
+    esperar_transicao(jogo)
+    lista = jogo.cenas.atual
+    assert nome_cena(jogo) == "Finais" and [i for _, i in lista.linhas] == vistos
+    assert len(lista.linhas) + len(lista.escondidos) == 8
+    clicar_botao(jogo, lista.linhas[0][0])
+    esperar_transicao(jogo)
+    fim = jogo.cenas.atual
+    numero, total = finais.numero(vistos[0])
+    assert nome_cena(jogo) == "Final" and fim.revendo == vistos[0]
+    assert fim.linhas_chance[0] == "Final %d/%d" % (numero, total), fim.linhas_chance
+    assert "%" in fim.linhas_chance[1], fim.linhas_chance
+    for _ in range(5):
+        fim.avancar()
+    assert fim.indice == 2 and fim.botao.texto == "Voltar aos finais"
+    rodar(jogo, 10)
+    capturar(jogo, "51-final-fonte-e-chance")
+    clicar_botao(jogo, fim.botao)
+    esperar_transicao(jogo)
+    assert nome_cena(jogo) == "Finais"
+    clicar_botao(jogo, jogo.cenas.atual.botao_voltar)
+    esperar_transicao(jogo)
+    assert nome_cena(jogo) == "Menu"
+    print("ok Finais: ler de novo um final já visto (Final N/8 e a chance)")
+
+
 def testar_dia10_e_noite10(jogo):
     """Dia 10 (Araci: duas perguntas na entrada, a conversa inteira na oca Wanadi, no meio da
     cama) e a Noite 10 (o pajé e Araci na fogueira; o final calculado de manhã não muda)."""
@@ -1876,6 +1909,7 @@ def testar_fluxo():
     testar_dia8_e_noite8(jogo)
     testar_dia9_e_noite9(jogo)
     testar_dia10_e_noite10(jogo)
+    testar_rever_finais(jogo)
     testar_aldeia_de_dia(jogo)
 
     # 5c. Continuar de onde parou, a tábua de barro e o "Como se joga" do menu

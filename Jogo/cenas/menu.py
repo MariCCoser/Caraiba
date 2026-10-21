@@ -1,17 +1,18 @@
 # Menu inicial: a fogueira ao fundo (luz pulsando), o título e os botões Continuar, Começar,
-# Como se joga, Opções e Sair. "Continuar" só aparece se houver uma partida guardada.
+# Como se joga, Finais, Opções e Sair. "Continuar" só aparece se houver uma partida guardada;
+# "Finais", depois do primeiro final visto (para ler de novo o que estava escrito).
 
 import pygame
 
 import config
 from dados.textos import MENU
-from motor import efeitos, fontes, progresso, ui
+from motor import efeitos, finais, fontes, progresso, ui
 from motor.cena import Cena, desenhar_cenario
 
 # Coluna da esquerda, onde ficam título e botões (o fogo fica no meio da imagem).
 X_COLUNA = 120
-Y_PRIMEIRO_BOTAO = 530
-ESPACO_ENTRE_BOTOES = 72
+Y_PRIMEIRO_BOTAO = 520
+ESPACO_ENTRE_BOTOES = 66
 
 
 class Menu(Cena):
@@ -26,14 +27,17 @@ class Menu(Cena):
         self.botao_continuar = botao(MENU["continuar"])
         self.botao_comecar = botao(MENU["comecar"])
         self.botao_tutorial = botao(MENU["tutorial"])
+        self.botao_finais = botao(MENU["finais"])
         self.botao_opcoes = botao(MENU["opcoes"])
         self.botao_sair = botao(MENU["sair"])
         # "Continuar" só aparece se houver partida guardada.
         self.botao_continuar.visivel = progresso.existe()
+        # "Finais" só aparece depois do primeiro final visto.
+        self.botao_finais.visivel = bool(finais.vistos())
         # No navegador não dá para "fechar o jogo": o botão Sair some.
         self.botao_sair.visivel = not config.NO_NAVEGADOR
         self.botoes = [self.botao_continuar, self.botao_comecar, self.botao_tutorial,
-                       self.botao_opcoes, self.botao_sair]
+                       self.botao_finais, self.botao_opcoes, self.botao_sair]
         # Empilha só os visíveis, sem deixar buraco.
         y = Y_PRIMEIRO_BOTAO
         for b in self.botoes:
@@ -51,6 +55,8 @@ class Menu(Cena):
             self.comecar()
         elif self.botao_tutorial.clicado(evento):
             self.jogo.ir_para("tutorial")
+        elif self.botao_finais.clicado(evento):
+            self.jogo.ir_para("finais")
         elif self.botao_opcoes.clicado(evento):
             self.jogo.ir_para("opcoes")
         elif self.botao_sair.clicado(evento):

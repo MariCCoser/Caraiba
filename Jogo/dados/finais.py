@@ -22,6 +22,15 @@
 # (o povo real que fez um caminho parecido e o que aconteceu com ele) e a "fonte".
 # Os textos das cenas são um rascunho: o grupo pode reescrever.
 #
+# A chance de cada final (aparece na tela da fonte, com "Final 5/8": a posição na fila). Os
+# números vêm do simulador (Jogo/ferramentas/simular_finais.py; Textos/Caraiba_Porcentagens_dos_Finais.md):
+#   "chance_acaso"     em quantas partidas (%) o final acontece, jogando ao acaso
+#   "chance_tentando"  em quantas partidas (%) dá certo, para quem tenta esse final
+#                      (None: não se mostra, como em O Vazio, que é o que sobra)
+# Mudou o roteiro ou as condições? Rode o simulador de novo e troque os números.
+# Ao acaso: 500 partidas em 21/10/2026. "Tentando" ainda sem números atuais (a simulação por
+# estratégia não terminou): enquanto for None, a tela mostra só a chance ao acaso.
+#
 # "vivos" conta só quem é de fora e está vivo na aldeia: a aldeia é o jogador, o pajé e quem
 # o jogador deixou entrar (no máximo 5 até o dia 10).
 
@@ -30,6 +39,7 @@ DIA_DO_CALCULO = 10
 FINAIS = [
     {
         "id": "troca",
+        "chance_acaso": 13.8, "chance_tentando": None,
         "nome": "A Troca",
         "povo": "Tupiniquim",
         "condicao": [{"entregues": ">= 2"}, {"proximidade_vila": ">= 3"}],
@@ -43,6 +53,7 @@ FINAIS = [
     },
     {
         "id": "loucura",
+        "chance_acaso": 3.4, "chance_tentando": None,
         "nome": "A Loucura",
         "povo": "Tupinambá (Santidade de Jaguaripe)",
         "condicao": [{"mortos_por_sua_mao": ">= 3"}],
@@ -56,6 +67,7 @@ FINAIS = [
     },
     {
         "id": "batismo",
+        "chance_acaso": 0, "chance_tentando": None,
         "nome": "A Água do Batismo",
         "povo": "Caeté",
         "condicao": [{"seguiu_paje": ">= 3", "inocentes": ">= 1"}],
@@ -69,6 +81,7 @@ FINAIS = [
     },
     {
         "id": "rio_acima",
+        "chance_acaso": 0.4, "chance_tentando": None,
         "nome": "Rio Acima",
         "povo": "Aimoré, hoje Krenak",
         # Na noite 10, Krenan (se voltou) faz o mesmo pedido, e o jogador escolhe ir com ele.
@@ -83,6 +96,7 @@ FINAIS = [
     },
     {
         "id": "anhanga",
+        "chance_acaso": 0, "chance_tentando": None,
         "nome": "Anhangá",
         "povo": "Potiguara",
         "condicao": [{"viu_anhanga": ">= 3", "mortos_por_sua_mao": "== 0", "entregues": "== 0"}],
@@ -95,6 +109,7 @@ FINAIS = [
     },
     {
         "id": "honra",
+        "chance_acaso": 0, "chance_tentando": None,
         "nome": "A Honra",
         "povo": "Tupinambá",
         "condicao": [{"vivos": ">= 2", "memoria": ">= 5", "mortos_por_sua_mao": "== 0",
@@ -108,6 +123,7 @@ FINAIS = [
     },
     {
         "id": "tapiri",
+        "chance_acaso": 0, "chance_tentando": None,
         "nome": "O Tapiri",
         "povo": "Korubo",
         "condicao": [{"tapiri_usos": ">= 3", "vivos": ">= 2", "mortos_por_sua_mao": "== 0",
@@ -122,6 +138,7 @@ FINAIS = [
     },
     {
         "id": "vazio",
+        "chance_acaso": 82.4, "chance_tentando": None,
         "nome": "O Vazio",
         "povo": "Goitacá",
         # Sempre bate (é o que sobra). Antes do dia 10, só acaba o jogo se a aldeia esvaziar.
@@ -145,5 +162,19 @@ TELA_FINAL = {
     "fonte": "Fonte",
     "seguir": "Continuar",
     "menu": "Voltar ao menu",
+    "voltar_finais": "Voltar aos finais",
+    "fundo": "fogueira_longe",
+    # Embaixo da fonte: a posição na fila e a chance.
+    "numero": "Final %d/%d",
+    "chance_acaso": "Jogando ao acaso, acontece em %s das partidas",
+    "chance_tentando": "Tentando, dá certo em %s",
+}
+
+# A tela "Finais" do menu: os finais já vistos, para ler de novo. Os outros ficam escondidos.
+LISTA_FINAIS = {
+    "titulo": "Finais",
+    "vistos": "Você já viu %d de %d finais.",
+    "escondido": "Final %d/%d · ainda não visto",
+    "voltar": "Voltar",
     "fundo": "fogueira_longe",
 }
