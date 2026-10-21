@@ -24,7 +24,7 @@ from dados.febre import DOENTES
 from dados.noites import NOITES
 from dados.textos import DIA
 from motor import efeitos, febre, finais, fontes, imagens, progresso, ui
-from motor.pessoas import PessoaNoCenario
+from motor.pessoas import PessoaNoCenario, corpo_no_cenario
 from motor.cena import Cena, desenhar_cenario
 from motor.tabua import Tabua
 
@@ -312,6 +312,27 @@ class Dia(Cena):
     def _tapiri_cheio(self):
         return len(self.estado.tapiri) >= TAPIRI["vagas"]
 
+    def _lugar_na_fogueira(self, nome):
+        """Onde a pessoa senta na fogueira desta noite: {"posicao", "escala", "espelhar"}.
+        "posicao_com": ela muda de lugar se outra está na fogueira nesta noite (mesmo que já
+        tenha ido dormir: o lugar não muda no meio da noite)."""
+        pessoa = self.noite["pessoas"][nome]
+        da_noite = [outro for outro, _ in self._pessoas_da_noite()]
+        posicao = next((lugar for outro, lugar in pessoa.get("posicao_com", {}).items() if outro in da_noite),
+                       pessoa["posicao"])
+        return {"posicao": posicao, "escala": pessoa["escala"], "espelhar": pessoa.get("espelhar", False)}
+
+    def _corpos_na_fogueira(self):
+        """De noite, quem o jogador matou nesta fogueira; de manhã, na fogueira, o da noite passada."""
+        noite = self.estado.dia if self.modo == "fogueira" else self.estado.dia - 1
+        filtro = "noite" if self.modo == "fogueira" else self.fundo[1]
+        corpos = [corpo for corpo in self.estado.corpos if corpo["onde"] == "fogueira" and corpo["noite"] == noite]
+        chave = (noite, filtro, tuple(corpo["nome"] for corpo in corpos))
+        if getattr(self, "_chave_corpos", None) != chave:   # monta as imagens só quando muda
+            self._chave_corpos = chave
+            self._corpos = [corpo_no_cenario(corpo, filtro) for corpo in corpos]
+        return self._corpos
+
     def _mostrar_fogueira(self):
         self.modo = "fogueira"
         self.caixa = None
@@ -324,17 +345,9 @@ class Dia(Cena):
         pessoas.sort(key=lambda item: 0 if item[1].get("atras") else 1)
         # "posicao_com": a pessoa muda de lugar se outra está na fogueira nesta noite (mesmo que
         # já tenha ido dormir: o lugar não muda no meio da noite).
-        da_noite = [nome for nome, _ in self._pessoas_da_noite()]
-
-        def posicao(pessoa):
-            for outro, lugar in pessoa.get("posicao_com", {}).items():
-                if outro in da_noite:
-                    return lugar
-            return pessoa["posicao"]
-
         self.na_fogueira = [
-            PessoaNoCenario(nome, pessoa["imagem"], posicao(pessoa), pessoa["escala"], "noite",
-                            espelhar=pessoa.get("espelhar", False))
+            PessoaNoCenario(nome, pessoa["imagem"], self._lugar_na_fogueira(nome)["posicao"],
+                            pessoa["escala"], "noite", espelhar=pessoa.get("espelhar", False))
             for nome, pessoa in pessoas]
         # A seta "Ir dormir" só aparece depois de falar com quem é obrigatório (quem é de fora:
         # decidir onde dorme) e de gastar toda a energia. Se não sobrou ninguém para examinar,
@@ -560,6 +573,10 @@ class Dia(Cena):
             self._acompanhar(nome)
         if opcao.get("morre"):
             nome = opcao["morre"]
+            # O corpo fica coberto com a esteira onde a pessoa sentava, na fogueira.
+            if self.noite and nome in self.noite["pessoas"]:
+                febre.deixar_corpo(self.estado, nome, self.estado.dia, "fogueira",
+                                   self._lugar_na_fogueira(nome), febre.era_amaldicoado(self.estado, nome))
             self._sair_da_aldeia(nome)
             self.estado.mortos_nomes.append(nome)
             self.estado.mortos_quando[nome] = self.estado.dia
@@ -736,6 +753,10 @@ class Dia(Cena):
         else:
             desenhar_cenario(tela, apelido, filtro, self.tempo)
 
+        if self.modo == "fogueira" or apelido == "fogueira_perto":
+            # Os corpos ficam no chão, atrás de quem está sentado.
+            for corpo in self._corpos_na_fogueira():
+                corpo.desenhar(tela)
         if self.modo == "fogueira":
             for pessoa in self.na_fogueira:
                 pessoa.desenhar(tela)

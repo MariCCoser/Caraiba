@@ -39,6 +39,10 @@ PERSONAGENS = {
     "iande_sentada": "personagens/sentados/iande.png",
     "araci_sentada": "personagens/sentados/araci.png",
     "potira_sentada": "personagens/sentados/potira.png",
+
+    # O corpo coberto com a esteira, deitado, no lugar de quem morreu (a mesma altura dos sentados).
+    "esteira": "personagens/esteira.png",                          # quem era são
+    "esteira_amaldicoado": "personagens/esteira-amaldicoado.png",  # quem era amaldiçoado
 }
 
 # Quem é de fora, pelo nome, e o apelido da arte em pé (em PERSONAGENS). Usado quando o Irmão

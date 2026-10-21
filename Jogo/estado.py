@@ -58,6 +58,10 @@ class Estado:
         self.mortos_nomes = []
         # Em que noite cada um morreu pela mão do jogador (o corpo aparece na manhã seguinte)
         self.mortos_quando = {}
+        # Os corpos cobertos com a esteira, no lugar onde a pessoa estava (cenas/dia.py, cenas/oca.py):
+        # {"nome", "noite" (em que morreu), "onde" ("fogueira", ou o nome da oca, ou "tapiri"),
+        #  "posicao", "escala", "espelhar", "amaldicoado" (True: a esteira de amaldiçoado)}
+        self.corpos = []
         # Os sinais que o pajé contou (a tábua de barro do jogador) e em que noite cada um
         self.tabua = []
         self.tabua_noites = []

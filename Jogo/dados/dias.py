@@ -52,6 +52,17 @@
 from dados.conversas import (conversa_araci, conversa_iande, conversa_mbae, conversa_potira,
                              conversa_tamandare, conversa_yara)
 
+
+# A manhã depois de o jogador matar alguém na fogueira: a fogueira de dia, com o corpo coberto
+# pela esteira no lugar onde a pessoa sentava (a de amaldiçoado, se ela era: cenas/dia.py), e o
+# nome. Depois, volta para a aldeia. condicao: "morto_ontem" (morreu na noite passada) ou "morto".
+def corpo_de(nome, condicao="morto_ontem"):
+    return {"tipo": "se", condicao: nome, "passos": [
+        {"tipo": "fundo", "fundo": "fogueira_perto", "filtro": "dia"},
+        {"tipo": "fala", "quem": "", "texto": "O corpo de %s amanheceu coberto com uma esteira." % nome},
+        {"tipo": "fundo", "fundo": "aldeia", "filtro": "dia"},
+    ]}
+
 # --- Dia 3: a primeira das três visitas do Irmão Aleixo (dias 3, 6 e 9) ---
 # Ninguém chega pela trilha: Aleixo vem até a entrada e finca uma cruz. Ele não traz cura:
 # só leva gente para a vila. Ninguém que ele leva volta.
@@ -295,10 +306,7 @@ DIAS = {
             {"tipo": "fundo", "fundo": "aldeia", "filtro": "dia"},
 
             # A manhã: o jogo mostra quem morreu. Quem o jogador matou aparece com o nome.
-            {"tipo": "se", "morto": "Yara", "passos": [
-                {"tipo": "fala", "quem": "",
-                 "texto": "O corpo de Yara amanheceu coberto com uma esteira."},
-            ]},
+            corpo_de("Yara", "morto"),
 
             # O jogador anda pela aldeia e vai até a entrada, como no dia 1.
             {"tipo": "aldeia"},
@@ -357,12 +365,8 @@ DIAS = {
 
             # A manhã: primeiro a febre (motor/febre.py: quantos acordaram doentes);
             # depois, o corpo de quem o jogador matou na noite 2, com o nome.
-            {"tipo": "se", "morto_ontem": "Yara", "passos": [
-                {"tipo": "fala", "quem": "", "texto": "O corpo de Yara amanheceu coberto com uma esteira."},
-            ]},
-            {"tipo": "se", "morto_ontem": "Mbaé", "passos": [
-                {"tipo": "fala", "quem": "", "texto": "O corpo de Mbaé amanheceu coberto com uma esteira."},
-            ]},
+            corpo_de("Yara"),
+            corpo_de("Mbaé"),
             {"tipo": "se", "na_oca": "Mbaé", "passos": [
                 {"tipo": "fala", "quem": "", "texto": "Mbaé tossiu a noite toda na oca Yebá Bëló."},
             ]},
@@ -405,12 +409,8 @@ DIAS = {
             {"tipo": "fundo", "fundo": "aldeia", "filtro": "dia"},
 
             # A manhã: primeiro a febre (motor/febre.py); depois, quem o jogador matou ontem.
-            {"tipo": "se", "morto_ontem": "Yara", "passos": [
-                {"tipo": "fala", "quem": "", "texto": "O corpo de Yara amanheceu coberto com uma esteira."},
-            ]},
-            {"tipo": "se", "morto_ontem": "Mbaé", "passos": [
-                {"tipo": "fala", "quem": "", "texto": "O corpo de Mbaé amanheceu coberto com uma esteira."},
-            ]},
+            corpo_de("Yara"),
+            corpo_de("Mbaé"),
             {"tipo": "se", "na_oca": "Mbaé", "passos": [
                 {"tipo": "fala", "quem": "", "texto": "Mbaé tossiu a noite toda na oca Yebá Bëló."},
             ]},
@@ -474,15 +474,9 @@ DIAS = {
             {"tipo": "fundo", "fundo": "aldeia", "filtro": "dia"},
 
             # A manhã: primeiro a febre (motor/febre.py); depois, quem o jogador matou ontem.
-            {"tipo": "se", "morto_ontem": "Yara", "passos": [
-                {"tipo": "fala", "quem": "", "texto": "O corpo de Yara amanheceu coberto com uma esteira."},
-            ]},
-            {"tipo": "se", "morto_ontem": "Mbaé", "passos": [
-                {"tipo": "fala", "quem": "", "texto": "O corpo de Mbaé amanheceu coberto com uma esteira."},
-            ]},
-            {"tipo": "se", "morto_ontem": "Potira", "passos": [
-                {"tipo": "fala", "quem": "", "texto": "O corpo de Potira amanheceu coberto com uma esteira."},
-            ]},
+            corpo_de("Yara"),
+            corpo_de("Mbaé"),
+            corpo_de("Potira"),
             {"tipo": "se", "na_oca": "Mbaé", "passos": [
                 {"tipo": "fala", "quem": "", "texto": "Mbaé tossiu a noite toda na oca Yebá Bëló."},
             ]},
@@ -546,19 +540,10 @@ DIAS = {
             {"tipo": "fundo", "fundo": "aldeia", "filtro": "dia"},
 
             # A manhã: primeiro a febre (motor/febre.py); depois, quem o jogador matou ontem.
-            {"tipo": "se", "morto_ontem": "Yara", "passos": [
-                {"tipo": "fala", "quem": "", "texto": "O corpo de Yara amanheceu coberto com uma esteira."},
-            ]},
-            {"tipo": "se", "morto_ontem": "Mbaé", "passos": [
-                {"tipo": "fala", "quem": "", "texto": "O corpo de Mbaé amanheceu coberto com uma esteira."},
-            ]},
-            {"tipo": "se", "morto_ontem": "Potira", "passos": [
-                {"tipo": "fala", "quem": "", "texto": "O corpo de Potira amanheceu coberto com uma esteira."},
-            ]},
-            {"tipo": "se", "morto_ontem": "Tamandaré-mirim", "passos": [
-                {"tipo": "fala", "quem": "",
-                 "texto": "O corpo de Tamandaré-mirim amanheceu coberto com uma esteira."},
-            ]},
+            corpo_de("Yara"),
+            corpo_de("Mbaé"),
+            corpo_de("Potira"),
+            corpo_de("Tamandaré-mirim"),
             {"tipo": "se", "na_oca": "Mbaé", "passos": [
                 {"tipo": "fala", "quem": "", "texto": "Mbaé tossiu a noite toda na oca Yebá Bëló."},
             ]},
@@ -606,19 +591,10 @@ DIAS = {
             {"tipo": "fundo", "fundo": "aldeia", "filtro": "dia"},
 
             # A manhã: primeiro a febre (motor/febre.py); depois, quem o jogador matou ontem.
-            {"tipo": "se", "morto_ontem": "Yara", "passos": [
-                {"tipo": "fala", "quem": "", "texto": "O corpo de Yara amanheceu coberto com uma esteira."},
-            ]},
-            {"tipo": "se", "morto_ontem": "Mbaé", "passos": [
-                {"tipo": "fala", "quem": "", "texto": "O corpo de Mbaé amanheceu coberto com uma esteira."},
-            ]},
-            {"tipo": "se", "morto_ontem": "Potira", "passos": [
-                {"tipo": "fala", "quem": "", "texto": "O corpo de Potira amanheceu coberto com uma esteira."},
-            ]},
-            {"tipo": "se", "morto_ontem": "Tamandaré-mirim", "passos": [
-                {"tipo": "fala", "quem": "",
-                 "texto": "O corpo de Tamandaré-mirim amanheceu coberto com uma esteira."},
-            ]},
+            corpo_de("Yara"),
+            corpo_de("Mbaé"),
+            corpo_de("Potira"),
+            corpo_de("Tamandaré-mirim"),
             {"tipo": "se", "na_oca": "Mbaé", "passos": [
                 {"tipo": "fala", "quem": "", "texto": "Mbaé tossiu a noite toda na oca Yebá Bëló."},
             ]},
@@ -677,22 +653,11 @@ DIAS = {
             {"tipo": "fundo", "fundo": "aldeia", "filtro": "dia"},
 
             # A manhã: primeiro a febre (motor/febre.py); depois, quem o jogador matou ontem.
-            {"tipo": "se", "morto_ontem": "Yara", "passos": [
-                {"tipo": "fala", "quem": "", "texto": "O corpo de Yara amanheceu coberto com uma esteira."},
-            ]},
-            {"tipo": "se", "morto_ontem": "Mbaé", "passos": [
-                {"tipo": "fala", "quem": "", "texto": "O corpo de Mbaé amanheceu coberto com uma esteira."},
-            ]},
-            {"tipo": "se", "morto_ontem": "Potira", "passos": [
-                {"tipo": "fala", "quem": "", "texto": "O corpo de Potira amanheceu coberto com uma esteira."},
-            ]},
-            {"tipo": "se", "morto_ontem": "Tamandaré-mirim", "passos": [
-                {"tipo": "fala", "quem": "",
-                 "texto": "O corpo de Tamandaré-mirim amanheceu coberto com uma esteira."},
-            ]},
-            {"tipo": "se", "morto_ontem": "Iandé", "passos": [
-                {"tipo": "fala", "quem": "", "texto": "O corpo de Iandé amanheceu coberto com uma esteira."},
-            ]},
+            corpo_de("Yara"),
+            corpo_de("Mbaé"),
+            corpo_de("Potira"),
+            corpo_de("Tamandaré-mirim"),
+            corpo_de("Iandé"),
             {"tipo": "se", "na_oca": "Mbaé", "passos": [
                 {"tipo": "fala", "quem": "", "texto": "Mbaé tossiu a noite toda na oca Yebá Bëló."},
             ]},
@@ -735,21 +700,11 @@ DIAS = {
             {"tipo": "fundo", "fundo": "aldeia", "filtro": "dia"},
 
             # A manhã: primeiro a febre (motor/febre.py); depois, quem o jogador matou ontem.
-            {"tipo": "se", "morto_ontem": "Yara", "passos": [
-                {"tipo": "fala", "quem": "", "texto": "O corpo de Yara amanheceu coberto com uma esteira."},
-            ]},
-            {"tipo": "se", "morto_ontem": "Mbaé", "passos": [
-                {"tipo": "fala", "quem": "", "texto": "O corpo de Mbaé amanheceu coberto com uma esteira."},
-            ]},
-            {"tipo": "se", "morto_ontem": "Potira", "passos": [
-                {"tipo": "fala", "quem": "", "texto": "O corpo de Potira amanheceu coberto com uma esteira."},
-            ]},
-            {"tipo": "se", "morto_ontem": "Tamandaré-mirim", "passos": [
-                {"tipo": "fala", "quem": "", "texto": "O corpo de Tamandaré-mirim amanheceu coberto com uma esteira."},
-            ]},
-            {"tipo": "se", "morto_ontem": "Iandé", "passos": [
-                {"tipo": "fala", "quem": "", "texto": "O corpo de Iandé amanheceu coberto com uma esteira."},
-            ]},
+            corpo_de("Yara"),
+            corpo_de("Mbaé"),
+            corpo_de("Potira"),
+            corpo_de("Tamandaré-mirim"),
+            corpo_de("Iandé"),
             {"tipo": "se", "na_oca": "Mbaé", "passos": [
                 {"tipo": "fala", "quem": "", "texto": "Mbaé tossiu a noite toda na oca Yebá Bëló."},
             ]},
@@ -798,21 +753,11 @@ DIAS = {
             {"tipo": "fundo", "fundo": "aldeia", "filtro": "dia"},
 
             # A manhã: primeiro a febre (motor/febre.py); depois, quem o jogador matou ontem.
-            {"tipo": "se", "morto_ontem": "Yara", "passos": [
-                {"tipo": "fala", "quem": "", "texto": "O corpo de Yara amanheceu coberto com uma esteira."},
-            ]},
-            {"tipo": "se", "morto_ontem": "Mbaé", "passos": [
-                {"tipo": "fala", "quem": "", "texto": "O corpo de Mbaé amanheceu coberto com uma esteira."},
-            ]},
-            {"tipo": "se", "morto_ontem": "Potira", "passos": [
-                {"tipo": "fala", "quem": "", "texto": "O corpo de Potira amanheceu coberto com uma esteira."},
-            ]},
-            {"tipo": "se", "morto_ontem": "Tamandaré-mirim", "passos": [
-                {"tipo": "fala", "quem": "", "texto": "O corpo de Tamandaré-mirim amanheceu coberto com uma esteira."},
-            ]},
-            {"tipo": "se", "morto_ontem": "Iandé", "passos": [
-                {"tipo": "fala", "quem": "", "texto": "O corpo de Iandé amanheceu coberto com uma esteira."},
-            ]},
+            corpo_de("Yara"),
+            corpo_de("Mbaé"),
+            corpo_de("Potira"),
+            corpo_de("Tamandaré-mirim"),
+            corpo_de("Iandé"),
             {"tipo": "se", "na_oca": "Mbaé", "passos": [
                 {"tipo": "fala", "quem": "", "texto": "Mbaé tossiu a noite toda na oca Yebá Bëló."},
             ]},

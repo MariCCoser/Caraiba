@@ -47,3 +47,14 @@ class PessoaNoCenario:
         rect.clamp_ip(pygame.Rect(24, 110, config.LARGURA - 48, config.ALTURA - 134))
         ui.painel_arredondado(tela, rect.inflate(28, 14), config.PRETO + (200,), raio=12, contorno=config.URUCUM)
         tela.blit(imagem, rect)
+
+
+# O corpo coberto com a esteira (estado.corpos), deitado no lugar onde a pessoa sentava: do
+# tamanho dela sentada vezes ESCALA_ESTEIRA (a arte da esteira tem a altura dos sentados).
+ESCALA_ESTEIRA = 0.6
+
+
+def corpo_no_cenario(corpo, filtro):
+    imagem = "esteira_amaldicoado" if corpo.get("amaldicoado") else "esteira"
+    return PessoaNoCenario(corpo["nome"], imagem, tuple(corpo["posicao"]),
+                           corpo["escala"] * ESCALA_ESTEIRA, filtro, espelhar=corpo.get("espelhar", False))

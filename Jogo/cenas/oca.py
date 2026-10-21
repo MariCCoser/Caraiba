@@ -6,6 +6,9 @@
 # dados/aldeia.py, ONDE_DORME. Quem o jogador levou ao tapiri, na fogueira, não dorme na oca:
 # fica dentro do tapiri (o "tapiri" de OCAS, com os lugares de ONDE_DORME_TAPIRI).
 #
+# Quem morreu da febre na noite passada fica no lugar onde dormia, coberto com a esteira de
+# amaldiçoado (estado.corpos, motor/febre.py), durante o dia e a noite seguintes.
+#
 # De dia, quem acabou de entrar na aldeia espera dentro da oca (as "pessoas" com "oca" no
 # passo "aldeia" de dados/dias.py): clicar nela abre a conversa e, no fim, volta para a oca.
 
@@ -16,7 +19,7 @@ from dados.aldeia import OCA, OCAS, ONDE_DORME, ONDE_DORME_TAPIRI
 from dados.textos import DIA
 from motor import efeitos, ui
 from motor.cena import Cena, desenhar_cenario
-from motor.pessoas import PessoaNoCenario
+from motor.pessoas import PessoaNoCenario, corpo_no_cenario
 from motor.tabua import Tabua
 
 CENTRO_PAINEL = (1180, 150)       # meio da borda de cima do painel
@@ -78,6 +81,14 @@ class Oca(Cena):
             texto = OCA[chave] % " e ".join(quem for quem, _ in self.pessoas)
         else:
             texto = OCA["vazio_tapiri"] if self.no_tapiri else OCA["vazia"]
+        # Quem morreu da febre aqui na noite passada: o corpo, onde a pessoa dormia.
+        onde = "tapiri" if self.no_tapiri else self.nome
+        corpos = [corpo for corpo in estado.corpos if corpo["onde"] == onde and corpo["noite"] == estado.dia - 1]
+        self.corpos = [corpo_no_cenario(corpo, self.filtro) for corpo in corpos]
+        if corpos:
+            nomes = [corpo["nome"] for corpo in corpos]
+            frase = OCA["corpos" if len(nomes) > 1 else "corpo"] % " e ".join(nomes)
+            texto = frase if texto in (OCA["vazio_tapiri"], OCA["vazia"], OCA["vazia_dia"]) else frase + " " + texto
         # Quem dorme aqui e não está esperando para conversar: sentado no lugar dele, parado.
         self.paradas = [self._sentada(quem) for quem, _ in self.pessoas]
         self.titulo = ui.CaixaTexto(self.oca["nome"], LARGURA_PAINEL, self.centro_painel, ancora="topo",
@@ -147,7 +158,7 @@ class Oca(Cena):
         # A oca pode ter uma arte de dia ("dentro_dia") e outra de noite ("dentro").
         dentro = self.oca.get("dentro_dia", self.oca["dentro"]) if self.de_dia else self.oca["dentro"]
         desenhar_cenario(tela, dentro, self.filtro, self.tempo)
-        for pessoa in self.paradas + self.na_oca:
+        for pessoa in self.corpos + self.paradas + self.na_oca:
             pessoa.desenhar(tela)
 
     def opacidade_do_texto(self):

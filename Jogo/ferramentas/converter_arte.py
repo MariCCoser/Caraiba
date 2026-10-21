@@ -65,7 +65,8 @@ LIMIAR_BRANCO_CERCADO = 240
 AREA_MINIMA_BRANCO_CERCADO = 1500   # pixels da arte original
 # Arte com o fundo xadrez desenhado na imagem (cinza e branco, sem transparência de verdade):
 # o xadrez preso entre o braço e o corpo forma manchas pequenas, que também saem.
-ARTE_XADREZ = ["personagens_png/Potira_png.png", "Personagens_sentados_png/Potira_sentada_png.png"]
+ARTE_XADREZ = ["personagens_png/Potira_png.png", "Personagens_sentados_png/Potira_sentada_png.png",
+               "personagens_png/esteira_amaldicoado.png"]
 AREA_MINIMA_BRANCO_CERCADO_XADREZ = 30
 LIMIAR_BRANCO_CERCADO_XADREZ = 232   # o cinza do xadrez (238) também conta
 
@@ -285,6 +286,14 @@ SENTADOS = [
     ("Personagens_sentados_png/Potira_sentada_png.png", "personagens/sentados/potira.png"),
 ]
 
+# O corpo coberto com a esteira, deitado (no lugar de quem morreu: na fogueira, na oca ou no
+# tapiri). Sai com a mesma altura dos sentados; quem desenha diminui (cenas/dia.py, ESCALA_ESTEIRA).
+# A esteira de quem era amaldiçoado veio com o fundo xadrez desenhado (ARTE_XADREZ).
+ESTEIRAS = [
+    ("personagens_png/esteira.png", "personagens/esteira.png"),
+    ("personagens_png/esteira_amaldicoado.png", "personagens/esteira-amaldicoado.png"),
+]
+
 
 def converter_sentado(origem, destino):
     caminho_origem = os.path.join(PASTA_ARTE, origem)
@@ -347,7 +356,8 @@ DETALHES = [
 DETALHES_XADREZ = [DOENCAS + "Mbaé/OlhoDoenteMbaé.png", DOENCAS + "Tama/OlhoTamaDoente.png",
                    DOENCAS + "Tama/BocaTama.png", DOENCAS + "Tama/BocaTamaDoente.png"]
 # Detalhes com a borda rasgada sobre um fundo preto pintado na imagem (sem transparência).
-DETALHES_FUNDO_PRETO = [DOENCAS + "Potira/OlhoPotira.png", DOENCAS + "Tama/OlhoTama.png"]
+DETALHES_FUNDO_PRETO = [DOENCAS + "Potira/OlhoPotira.png", DOENCAS + "Tama/OlhoTama.png",
+                        DOENCAS + "Yara/OlhoYara.png"]
 LIMIAR_FUNDO_PRETO = 4   # canal mais claro abaixo disto, ligado à borda, é o fundo preto
 OPACO = 250   # alfa a partir do qual o pixel conta como pintura (e não como borda rasgada)
 
@@ -422,7 +432,7 @@ def main():
     for linha in PERSONAGENS:
         converter_personagem(*linha)
     print("Convertendo personagens sentados")
-    for origem, destino in SENTADOS:
+    for origem, destino in SENTADOS + ESTEIRAS:
         converter_sentado(origem, destino)
     print("Convertendo detalhes do exame")
     for origem, destino in DETALHES:

@@ -96,7 +96,7 @@ def testar_estado_inicial():
                 "pistas": 0, "sanidade": 10, "tapiri_usos": 0, "viu_anhanga": 0, "seguiu_paje": 0,
                 "inocentes": 0, "machado": 0, "energia_hoje": 0, "krenan_volta": 0, "subiu_o_rio": 0, "rio_acima_nomes": [], "convidados": [], "dentro": [], "tapiri": [], "tapiri_desde": {}, "febre": [], "noites_na_oca": {}, "manha": [],
                 "historias": [], "entregues_nomes": [],
-                "mortos_nomes": [], "mortos_quando": {}, "tabua": [], "tabua_noites": [],
+                "mortos_nomes": [], "mortos_quando": {}, "corpos": [], "tabua": [], "tabua_noites": [],
                 "final_calculado": None, "final": None}
     dados = estado.para_dicionario()
     assert isinstance(dados.pop("semente"), int), "cada partida tem a sua sorte"
@@ -135,6 +135,26 @@ def testar_sinais_no_rosto():
     estado.noites_na_oca = {"Mbaé": 3}
     assert imagens(noites.ZONAS_MBAE, estado)["Olhos"] == "olho_mbae_doente"
     print("ok sinais no rosto: olho e boca mudam com a doença")
+
+
+def testar_corpos():
+    """Quem morre deixa o corpo coberto com a esteira no lugar onde estava."""
+    from dados.aldeia import ONDE_DORME
+    from motor import febre
+    estado = Estado()
+    estado.dia = 3
+    estado.dentro = ["Yara", "Mbaé"]
+    estado.vivos = 2
+    # Yara pegou a febre na noite 2 e morre na noite 3, na oca dela: a esteira de amaldiçoado.
+    estado.febre = [{"nome": "Yara", "de": "Mbaé", "noite": 2, "visivel": False}]
+    febre.amanhecer(estado)
+    assert estado.dia == 4 and "Yara" not in estado.dentro
+    corpo = estado.corpos[0]
+    assert (corpo["nome"], corpo["onde"], corpo["noite"], corpo["amaldicoado"]) == ("Yara", "oca1", 3, True), corpo
+    assert tuple(corpo["posicao"]) == ONDE_DORME["Yara"]["posicao"]
+    # Quem era são (sem DOENTES e sem febre) ganha a esteira comum; quem chegou doente, a outra.
+    assert not febre.era_amaldicoado(Estado(), "Potira") and febre.era_amaldicoado(Estado(), "Mbaé")
+    print("ok corpos: a esteira no lugar de quem morreu")
 
 
 def testar_febre():
@@ -1958,6 +1978,7 @@ if __name__ == "__main__":
     testar_finais()
     testar_febre()
     testar_sinais_no_rosto()
+    testar_corpos()
     testar_cartoes_introducao()
     testar_fluxo()
     testar_desempenho()

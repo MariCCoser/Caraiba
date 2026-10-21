@@ -12,6 +12,8 @@
 # - amanhecer(estado): passa para o dia seguinte. Quem pegou a febre acorda doente no 1º dia
 #   e morre no 2º; as frases da manhã (com o nome) ficam em estado.manha, para o Dia mostrar.
 # - amaldicoado(estado, nome): o doente de fora que ainda passa a febre.
+# - era_amaldicoado(estado, nome) e deixar_corpo(...): quem morre deixa o corpo coberto com a
+#   esteira (a de amaldiçoado, se era) no lugar onde estava; quem morre da febre, onde dormia.
 # - mostra_febre(estado, nome): quem pegou a febre numa noite anterior e mostra (o exame vê o
 #   olho e a boca doentes).
 # - quantos_amaldicoados(estado): os doentes de fora na aldeia mais quem pegou deles.
@@ -22,7 +24,8 @@
 
 import random
 
-from dados.febre import CHANCE_DE_MOSTRAR, CONTAGIO, CONTAGIO_PEGOU, DIAS_ATE_MORRER, MANHA
+from dados.aldeia import ONDE_DORME, ONDE_DORME_TAPIRI
+from dados.febre import CHANCE_DE_MOSTRAR, CONTAGIO, CONTAGIO_PEGOU, DIAS_ATE_MORRER, DOENTES, MANHA
 
 
 def _sorte(estado, quem):
@@ -75,6 +78,32 @@ def amaldicoado(estado, nome):
     return nome in CONTAGIO and nome in estado.dentro
 
 
+def era_amaldicoado(estado, nome):
+    """Chegou com a maldição (dados/febre.py, DOENTES) ou pegou a febre, mostrando ou não."""
+    return nome in DOENTES or any(entrada.get("nome") == nome for entrada in estado.febre)
+
+
+def deixar_corpo(estado, nome, noite, onde, lugar, amaldicoado):
+    """O corpo coberto com a esteira fica no lugar onde a pessoa estava, desde a noite em que
+    morreu (lugar: o de dados/noites.py ou dados/aldeia.py, com "posicao", "escala" e, se
+    tiver, "espelhar")."""
+    estado.corpos.append({"nome": nome, "noite": noite, "onde": onde,
+                          "posicao": list(lugar["posicao"]), "escala": lugar["escala"],
+                          "espelhar": lugar.get("espelhar", False), "amaldicoado": amaldicoado})
+
+
+def _corpo_na_oca(estado, nome):
+    """Quem morre da febre morre onde dormia: na oca dele ou no tapiri."""
+    if nome in estado.tapiri and nome in ONDE_DORME_TAPIRI:
+        onde, lugar = "tapiri", ONDE_DORME_TAPIRI[nome]
+    elif nome in ONDE_DORME:
+        onde, lugar = ONDE_DORME[nome]["oca"], ONDE_DORME[nome]
+    else:
+        return
+    # Morreu esta noite: a de ontem (amanhecer já passou para o dia seguinte).
+    deixar_corpo(estado, nome, estado.dia - 1, onde, lugar, amaldicoado=True)
+
+
 def mostra_febre(estado, nome):
     """Pegou a febre na oca numa noite anterior e mostra: está doente à vista."""
     return any(entrada.get("nome") == nome and entrada.get("visivel", True) and entrada["noite"] < estado.dia
@@ -104,6 +133,7 @@ def amanhecer(estado):
             doentes.append(nome)
         if estado.dia >= entrada["noite"] + DIAS_ATE_MORRER:
             (mortos if visivel else mortos_sem_sinal).append(nome)
+            _corpo_na_oca(estado, nome)
             estado.febre.remove(entrada)
             estado.dentro.remove(nome)
             if nome in estado.tapiri:
