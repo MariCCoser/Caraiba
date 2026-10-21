@@ -309,20 +309,89 @@ def converter_sentado(origem, destino):
     print("  ok  %-22s -> %-36s %4d KB" % (origem.split("/")[-1], destino, tamanho_kb))
 
 
-# DETALHES DO EXAME (Arte/Doenças/): o olho de perto, que aparece no exame da noite em vez de
-# uma descrição. Saem quadrados, em cores (a interface não passa pelo filtro da noite).
+# DETALHES DO EXAME (Arte/Doenças/): o olho e a boca de perto, que aparecem no exame da noite
+# em vez de uma descrição. Saem quadrados, em cores (a interface não passa pelo filtro da noite).
+# Quem mostra cada um e quando: Textos/Caraiba_Sinais_dos_Personagens.md.
 TAMANHO_DETALHE = 420
+DOENCAS = "Doenças/"
 DETALHES = [
-    ("Doenças/Yara/OlhoYara_Doente.png", "detalhes/olho-yara.png"),        # vermelho da fumaça
-    ("Doenças/Mbaé/OlhoMbaé_ate3.png", "detalhes/olho-mbae.png"),          # até o 3º dia na oca
-    # Falta: Doenças/Mbaé/OlhoMbaé_Doente.png (depois de 3 dias na oca) -> detalhes/olho-mbae-doente.png
-    ("Doenças/Potira/OlhoPotira.png", "detalhes/olho-potira.png"),
-    ("Doenças/Tama/OlhoTama.png", "detalhes/olho-tamandare.png"),
-    ("Doenças/Iandé/OlhoIandé.png", "detalhes/olho-iande.png"),
-    ("Doenças/Iandé/OlhoIandé_Doente.png", "detalhes/olho-iande-doente.png"),
-    ("Doenças/Krenan/OlhoKrenan.png", "detalhes/olho-krenan.png"),
-    ("Doenças/Krenan/OlhoKrenan_Doente.png", "detalhes/olho-krenan-doente.png"),
+    # Yara: o olho vermelho da fumaça nas noites 1 e 2 (e se pegar a febre); depois, o normal.
+    (DOENCAS + "Yara/OlhoYara_Doente.png", "detalhes/olho-yara-vermelho.png"),
+    (DOENCAS + "Yara/OlhoYara.png", "detalhes/olho-yara.png"),
+    (DOENCAS + "Yara/BocaYara.png", "detalhes/boca-yara.png"),
+    (DOENCAS + "Yara/BocaYaraDoente.png", "detalhes/boca-yara-doente.png"),
+    # Mbaé: o olho até o 3º dia na oca; depois, o doente. A boca já chega ferida.
+    (DOENCAS + "Mbaé/OlhoMbaé_ate3.png", "detalhes/olho-mbae.png"),
+    (DOENCAS + "Mbaé/OlhoDoenteMbaé.png", "detalhes/olho-mbae-doente.png"),
+    (DOENCAS + "Mbaé/BocaMbaé.png", "detalhes/boca-mbae.png"),
+    (DOENCAS + "Mbaé/BocaMbaéDoente.png", "detalhes/boca-mbae-doente.png"),
+    (DOENCAS + "Potira/OlhoPotira.png", "detalhes/olho-potira.png"),
+    (DOENCAS + "Potira/OlharPotiraDoente.png", "detalhes/olho-potira-doente.png"),
+    (DOENCAS + "Potira/BocaPotira.png", "detalhes/boca-potira.png"),
+    (DOENCAS + "Potira/BocaPotiraDoente.png", "detalhes/boca-potira-doente.png"),
+    (DOENCAS + "Tama/OlhoTama.png", "detalhes/olho-tamandare.png"),
+    (DOENCAS + "Tama/OlhoTamaDoente.png", "detalhes/olho-tamandare-doente.png"),
+    (DOENCAS + "Tama/BocaTama.png", "detalhes/boca-tamandare.png"),
+    (DOENCAS + "Tama/BocaTamaDoente.png", "detalhes/boca-tamandare-doente.png"),
+    (DOENCAS + "Iandé/OlhoIandé.png", "detalhes/olho-iande.png"),
+    (DOENCAS + "Iandé/OlhoIandé_Doente.png", "detalhes/olho-iande-doente.png"),
+    (DOENCAS + "Iandé/BocaIandé.png", "detalhes/boca-iande.png"),
+    (DOENCAS + "Iandé/BocaIandéDoente.png", "detalhes/boca-iande-doente.png"),
+    (DOENCAS + "Krenan/OlhoKrenan.png", "detalhes/olho-krenan.png"),
+    (DOENCAS + "Krenan/OlhoKrenan_Doente.png", "detalhes/olho-krenan-doente.png"),
+    (DOENCAS + "Araci/OlhoDoenteAraci.png", "detalhes/olho-araci-doente.png"),
+    (DOENCAS + "Araci/BocaAraci.png", "detalhes/boca-araci.png"),
+    (DOENCAS + "Araci/BocaAraciDoente.png", "detalhes/boca-araci-doente.png"),
 ]
+# Detalhes com o fundo xadrez desenhado na imagem (sem transparência de verdade).
+DETALHES_XADREZ = [DOENCAS + "Mbaé/OlhoDoenteMbaé.png", DOENCAS + "Tama/OlhoTamaDoente.png",
+                   DOENCAS + "Tama/BocaTama.png", DOENCAS + "Tama/BocaTamaDoente.png"]
+# Detalhes com a borda rasgada sobre um fundo preto pintado na imagem (sem transparência).
+DETALHES_FUNDO_PRETO = [DOENCAS + "Potira/OlhoPotira.png", DOENCAS + "Tama/OlhoTama.png"]
+LIMIAR_FUNDO_PRETO = 4   # canal mais claro abaixo disto, ligado à borda, é o fundo preto
+OPACO = 250   # alfa a partir do qual o pixel conta como pintura (e não como borda rasgada)
+
+
+def tirar_fundo_preto(imagem):
+    """Deixa transparente o preto que encosta na borda da imagem (o fundo)."""
+    r, g, b, _ = imagem.split()
+    mais_claro = ImageChops.lighter(ImageChops.lighter(r, g), b)
+    escuro = mais_claro.point(lambda v: 255 if v < LIMIAR_FUNDO_PRETO else 0)
+    largura, altura = escuro.size
+    for ponto in [(0, 0), (largura - 1, 0), (0, altura - 1), (largura - 1, altura - 1)]:
+        if escuro.getpixel(ponto) == 255:
+            ImageDraw.floodfill(escuro, ponto, 128)
+    imagem.putalpha(escuro.point(lambda v: 0 if v == 128 else 255))
+    return imagem
+
+
+def recorte_opaco(imagem):
+    """O maior quadrado no meio da pintura sem nenhum pixel transparente.
+
+    As artes novas vêm com a borda rasgada (e transparente) em volta: o quadrado corta a
+    borda, para todo detalhe sair cheio, como os olhos de antes.
+    """
+    alfa = imagem.getchannel("A").point(lambda v: 255 if v >= OPACO else 0)
+    esquerda, topo, direita, baixo = alfa.getbbox()
+    # Fecha o retângulo, um lado de cada vez, até nenhuma borda dele tocar o transparente.
+    while esquerda < direita and topo < baixo:
+        lados = {
+            "esquerda": alfa.crop((esquerda, topo, esquerda + 1, baixo)),
+            "direita": alfa.crop((direita - 1, topo, direita, baixo)),
+            "topo": alfa.crop((esquerda, topo, direita, topo + 1)),
+            "baixo": alfa.crop((esquerda, baixo - 1, direita, baixo)),
+        }
+        furados = [lado for lado, linha in lados.items() if linha.getextrema()[0] < 255]
+        if not furados:
+            break
+        esquerda += "esquerda" in furados
+        direita -= "direita" in furados
+        topo += "topo" in furados
+        baixo -= "baixo" in furados
+    lado = min(direita - esquerda, baixo - topo)
+    x = (esquerda + direita - lado) // 2
+    y = (topo + baixo - lado) // 2
+    return imagem.crop((x, y, x + lado, y + lado))
 
 
 def converter_detalhe(origem, destino):
@@ -333,8 +402,13 @@ def converter_detalhe(origem, destino):
         return
     os.makedirs(os.path.dirname(caminho_destino), exist_ok=True)
     imagem = Image.open(caminho_origem).convert("RGBA")
-    imagem = imagem.resize((TAMANHO_DETALHE, round(imagem.height * TAMANHO_DETALHE / imagem.width)),
-                           Image.LANCZOS)
+    if origem in DETALHES_XADREZ:
+        imagem = tirar_fundo_branco(imagem, limiar_cercado=LIMIAR_BRANCO_CERCADO_XADREZ,
+                                    area_cercado=AREA_MINIMA_BRANCO_CERCADO_XADREZ)
+    elif origem in DETALHES_FUNDO_PRETO:
+        imagem = tirar_fundo_preto(imagem)
+    imagem = recorte_opaco(imagem).convert("RGB")
+    imagem = imagem.resize((TAMANHO_DETALHE, TAMANHO_DETALHE), Image.LANCZOS)
     imagem.save(caminho_destino, optimize=True)
     tamanho_kb = os.path.getsize(caminho_destino) // 1024
     print("  ok  %-22s -> %-36s %4d KB" % (origem.split("/")[-1], destino, tamanho_kb))

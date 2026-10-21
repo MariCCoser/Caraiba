@@ -94,7 +94,7 @@ def testar_estado_inicial():
     esperado = {"dia": 1, "vivos": 0, "mortos": 0, "mortos_por_sua_mao": 0, "entregues": 0,
                 "proximidade_vila": 0, "rio_acima": 0, "memoria": 0, "recusas_aleixo": 0, "levados": 0,
                 "pistas": 0, "sanidade": 10, "tapiri_usos": 0, "viu_anhanga": 0, "seguiu_paje": 0,
-                "inocentes": 0, "machado": 0, "energia_hoje": 0, "krenan_volta": 0, "subiu_o_rio": 0, "rio_acima_nomes": [], "convidados": [], "dentro": [], "tapiri": [], "tapiri_desde": {}, "febre": [], "manha": [],
+                "inocentes": 0, "machado": 0, "energia_hoje": 0, "krenan_volta": 0, "subiu_o_rio": 0, "rio_acima_nomes": [], "convidados": [], "dentro": [], "tapiri": [], "tapiri_desde": {}, "febre": [], "noites_na_oca": {}, "manha": [],
                 "historias": [], "entregues_nomes": [],
                 "mortos_nomes": [], "mortos_quando": {}, "tabua": [], "tabua_noites": [],
                 "final_calculado": None, "final": None}
@@ -102,6 +102,39 @@ def testar_estado_inicial():
     assert isinstance(dados.pop("semente"), int), "cada partida tem a sua sorte"
     assert dados == esperado, dados
     print("ok Estado com os valores iniciais do documento")
+
+
+def testar_sinais_no_rosto():
+    """O olho e a boca de perto mudam com a doença (Textos/Caraiba_Sinais_dos_Personagens.md)."""
+    from types import SimpleNamespace
+    from cenas.dia import Dia
+    from dados import noites
+
+    def imagens(zonas, estado):
+        dia = SimpleNamespace(estado=estado)
+        return {zona["pergunta"]: zona.get("imagem") for zona in zonas if Dia._condicao(dia, zona)}
+
+    estado = Estado()
+    estado.dia = 3
+    estado.dentro = ["Yara", "Mbaé"]
+    # Yara: vermelho da fumaça nas noites 1 e 2; na 3, sã, o olho volta ao normal.
+    assert imagens(noites.ZONAS_YARA, estado)["Olhos"] == "olho_yara_vermelho"
+    assert imagens(noites.ZONAS_YARA_NOITE_3, estado) == {
+        "Testa": None, "Olhos": "olho_yara", "Orelhas": None, "Boca": "boca_yara",
+        "Mãos": None, "Respiração": None}
+    # Pegou a febre de Mbaé na noite 2 e mostra: o olho segue vermelho, a boca ferida.
+    estado.febre = [{"nome": "Yara", "de": "Mbaé", "noite": 2, "visivel": True}]
+    vistas = imagens(noites.ZONAS_YARA_NOITE_3, estado)
+    assert vistas["Olhos"] == "olho_yara_vermelho" and vistas["Boca"] == "boca_yara_doente", vistas
+    # Pegou sem mostrar: o rosto de sempre.
+    estado.febre[0]["visivel"] = False
+    assert imagens(noites.ZONAS_YARA_NOITE_3, estado)["Olhos"] == "olho_yara"
+    # Mbaé: o olho piora depois de 3 noites dormindo na oca; a boca já chega ferida.
+    vistas = imagens(noites.ZONAS_MBAE, estado)
+    assert vistas["Olhos"] == "olho_mbae" and vistas["Boca"] == "boca_mbae_doente", vistas
+    estado.noites_na_oca = {"Mbaé": 3}
+    assert imagens(noites.ZONAS_MBAE, estado)["Olhos"] == "olho_mbae_doente"
+    print("ok sinais no rosto: olho e boca mudam com a doença")
 
 
 def testar_febre():
@@ -1889,6 +1922,7 @@ if __name__ == "__main__":
     testar_estado_inicial()
     testar_finais()
     testar_febre()
+    testar_sinais_no_rosto()
     testar_cartoes_introducao()
     testar_fluxo()
     testar_desempenho()

@@ -219,7 +219,10 @@ class Dia(Cena):
         na aldeia (motor/febre.py, quantos_amaldicoados); "levou_alguem": True (o Irmão Aleixo já
         levou alguém); "entregue": "Yara" (o Irmão Aleixo levou essa pessoa, entregue ou não);
         "ao_menos": {"krenan_volta": 1} (variáveis do estado.py com pelo menos esse valor);
-        "no_maximo": {"recusas_aleixo": 1} (variáveis do estado.py com no máximo esse valor).
+        "no_maximo": {"recusas_aleixo": 1} (variáveis do estado.py com no máximo esse valor);
+        "com_febre" e "sem_febre" levam o nome de quem pegou a febre na oca e mostra
+        (motor/febre.py, mostra_febre); "noites_na_oca_ao_menos": {"Mbaé": 3} e
+        "noites_na_oca_menos_de": {"Mbaé": 3} contam as noites que a pessoa dormiu na oca.
         """
         estado = self.estado
         if "morto_ontem" in item and estado.mortos_quando.get(item["morto_ontem"]) != estado.dia - 1:
@@ -230,6 +233,16 @@ class Dia(Cena):
             return False
         if "sao" in item and febre.amaldicoado(estado, item["sao"]):
             return False
+        if "com_febre" in item and not febre.mostra_febre(estado, item["com_febre"]):
+            return False
+        if "sem_febre" in item and febre.mostra_febre(estado, item["sem_febre"]):
+            return False
+        for nome, minimo in item.get("noites_na_oca_ao_menos", {}).items():
+            if estado.noites_na_oca.get(nome, 0) < minimo:
+                return False
+        for nome, minimo in item.get("noites_na_oca_menos_de", {}).items():
+            if estado.noites_na_oca.get(nome, 0) >= minimo:
+                return False
         if item.get("levou_alguem") and not estado.entregues_nomes:
             return False
         if "entregue" in item and item["entregue"] not in estado.entregues_nomes:
@@ -350,6 +363,10 @@ class Dia(Cena):
         # quem pegou numa noite anterior (nas noites com amaldiçoados), depois os doentes de fora.
         if self.noite.get("amaldicoados"):
             febre.passar_na_oca(self.estado)
+        # Quem é de fora e não está no tapiri dormiu na oca (o olho de Mbaé piora com as noites).
+        for nome in self.estado.dentro:
+            if nome not in self.estado.tapiri:
+                self.estado.noites_na_oca[nome] = self.estado.noites_na_oca.get(nome, 0) + 1
         for nome in list(self.estado.dentro):
             febre.pegar(self.estado, nome)
         self.fila[0:0] = self.noite.get("fim", [])

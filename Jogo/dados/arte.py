@@ -53,16 +53,34 @@ EM_PE = {
     "Araci": "araci",
 }
 
-# Detalhes do exame (Arte/Doenças/): o olho de perto, em cores, à direita da tela.
+# Detalhes do exame (Arte/Doenças/): o olho e a boca de perto, em cores.
+# Quem mostra cada um e quando: Textos/Caraiba_Sinais_dos_Personagens.md.
 DETALHES = {
-    "olho_yara": "detalhes/olho-yara.png",          # vermelho da fumaça (noites 1 e 2)
-    "olho_mbae": "detalhes/olho-mbae.png",          # até o 3º dia na oca
+    "olho_yara": "detalhes/olho-yara.png",                    # da noite 3 em diante, sem febre
+    "olho_yara_vermelho": "detalhes/olho-yara-vermelho.png",  # fumaça (noites 1 e 2) ou febre
+    "boca_yara": "detalhes/boca-yara.png",
+    "boca_yara_doente": "detalhes/boca-yara-doente.png",
+    "olho_mbae": "detalhes/olho-mbae.png",                    # até 3 noites na oca
+    "olho_mbae_doente": "detalhes/olho-mbae-doente.png",      # depois de 3 noites na oca
+    "boca_mbae": "detalhes/boca-mbae.png",                    # (sem uso: Mbaé já chega doente)
+    "boca_mbae_doente": "detalhes/boca-mbae-doente.png",
     "olho_potira": "detalhes/olho-potira.png",
-    "olho_tamandare": "detalhes/olho-tamandare.png",
-    "olho_iande": "detalhes/olho-iande.png",
-    "olho_iande_doente": "detalhes/olho-iande-doente.png",
-    "olho_krenan": "detalhes/olho-krenan.png",
+    "olho_potira_doente": "detalhes/olho-potira-doente.png",
+    "boca_potira": "detalhes/boca-potira.png",
+    "boca_potira_doente": "detalhes/boca-potira-doente.png",
+    "olho_tamandare": "detalhes/olho-tamandare.png",          # até 3 noites na oca
+    "olho_tamandare_doente": "detalhes/olho-tamandare-doente.png",
+    "boca_tamandare": "detalhes/boca-tamandare.png",          # (sem uso: já chega doente)
+    "boca_tamandare_doente": "detalhes/boca-tamandare-doente.png",
+    "olho_iande": "detalhes/olho-iande.png",                  # noites 7 e 8
+    "olho_iande_doente": "detalhes/olho-iande-doente.png",    # noite 9
+    "boca_iande": "detalhes/boca-iande.png",
+    "boca_iande_doente": "detalhes/boca-iande-doente.png",
+    "olho_krenan": "detalhes/olho-krenan.png",                # (sem uso: Krenan não é examinado)
     "olho_krenan_doente": "detalhes/olho-krenan-doente.png",
+    "olho_araci_doente": "detalhes/olho-araci-doente.png",
+    "boca_araci": "detalhes/boca-araci.png",                  # (sem uso: Araci já chega doente)
+    "boca_araci_doente": "detalhes/boca-araci-doente.png",
 }
 
 # Onde fica o fogo em cada cenário (x, y na tela 1600x900).

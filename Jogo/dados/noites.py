@@ -40,8 +40,10 @@
 #   "exame"     o jogador escolhe as zonas do rosto para olhar de perto. Cada zona tem
 #               "pergunta" (o nome no botão), "resposta" (o que se vê) e, se o que se vê for
 #               um sinal, "sinal": True. Zona com "imagem" (dados/arte.py, DETALHES) mostra o
-#               detalhe de perto, à direita, em vez de descrever: a "resposta" fica só com o
-#               que a pessoa diz. Cada zona gasta 1 de energia (ou o "custo" dela, se
+#               detalhe de perto (o olho ou a boca), em vez de descrever: a "resposta" fica só
+#               com o que a pessoa diz. A mesma zona pode vir duas vezes, com condições opostas
+#               (ex.: "sem_febre"/"com_febre", "noites_na_oca_menos_de"/"noites_na_oca_ao_menos",
+#               cenas/dia.py): aparece só a que bate. Cada zona gasta 1 de energia (ou o "custo" dela, se
 #               tiver). Zona que custa mais do que sobrou fica apagada. Diga de quem é o exame
 #               com "quem". "liberadas": a lista das zonas que dá para olhar nessa noite (ex.:
 #               só ["Olhos"] na noite 1). Sem ela, todas as zonas aparecem.
@@ -81,16 +83,33 @@ POSICAO_MBAE, ESCALA_MBAE = (470, 520), 0.5      # na ponta do tronco de cima, �
 TEXTO_EXAME = "Você chega perto do rosto, na luz do fogo."
 FALA_MATAR = {"tipo": "fala", "quem": "", "texto": "O fogo estala. Ninguém na aldeia diz nada."}
 
-# Yara está saudável: o olho vermelho é da fumaça, a terra é do caminho.
+# --- Quem é são pode pegar a febre na oca (dados/febre.py) ---
+# Quem pegou e mostra (acorda com febre no dia seguinte) tem, na noite em que ainda está viva, o
+# olho e a boca doentes. Quem pegou sem mostrar segue com o rosto de sempre.
+# As diferenças de cada um: Textos/Caraiba_Sinais_dos_Personagens.md.
+def pode_pegar_febre(zonas, quem, doente):
+    """As zonas de quem é são, e, para cada zona de `doente` ({"Olhos": zona, ...}), a versão
+    doente logo depois da sã: aparece só uma das duas ("sem_febre"/"com_febre", cenas/dia.py)."""
+    novas = []
+    for zona in zonas:
+        if zona["pergunta"] in doente:
+            novas.append(dict(zona, sem_febre=quem))
+            novas.append(dict(doente[zona["pergunta"]], pergunta=zona["pergunta"], com_febre=quem))
+        else:
+            novas.append(dict(zona))
+    return novas
+
+
+# Yara está saudável: o olho vermelho é da fumaça (noites 1 e 2), a terra é do caminho.
 ZONAS_YARA = [
     {"pergunta": "Testa",
      "resposta": "Fresca. Nenhum suor."},
-    {"pergunta": "Olhos", "sinal": True, "imagem": "olho_yara",
+    {"pergunta": "Olhos", "sinal": True, "imagem": "olho_yara_vermelho",
      "resposta": "[Dormi perto do fogo]."},
     {"pergunta": "Orelhas",
      "resposta": "Nada atrás das orelhas. A pele está limpa."},
-    {"pergunta": "Boca",
-     "resposta": "Ela abre a boca. Por dentro da bochecha, nada. Língua rosada."},
+    {"pergunta": "Boca", "imagem": "boca_yara",
+     "resposta": "Pode olhar. Não tenho nada."},
     {"pergunta": "Mãos",
      "resposta": "Firmes. Terra seca debaixo das unhas e calos de carregar peso."},
     {"pergunta": "Respiração",
@@ -99,25 +118,30 @@ ZONAS_YARA = [
 
 # Na noite 2 ainda é o mesmo olho (a arte do olho vermelho vale até a noite 3).
 ZONAS_YARA_NOITE_2 = [dict(zona) for zona in ZONAS_YARA]
-ZONAS_YARA_NOITE_2[1] = {"pergunta": "Olhos", "imagem": "olho_yara",
+ZONAS_YARA_NOITE_2[1] = {"pergunta": "Olhos", "imagem": "olho_yara_vermelho",
                          "resposta": "Dormi perto do fogo. [Já está passando]."}
-ZONAS_YARA_NOITE_2[3] = {"pergunta": "Boca",
-                         "resposta": "Ela abre a boca e respira fundo, sem tossir. Língua rosada."}
+ZONAS_YARA_NOITE_2[3] = {"pergunta": "Boca", "imagem": "boca_yara",
+                         "resposta": "Respiro fundo, viu? Nem uma tosse."}
 
 # Mbaé está com a febre: suor, olho vermelho e, abrindo a boca, a tosse e as feridas na língua
 # (o sinal que o pajé conta na noite 2).
 # (Os pontinhos brancos na bochecha ficam para Tamandaré-mirim, na noite 5.)
 # A pintura de jenipapo nunca é sinal de doença.
+# O olho piora com a febre: depois de 3 noites dormindo na oca, aparece o olho doente.
+NOITES_ATE_O_OLHO_PIORAR = 3
 ZONAS_MBAE = [
     {"pergunta": "Testa", "sinal": True,
      "resposta": "Molhada de suor e quente, mesmo longe do fogo."},
-    # Até o 3º dia na oca; depois, o olho doente (Arte/Doenças/Mbaé/OlhoMbaé_Doente, ainda por vir).
     {"pergunta": "Olhos", "sinal": True, "imagem": "olho_mbae",
+     "noites_na_oca_menos_de": {"Mbaé": NOITES_ATE_O_OLHO_PIORAR},
      "resposta": "(tosse) [É o vento do rio]."},
+    {"pergunta": "Olhos", "sinal": True, "imagem": "olho_mbae_doente",
+     "noites_na_oca_ao_menos": {"Mbaé": NOITES_ATE_O_OLHO_PIORAR},
+     "resposta": "(tosse) [É o vento do rio]. De noite arde mais."},
     {"pergunta": "Orelhas",
      "resposta": "Nada atrás das orelhas. Só a pintura de jenipapo."},
-    {"pergunta": "Boca", "sinal": True,
-     "resposta": "Ele abre a boca e tosse. Por dentro, feridas na língua."},
+    {"pergunta": "Boca", "sinal": True, "imagem": "boca_mbae_doente",
+     "resposta": "(tosse) [Mordi a língua comendo peixe]."},
     {"pergunta": "Mãos",
      "resposta": "Calos de arco. Nenhuma bolha na palma."},
     {"pergunta": "Respiração", "sinal": True,
@@ -171,10 +195,17 @@ def barulho_na_mata(resposta):
 # Na noite com "amaldicoados": True, quem pegou a febre passa adiante no fim da noite. Perguntas podem ter "amaldicoado": "Mbaé" (Mbaé ainda passa a febre) ou
 # "sao": "Mbaé" (não passa mais): aparece só a que bate.
 
-# Yara na noite 3: o olho clareou (o sinal da noite 1 a acusou à toa).
+# Yara na noite 3: o olho clareou (o sinal da noite 1 a acusou à toa). Mas, se ela pegou a
+# febre de Mbaé na oca e mostra, o olho segue vermelho e a boca fica ferida.
 ZONAS_YARA_NOITE_3 = [dict(zona) for zona in ZONAS_YARA_NOITE_2]
-ZONAS_YARA_NOITE_3[1] = {"pergunta": "Olhos",
-                         "resposta": "O branco do olho clareou. Nenhum risco vermelho."}
+ZONAS_YARA_NOITE_3[1] = {"pergunta": "Olhos", "imagem": "olho_yara",
+                         "resposta": "Viu? [Era a fumaça]."}
+ZONAS_YARA_NOITE_3 = pode_pegar_febre(ZONAS_YARA_NOITE_3, "Yara", {
+    "Olhos": {"sinal": True, "imagem": "olho_yara_vermelho",
+              "resposta": "(treme) [É frio], só isso."},
+    "Boca": {"sinal": True, "imagem": "boca_yara_doente",
+             "resposta": "(tosse) Dói para engolir."},
+})
 
 
 # --- Noite 4: Potira, a que você conhece ---
@@ -191,9 +222,9 @@ ZONAS_POTIRA = [
      "resposta": "[É sono]. Andei desde antes do sol."},
     {"pergunta": "Orelhas",
      "resposta": "Nada atrás das orelhas. A pele está limpa."},
-    {"pergunta": "Boca",
+    {"pergunta": "Boca", "imagem": "boca_potira",
      "resposta": [
-         "Os lábios estão rachados. Por dentro da bochecha, nada.",
+         "Os lábios? Estão secos.",
          "[É do frio]. Dormi no mato, longe de qualquer fogueira.",
      ]},
     {"pergunta": "Mãos",
@@ -201,6 +232,13 @@ ZONAS_POTIRA = [
     {"pergunta": "Respiração",
      "resposta": "Respira fundo, sem tosse."},
 ]
+# Se Potira pegou a febre na oca e mostra: o olho vermelho e a boca ferida.
+ZONAS_POTIRA = pode_pegar_febre(ZONAS_POTIRA, "Potira", {
+    "Olhos": {"sinal": True, "imagem": "olho_potira_doente",
+              "resposta": "(treme) [Dormi mal], só isso."},
+    "Boca": {"sinal": True, "imagem": "boca_potira_doente",
+             "resposta": "(tosse) Arde por dentro."},
+})
 
 
 # --- Noite 5: Tamandaré-mirim, com a maldição ---
@@ -211,15 +249,17 @@ POSICAO_TAMANDARE, ESCALA_TAMANDARE = (1120, 790), 0.5
 ZONAS_TAMANDARE = [
     {"pergunta": "Testa",
      "resposta": "Morna. Suor de quem andou muito."},
+    # Como Mbaé, o olho piora depois de 3 noites dormindo na oca.
     {"pergunta": "Olhos", "sinal": True, "imagem": "olho_tamandare",
+     "noites_na_oca_menos_de": {"Tamandaré-mirim": NOITES_ATE_O_OLHO_PIORAR},
      "resposta": "[É o sol da estrada]."},
+    {"pergunta": "Olhos", "sinal": True, "imagem": "olho_tamandare_doente",
+     "noites_na_oca_ao_menos": {"Tamandaré-mirim": NOITES_ATE_O_OLHO_PIORAR},
+     "resposta": "[É o sol da estrada]. Agora arde."},
     {"pergunta": "Orelhas",
      "resposta": "Nada atrás das orelhas."},
-    {"pergunta": "Boca", "sinal": True,
-     "resposta": [
-         "Ele abre a boca. Por dentro da bochecha, pontinhos brancos.",
-         "[Rouco de pregar]. Só isso.",
-     ]},
+    {"pergunta": "Boca", "sinal": True, "imagem": "boca_tamandare_doente",
+     "resposta": "[Rouco de pregar]. Só isso."},
     {"pergunta": "Mãos",
      "resposta": "Calos de trabalho pesado. Uma marca de corda no pulso."},
     {"pergunta": "Respiração",
@@ -233,7 +273,7 @@ LIBERADAS_NOITE_6 = ["Olhos", "Boca", "Orelhas"]
 
 # Tamandaré-mirim na noite 6: as primeiras manchas atrás da orelha. Três sinais da tábua.
 ZONAS_TAMANDARE_NOITE_6 = [dict(zona) for zona in ZONAS_TAMANDARE]
-ZONAS_TAMANDARE_NOITE_6[2] = {"pergunta": "Orelhas", "sinal": True,
+ZONAS_TAMANDARE_NOITE_6[3] = {"pergunta": "Orelhas", "sinal": True,
                               "resposta": "Atrás das orelhas, manchas brancas começando a descer."}
 
 
@@ -249,8 +289,8 @@ ZONAS_IANDE = [
      "resposta": "[Dormi bem na vila]."},
     {"pergunta": "Orelhas",
      "resposta": "Nada atrás das orelhas. A pele está limpa."},
-    {"pergunta": "Boca",
-     "resposta": "Normal. Por dentro da bochecha também."},
+    {"pergunta": "Boca", "imagem": "boca_iande",
+     "resposta": "Pode olhar. Está tudo bem."},
     {"pergunta": "Mãos",
      "resposta": "Firmes. Uma conta de vidro nova no pulso."},
     {"pergunta": "Respiração",
@@ -315,7 +355,13 @@ def com_pescoco(zonas, pescoco=PESCOCO_LIMPO):
 ZONAS_TAMANDARE_NOITE_9 = com_pescoco(ZONAS_TAMANDARE_NOITE_6, {
     "pergunta": "Pescoço", "sinal": True,
     "resposta": "As manchas brancas já desceram até o pescoço."})
-ZONAS_IANDE_NOITE_9 = com_pescoco(ZONAS_IANDE, {
+# Na noite 9 a maldição de Iandé aparece também no olho e na boca.
+ZONAS_IANDE_NOITE_9 = [dict(zona) for zona in ZONAS_IANDE]
+ZONAS_IANDE_NOITE_9[1] = {"pergunta": "Olhos", "sinal": True, "imagem": "olho_iande_doente",
+                          "resposta": "Não dormi. [É a dor nas costas]."}
+ZONAS_IANDE_NOITE_9[3] = {"pergunta": "Boca", "sinal": True, "imagem": "boca_iande_doente",
+                          "resposta": "(tosse) [Comi farinha velha na vila]."}
+ZONAS_IANDE_NOITE_9 = com_pescoco(ZONAS_IANDE_NOITE_9, {
     "pergunta": "Pescoço", "sinal": True,
     "resposta": ["Do lado do pescoço, umas manchas brancas, pequenas.", "[É da alça do cesto]."]})
 
@@ -331,12 +377,12 @@ POSICAO_ARACI, ESCALA_ARACI = (290, 700), 0.62
 LIBERADAS_NOITE_10 = LIBERADAS_NOITE_9
 
 ZONAS_ARACI = [
-    {"pergunta": "Olhos", "sinal": True,
-     "resposta": "Vermelhos e fundos."},
+    {"pergunta": "Olhos", "sinal": True, "imagem": "olho_araci_doente",
+     "resposta": "Não durmo. [A criança não deixa]."},
     {"pergunta": "Orelhas", "sinal": True,
      "resposta": "Atrás das orelhas, manchas que já desceram."},
-    {"pergunta": "Boca", "sinal": True,
-     "resposta": "Seca. Por dentro da bochecha, os pontos brancos já sumindo."},
+    {"pergunta": "Boca", "sinal": True, "imagem": "boca_araci_doente",
+     "resposta": "[É sede]. Andei o dia inteiro."},
     {"pergunta": "Pescoço", "sinal": True,
      "resposta": "Manchas no pescoço, pequenas, todas juntas."},
 ]

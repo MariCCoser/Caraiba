@@ -40,6 +40,8 @@ class Estado:
         self.tapiri_desde = {}
         # A febre que passou na oca: quem pegou, de quem e em que noite (motor/febre.py)
         self.febre = []
+        # Quantas noites cada um de fora dormiu na oca (o olho dos amaldiçoados piora com elas)
+        self.noites_na_oca = {}
         # As histórias já ouvidas (dados/conversas.py): a memória sobe uma vez por história
         self.historias = []
         # Quem o jogador chamou para a fogueira sem deixar entrar na aldeia (ex.: Krenan)

@@ -12,6 +12,8 @@
 # - amanhecer(estado): passa para o dia seguinte. Quem pegou a febre acorda doente no 1º dia
 #   e morre no 2º; as frases da manhã (com o nome) ficam em estado.manha, para o Dia mostrar.
 # - amaldicoado(estado, nome): o doente de fora que ainda passa a febre.
+# - mostra_febre(estado, nome): quem pegou a febre numa noite anterior e mostra (o exame vê o
+#   olho e a boca doentes).
 # - quantos_amaldicoados(estado): os doentes de fora na aldeia mais quem pegou deles.
 #
 # Cada entrada de estado.febre é uma pessoa de fora:
@@ -71,6 +73,12 @@ def quantos_amaldicoados(estado):
 def amaldicoado(estado, nome):
     """O doente de fora ainda passa a febre: está na aldeia (não morreu nem foi levado)."""
     return nome in CONTAGIO and nome in estado.dentro
+
+
+def mostra_febre(estado, nome):
+    """Pegou a febre na oca numa noite anterior e mostra: está doente à vista."""
+    return any(entrada.get("nome") == nome and entrada.get("visivel", True) and entrada["noite"] < estado.dia
+               for entrada in estado.febre)
 
 
 def _frase(chave, nomes):
