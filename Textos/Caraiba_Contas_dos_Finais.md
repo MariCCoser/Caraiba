@@ -64,9 +64,9 @@ entram, e Araci chega depois do cálculo.
 |---|---|---|---|
 | 1 | A Troca | `entregues` ≥ 2 **ou** `proximidade_vila` ≥ 3 | **noite 3** |
 | 2 | A Loucura | `mortos_por_sua_mao` ≥ 3 | **noite 4** |
-| 3 | A Água do Batismo | `seguiu_paje` ≥ 3 e `inocentes` ≥ 1 | dia 10 |
+| 3 | A Água do Batismo | `converteu` ≥ 1 (aceitou o batismo do padre novo) | noite 9 |
 | 4 | Rio Acima | `rio_acima` ≥ 4 e `entregues` = 0 | **noite 9** |
-| 5 | Anhangá | `viu_anhanga` ≥ 3, sem mortes pela mão, sem entregas | dia 10 |
+| 5 | Anhangá | `viu_anhanga` ≥ 3, sem mortes pela mão, sem entregas | noite 9 |
 | 6 | A Honra | `vivos` ≥ 9, `memoria` ≥ 5, sem mortes pela mão, sem entregas | dia 10 |
 | 7 | O Tapiri | `tapiri_usos` ≥ 3, `vivos` ≥ 7, sem mortes pela mão, sem entregas | dia 10 |
 | 8 | O Vazio | nenhuma das anteriores; ou `vivos` ≤ 7 no fim de uma noite | **noite 9** (ou dia 10) |
@@ -93,14 +93,15 @@ entram, e Araci chega depois do cálculo.
   na **noite 7**.
 - Cada morte tira 3 de sanidade: com 3 mortes, a sanidade cai de 10 para 1.
 
-### 3. A Água do Batismo: dia 10
+### 3. A Água do Batismo: noite 9
 
-- O pajé precisa acusar alguém **pelo nome** em pelo menos 3 noites em que o tapiri tenha vaga
-  livre, e pelo menos um dos acusados precisa ser são.
-- Exemplo com 1 vaga só: Yara na noite 1 (inocente; fica até a 3), Potira na noite 4
-  (inocente; fica até a 6) e Iandé na noite 7 (doente). São 3 acusações seguidas e 2 inocentes.
-- **Falta no jogo:** hoje o pajé diz o sinal ("olho vermelho") mas não diz nomes. As falas dele
-  precisam ser reescritas, como o PDF já indica.
+- No dia 9 (a última visita do Aleixo), **entregar 1 pessoa** a ele.
+- **Nunca perguntar por quem ele levou:** nem as perguntas do dia 6 sobre cada levado ("Yara
+  está curada?", "Onde Yara está?"…), nem as do dia 9 ("Os que você levou voltam?", "Os meus
+  estão curados?", "Onde os meus estão?"). Qualquer uma delas fecha o caminho.
+- Ao cair da noite 9, o padre novo da vila sobe a trilha e oferece o batismo. **Aceitar** acaba
+  o jogo no fim da noite 9. Recusar segue o jogo.
+- Quem já entregou alguém no dia 3 ou no dia 6 chega a 2 entregas e cai antes em A Troca.
 
 ### 4. Rio Acima: a partir da noite 9
 
@@ -108,12 +109,15 @@ entram, e Araci chega depois do cálculo.
   4, e o jogo acaba na **noite 9**.
 - Precisa recusar o Aleixo nas três visitas (nenhuma entrega).
 
-### 5. Anhangá: dia 10
+### 5. Anhangá: noite 9
 
-- Precisa olhar a mata nas três noites (2, 5 e 8). Perder uma já tira o final, porque o máximo
-  é 3.
+- Precisa perguntar ao pajé "Que barulho é esse na mata?" nas três noites em que dá (2, 5 e 8).
+  Perder uma já tira o final, porque o máximo é 3.
+- A mata aparece na tela inteira, na ordem das vezes: na 1ª, só o escuro (`Anhanga_um`); na 2ª,
+  uma sombra clara (`Anhanga_dois`); na 3ª, o veado branco (`Anhanga_tres`).
 - Cada olhar custa 1 de energia: é um olhar a menos no exame daquela noite.
-- **Falta no jogo:** o desenho do veado e o botão "Olhar a mata".
+- Sem mortes pela sua mão e sem entregas. O jogo acaba no fim da **noite 9**, com
+  `Anhanga_final` atrás das telas do final.
 
 ### 6. A Honra: dia 10
 

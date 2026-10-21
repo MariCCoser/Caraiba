@@ -15,6 +15,8 @@ from motor.cena import Cena, desenhar_cenario
 
 TECLAS_AVANCAR = (pygame.K_SPACE, pygame.K_RETURN, pygame.K_KP_ENTER)
 LARGURA_TEXTO = 1150
+ESCURECER = 150             # o quanto o fundo escurece atrás do texto (0 a 255)
+ESCURECER_COM_FUNDO = 80
 ESPACO_CHANCE = 70   # da fonte até a linha "Final 5/8" (e, embaixo dela, a chance)
 
 
@@ -94,8 +96,9 @@ class Final(Cena):
         self.botao.atualizar(self.jogo.mouse)
 
     def desenhar_cena(self, tela):
-        desenhar_cenario(tela, TELA_FINAL["fundo"], "noite", self.tempo)
-        efeitos.escurecer(tela, 150)
+        desenhar_cenario(tela, self.final.get("fundo", TELA_FINAL["fundo"]), "noite", self.tempo)
+        # Final com imagem própria (o veado do Anhangá) escurece menos, para ela aparecer.
+        efeitos.escurecer(tela, ESCURECER_COM_FUNDO if "fundo" in self.final else ESCURECER)
 
     def desenhar_interface(self, tela):
         titulo, _ = self.telas[self.indice]

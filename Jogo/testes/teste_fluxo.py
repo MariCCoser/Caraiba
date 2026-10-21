@@ -93,7 +93,8 @@ def testar_estado_inicial():
     estado = Estado()
     esperado = {"dia": 1, "vivos": 0, "mortos": 0, "mortos_por_sua_mao": 0, "entregues": 0,
                 "proximidade_vila": 0, "rio_acima": 0, "memoria": 0, "recusas_aleixo": 0, "levados": 0,
-                "pistas": 0, "sanidade": 10, "tapiri_usos": 0, "viu_anhanga": 0, "seguiu_paje": 0,
+                "pistas": 0, "sanidade": 10, "tapiri_usos": 0, "viu_anhanga": 0, "seguiu_paje": 0, "converteu": 0,
+                "entregou_ultima_visita": 0, "perguntou_levados": 0,
                 "inocentes": 0, "machado": 0, "energia_hoje": 0, "krenan_volta": 0, "subiu_o_rio": 0, "rio_acima_nomes": [], "convidados": [], "dentro": [], "tapiri": [], "tapiri_desde": {}, "febre": [], "noites_na_oca": {}, "manha": [],
                 "historias": [], "entregues_nomes": [],
                 "mortos_nomes": [], "mortos_quando": {}, "corpos": [], "tabua": [], "tabua_noites": [],
@@ -513,7 +514,7 @@ def testar_finais():
         ({"proximidade_vila": 3}, "troca"),
         ({"mortos_por_sua_mao": 3}, "loucura"),
         ({"entregues": 2, "mortos_por_sua_mao": 3}, "troca"),          # a fila: Troca vem antes
-        ({"seguiu_paje": 3, "inocentes": 1, "tapiri_usos": 3}, "batismo"),
+        ({"converteu": 1, "tapiri_usos": 3}, "batismo"),               # aceitou o padre novo
         ({"seguiu_paje": 3, "inocentes": 0, "tapiri_usos": 3, "vivos": 4}, "tapiri"),
         ({"subiu_o_rio": 1, "entregues": 1}, "rio_acima"),              # a escolha da noite 10
         ({"rio_acima": 4}, "vazio"),                                     # levar gente com Krenan não basta
@@ -543,6 +544,10 @@ def testar_finais():
         ({"dia": 9, "vivos": 1, "mortos": 4}, None),
         ({"dia": 5, "memoria": 5, "vivos": 5}, None),                   # A Honra só no dia 10
         ({"dia": 7, "tapiri_usos": 3}, None),                           # O Tapiri só no dia 10
+        ({"dia": 8, "viu_anhanga": 3}, None),                           # Anhangá fecha na noite 9
+        ({"dia": 9, "viu_anhanga": 3}, "anhanga"),
+        ({"dia": 9, "viu_anhanga": 3, "entregues": 1}, None),
+        ({"dia": 9, "converteu": 1, "entregues": 1}, "batismo"),       # o padre novo, na noite 9
     ]
     for valores, esperado in antes:
         final = finais.fim_da_noite(estado_com(**valores))

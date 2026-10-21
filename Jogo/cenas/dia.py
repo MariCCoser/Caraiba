@@ -509,9 +509,26 @@ class Dia(Cena):
         frases = [resposta] if isinstance(resposta, str) else list(resposta)
         quem = passo.get("quem", self.quem)
         self.fila[0:0] = [{"tipo": "fala", "quem": quem, "texto": frase} for frase in frases[1:]] + [passo]
+        if "por_vez" in item:
+            self.fila[0:0] = self._passos_da_vez(item["por_vez"])
         self.botoes = []
         # Zona com "imagem": o jogador vê (o olho de perto), em vez de ler uma descrição.
         self._mostrar_fala(quem, frases[0], pergunta=item["pergunta"], imagem=item.get("imagem"))
+
+    def _passos_da_vez(self, por_vez):
+        """Pergunta com "por_vez" (o Anhangá, dados/noites.py): a imagem e a frase da vez (o valor
+        da variável, já com os efeitos), na tela inteira, sem ninguém na frente. Depois, o
+        cenário e quem estava na tela voltam."""
+        vezes = por_vez["vezes"]
+        vez = vezes[max(0, min(getattr(self.estado, por_vez["variavel"]), len(vezes)) - 1)]
+        apelido, filtro = self.fundo
+        return [
+            {"tipo": "visitante", "visitante": None},
+            {"tipo": "fundo", "fundo": vez["fundo"], "filtro": "noite"},
+            {"tipo": "fala", "quem": "", "texto": vez["resposta"]},
+            {"tipo": "fundo", "fundo": apelido, "filtro": filtro},
+            {"tipo": "visitante", "visitante": self.visitante},
+        ]
 
     def _acusado_da_pergunta(self, item):
         """Pergunta com "acusa": [(nome, resposta), ...]: o pajé acusa o primeiro da lista que

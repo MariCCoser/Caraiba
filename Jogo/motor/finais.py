@@ -83,7 +83,8 @@ def fim_da_noite(estado):
                 return final
         return por_id(estado.final_calculado) if estado.final_calculado else escolher(estado)
     for final in FINAIS:
-        if final.get("antecipado") and condicao_bate(estado, final):
+        if (final.get("antecipado") and estado.dia >= final.get("a_partir_da_noite", 0)
+                and condicao_bate(estado, final)):
             return final
     for final in FINAIS:
         if final.get("esvaziou") and jeito_bate(estado, final["esvaziou"]):

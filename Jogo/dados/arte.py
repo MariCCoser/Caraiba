@@ -15,6 +15,11 @@ CENARIOS = {
     "oca3_dia": "cenarios/cenario-oca3-dia.jpg",   # por dentro da oca 3 (Wanadi), de dia
     "oca3_noite": "cenarios/cenario-oca3-noite.jpg",  # e de noite
     "tapiri": "cenarios/cenario-tapiri.jpg",       # por dentro do tapiri, dia e noite
+    # O Anhangá: a mata para onde o pajé aponta, na 1ª, 2ª e 3ª vez, e o fundo do final Anhangá.
+    "anhanga_um": "cenarios/anhanga-1.jpg",
+    "anhanga_dois": "cenarios/anhanga-2.jpg",
+    "anhanga_tres": "cenarios/anhanga-3.jpg",
+    "anhanga_final": "cenarios/anhanga-final.jpg",
 }
 
 # Personagens gerados por ferramentas/converter_arte.py: PNG com fundo transparente,
@@ -29,6 +34,7 @@ PERSONAGENS = {
     "araci": "personagens/araci.png",
     "aleixo": "personagens/aleixo.png",
     "paje": "personagens/paje.png",
+    "padre": "personagens/padre.png",   # o padre novo da vila (noite 9, A Água do Batismo)
 
     # Sentados (a fogueira, de noite): o corpo inteiro, do topo da cabeça ao chão, 560 de altura.
     "yara_sentada": "personagens/sentados/yara.png",

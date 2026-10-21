@@ -90,6 +90,9 @@ DEUSES_FELIZES = {"tipo": "se", "amaldicoados_menos_de": DEUSES, "passos": [
 DEUSES_INFELIZES = {"tipo": "se", "amaldicoados_ao_menos": DEUSES, "passos": [
     {"tipo": "fala", "quem": "Pajé", "texto": "Os deuses estão infelizes. Há maldição demais entre as redes."},
 ]}
+# Perguntar ao Aleixo por quem ele levou (dias 6 e 9) fecha A Água do Batismo: o padre novo só
+# vem atrás de quem entregou sem perguntar nada.
+PERGUNTOU_LEVADOS = {"perguntou_levados": 1}
 PERGUNTAS_ALEIXO = {
     3: [
         {"pergunta": "O que você quer?",
@@ -110,12 +113,12 @@ PERGUNTAS_ALEIXO = {
     ],
     # Dia 9: tudo o que ele ainda não disse, e o cordão (o da Iandé, que ele batizou).
     9: [
-        {"pergunta": "Os que você levou voltam?",
+        {"pergunta": "Os que você levou voltam?", "efeitos": PERGUNTOU_LEVADOS,
          "resposta": "[Estão bem na vila]. É longe para voltar."},
         # Sobre quem ele já levou: no dia 9, sem repetir as perguntas de cada um (dia 6).
-        {"pergunta": "Os meus estão curados?", "levou_alguem": True,
+        {"pergunta": "Os meus estão curados?", "levou_alguem": True, "efeitos": PERGUNTOU_LEVADOS,
          "resposta": "Rezam todos os dias. [Deus vai curá-los]."},
-        {"pergunta": "Onde os meus estão?", "levou_alguem": True,
+        {"pergunta": "Onde os meus estão?", "levou_alguem": True, "efeitos": PERGUNTOU_LEVADOS,
          "resposta": "Na vila, cada um no seu lugar. [Lá cuidam deles]."},
         {"pergunta": "Isso é ameaça?",
          "resposta": "É aviso. Eu gosto de vocês. Por isso vim antes dos outros."},
@@ -153,8 +156,10 @@ def perguntas_sobre_os_levados():
     """As perguntas sobre cada um que o Aleixo já levou (dia 6)."""
     perguntas = []
     for nome, (curado, resposta_curado, onde, resposta_onde) in SOBRE_OS_LEVADOS.items():
-        perguntas.append({"pergunta": curado, "resposta": resposta_curado, "entregue": nome})
-        perguntas.append({"pergunta": onde, "resposta": resposta_onde, "entregue": nome})
+        perguntas.append({"pergunta": curado, "resposta": resposta_curado, "entregue": nome,
+                          "efeitos": PERGUNTOU_LEVADOS})
+        perguntas.append({"pergunta": onde, "resposta": resposta_onde, "entregue": nome,
+                          "efeitos": PERGUNTOU_LEVADOS})
     return perguntas
 
 
@@ -197,12 +202,36 @@ FALA_ENTREGUE = {
 }
 
 
+# O padre novo da vila, na noite 9 (A Água do Batismo).
+PADRE = "Padre"
+PADRE_NOVO = {"tipo": "se", "ao_menos": {"entregou_ultima_visita": 1}, "no_maximo": {"perguntou_levados": 0},
+              "passos": [
+    {"tipo": "visitante", "visitante": None},
+    {"tipo": "fala", "quem": "", "texto": "Um homem de batina sobe a trilha com uma tocha. Não é o Irmão Aleixo."},
+    {"tipo": "visitante", "visitante": "padre"},
+    {"tipo": "fala", "quem": PADRE, "texto": "Sou o padre novo da vila. O Irmão Aleixo me falou de você."},
+    {"tipo": "fala", "quem": PADRE, "texto": "Você entregou um dos seus e não perguntou nada. [Isso é fé]."},
+    {"tipo": "fala", "quem": PADRE, "texto": "Quer receber a água do batismo? [Em quem é batizado, a maldição não fica]."},
+    {"tipo": "escolha", "texto": "O padre espera a sua resposta.", "opcoes": [
+        {"texto": "Aceitar o batismo", "efeitos": {"converteu": 1}, "passos": [
+            {"tipo": "fala", "quem": PADRE, "texto": "Ajoelhe. Amanhã você terá um nome novo."},
+        ]},
+        {"texto": "Recusar", "passos": [
+            {"tipo": "fala", "quem": PADRE, "texto": "A porta da igreja fica aberta. Por pouco tempo."},
+        ]},
+    ]},
+    {"tipo": "visitante", "visitante": "paje"},
+]}
+
+
 def oferta_aleixo(dia):
     """O pedido de Aleixo: o jogador entrega alguém de fora ou nega. Negando, ele leva alguém
     que ele quer mesmo assim (sorteado: o passo "aleixo_leva"), menos nos DIAS_SEM_LEVAR."""
+    # Entregar na última visita (dia 9) conta para A Água do Batismo (o padre novo, à noite).
+    efeitos = dict(EFEITOS_ENTREGAR, **({"entregou_ultima_visita": 1} if dia == 9 else {}))
     entregar = [
         {"texto": "Entregar " + nome, "condicao": {"dentro": nome}, "entrega": nome,
-         "efeitos": EFEITOS_ENTREGAR, "passos": [{"tipo": "fala", "quem": ALEIXO, "texto": fala}]}
+         "efeitos": efeitos, "passos": [{"tipo": "fala", "quem": ALEIXO, "texto": fala}]}
         for nome, fala in FALA_ENTREGUE.items()]
     return {"tipo": "escolha", "texto": "Ele quer levar alguém para a vila.", "opcoes": entregar + [
         {"texto": "Negar", "efeitos": {"recusas_aleixo": 1, "energia_hoje": ENERGIA_POR_NEGAR}, "passos": [
@@ -736,6 +765,11 @@ DIAS = {
             {"tipo": "fala", "quem": "Pajé",
              "texto": "Sonhei com um pescoço marcado. O mal deixa [manchas brancas no pescoço]."},
             {"tipo": "sinal", "texto": "Manchas brancas no pescoço."},
+
+            # A Água do Batismo: quem entregou alguém hoje sem nunca perguntar por quem o Aleixo
+            # levou recebe, ao cair da noite, o padre novo da vila. Aceitar acaba o jogo no fim
+            # da noite 9 (dados/finais.py).
+            PADRE_NOVO,
 
             {"tipo": "noite"},
         ],

@@ -40,6 +40,12 @@ CENARIOS = [
     ("Ocas/Wanadi_noite_3.png", "cenarios/cenario-oca3-noite.jpg"),
     # O tapiri por dentro: uma imagem só, para o dia e a noite.
     ("Ocas/Tabiri.png", "cenarios/cenario-tapiri.jpg"),
+    # O Anhangá: a mata para onde o pajé aponta, a 1ª, a 2ª e a 3ª vez (o veado cada vez mais
+    # à vista), e a imagem atrás das telas do final Anhangá.
+    ("Ar_livre/Anhanga_um.png", "cenarios/anhanga-1.jpg"),
+    ("Ar_livre/Anhanga_dois.png", "cenarios/anhanga-2.jpg"),
+    ("Ar_livre/Anhanga_tres.png", "cenarios/anhanga-3.jpg"),
+    ("Ar_livre/Anhanga_final.png", "cenarios/anhanga-final.jpg"),
 ]
 
 # Cenários que saem mais claros que o original (1 = igual; 1.3 = 30% mais claro).
@@ -66,7 +72,7 @@ AREA_MINIMA_BRANCO_CERCADO = 1500   # pixels da arte original
 # Arte com o fundo xadrez desenhado na imagem (cinza e branco, sem transparência de verdade):
 # o xadrez preso entre o braço e o corpo forma manchas pequenas, que também saem.
 ARTE_XADREZ = ["personagens_png/Potira_png.png", "Personagens_sentados_png/Potira_sentada_png.png",
-               "personagens_png/esteira_amaldicoado.png"]
+               "personagens_png/esteira_amaldicoado.png", "personagens_png/Padre.png"]
 AREA_MINIMA_BRANCO_CERCADO_XADREZ = 30
 LIMIAR_BRANCO_CERCADO_XADREZ = 232   # o cinza do xadrez (238) também conta
 
@@ -108,6 +114,8 @@ PERSONAGENS = [
     (PNG + "Irmão Aleixo.png", "personagens/aleixo.png", 0, 1520),
     # O pajé já veio de pé. O topo é o do cocar de penas, então a cabeça fica um pouco menor.
     (PNG + "Pajé.png", "personagens/paje.png", 0, 920),
+    # O padre novo da vila (noite 9, A Água do Batismo): já de pé, com o fundo xadrez desenhado.
+    ("personagens_png/Padre.png", "personagens/padre.png", 0, 1200),
 ]
 
 

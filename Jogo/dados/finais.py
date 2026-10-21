@@ -6,6 +6,7 @@
 # Como o jogo escolhe o final:
 # - No fim de CADA noite, o jogo testa os finais que têm "antecipado": True, na ordem da
 #   fila. Se a condição de um deles já bate, o jogo acaba ali (pode ser na noite 4, na 6...).
+#   Com "a_partir_da_noite": 9, o final só é testado do fim da noite 9 em diante.
 # - Na manhã do dia 10 (DIA_DO_CALCULO), antes de Araci chegar, o jogo testa a fila inteira
 #   e fica com o primeiro final que bater. O Vazio, o último, sempre bate. O final aparece
 #   no fim da noite 10, e nada do que o jogador faz com Araci o muda.
@@ -21,6 +22,7 @@
 # Cada final tem três telas: a "cena" (o que aconteceu com a aldeia), o "povo" e o "fato"
 # (o povo real que fez um caminho parecido e o que aconteceu com ele) e a "fonte".
 # Os textos das cenas são um rascunho: o grupo pode reescrever.
+# "fundo": a imagem atrás das três telas (dados/arte.py); sem ele, TELA_FINAL["fundo"].
 #
 # A chance de cada final (aparece na tela da fonte, com "Final 5/8": a posição na fila). Os
 # números vêm do simulador (Jogo/ferramentas/simular_finais.py; Textos/Caraiba_Porcentagens_dos_Finais.md):
@@ -70,10 +72,14 @@ FINAIS = [
         "chance_acaso": 0, "chance_tentando": None,
         "nome": "A Água do Batismo",
         "povo": "Caeté",
-        "condicao": [{"seguiu_paje": ">= 3", "inocentes": ">= 1"}],
-        "antecipado": False,
-        "cena": "A aldeia sobrevive, mas cada um dorme de costas para o outro. Na vila, um padre "
-                "derrama água na testa de um doente, que morre logo depois.",
+        # No dia 9, o jogador entrega 1 pessoa ao Aleixo sem nunca ter perguntado por quem ele
+        # levou; na noite 9, o padre novo da vila chega e oferece o batismo (dados/dias.py).
+        # Aceitar acaba o jogo no fim da noite 9.
+        "condicao": [{"converteu": ">= 1"}],
+        "antecipado": True,
+        "a_partir_da_noite": 9,
+        "cena": "A água escorre pela sua testa, e você ganha um nome que não é o seu. Na vila, o "
+                "mesmo padre derrama a mesma água na testa de um doente, que morre logo depois.",
         "fato": "Em abril de 1563, na aldeia de Santiago, na Bahia, os jesuítas batizaram 84 "
                 "indígenas à beira da morte, e todos morreram. No mesmo período, o governador "
                 "Mem de Sá declarou que os Caeté podiam ser escravizados onde fossem encontrados.",
@@ -99,9 +105,14 @@ FINAIS = [
         "chance_acaso": 0, "chance_tentando": None,
         "nome": "Anhangá",
         "povo": "Potiguara",
+        # As três vezes em que o pajé aponta para a mata (noites 2, 5 e 8); o final fecha no fim
+        # da noite 9, com a imagem do veado atrás das telas.
         "condicao": [{"viu_anhanga": ">= 3", "mortos_por_sua_mao": "== 0", "entregues": "== 0"}],
-        "antecipado": False,
-        "cena": "Quando Araci chega à entrada, o veado branco está parado atrás dela. Depois some.",
+        "antecipado": True,
+        "a_partir_da_noite": 9,
+        "fundo": "anhanga_final",
+        "cena": "Na nona noite, o veado branco sai da mata e para diante do fogo. O pajé abaixa a "
+                "cabeça. Depois, o veado some entre as árvores.",
         "fato": "Os missionários transformaram o Anhangá, protetor dos animais, em demônio: o "
                 "bandeirante Bartolomeu Bueno da Silva ganhou o apelido de Anhanguera, “diabo "
                 "velho”. É o mesmo caminho da palavra caraíba: de sagrado a invasor.",

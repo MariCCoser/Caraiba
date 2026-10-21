@@ -178,12 +178,24 @@ ACUSACAO = {"pergunta": "De quem você desconfia?", "acusa": [
 
 # --- O barulho na mata (Anhangá) ---
 # Nas noites 2, 5 e 8, o jogador pode perguntar ao pajé sobre um barulho na mata. Custa 1
-# olhar. O pajé mostra de onde vem: o veado branco, o Anhangá (viu_anhanga +1). O final
-# Anhangá pede as três noites.
-def barulho_na_mata(resposta):
+# olhar. O pajé aponta, e a mata aparece na tela inteira (viu_anhanga +1). A imagem e a frase
+# seguem a vez, não a noite: na 1ª vez, só o escuro (Arte/Ar_livre/Anhanga_um); na 2ª, uma
+# sombra clara (Anhanga_dois); na 3ª, o veado branco (Anhanga_tres). O final Anhangá pede as
+# três e fecha no fim da noite 9 (dados/finais.py).
+# "por_vez" (cenas/dia.py): depois dos efeitos, a vez é o valor da variável; cada vez tem o
+# "fundo" (dados/arte.py) e a "resposta" que aparece com ele.
+ANHANGA_POR_VEZ = {"variavel": "viu_anhanga", "vezes": [
+    {"fundo": "anhanga_um", "resposta": "Só o escuro entre os troncos. Mas alguma coisa olha de lá."},
+    {"fundo": "anhanga_dois", "resposta": "Entre as folhas, uma sombra clara. Some quando você pisca."},
+    {"fundo": "anhanga_tres",
+     "resposta": "O veado branco está na beira da trilha. Ele olha para você, e só para você."},
+]}
+
+
+def barulho_na_mata():
     return {"pergunta": "Que barulho é esse na mata?", "custo": 1, "efeitos": {"viu_anhanga": 1},
-            "resposta": ["O pajé não responde. Levanta e aponta para as árvores, para o escuro.",
-                         resposta]}
+            "resposta": "O pajé não responde. Levanta e aponta para as árvores, para o escuro.",
+            "por_vez": ANHANGA_POR_VEZ}
 
 
 # --- Noite 3: a fogueira da aldeia e os amaldiçoados (Textos/Amaldiçoados.txt) ---
@@ -491,7 +503,7 @@ NOITES = {
                         {"pergunta": "O tapiri tem lugar?",
                          "resposta": "Um lugar só. Quem entra fica três noites, longe de todos."},
                         ACUSACAO,
-                        barulho_na_mata("Entre os troncos, um veado branco olha para o fogo. Depois some."),
+                        barulho_na_mata(),
                     ]},
                     {"tipo": "visitante", "visitante": None},
                 ],
@@ -772,7 +784,7 @@ NOITES = {
                         {"pergunta": "Viu gente amaldiçoada?",
                          "resposta": "Vi rede vazia pendurada. Não entrei."},
                         ACUSACAO,
-                        barulho_na_mata("O veado branco de novo, mais perto. Ele não foge da luz."),
+                        barulho_na_mata(),
                     ]},
                     {"tipo": "exame", "quem": "Potira", "liberadas": ["Olhos", "Boca"],
                      "texto": TEXTO_EXAME, "zonas": ZONAS_POTIRA},
@@ -1048,7 +1060,7 @@ NOITES = {
                         {"pergunta": "E o Krenan?",
                          "resposta": ["Krenan. A gente dele é de outro rio.",
                                       "Ele lembra o que a gente esqueceu. Mas [quem leva a aldeia embora não é da aldeia]."]},
-                        barulho_na_mata("O veado branco está na beira da trilha. Ele olha para você, e só para você."),
+                        barulho_na_mata(),
                     ]},
                     {"tipo": "visitante", "visitante": None},
                 ],

@@ -30,7 +30,7 @@ config.PASTA_SAVES = tempfile.mkdtemp(prefix="caraiba-simulacao-")
 
 from cenas.dia import Dia  # noqa: E402
 from dados.aldeia import TAPIRI  # noqa: E402
-from dados.dias import DIAS  # noqa: E402
+from dados.dias import DIAS, PERGUNTAS_ALEIXO, PERGUNTOU_LEVADOS, perguntas_sobre_os_levados  # noqa: E402
 from dados.febre import DOENTES  # noqa: E402
 from dados.finais import FINAIS  # noqa: E402
 from dados.noites import QUEM_SOBE  # noqa: E402
@@ -52,20 +52,13 @@ def _onde_dorme_tapiri(dia):
     return ["Deixar na oca"]
 
 
-def _seguir_o_paje(dia):
-    """Quem o pajé acusou nesta noite vai para o tapiri, se há vaga; o resto fica na oca."""
-    quem = dia.passo_atual.get("quem")
-    if quem and quem == dia.acusado and len(dia.estado.tapiri) < TAPIRI["vagas"]:
-        return ["Levar ao tapiri"]
-    return ["Deixar na oca"]
-
-
 def _entregar(dia):
     return [bloco.texto for bloco, _ in dia.botoes if bloco.texto.startswith("Entregar")]
 
 
 # Cada estratégia: "preferir" diz as opções preferidas da escolha que está na tela, em ordem
-# (a primeira da lista que estiver habilitada ganha); "historias": True faz todas as perguntas das
+# (a primeira da lista que estiver habilitada ganha); "evitar": perguntas que ele nunca faz;
+# "historias": True faz todas as perguntas das
 # conversas (a memória da Honra); "perguntar" são as perguntas que ele sempre faz primeiro;
 # "paje_primeiro": True, na fogueira, fala com o pajé antes de todos (antes de gastar os olhares).
 # O que a estratégia não decide, o jogador escolhe ao acaso.
@@ -85,8 +78,11 @@ ESTRATEGIAS = {
                                            "Deixar levar alguém"]
                   + (["Ir com ele"] if dia.estado.dia >= 10 else DOENTES + QUEM_SOBE)
                   + _onde_dorme_tapiri(dia)},
-    "batismo": {"perguntar": ["De quem você desconfia?"], "paje_primeiro": True,
-                "preferir": lambda dia: ["Deixar entrar", "Negar", "Não deixar"] + _seguir_o_paje(dia)},
+    # Entrega 1 pessoa só no dia 9, nunca pergunta por quem o Aleixo levou e aceita o batismo.
+    "batismo": {"evitar": [p["pergunta"] for p in PERGUNTAS_ALEIXO[9] + perguntas_sobre_os_levados()
+                           if p.get("efeitos") == PERGUNTOU_LEVADOS],
+                "preferir": lambda dia: (_entregar(dia)[:1] if dia.estado.dia == 9 else [])
+                + ["Deixar entrar", "Negar", "Não deixar", "Aceitar o batismo", "Deixar na oca"]},
     "anhanga": {"perguntar": ["Que barulho é esse na mata?"], "paje_primeiro": True,
                 "preferir": lambda dia: ["Deixar entrar", "Negar", "Não deixar", "Ficar na aldeia",
                                          "Deixar na oca"]},
@@ -98,6 +94,7 @@ def _clicar(dia, sorte, estrategia):
     habilitados = [(bloco, acao) for bloco, acao in dia.botoes if bloco.habilitado]
     if dia.modo == "perguntas":
         perguntas, seguir = habilitados[:-1], habilitados[-1]
+        perguntas = [(bloco, acao) for bloco, acao in perguntas if bloco.texto not in estrategia.get("evitar", [])]
         primeiro = [(bloco, acao) for bloco, acao in perguntas if bloco.texto in estrategia.get("perguntar", [])]
         if primeiro:
             primeiro[0][1]()
