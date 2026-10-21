@@ -32,7 +32,7 @@ pessoa, com a maldição e sem ela, e **quando** a imagem muda.
 | **Mbaé** | Dia 2 | **Sim** (desde o início) | Até 3 noites na oca: o olho de **até o 3º dia**. Depois: **doente** | **Doente** desde o início (as feridas: sinal da noite 2) |
 | **Potira** | Dia 4 | Não (pode pegar na oca) | **Normal** (cansado de sono). Se pegou a febre e mostra: **doente** | **Normal** (lábios secos do frio). Se pegou a febre e mostra: **doente** |
 | **Tamandaré-mirim** | Dia 5 | **Sim** (desde o início) | Até 3 noites na oca: **levemente vermelho** (já é sinal). Depois: **doente** | **Doente** desde o início (os pontos brancos: sinal da noite 5) |
-| **Iandé** | Dia 7 | **Sim**, mas escondida | Noites 7 e 8: **normal** (parece perfeita). Noite 9: **doente** | Noites 7 e 8: **normal**. Noite 9: **doente** |
+| **Iandé** | Dia 7 | **Sim**, mas escondida | Noites 7 e 8: **normal** (parece perfeita). Noites 9 e 10: **doente** | Noites 7 e 8: **normal**. Noites 9 e 10: **doente** |
 | **Araci** | Dia 10 | **Sim**, tudo à vista | **Doente** | **Doente** |
 | **Krenan** | Noite 8 | — | Não é examinado | Não é examinado |
 
@@ -44,7 +44,7 @@ pessoa, com a maldição e sem ela, e **quando** a imagem muda.
 | Mbaé | `OlhoMbaé_ate3.png` (até 3 noites na oca) | `OlhoDoenteMbaé.png`, `BocaMbaéDoente.png` |
 | Potira | `OlhoPotira.png`, `BocaPotira.png` | `OlharPotiraDoente.png`, `BocaPotiraDoente.png` |
 | Tamandaré-mirim | `OlhoTama.png` (até 3 noites na oca; já levemente vermelho) | `OlhoTamaDoente.png`, `BocaTamaDoente.png` |
-| Iandé | `OlhoIandé.png`, `BocaIandé.png` (noites 7 e 8) | `OlhoIandé_Doente.png`, `BocaIandéDoente.png` (noite 9) |
+| Iandé | `OlhoIandé.png`, `BocaIandé.png` (noites 7 e 8) | `OlhoIandé_Doente.png`, `BocaIandéDoente.png` (noites 9 e 10) |
 | Araci | — | `OlhoDoenteAraci.png`, `BocaAraciDoente.png` |
 
 **Convertidas, mas sem uso no jogo** (a pessoa já chega doente, ou não é examinada):

@@ -1664,7 +1664,8 @@ def testar_dia10_e_noite10(jogo):
     dia = jogo.cenas.atual
     assert dia.titulo == "Noite 10" and dia.modo == "fogueira" and dia.energia == 2
     # Krenan levou alguém na noite 8: volta e faz o mesmo pedido. Aqui, ninguém vai.
-    assert [p.nome for p in dia.na_fogueira] == ["Krenan", "Pajé", "Araci"], [p.nome for p in dia.na_fogueira]
+    # Quem o jogador deixou entrar (Potira) também está no fogo.
+    assert [p.nome for p in dia.na_fogueira] == ["Krenan", "Pajé", "Potira", "Araci"], [p.nome for p in dia.na_fogueira]
     assert not dia.botao_dormir.visivel, "antes, é preciso falar com Araci e com Krenan"
     clicar_pessoa(jogo, "Krenan")
     passar_falas(jogo)
