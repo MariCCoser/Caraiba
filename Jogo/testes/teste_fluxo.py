@@ -95,7 +95,7 @@ def testar_estado_inicial():
                 "proximidade_vila": 0, "rio_acima": 0, "memoria": 0, "recusas_aleixo": 0, "levados": 0,
                 "pistas": 0, "sanidade": 10, "tapiri_usos": 0, "viu_anhanga": 0, "seguiu_paje": 0, "converteu": 0,
                 "entregou_ultima_visita": 0, "perguntou_levados": 0,
-                "inocentes": 0, "machado": 0, "energia_hoje": 0, "krenan_volta": 0, "subiu_o_rio": 0, "rio_acima_nomes": [], "convidados": [], "dentro": [], "tapiri": [], "tapiri_desde": {}, "febre": [], "noites_na_oca": {}, "manha": [],
+                "inocentes": 0, "machado": 0, "energia_hoje": 0, "krenan_volta": 0, "subiu_o_rio": 0, "rio_acima_nomes": [], "convidados": [], "dentro": [], "tapiri": [], "tapiri_desde": {}, "febre": [], "noites_na_oca": {}, "curados": [], "manha": [],
                 "historias": [], "entregues_nomes": [],
                 "mortos_nomes": [], "mortos_quando": {}, "corpos": [], "tabua": [], "tabua_noites": [],
                 "final_calculado": None, "final": None}
@@ -159,6 +159,29 @@ def testar_corpos():
     # Quem era são (sem DOENTES e sem febre) ganha a esteira comum; quem chegou doente, a outra.
     assert not febre.era_amaldicoado(Estado(), "Potira") and febre.era_amaldicoado(Estado(), "Mbaé")
     print("ok corpos: a esteira no lugar de quem morreu")
+
+
+def testar_cura_no_tapiri():
+    """Quem era amaldiçoado e completa as noites do tapiri sai curado."""
+    from types import SimpleNamespace
+    from cenas.dia import Dia
+    from dados import noites
+    from motor import febre
+    estado = Estado()
+    estado.dia = 5
+    estado.dentro = ["Yara", "Mbaé"]
+    estado.tapiri, estado.tapiri_desde = ["Mbaé"], {"Mbaé": 2}
+    assert febre.amaldicoado(estado, "Mbaé")
+    dia = SimpleNamespace(estado=estado)
+    Dia._liberar_tapiri(dia)
+    assert estado.tapiri == [] and estado.curados == ["Mbaé"]
+    assert not febre.amaldicoado(estado, "Mbaé") and febre.quantos_amaldicoados(estado) == 0
+    febre.pegar(estado, "Mbaé")
+    assert estado.febre == [], "curado não passa a febre"
+    vistas = {z["pergunta"]: z for z in noites.ZONAS_MBAE if Dia._condicao(dia, z)}
+    assert vistas["Boca"]["imagem"] == "boca_mbae" and not vistas["Boca"].get("sinal")
+    assert sum(1 for z in noites.ZONAS_MBAE if Dia._condicao(dia, z) and z["pergunta"] == "Olhos") == 1
+    print("ok cura no tapiri: sai curado, não passa a febre e o rosto mostra")
 
 
 def testar_febre():
@@ -1991,6 +2014,7 @@ if __name__ == "__main__":
     testar_febre()
     testar_sinais_no_rosto()
     testar_corpos()
+    testar_cura_no_tapiri()
     testar_cartoes_introducao()
     testar_fluxo()
     testar_desempenho()

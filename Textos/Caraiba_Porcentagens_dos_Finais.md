@@ -109,7 +109,7 @@ As porcentagens desta seção são de **quem tenta** o final, seguindo o caminho
 - A condição pede `viu_anhanga` ≥ 3, mas **ainda não existe o "Olhar a mata"** nas noites,
   e nada soma `viu_anhanga`.
 - **Para funcionar:** criar o veado branco e o botão de olhar a mata (a ideia era nas noites
-  2, 5 e 8, gastando 1 olhar).
+  2, 5 e 9, gastando 1 olhar).
 
 ### A Honra: impossível hoje
 

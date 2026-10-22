@@ -12,6 +12,8 @@
 # - amanhecer(estado): passa para o dia seguinte. Quem pegou a febre acorda doente no 1º dia
 #   e morre no 2º; as frases da manhã (com o nome) ficam em estado.manha, para o Dia mostrar.
 # - amaldicoado(estado, nome): o doente de fora que ainda passa a febre.
+# - curar(estado, nome): quem era amaldiçoado e completa as noites do tapiri sai curado
+#   (estado.curados): não passa mais a febre nem conta como amaldiçoado.
 # - era_amaldicoado(estado, nome) e deixar_corpo(...): quem morre deixa o corpo coberto com a
 #   esteira (a de amaldiçoado, se era) no lugar onde estava; quem morre da febre, onde dormia.
 # - mostra_febre(estado, nome): quem pegou a febre numa noite anterior e mostra (o exame vê o
@@ -55,7 +57,7 @@ def _contaminar(estado, de, intervalo, sorte):
 
 
 def pegar(estado, quem):
-    if quem not in CONTAGIO or not _na_oca(estado, quem):
+    if quem not in CONTAGIO or quem in estado.curados or not _na_oca(estado, quem):
         return
     _contaminar(estado, quem, CONTAGIO[quem], _sorte(estado, quem))
 
@@ -71,17 +73,28 @@ def passar_na_oca(estado):
 
 def quantos_amaldicoados(estado):
     """Quantos amaldiçoados há na aldeia: os doentes de fora que estão nela e quem pegou deles."""
-    return sum(1 for nome in estado.dentro if nome in CONTAGIO) + len(estado.febre)
+    return sum(1 for nome in estado.dentro if nome in CONTAGIO and nome not in estado.curados) + len(estado.febre)
 
 
 def amaldicoado(estado, nome):
-    """O doente de fora ainda passa a febre: está na aldeia (não morreu nem foi levado)."""
-    return nome in CONTAGIO and nome in estado.dentro
+    """O doente de fora ainda passa a febre: está na aldeia (não morreu nem foi levado) e não
+    saiu curado do tapiri."""
+    return nome in CONTAGIO and nome in estado.dentro and nome not in estado.curados
 
 
 def era_amaldicoado(estado, nome):
-    """Chegou com a maldição (dados/febre.py, DOENTES) ou pegou a febre, mostrando ou não."""
+    """Chegou com a maldição (dados/febre.py, DOENTES) ou pegou a febre, mostrando ou não, e
+    não saiu curado do tapiri."""
+    if nome in estado.curados:
+        return False
     return nome in DOENTES or any(entrada.get("nome") == nome for entrada in estado.febre)
+
+
+def curar(estado, nome):
+    """Saiu do tapiri depois das noites lá: se era amaldiçoado, está curado."""
+    if era_amaldicoado(estado, nome):
+        estado.curados.append(nome)
+        estado.febre = [entrada for entrada in estado.febre if entrada.get("nome") != nome]
 
 
 def _lugar(lugar):

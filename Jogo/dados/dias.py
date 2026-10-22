@@ -395,7 +395,7 @@ DIAS = {
             # depois, o corpo de quem o jogador matou na noite 2, com o nome.
             corpo_de("Yara"),
             corpo_de("Mbaé"),
-            {"tipo": "se", "na_oca": "Mbaé", "passos": [
+            {"tipo": "se", "na_oca": "Mbaé", "nao_curado": "Mbaé", "passos": [
                 {"tipo": "fala", "quem": "", "texto": "Mbaé tossiu a noite toda na oca Yebá Bëló."},
             ]},
 
@@ -439,7 +439,7 @@ DIAS = {
             # A manhã: primeiro a febre (motor/febre.py); depois, quem o jogador matou ontem.
             corpo_de("Yara"),
             corpo_de("Mbaé"),
-            {"tipo": "se", "na_oca": "Mbaé", "passos": [
+            {"tipo": "se", "na_oca": "Mbaé", "nao_curado": "Mbaé", "passos": [
                 {"tipo": "fala", "quem": "", "texto": "Mbaé tossiu a noite toda na oca Yebá Bëló."},
             ]},
 
@@ -505,7 +505,7 @@ DIAS = {
             corpo_de("Yara"),
             corpo_de("Mbaé"),
             corpo_de("Potira"),
-            {"tipo": "se", "na_oca": "Mbaé", "passos": [
+            {"tipo": "se", "na_oca": "Mbaé", "nao_curado": "Mbaé", "passos": [
                 {"tipo": "fala", "quem": "", "texto": "Mbaé tossiu a noite toda na oca Yebá Bëló."},
             ]},
 
@@ -572,7 +572,7 @@ DIAS = {
             corpo_de("Mbaé"),
             corpo_de("Potira"),
             corpo_de("Tamandaré-mirim"),
-            {"tipo": "se", "na_oca": "Mbaé", "passos": [
+            {"tipo": "se", "na_oca": "Mbaé", "nao_curado": "Mbaé", "passos": [
                 {"tipo": "fala", "quem": "", "texto": "Mbaé tossiu a noite toda na oca Yebá Bëló."},
             ]},
 
@@ -623,7 +623,7 @@ DIAS = {
             corpo_de("Mbaé"),
             corpo_de("Potira"),
             corpo_de("Tamandaré-mirim"),
-            {"tipo": "se", "na_oca": "Mbaé", "passos": [
+            {"tipo": "se", "na_oca": "Mbaé", "nao_curado": "Mbaé", "passos": [
                 {"tipo": "fala", "quem": "", "texto": "Mbaé tossiu a noite toda na oca Yebá Bëló."},
             ]},
 
@@ -686,7 +686,7 @@ DIAS = {
             corpo_de("Potira"),
             corpo_de("Tamandaré-mirim"),
             corpo_de("Iandé"),
-            {"tipo": "se", "na_oca": "Mbaé", "passos": [
+            {"tipo": "se", "na_oca": "Mbaé", "nao_curado": "Mbaé", "passos": [
                 {"tipo": "fala", "quem": "", "texto": "Mbaé tossiu a noite toda na oca Yebá Bëló."},
             ]},
 
@@ -733,7 +733,7 @@ DIAS = {
             corpo_de("Potira"),
             corpo_de("Tamandaré-mirim"),
             corpo_de("Iandé"),
-            {"tipo": "se", "na_oca": "Mbaé", "passos": [
+            {"tipo": "se", "na_oca": "Mbaé", "nao_curado": "Mbaé", "passos": [
                 {"tipo": "fala", "quem": "", "texto": "Mbaé tossiu a noite toda na oca Yebá Bëló."},
             ]},
 
@@ -791,7 +791,7 @@ DIAS = {
             corpo_de("Potira"),
             corpo_de("Tamandaré-mirim"),
             corpo_de("Iandé"),
-            {"tipo": "se", "na_oca": "Mbaé", "passos": [
+            {"tipo": "se", "na_oca": "Mbaé", "nao_curado": "Mbaé", "passos": [
                 {"tipo": "fala", "quem": "", "texto": "Mbaé tossiu a noite toda na oca Yebá Bëló."},
             ]},
 

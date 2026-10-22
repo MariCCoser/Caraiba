@@ -87,6 +87,31 @@ FALA_MATAR = {"tipo": "fala", "quem": "", "texto": "O fogo estala. Ninguém na a
 # Quem pegou e mostra (acorda com febre no dia seguinte) tem, na noite em que ainda está viva, o
 # olho e a boca doentes. Quem pegou sem mostrar segue com o rosto de sempre.
 # As diferenças de cada um: Textos/Caraiba_Sinais_dos_Personagens.md.
+# --- O tapiri cura (cenas/dia.py, _liberar_tapiri) ---
+# Quem é amaldiçoado e completa as noites do tapiri sai curado (estado.curados): não passa mais
+# a febre, e o rosto e a fala mostram isso. "curado"/"nao_curado" levam o nome (cenas/dia.py).
+def fala_ou_curado(quem, texto, texto_curado):
+    """A fala de sempre e, se a pessoa já saiu curada do tapiri, a outra."""
+    return [{"tipo": "se", "nao_curado": quem, "passos": [{"tipo": "fala", "quem": quem, "texto": texto}]},
+            {"tipo": "se", "curado": quem, "passos": [{"tipo": "fala", "quem": quem, "texto": texto_curado}]}]
+
+
+def pode_se_curar(zonas, quem, curado):
+    """Como pode_pegar_febre, ao contrário: cada zona de `curado` ganha a versão de quem saiu
+    curado do tapiri (sem sinal), logo depois da de sempre. Zona que já vem em duas versões (o
+    olho que piora com as noites na oca) ganha uma versão curada só."""
+    novas, feitas = [], set()
+    for zona in zonas:
+        if zona["pergunta"] not in curado:
+            novas.append(dict(zona))
+            continue
+        novas.append(dict(zona, nao_curado=quem))
+        if zona["pergunta"] not in feitas:
+            feitas.add(zona["pergunta"])
+            novas.append(dict(curado[zona["pergunta"]], pergunta=zona["pergunta"], curado=quem))
+    return novas
+
+
 def pode_pegar_febre(zonas, quem, doente):
     """As zonas de quem é são, e, para cada zona de `doente` ({"Olhos": zona, ...}), a versão
     doente logo depois da sã: aparece só uma das duas ("sem_febre"/"com_febre", cenas/dia.py)."""
@@ -177,7 +202,7 @@ ACUSACAO = {"pergunta": "De quem você desconfia?", "acusa": [
 ]}
 
 # --- O barulho na mata (Anhangá) ---
-# Nas noites 2, 5 e 8, o jogador pode perguntar ao pajé sobre um barulho na mata. Custa 1
+# Nas noites 2, 5 e 9, o jogador pode perguntar ao pajé sobre um barulho na mata. Custa 1
 # olhar. O pajé aponta, e a mata aparece na tela inteira (viu_anhanga +1). A imagem e a frase
 # seguem a vez, não a noite: na 1ª vez, só o escuro (Arte/Ar_livre/Anhanga_um); na 2ª, uma
 # sombra clara (Anhanga_dois); na 3ª, o veado branco (Anhanga_tres). O final Anhangá pede as
@@ -429,6 +454,32 @@ ESCOLHA_ARACI = {"tipo": "escolha", "quem": "Araci", "texto": "Onde Araci dorme 
         {"tipo": "fala", "quem": "", "texto": "Araci. Duas."},
     ]},
 ]}
+
+
+# Quem sai curado do tapiri: o rosto limpo, as manchas secando (pode_se_curar, lá em cima).
+MBAE_CURADO = {
+    "Testa": {"resposta": "Fresca. A febre passou."},
+    "Olhos": {"imagem": "olho_mbae", "resposta": "O tapiri me fez bem."},
+    "Boca": {"imagem": "boca_mbae", "resposta": "Pode olhar. As feridas fecharam."},
+    "Respiração": {"resposta": "Respira fundo, sem chiado."},
+}
+TAMANDARE_CURADO = {
+    "Olhos": {"imagem": "olho_tamandare", "resposta": "O sol da estrada já não arde."},
+    "Boca": {"imagem": "boca_tamandare", "resposta": "A rouquidão foi embora."},
+    "Orelhas": {"resposta": "Atrás das orelhas, as manchas estão secando."},
+    "Pescoço": {"resposta": "No pescoço, as manchas estão secando."},
+    "Respiração": {"resposta": "Respira fundo, sem tosse."},
+}
+IANDE_CURADA = {
+    "Olhos": {"imagem": "olho_iande", "resposta": "Dormi bem, enfim."},
+    "Boca": {"imagem": "boca_iande", "resposta": "Pode olhar. Está tudo bem."},
+    "Pescoço": {"resposta": "No pescoço, as manchas estão secando."},
+}
+ZONAS_MBAE = pode_se_curar(ZONAS_MBAE, "Mbaé", MBAE_CURADO)
+ZONAS_TAMANDARE = pode_se_curar(ZONAS_TAMANDARE, "Tamandaré-mirim", TAMANDARE_CURADO)
+ZONAS_TAMANDARE_NOITE_6 = pode_se_curar(ZONAS_TAMANDARE_NOITE_6, "Tamandaré-mirim", TAMANDARE_CURADO)
+ZONAS_TAMANDARE_NOITE_9 = pode_se_curar(ZONAS_TAMANDARE_NOITE_9, "Tamandaré-mirim", TAMANDARE_CURADO)
+ZONAS_IANDE_NOITE_9 = pode_se_curar(ZONAS_IANDE_NOITE_9, "Iandé", IANDE_CURADA)
 
 
 NOITES = {
@@ -782,7 +833,8 @@ NOITES = {
                 "de_fora": True, "uma_vez": True, "obrigatorio": True,
                 "passos": [
                     {"tipo": "visitante", "visitante": "mbae"},
-                    {"tipo": "fala", "quem": "Mbaé", "texto": "(tosse) O frio entra no peito."},
+                    *fala_ou_curado("Mbaé", "(tosse) O frio entra no peito.",
+                                    "O tapiri me devolveu o fôlego."),
                     {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa_mbae()},
                     {"tipo": "exame", "quem": "Mbaé", "liberadas": ["Olhos", "Boca"],
                      "texto": TEXTO_EXAME, "zonas": ZONAS_MBAE},
@@ -884,7 +936,8 @@ NOITES = {
                 "de_fora": True, "uma_vez": True, "obrigatorio": True,
                 "passos": [
                     {"tipo": "visitante", "visitante": "mbae"},
-                    {"tipo": "fala", "quem": "Mbaé", "texto": "(tosse) Ainda estou aqui."},
+                    *fala_ou_curado("Mbaé", "(tosse) Ainda estou aqui.",
+                                    "Respiro sem tossir. Fazia tempo."),
                     {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa_mbae()},
                     {"tipo": "exame", "quem": "Mbaé", "liberadas": LIBERADAS_NOITE_6,
                      "texto": TEXTO_EXAME, "zonas": ZONAS_MBAE},
@@ -984,7 +1037,8 @@ NOITES = {
                 "de_fora": True, "uma_vez": True, "obrigatorio": True,
                 "passos": [
                     {"tipo": "visitante", "visitante": "mbae"},
-                    {"tipo": "fala", "quem": "Mbaé", "texto": "(tosse) Mais um dia."},
+                    *fala_ou_curado("Mbaé", "(tosse) Mais um dia.",
+                                    "Mais um dia, e sem tosse."),
                     {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa_mbae()},
                     {"tipo": "exame", "quem": "Mbaé", "liberadas": LIBERADAS_NOITE_6,
                      "texto": TEXTO_EXAME, "zonas": ZONAS_MBAE},
@@ -1078,7 +1132,6 @@ NOITES = {
                         {"pergunta": "E o Krenan?",
                          "resposta": ["Krenan. A gente dele é de outro rio.",
                                       "Ele lembra o que a gente esqueceu. Mas [quem leva a aldeia embora não é da aldeia]."]},
-                        barulho_na_mata(),
                     ]},
                     {"tipo": "visitante", "visitante": None},
                 ],
@@ -1125,7 +1178,8 @@ NOITES = {
                 "de_fora": True, "uma_vez": True, "obrigatorio": True,
                 "passos": [
                     {"tipo": "visitante", "visitante": "mbae"},
-                    {"tipo": "fala", "quem": "Mbaé", "texto": "(tosse) O rio acima é frio."},
+                    *fala_ou_curado("Mbaé", "(tosse) O rio acima é frio.",
+                                    "O rio acima é frio. Agora eu aguento."),
                     {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa_mbae()},
                     {"tipo": "exame", "quem": "Mbaé", "liberadas": LIBERADAS_NOITE_6,
                      "texto": TEXTO_EXAME, "zonas": ZONAS_MBAE},
@@ -1215,6 +1269,8 @@ NOITES = {
                         {"pergunta": "Como eu vejo isso?",
                          "resposta": "Olhe a pele de perto. O fogo engana."},
                         ACUSACAO,
+                        # A 3ª vez do Anhangá: no fim desta noite, o final (dados/finais.py).
+                        barulho_na_mata(),
                     ]},
                     {"tipo": "visitante", "visitante": None},
                 ],
@@ -1240,7 +1296,8 @@ NOITES = {
                 "de_fora": True, "uma_vez": True, "obrigatorio": True,
                 "passos": [
                     {"tipo": "visitante", "visitante": "mbae"},
-                    {"tipo": "fala", "quem": "Mbaé", "texto": "(tosse) Ainda respiro."},
+                    *fala_ou_curado("Mbaé", "(tosse) Ainda respiro.",
+                                    "Já posso subir o rio de novo."),
                     {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa_mbae()},
                     {"tipo": "exame", "quem": "Mbaé", "liberadas": LIBERADAS_NOITE_9,
                      "texto": TEXTO_EXAME, "zonas": com_pescoco(ZONAS_MBAE)},
@@ -1274,7 +1331,8 @@ NOITES = {
                 "de_fora": True, "uma_vez": True, "obrigatorio": True,
                 "passos": [
                     {"tipo": "visitante", "visitante": "tamandare"},
-                    {"tipo": "fala", "quem": "Tamandaré-mirim", "texto": "A pele arde. Deve ser a terra sem mal chegando."},
+                    *fala_ou_curado("Tamandaré-mirim", "A pele arde. Deve ser a terra sem mal chegando.",
+                                    "A pele secou. A terra sem mal me poupou."),
                     {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa_tamandare()},
                     {"tipo": "exame", "quem": "Tamandaré-mirim", "liberadas": LIBERADAS_NOITE_9,
                      "texto": TEXTO_EXAME, "zonas": ZONAS_TAMANDARE_NOITE_9},
@@ -1373,7 +1431,8 @@ NOITES = {
                 "de_fora": True, "uma_vez": True, "obrigatorio": True,
                 "passos": [
                     {"tipo": "visitante", "visitante": "mbae"},
-                    {"tipo": "fala", "quem": "Mbaé", "texto": "(tosse) Se eu não acordar, devolvam meu arco ao rio."},
+                    *fala_ou_curado("Mbaé", "(tosse) Se eu não acordar, devolvam meu arco ao rio.",
+                                    "Quando o cacique voltar, eu sigo caminho."),
                     {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa_mbae()},
                     {"tipo": "exame", "quem": "Mbaé", "liberadas": LIBERADAS_NOITE_10,
                      "texto": TEXTO_EXAME, "zonas": com_pescoco(ZONAS_MBAE)},
@@ -1407,7 +1466,8 @@ NOITES = {
                 "de_fora": True, "uma_vez": True, "obrigatorio": True,
                 "passos": [
                     {"tipo": "visitante", "visitante": "tamandare"},
-                    {"tipo": "fala", "quem": "Tamandaré-mirim", "texto": "A terra sem mal está perto. Sinto na pele."},
+                    *fala_ou_curado("Tamandaré-mirim", "A terra sem mal está perto. Sinto na pele.",
+                                    "A terra sem mal está perto. A pele já não arde."),
                     {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa_tamandare()},
                     {"tipo": "exame", "quem": "Tamandaré-mirim", "liberadas": LIBERADAS_NOITE_10,
                      "texto": TEXTO_EXAME, "zonas": ZONAS_TAMANDARE_NOITE_9},
@@ -1422,7 +1482,8 @@ NOITES = {
                 "de_fora": True, "uma_vez": True, "obrigatorio": True,
                 "passos": [
                     {"tipo": "visitante", "visitante": "iande"},
-                    {"tipo": "fala", "quem": "Iandé", "texto": "As costas doem mais hoje. Deve ser a chuva."},
+                    *fala_ou_curado("Iandé", "As costas doem mais hoje. Deve ser a chuva.",
+                                    "As costas pararam de doer. O tapiri me fez bem."),
                     {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": [
                         {"pergunta": "Viu alguém amaldiçoado?",
                          "resposta": "Vi uma casa fechada, com uma cruz na porta."},

@@ -31,7 +31,7 @@ precisam ser confirmadas pelo grupo.**
 | Matar alguém na fogueira | `mortos_por_sua_mao` +1, `mortos` +1, `vivos` −1, `sanidade` −3 |
 | Krenan leva alguém rio acima (dias 8 a 10) | `rio_acima` +1, `vivos` −1. Ele leva até 2 por dia (proposta) |
 | Ouvir a história de quem entrou | `memoria` +1 (uma história por visitante) |
-| Olhar a mata nas noites 2, 5 e 8 | `viu_anhanga` +1. Custa 1 de energia |
+| Olhar a mata nas noites 2, 5 e 9 | `viu_anhanga` +1. Custa 1 de energia |
 | Levar ao tapiri um doente de verdade | `tapiri_usos` +1. Gente sã não conta |
 | Levar ao tapiri quem o pajé acusou | `seguiu_paje` +1. Se a pessoa era sã, `inocentes` +1 |
 
@@ -111,7 +111,7 @@ entram, e Araci chega depois do cálculo.
 
 ### 5. Anhangá: noite 9
 
-- Precisa perguntar ao pajé "Que barulho é esse na mata?" nas três noites em que dá (2, 5 e 8).
+- Precisa perguntar ao pajé "Que barulho é esse na mata?" nas três noites em que dá (2, 5 e 9). No fim da noite 9, a da 3ª vez, o jogo vai para o final.
   Perder uma já tira o final, porque o máximo é 3.
 - A mata aparece na tela inteira, na ordem das vezes: na 1ª, só o escuro (`Anhanga_um`); na 2ª,
   uma sombra clara (`Anhanga_dois`); na 3ª, o veado branco (`Anhanga_tres`).
@@ -136,6 +136,10 @@ entram, e Araci chega depois do cálculo.
 
 - Precisa levar ao tapiri **os três doentes**, Mbaé (noite 2), Tamandaré-mirim (noite 5) e
   Iandé (noite 7), porque só eles contam.
+- **O tapiri cura:** quem era amaldiçoado e completa as 3 noites lá volta curado. Não passa
+  mais a febre, não conta como amaldiçoado para os deuses do pajé, e o rosto (olho, boca,
+  manchas secando) e a fala mostram que sarou. Mbaé sai curado na noite 5, Tamandaré-mirim na
+  noite 8 e Iandé na noite 10.
 - Conta das vagas: Mbaé ocupa a vaga das noites 2 a 4. Tamandaré-mirim ocupa a mesma vaga das
   noites 5 a 7. Na noite 7 ela ainda está ocupada, então Iandé só cabe na **2ª vaga, que só
   existe se Potira entrou**. Ou seja, O Tapiri também exige deixar Potira entrar.

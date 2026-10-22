@@ -237,7 +237,8 @@ class Dia(Cena):
         "no_maximo": {"recusas_aleixo": 1} (variáveis do estado.py com no máximo esse valor);
         "com_febre" e "sem_febre" levam o nome de quem pegou a febre na oca e mostra
         (motor/febre.py, mostra_febre); "noites_na_oca_ao_menos": {"Mbaé": 3} e
-        "noites_na_oca_menos_de": {"Mbaé": 3} contam as noites que a pessoa dormiu na oca.
+        "noites_na_oca_menos_de": {"Mbaé": 3} contam as noites que a pessoa dormiu na oca;
+        "curado" e "nao_curado" levam o nome de quem saiu (ou não) curado do tapiri.
         """
         estado = self.estado
         if "morto_ontem" in item and estado.mortos_quando.get(item["morto_ontem"]) != estado.dia - 1:
@@ -247,6 +248,10 @@ class Dia(Cena):
         if "amaldicoado" in item and not febre.amaldicoado(estado, item["amaldicoado"]):
             return False
         if "sao" in item and febre.amaldicoado(estado, item["sao"]):
+            return False
+        if "curado" in item and item["curado"] not in estado.curados:
+            return False
+        if "nao_curado" in item and item["nao_curado"] in estado.curados:
             return False
         if "com_febre" in item and not febre.mostra_febre(estado, item["com_febre"]):
             return False
@@ -317,12 +322,14 @@ class Dia(Cena):
             yield nome, pessoa
 
     def _liberar_tapiri(self):
-        """Quem já passou TAPIRI["noites"] noites no tapiri volta para a oca: a vaga abre."""
+        """Quem já passou TAPIRI["noites"] noites no tapiri volta para a oca: a vaga abre. Quem
+        era amaldiçoado volta curado (motor/febre.py, curar)."""
         for nome in list(self.estado.tapiri):
             desde = self.estado.tapiri_desde.get(nome, 0)
             if self.estado.dia - desde >= TAPIRI["noites"]:
                 self.estado.tapiri.remove(nome)
                 self.estado.tapiri_desde.pop(nome, None)
+                febre.curar(self.estado, nome)
 
     def _tapiri_cheio(self):
         return len(self.estado.tapiri) >= TAPIRI["vagas"]

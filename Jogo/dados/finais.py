@@ -109,8 +109,8 @@ FINAIS = [
         "chance_acaso": 0, "chance_tentando": None,
         "nome": "Anhangá",
         "povo": "Potiguara",
-        # As três vezes em que o pajé aponta para a mata (noites 2, 5 e 8); o final fecha no fim
-        # da noite 9, com a imagem do veado atrás das telas.
+        # As três vezes em que o pajé aponta para a mata (noites 2, 5 e 9); no fim da noite 9,
+        # a da 3ª vez, o jogo vai para o final, com a imagem do veado atrás das telas.
         "condicao": [{"viu_anhanga": ">= 3", "mortos_por_sua_mao": "== 0", "entregues": "== 0"}],
         "antecipado": True,
         "a_partir_da_noite": 9,

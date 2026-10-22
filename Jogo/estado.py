@@ -45,6 +45,8 @@ class Estado:
         self.febre = []
         # Quantas noites cada um de fora dormiu na oca (o olho dos amaldiçoados piora com elas)
         self.noites_na_oca = {}
+        # Quem era amaldiçoado e saiu curado do tapiri (completou as noites lá): não passa mais a febre
+        self.curados = []
         # As histórias já ouvidas (dados/conversas.py): a memória sobe uma vez por história
         self.historias = []
         # Quem o jogador chamou para a fogueira sem deixar entrar na aldeia (ex.: Krenan)
