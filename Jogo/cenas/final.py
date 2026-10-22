@@ -14,9 +14,15 @@ from motor import efeitos, finais, progresso, ui
 from motor.cena import Cena, desenhar_cenario
 
 TECLAS_AVANCAR = (pygame.K_SPACE, pygame.K_RETURN, pygame.K_KP_ENTER)
-LARGURA_TEXTO = 1150
-ESCURECER = 150             # o quanto o fundo escurece atrás do texto (0 a 255)
-ESCURECER_COM_FUNDO = 80
+# O texto fica numa coluna à direita, para a imagem do final aparecer à esquerda.
+CENTRO_COLUNA = 1180        # o meio da coluna (x)
+LARGURA_TEXTO = 640
+Y_TEXTO = 450               # o meio do texto (y)
+TAMANHO_TEXTO = 27
+ESCURECER = 150             # o quanto a imagem escurece inteira (0 a 255), no final sem imagem própria
+ESCURECER_COM_FUNDO = 35    # no final com imagem própria: quase nada
+PAINEL = (0, 0, 0, 110)     # o painel atrás da coluna: preto quase transparente
+MARGEM_PAINEL = 28
 ESPACO_CHANCE = 70   # da fonte até a linha "Final 5/8" (e, embaixo dela, a chance)
 
 
@@ -48,7 +54,7 @@ class Final(Cena):
         ]
         self.linhas_chance = self._linhas_chance()
         self.indice = 0
-        self.botao = ui.Botao(TELA_FINAL["seguir"], (800, 830), largura_minima=300)
+        self.botao = ui.Botao(TELA_FINAL["seguir"], (CENTRO_COLUNA, 830), largura_minima=300)
         self._mostrar()
 
     def _linhas_chance(self):
@@ -57,15 +63,16 @@ class Final(Cena):
         chances = [TELA_FINAL["chance_acaso"] % porcentagem(self.final["chance_acaso"])]
         if self.final.get("chance_tentando") is not None:
             chances.append(TELA_FINAL["chance_tentando"] % porcentagem(self.final["chance_tentando"]))
-        return linhas + [" · ".join(chances)]
+        return linhas + chances
 
     def _ultima(self):
         return self.indice == len(self.telas) - 1
 
     def _mostrar(self):
         _, texto = self.telas[self.indice]
-        self.caixa = ui.CaixaTexto(texto, LARGURA_TEXTO, (800, 470), ancora="centro",
-                                   tamanho=30, alinhamento="centro", max_linhas=10)
+        self.caixa = ui.CaixaTexto(texto, LARGURA_TEXTO, (CENTRO_COLUNA, Y_TEXTO), ancora="centro",
+                                   tamanho=TAMANHO_TEXTO, alinhamento="centro", max_linhas=12,
+                                   fundo=False)
         self.caixa.comecar_digitacao()
         if not self._ultima():
             self.botao.texto = TELA_FINAL["seguir"]
@@ -104,14 +111,27 @@ class Final(Cena):
 
     def desenhar_interface(self, tela):
         titulo, _ = self.telas[self.indice]
-        self.caixa.desenhar(tela)
-        ui.texto_simples(tela, titulo, (800, self.caixa.rect.top - 60),
+        self.caixa.numero_de_linhas()   # garante o layout (o tamanho do texto pode ter mudado)
+        y_titulo = self.caixa.rect.top - 50
+        # "Final 5/8" e as chances, embaixo da fonte (só na última tela, com o texto inteiro).
+        chance = self._ultima() and self.caixa.terminou()
+        fim = self.caixa.rect.bottom + (ESPACO_CHANCE + 46 * (len(self.linhas_chance) - 1) if chance else 0)
+        # O painel quase transparente atrás da coluna inteira (título, texto e chances).
+        painel = pygame.Rect(0, 0, LARGURA_TEXTO + 2 * MARGEM_PAINEL, 0)
+        painel.top = y_titulo - 30 - MARGEM_PAINEL // 2
+        painel.height = fim + 20 - painel.top
+        painel.centerx = CENTRO_COLUNA
+        ui.painel_arredondado(tela, painel, PAINEL)
+        ui.texto_simples(tela, titulo, (CENTRO_COLUNA, y_titulo),
                          config.TAMANHO_SUBTITULO + 8, nome_fonte="serif_negrito")
-        if self._ultima() and self.caixa.terminou():
-            numero, chance = self.linhas_chance
+        self.caixa.desenhar(tela)
+        if chance:
+            numero, *chances = self.linhas_chance
             y = self.caixa.rect.bottom + ESPACO_CHANCE
-            ui.texto_simples(tela, numero, (800, y), config.TAMANHO_SUBTITULO,
+            ui.texto_simples(tela, numero, (CENTRO_COLUNA, y), config.TAMANHO_SUBTITULO,
                              nome_fonte="serif_negrito")
-            ui.texto_simples(tela, chance, (800, y + 46), config.TAMANHO_PEQUENO,
-                             cor=config.BARRO)
+            for linha in chances:
+                y += 46
+                ui.texto_simples(tela, linha, (CENTRO_COLUNA, y), config.TAMANHO_PEQUENO,
+                                 cor=config.TABATINGA)
         self.botao.desenhar(tela)

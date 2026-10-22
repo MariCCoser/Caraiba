@@ -100,6 +100,9 @@ class Dia(Cena):
         self.rect_imagem = pygame.Rect(0, 0, 0, 0)
         self.botoes = []          # [(BlocoOpcao, o que fazer ao clicar)]
         self.perguntas_feitas = set()
+        # Quem responde cada bloco de perguntas (o primeiro a falar antes dele): uma narração no
+        # meio da conversa (a visão do Anhangá) não pode tirar o nome de quem responde.
+        self.quem_responde = {}
         self.apresentados = set()  # exames e escolhas que já mostraram o "texto" de abertura
         self.passo_aldeia = None   # o passo "aldeia" em que o jogador está andando
         self.voltar_para = None    # depois de uma conversa de dia: "aldeia" ou "oca" (onde ela começou)
@@ -533,7 +536,7 @@ class Dia(Cena):
         # Uma resposta pode ter várias frases: a primeira aparece agora, as outras em seguida.
         # Depois da resposta, volta para as perguntas que sobraram.
         frases = [resposta] if isinstance(resposta, str) else list(resposta)
-        quem = passo.get("quem", self.quem)
+        quem = passo.get("quem") or self.quem_responde.setdefault(id(passo), self.quem)
         self.fila[0:0] = [{"tipo": "fala", "quem": quem, "texto": frase} for frase in frases[1:]] + [passo]
         if "por_vez" in item:
             self.fila[0:0] = self._passos_da_vez(item["por_vez"])
@@ -880,10 +883,12 @@ class Dia(Cena):
             nome = fonte_nome.render(self.quem, True, config.BARRO)
             tela.blit(nome, nome.get_rect(midtop=(self.painel.centerx, self.painel.top + 14)))
             if self.pergunta:
-                # A pergunta do jogador, logo abaixo do nome de quem responde.
+                # A pergunta do jogador, logo abaixo do nome de quem responde (no mesmo espaço que
+                # _posicionar guarda para ela: sem nome, ela sobe para o lugar dele).
+                y = self.painel.top + 18 + (nome.get_height() if self.quem else 0)
                 ui.texto_simples(tela, "— " + self.pergunta,
-                                 (self.painel.centerx, self.painel.top + 18 + nome.get_height()
-                                  + fontes.fonte_escalada("serif_italico", config.TAMANHO_PEQUENO).get_linesize() // 2),
+                                 (self.painel.centerx,
+                                  y + fontes.fonte_escalada("serif_italico", config.TAMANHO_PEQUENO).get_linesize() // 2),
                                  config.TAMANHO_PEQUENO, nome_fonte="serif_italico", cor=config.TABATINGA)
             self.caixa.desenhar(tela)
             if self.modo == "fala" and self.caixa.terminou():
