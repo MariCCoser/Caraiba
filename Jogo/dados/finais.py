@@ -111,7 +111,8 @@ FINAIS = [
         "povo": "Potiguara",
         # As três vezes em que o pajé aponta para a mata (noites 2, 5 e 9); no fim da noite 9,
         # a da 3ª vez, o jogo vai para o final, com a imagem do veado atrás das telas.
-        "condicao": [{"viu_anhanga": ">= 3", "mortos_por_sua_mao": "== 0", "entregues": "== 0"}],
+        # Entregar alguém ao Aleixo não impede (com 2 entregas, A Troca vem antes na fila).
+        "condicao": [{"viu_anhanga": ">= 3", "mortos_por_sua_mao": "== 0"}],
         "antecipado": True,
         "a_partir_da_noite": 9,
         "fundo": "anhanga_final",

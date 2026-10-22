@@ -66,7 +66,7 @@ entram, e Araci chega depois do cálculo.
 | 2 | A Loucura | `mortos_por_sua_mao` ≥ 3 | **noite 4** |
 | 3 | A Água do Batismo | `converteu` ≥ 1 (aceitou o batismo do padre novo) | noite 9 |
 | 4 | Rio Acima | `rio_acima` ≥ 4 e `entregues` = 0 | **noite 9** |
-| 5 | Anhangá | `viu_anhanga` ≥ 3, sem mortes pela mão, sem entregas | noite 9 |
+| 5 | Anhangá | `viu_anhanga` ≥ 3, sem mortes pela mão (entregar ao Aleixo não impede) | noite 9 |
 | 6 | A Honra | `vivos` ≥ 9, `memoria` ≥ 5, sem mortes pela mão, sem entregas | dia 10 |
 | 7 | O Tapiri | `tapiri_usos` ≥ 3, `vivos` ≥ 7, sem mortes pela mão, sem entregas | dia 10 |
 | 8 | O Vazio | nenhuma das anteriores; ou `vivos` ≤ 7 no fim de uma noite | **noite 9** (ou dia 10) |
@@ -116,7 +116,7 @@ entram, e Araci chega depois do cálculo.
 - A mata aparece na tela inteira, na ordem das vezes: na 1ª, só o escuro (`Anhanga_um`); na 2ª,
   uma sombra clara (`Anhanga_dois`); na 3ª, o veado branco (`Anhanga_tres`).
 - Cada olhar custa 1 de energia: é um olhar a menos no exame daquela noite.
-- Sem mortes pela sua mão e sem entregas. O jogo acaba no fim da **noite 9**, com
+- Sem mortes pela sua mão. Entregar alguém ao Aleixo não impede (mas com 2 entregas A Troca vem antes, e quem aceita o batismo na noite 9 cai em A Água do Batismo). O jogo acaba no fim da **noite 9**, com
   `Anhanga_final` atrás das telas do final.
 
 ### 6. A Honra: dia 10

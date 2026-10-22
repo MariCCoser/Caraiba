@@ -579,7 +579,9 @@ def testar_finais():
         ({"dia": 7, "tapiri_usos": 3}, None),                           # O Tapiri só no dia 10
         ({"dia": 8, "viu_anhanga": 3}, None),                           # Anhangá fecha na noite 9
         ({"dia": 9, "viu_anhanga": 3}, "anhanga"),
-        ({"dia": 9, "viu_anhanga": 3, "entregues": 1}, None),
+        ({"dia": 9, "viu_anhanga": 3, "entregues": 1}, "anhanga"),     # entregar não impede
+        ({"dia": 9, "viu_anhanga": 3, "entregues": 2}, "troca"),        # 2 entregas: A Troca antes
+        ({"dia": 9, "viu_anhanga": 3, "mortos_por_sua_mao": 1}, None),
         ({"dia": 9, "converteu": 1, "entregues": 1}, "batismo"),       # o padre novo, na noite 9
     ]
     for valores, esperado in antes:
