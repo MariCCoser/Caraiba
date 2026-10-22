@@ -745,7 +745,8 @@ NOITES = {
         "dica": "Clique em quem está perto do fogo para conversar.",
         "dormir": "Ir dormir",
         "pessoas": {
-            # O pajé só diz como estão os deuses (dados/dias.py, DEUSES).
+            # O pajé diz como estão os deuses (dados/dias.py, DEUSES). É com ele a acusação e o
+            # barulho na mata (a 2ª vez do Anhangá), como nas outras noites.
             "Pajé": {
                 "imagem": "paje_sentado", "posicao": POSICAO_PAJE, "escala": ESCALA_PAJE, "espelhar": True,
                 "posicao_com": {"Potira": POSICAO_PAJE_COM_POTIRA},
@@ -753,6 +754,10 @@ NOITES = {
                     {"tipo": "visitante", "visitante": "paje"},
                     DEUSES_FELIZES,
                     DEUSES_INFELIZES,
+                    {"tipo": "perguntas", "botao": "Voltar para a fogueira", "perguntas": [
+                        ACUSACAO,
+                        barulho_na_mata(),
+                    ]},
                     {"tipo": "visitante", "visitante": None},
                 ],
             },
@@ -798,8 +803,6 @@ NOITES = {
                     {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": [
                         {"pergunta": "Viu gente amaldiçoada?",
                          "resposta": "Vi rede vazia pendurada. Não entrei."},
-                        ACUSACAO,
-                        barulho_na_mata(),
                     ]},
                     {"tipo": "exame", "quem": "Potira", "liberadas": ["Olhos", "Boca"],
                      "texto": TEXTO_EXAME, "zonas": ZONAS_POTIRA_DEPOIS},

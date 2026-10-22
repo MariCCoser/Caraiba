@@ -46,6 +46,7 @@ FINAIS = [
         "povo": "Tupiniquim",
         "condicao": [{"entregues": ">= 2"}, {"proximidade_vila": ">= 3"}],
         "antecipado": True,
+        "fundo": "troca_final",
         "cena": "A vila manda gente para cuidar da aldeia, do jeito dela. "
                 "Os nomes que foram com o Irmão Aleixo não voltam.",
         "fato": "Os Tupiniquim eram cerca de 90 mil em 1500 e 55 em 1876. Hoje são cerca de "
@@ -60,6 +61,7 @@ FINAIS = [
         "povo": "Tupinambá (Santidade de Jaguaripe)",
         "condicao": [{"mortos_por_sua_mao": ">= 3"}],
         "antecipado": True,
+        "fundo": "loucura_final",
         "cena": "Ninguém mais dorme perto de você. Antes do sol, a aldeia manda você para a mata.",
         "fato": "Vinte anos depois de 1562, tupinambá fugidos dos aldeamentos e da escravidão "
                 "formaram a Santidade de Jaguaripe (1580-1585), liderada por Antônio e por Maria. "
@@ -95,6 +97,7 @@ FINAIS = [
         "condicao": [{"subiu_o_rio": ">= 1"}],
         "antecipado": False,
         "ultima_noite": True,
+        "fundo": "rio_acima_final",
         "cena": "A aldeia sobe o rio atrás de Krenan. As ocas ficam vazias para trás.",
         "fato": "A carta régia de 13 de maio de 1808 declarou guerra oficial contra os Aimoré, "
                 "chamados de Botocudos. Os descendentes incluem os Krenak, que vivem no Vale do "
@@ -127,6 +130,7 @@ FINAIS = [
         "condicao": [{"vivos": ">= 2", "memoria": ">= 5", "mortos_por_sua_mao": "== 0",
                       "entregues": "== 0"}],
         "antecipado": False,
+        "fundo": "honra_final",
         "cena": "A aldeia chega ao fim da febre com as histórias de quem entrou guardadas.",
         "fato": "Um manto tupinambá de penas vermelhas, levado para a Europa no século XVII, "
                 "voltou ao Museu Nacional, no Rio, em 2024. Os Tupinambá de Olivença (BA) lutam "
@@ -156,6 +160,7 @@ FINAIS = [
         # Sempre bate (é o que sobra). Antes do dia 10, só acaba o jogo se a aldeia esvaziar.
         "condicao": [{}],
         "antecipado": False,
+        "fundo": "vazio_final",
         "cena": "As redes ficam vazias, uma a uma. Ninguém invadiu: os amaldiçoados dormiram entre os "
                 "seus, e a febre decidiu por você.",
         "fato": "Os Goitacá eram temidos por boato: cronistas os descreveram como ferozes sem "

@@ -1271,6 +1271,10 @@ def testar_dia5_e_noite5(jogo):
     dia.caixa.completar()
     assert "infelizes" in dia.caixa.texto, dia.caixa.texto
     passar_falas(jogo)
+    # A acusação e o barulho na mata (a 2ª vez do Anhangá) são com o pajé, não com Potira.
+    assert textos_dos_botoes(jogo) == ["De quem você desconfia?", "Que barulho é esse na mata?",
+                                       "Voltar para a fogueira"], textos_dos_botoes(jogo)
+    clicar_opcao(jogo, "Voltar para a fogueira")
     assert dia.modo == "fogueira"
     # Com poucos amaldiçoados, os deuses estão felizes.
     assert dia._condicao({"amaldicoados_menos_de": 2}) is False

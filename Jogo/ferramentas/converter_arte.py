@@ -50,6 +50,11 @@ CENARIOS = [
     # As imagens atrás das telas de cada final (Arte/Ar_livre/Finais/).
     ("Ar_livre/Finais/Anhanga_final.png", "cenarios/anhanga-final.jpg"),
     ("Ar_livre/Finais/batismo.png", "cenarios/final-batismo.jpg"),
+    ("Ar_livre/Finais/Tupiniquim.png", "cenarios/final-troca.jpg"),
+    ("Ar_livre/Finais/SantidadeDeJaguaripe.png", "cenarios/final-loucura.jpg"),
+    ("Ar_livre/Finais/RioAcima.png", "cenarios/final-rio-acima.jpg"),
+    ("Ar_livre/Finais/aHonra.png", "cenarios/final-honra.jpg"),
+    ("Ar_livre/Finais/Goitacas.png", "cenarios/final-vazio.jpg"),
 ]
 
 # Cenários que saem mais claros que o original (1 = igual; 1.3 = 30% mais claro).
