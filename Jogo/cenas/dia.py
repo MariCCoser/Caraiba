@@ -69,6 +69,12 @@ class Dia(Cena):
         # Passos que ainda vão acontecer. O dia começa com as notícias da manhã (a febre).
         manha = [{"tipo": "fala", "quem": "", "texto": frase} for frase in self.estado.manha]
         self.fila = manha + list(self.roteiro["passos"])
+        # Modo de teste (motor/teste.py): começa direto na fogueira, e esta noite não é guardada
+        # (o "Continuar" não saberia refazê-la: ele refaz o dia desde a manhã).
+        self.so_a_noite = getattr(jogo, "testando_noite", False)
+        jogo.testando_noite = False
+        if self.so_a_noite:
+            self.fila = [{"tipo": "noite"}]
         self.titulo = self.roteiro["titulo"]
         self.tempo = 0.0
         self.energia = None       # olhares que sobram na noite (None durante o dia)
@@ -141,6 +147,8 @@ class Dia(Cena):
     # --- progresso ----------------------------------------------------------
 
     def _salvar(self):
+        if self.so_a_noite:
+            return
         progresso.salvar("dia", self.estado_inicio, self.acoes)
 
     def _registrar(self, acao):
@@ -378,16 +386,16 @@ class Dia(Cena):
             PessoaNoCenario(nome, pessoa["imagem"], self._lugar_na_fogueira(nome)["posicao"],
                             pessoa["escala"], "noite", espelhar=pessoa.get("espelhar", False))
             for nome, pessoa in pessoas]
-        # A seta "Ir dormir" só aparece depois de falar com quem é obrigatório (quem é de fora:
-        # decidir onde dorme) e de gastar toda a energia. Se não sobrou ninguém para examinar,
-        # ela aparece mesmo com energia (senão o jogador ficaria preso na fogueira).
+        # A seta "Ir dormir" aparece quando a energia acaba, mesmo sem ter falado com todos (quem
+        # ficou sem decisão dorme na oca). Com energia, só depois de falar com quem é obrigatório
+        # e se não sobrou ninguém para examinar (senão o jogador ficaria preso na fogueira).
         faltam = [nome for nome, pessoa in self._pessoas_da_noite()
                   if pessoa.get("obrigatorio") and nome not in self.conversados]
         da_para_examinar = any(passo["tipo"] == "exame"
                                for pessoa in self.na_fogueira
                                for passo in self.noite["pessoas"][pessoa.nome]["passos"])
         self.botao_dormir = ui.Seta(self.noite["dormir"], CENTRO_SETA_DORMIR)
-        self.botao_dormir.visivel = not faltam and (self.energia <= 0 or not da_para_examinar)
+        self.botao_dormir.visivel = self.energia <= 0 or (not faltam and not da_para_examinar)
 
     def _conversar_na_fogueira(self, nome):
         self._registrar(["pessoa", nome])
@@ -690,11 +698,14 @@ class Dia(Cena):
         final = finais.fim_da_noite(self.estado) if self.noite else None
         if final:
             self.estado.final = final["id"]
-            progresso.salvar("final", self.estado.para_dicionario())
+            if not self.so_a_noite:
+                progresso.salvar("final", self.estado.para_dicionario())
+            self.jogo.final_de_teste = self.so_a_noite   # a tela do final também não guarda
             if not self.refazendo:
                 self.jogo.ir_para("final")
             return
-        progresso.salvar("aldeia", self.estado.para_dicionario())
+        if not self.so_a_noite:
+            progresso.salvar("aldeia", self.estado.para_dicionario())
         if not self.refazendo:
             # Depois do sinal do pajé, a noite: o jogador anda pela aldeia e entra nas ocas.
             self.jogo.ir_para("aldeia")

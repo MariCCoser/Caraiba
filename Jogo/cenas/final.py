@@ -43,8 +43,11 @@ class Final(Cena):
         self.revendo = getattr(jogo, "final_revendo", None)
         jogo.final_revendo = None
         self.final = finais.por_id(self.revendo or jogo.estado.final)
+        de_teste = getattr(jogo, "final_de_teste", False)
+        jogo.final_de_teste = False
         if not self.revendo:
-            progresso.salvar("final", jogo.estado.para_dicionario())
+            if not de_teste:   # a noite de teste (motor/teste.py) não troca a partida guardada
+                progresso.salvar("final", jogo.estado.para_dicionario())
             finais.marcar_visto(self.final["id"])
         # Cada tela: (título, texto).
         self.telas = [

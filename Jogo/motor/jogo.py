@@ -19,6 +19,7 @@ from cenas.aldeia import Aldeia
 from cenas.oca import Oca
 from cenas.final import Final
 from cenas.finais import Finais
+from cenas.testar import Testar
 
 CENAS = {
     "menu": Menu,
@@ -30,6 +31,7 @@ CENAS = {
     "oca": Oca,
     "final": Final,
     "finais": Finais,
+    "testar": Testar,   # só com config.MODO_TESTE
 }
 
 # Tamanhos de janela tentados, do maior para o menor (todos 16:9).
@@ -62,6 +64,8 @@ class Jogo:
         self.dia_pausado = None
         # O final que a tela "Finais" do menu pediu para ler de novo (cenas/final.py), ou None.
         self.final_revendo = None
+        # Modo de teste: o próximo Dia começa direto na fogueira (motor/teste.py).
+        self.testando_noite = False
         self.relogio = pygame.time.Clock()
         self.mouse = (0, 0)       # posição do mouse já em coordenadas 1600x900
         self.rodando = True

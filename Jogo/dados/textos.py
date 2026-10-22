@@ -161,6 +161,16 @@ TABUA = {
 }
 
 # Tela "Como se joga", aberta pelo menu a qualquer momento.
+# Modo de teste (config.MODO_TESTE): pular direto para uma noite.
+TESTE = {
+    "menu": "Testar uma noite",
+    "titulo": "Testar uma noite",
+    "aviso": "Todos que chegam até essa noite estão na aldeia. A partida guardada só muda se você seguir jogando depois.",
+    "noite": "Noite %d",
+    "voltar": "Voltar",
+    "fundo": "fogueira_longe",
+}
+
 TUTORIAL = {
     "titulo": "Como se joga",
     "texto": REGRAS,

@@ -1204,7 +1204,8 @@ def testar_dia4_e_noite4(jogo):
     clicar_opcao(jogo, "Terminar o exame")
     clicar_opcao(jogo, "Deixar na oca")
     passar_falas(jogo)
-    assert dia.energia == 0 and not dia.botao_dormir.visivel, "sem energia, mas ainda falta Mbaé"
+    # Sem energia, já dá para dormir, mesmo sem ter falado com Mbaé (ele dormiria na oca).
+    assert dia.energia == 0 and dia.botao_dormir.visivel, "sem energia, a seta de dormir aparece"
 
     clicar_pessoa(jogo, "Mbaé")
     passar_falas(jogo)
@@ -2003,6 +2004,25 @@ def testar_fluxo():
     print("ok sair")
 
 
+def testar_modo_teste():
+    """Testar uma noite (config.MODO_TESTE): cada noite abre direto na fogueira, sem mexer na
+    partida guardada."""
+    from motor import progresso, teste
+    progresso.salvar("aldeia", {"dia": 3})
+    jogo = Jogo(tamanho_janela=(1280, 720))
+    for noite in range(1, 11):
+        teste.ir_para_noite(jogo, noite)
+        esperar_transicao(jogo)
+        dia = jogo.cenas.atual
+        assert nome_cena(jogo) == "Dia" and dia.titulo == "Noite %d" % noite and dia.modo == "fogueira", (
+            noite, nome_cena(jogo), getattr(dia, "titulo", None))
+        assert len(jogo.estado.dentro) == {1: 1, 2: 2, 3: 2, 4: 3, 5: 4, 6: 4, 7: 5, 8: 5, 9: 5, 10: 6}[noite]
+    assert "Krenan" not in [p.nome for p in dia.na_fogueira] or noite in (8, 10)
+    assert progresso.carregar()["estado"] == {"dia": 3}, "a partida guardada não muda"
+    jogo.encerrar()
+    print("ok testar uma noite: as 10 noites abrem na fogueira, e a partida guardada fica")
+
+
 def testar_desempenho():
     """Mede quanto tempo um quadro leva (meta: bem menos que 16 ms para 60 FPS)."""
     import time
@@ -2026,5 +2046,6 @@ if __name__ == "__main__":
     testar_cura_no_tapiri()
     testar_cartoes_introducao()
     testar_fluxo()
+    testar_modo_teste()
     testar_desempenho()
     print("TUDO CERTO")

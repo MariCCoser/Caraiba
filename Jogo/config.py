@@ -27,6 +27,10 @@ DURACAO_FADE = 0.25
 # nem arquivos no disco, nem controle da janela.
 NO_NAVEGADOR = sys.platform == "emscripten"
 
+# Modo de teste (só para o grupo): o menu ganha "Testar uma noite", que pula direto para
+# qualquer noite (cenas/testar.py). Deixe False na versão que vai para os jogadores.
+MODO_TESTE = True
+
 # ---------------------------------------------------------------------------
 # Paleta (Arte/PALETA E EXEMPLO.docx). Use SEMPRE estes nomes, nunca números soltos.
 # ---------------------------------------------------------------------------

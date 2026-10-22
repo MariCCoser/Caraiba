@@ -5,14 +5,14 @@
 import pygame
 
 import config
-from dados.textos import MENU
+from dados.textos import MENU, TESTE
 from motor import efeitos, finais, fontes, progresso, ui
 from motor.cena import Cena, desenhar_cenario
 
 # Coluna da esquerda, onde ficam título e botões (o fogo fica no meio da imagem).
 X_COLUNA = 120
-Y_PRIMEIRO_BOTAO = 520
-ESPACO_ENTRE_BOTOES = 66
+Y_PRIMEIRO_BOTAO = 480
+ESPACO_ENTRE_BOTOES = 60
 
 
 class Menu(Cena):
@@ -29,6 +29,8 @@ class Menu(Cena):
         self.botao_tutorial = botao(MENU["tutorial"])
         self.botao_finais = botao(MENU["finais"])
         self.botao_opcoes = botao(MENU["opcoes"])
+        self.botao_testar = botao(TESTE["menu"])
+        self.botao_testar.visivel = config.MODO_TESTE   # só para o grupo testar
         self.botao_sair = botao(MENU["sair"])
         # "Continuar" só aparece se houver partida guardada.
         self.botao_continuar.visivel = progresso.existe()
@@ -37,7 +39,7 @@ class Menu(Cena):
         # No navegador não dá para "fechar o jogo": o botão Sair some.
         self.botao_sair.visivel = not config.NO_NAVEGADOR
         self.botoes = [self.botao_continuar, self.botao_comecar, self.botao_tutorial,
-                       self.botao_finais, self.botao_opcoes, self.botao_sair]
+                       self.botao_finais, self.botao_testar, self.botao_opcoes, self.botao_sair]
         # Empilha só os visíveis, sem deixar buraco.
         y = Y_PRIMEIRO_BOTAO
         for b in self.botoes:
@@ -57,6 +59,8 @@ class Menu(Cena):
             self.jogo.ir_para("tutorial")
         elif self.botao_finais.clicado(evento):
             self.jogo.ir_para("finais")
+        elif self.botao_testar.clicado(evento):
+            self.jogo.ir_para("testar")
         elif self.botao_opcoes.clicado(evento):
             self.jogo.ir_para("opcoes")
         elif self.botao_sair.clicado(evento):
