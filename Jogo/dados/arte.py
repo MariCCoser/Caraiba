@@ -21,13 +21,14 @@ CENARIOS = {
     "anhanga_dois": "cenarios/anhanga-2.jpg",
     "anhanga_tres": "cenarios/anhanga-3.jpg",
     "anhanga_final": "cenarios/anhanga-final.jpg",
-    # Os fundos das telas de cada final (dados/finais.py, "fundo"). O Tapiri ainda não tem.
+    # Os fundos das telas de cada final (dados/finais.py, "fundo").
     "batismo_final": "cenarios/final-batismo.jpg",
     "troca_final": "cenarios/final-troca.jpg",
     "loucura_final": "cenarios/final-loucura.jpg",
     "rio_acima_final": "cenarios/final-rio-acima.jpg",
     "honra_final": "cenarios/final-honra.jpg",
     "vazio_final": "cenarios/final-vazio.jpg",
+    "tapiri_final": "cenarios/final-tapiri.jpg",
 }
 
 # Personagens gerados por ferramentas/converter_arte.py: PNG com fundo transparente,

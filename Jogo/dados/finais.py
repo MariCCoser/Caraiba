@@ -145,6 +145,7 @@ FINAIS = [
         "condicao": [{"tapiri_usos": ">= 3", "vivos": ">= 2", "mortos_por_sua_mao": "== 0",
                       "entregues": "== 0"}],
         "antecipado": False,
+        "fundo": "tapiri_final",
         "cena": "Poucas redes em volta da fogueira. Ao longe, o tapiri com uma luz acesa: "
                 "o pajé cuida de quem está lá.",
         "fato": "Os Korubo vivem no Vale do Javari (AM), a região com mais povos isolados do "
