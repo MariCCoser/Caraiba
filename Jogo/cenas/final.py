@@ -96,7 +96,9 @@ class Final(Cena):
         self.botao.atualizar(self.jogo.mouse)
 
     def desenhar_cena(self, tela):
-        desenhar_cenario(tela, self.final.get("fundo", TELA_FINAL["fundo"]), "noite", self.tempo)
+        # Final com imagem própria aparece com as cores do desenho (sem o filtro da noite).
+        filtro = None if "fundo" in self.final else "noite"
+        desenhar_cenario(tela, self.final.get("fundo", TELA_FINAL["fundo"]), filtro, self.tempo)
         # Final com imagem própria (o veado do Anhangá) escurece menos, para ela aparecer.
         efeitos.escurecer(tela, ESCURECER_COM_FUNDO if "fundo" in self.final else ESCURECER)
 

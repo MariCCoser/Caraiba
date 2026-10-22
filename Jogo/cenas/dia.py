@@ -52,6 +52,8 @@ POSICAO_BOTAO_MENU = (1420, 60)
 CENTRO_DICA_FOGUEIRA = (800, 850)          # sem a seta de ir dormir, a dica fica embaixo
 CENTRO_DICA_FOGUEIRA_SETA = (800, 730)     # com a seta, ela sobe
 CENTRO_SETA_DORMIR = (800, 830)
+# A manhã depois de uma morte: a fogueira de perto, de dia (os troncos no mesmo lugar que de noite).
+FOGUEIRA_DE_DIA = "fogueira_dia"
 LARGURA_DETALHE = 520          # o olho de perto, embaixo do painel
 # Fala que mostra o olho de perto: a caixa de texto fica menor, para o olho caber grande.
 LARGURA_PAINEL_DETALHE = 500
@@ -76,6 +78,13 @@ class Dia(Cena):
 
         self.fundo = ("aldeia", "dia")
         self.fundo_anterior = None
+        # Quem morreu na noite passada (pela mão do jogador ou pela maldição) amanhece coberto
+        # com a esteira, na fogueira: as notícias da manhã aparecem lá, até o jogador sair
+        # andando pela aldeia (o passo "aldeia").
+        self.manha_na_fogueira = any(corpo.get("fogueira") and corpo["noite"] == self.estado.dia - 1
+                                     for corpo in self.estado.corpos)
+        if self.manha_na_fogueira:
+            self.fundo = (FOGUEIRA_DE_DIA, "dia")
         self.tempo_troca = DURACAO_TROCA_DE_FUNDO
         self.visitante = None
         self.tempo_chegada = DURACAO_CHEGADA
@@ -169,6 +178,9 @@ class Dia(Cena):
             passo = self.fila.pop(0)
             tipo = passo["tipo"]
             if tipo == "fundo":
+                if self.manha_na_fogueira and passo["fundo"] == "aldeia":
+                    continue   # a manhã fica na fogueira, com os corpos
+                self.manha_na_fogueira = False
                 self._trocar_fundo((passo["fundo"], passo.get("filtro", "noite")))
             elif tipo == "visitante":
                 self.visitante = passo["visitante"]
@@ -185,6 +197,9 @@ class Dia(Cena):
                 self._mostrar_fala(DIA["tabua"], DIA["anotado"] + " " + passo["texto"])
                 return
             elif tipo == "aldeia":
+                if self.manha_na_fogueira:
+                    self.manha_na_fogueira = False
+                    self._trocar_fundo(("aldeia", "dia"))
                 self._ir_para_aldeia(passo)
                 return
             elif tipo == "se":
@@ -326,12 +341,16 @@ class Dia(Cena):
         """De noite, quem o jogador matou nesta fogueira; de manhã, na fogueira, o da noite passada."""
         noite = self.estado.dia if self.modo == "fogueira" else self.estado.dia - 1
         filtro = "noite" if self.modo == "fogueira" else self.fundo[1]
-        corpos = [corpo for corpo in self.estado.corpos if corpo["onde"] == "fogueira" and corpo["noite"] == noite]
+        corpos = [corpo for corpo in self.estado.corpos if corpo.get("fogueira") and corpo["noite"] == noite]
         chave = (noite, filtro, tuple(corpo["nome"] for corpo in corpos))
         if getattr(self, "_chave_corpos", None) != chave:   # monta as imagens só quando muda
             self._chave_corpos = chave
-            self._corpos = [corpo_no_cenario(corpo, filtro) for corpo in corpos]
+            self._corpos = [corpo_no_cenario(corpo, filtro, corpo["fogueira"]) for corpo in corpos]
         return self._corpos
+
+    def _mostra_corpos_da_manha(self):
+        """De manhã, na fogueira de dia: os corpos da noite passada, com o nome em cima."""
+        return self.modo != "fogueira" and self.fundo[0] == FOGUEIRA_DE_DIA and self._corpos_na_fogueira()
 
     def _mostrar_fogueira(self):
         self.modo = "fogueira"
@@ -524,7 +543,8 @@ class Dia(Cena):
         apelido, filtro = self.fundo
         return [
             {"tipo": "visitante", "visitante": None},
-            {"tipo": "fundo", "fundo": vez["fundo"], "filtro": "noite"},
+            # Sem o filtro da noite: a visão aparece com as cores do desenho (o veado branco).
+            {"tipo": "fundo", "fundo": vez["fundo"], "filtro": None},
             {"tipo": "fala", "quem": "", "texto": vez["resposta"]},
             {"tipo": "fundo", "fundo": apelido, "filtro": filtro},
             {"tipo": "visitante", "visitante": self.visitante},
@@ -770,7 +790,7 @@ class Dia(Cena):
         else:
             desenhar_cenario(tela, apelido, filtro, self.tempo)
 
-        if self.modo == "fogueira" or apelido == "fogueira_perto":
+        if self.modo == "fogueira" or apelido == FOGUEIRA_DE_DIA:
             # Os corpos ficam no chão, atrás de quem está sentado.
             for corpo in self._corpos_na_fogueira():
                 corpo.desenhar(tela)
@@ -833,6 +853,9 @@ class Dia(Cena):
         return menor
 
     def desenhar_interface(self, tela):
+        if self._mostra_corpos_da_manha():
+            for corpo in self._corpos_na_fogueira():
+                corpo.desenhar_destaque(tela, contorno=False)
         ui.texto_simples(tela, self.titulo, (40, 60), config.TAMANHO_PEQUENO,
                          nome_fonte="mono", cor=config.BARRO, ancora="esquerda")
         if self.energia is not None:

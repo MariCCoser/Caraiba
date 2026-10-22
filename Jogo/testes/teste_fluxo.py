@@ -153,6 +153,9 @@ def testar_corpos():
     corpo = estado.corpos[0]
     assert (corpo["nome"], corpo["onde"], corpo["noite"], corpo["amaldicoado"]) == ("Yara", "oca1", 3, True), corpo
     assert tuple(corpo["posicao"]) == ONDE_DORME["Yara"]["posicao"]
+    # De manhã, o corpo aparece também na fogueira, onde ela sentava na noite em que morreu.
+    from dados.noites import NOITES
+    assert tuple(corpo["fogueira"]["posicao"]) == NOITES[3]["pessoas"]["Yara"]["posicao"], corpo
     # Quem era são (sem DOENTES e sem febre) ganha a esteira comum; quem chegou doente, a outra.
     assert not febre.era_amaldicoado(Estado(), "Potira") and febre.era_amaldicoado(Estado(), "Mbaé")
     print("ok corpos: a esteira no lugar de quem morreu")

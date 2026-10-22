@@ -25,6 +25,7 @@
 import random
 
 from dados.aldeia import ONDE_DORME, ONDE_DORME_TAPIRI
+from dados.noites import NOITES
 from dados.febre import CHANCE_DE_MOSTRAR, CONTAGIO, CONTAGIO_PEGOU, DIAS_ATE_MORRER, DOENTES, MANHA
 
 
@@ -83,13 +84,25 @@ def era_amaldicoado(estado, nome):
     return nome in DOENTES or any(entrada.get("nome") == nome for entrada in estado.febre)
 
 
+def _lugar(lugar):
+    return {"posicao": list(lugar["posicao"]), "escala": lugar["escala"],
+            "espelhar": lugar.get("espelhar", False)}
+
+
 def deixar_corpo(estado, nome, noite, onde, lugar, amaldicoado):
     """O corpo coberto com a esteira fica no lugar onde a pessoa estava, desde a noite em que
     morreu (lugar: o de dados/noites.py ou dados/aldeia.py, com "posicao", "escala" e, se
-    tiver, "espelhar")."""
-    estado.corpos.append({"nome": nome, "noite": noite, "onde": onde,
-                          "posicao": list(lugar["posicao"]), "escala": lugar["escala"],
-                          "espelhar": lugar.get("espelhar", False), "amaldicoado": amaldicoado})
+    tiver, "espelhar"). Na manhã seguinte, ele aparece também na fogueira, no lugar onde a
+    pessoa sentava naquela noite ("fogueira"; None se ela não estava na fogueira)."""
+    if onde == "fogueira":
+        fogueira = lugar
+    else:
+        pessoa = NOITES.get(noite, {}).get("pessoas", {}).get(nome)
+        fogueira = pessoa if pessoa and pessoa.get("de_fora") else None
+    corpo = {"nome": nome, "noite": noite, "onde": onde, "amaldicoado": amaldicoado,
+             "fogueira": _lugar(fogueira) if fogueira else None}
+    corpo.update(_lugar(lugar))
+    estado.corpos.append(corpo)
 
 
 def _corpo_na_oca(estado, nome):

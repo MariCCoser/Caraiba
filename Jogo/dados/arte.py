@@ -8,6 +8,7 @@ CENARIOS = {
     "aldeia": "cenarios/cenario-aldeia.jpg",
     "fogueira_longe": "cenarios/cenario-fogueira-longe.jpg",
     "fogueira_perto": "cenarios/cenario-fogueira-perto.jpg",
+    "fogueira_dia": "cenarios/cenario-fogueira-dia.jpg",   # a mesma, de dia (a manhã depois de uma morte)
     "floresta": "cenarios/cenario-floresta.jpg",   # a trilha na mata, atrás de quem chega
     "oca1": "cenarios/cenario-oca1.jpg",           # por dentro da oca 1 (Yorixiriamori), dia e noite
     "oca2_dia": "cenarios/cenario-oca2-dia.jpg",   # por dentro da oca 2 (Yebá Bëló), de dia
@@ -20,6 +21,7 @@ CENARIOS = {
     "anhanga_dois": "cenarios/anhanga-2.jpg",
     "anhanga_tres": "cenarios/anhanga-3.jpg",
     "anhanga_final": "cenarios/anhanga-final.jpg",
+    "batismo_final": "cenarios/final-batismo.jpg",   # o fundo do final A Água do Batismo
 }
 
 # Personagens gerados por ferramentas/converter_arte.py: PNG com fundo transparente,

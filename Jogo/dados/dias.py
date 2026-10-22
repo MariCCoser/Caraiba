@@ -53,14 +53,13 @@ from dados.conversas import (conversa_araci, conversa_iande, conversa_mbae, conv
                              conversa_tamandare, conversa_yara)
 
 
-# A manhã depois de o jogador matar alguém na fogueira: a fogueira de dia, com o corpo coberto
-# pela esteira no lugar onde a pessoa sentava (a de amaldiçoado, se ela era: cenas/dia.py), e o
-# nome. Depois, volta para a aldeia. condicao: "morto_ontem" (morreu na noite passada) ou "morto".
+# A manhã depois de o jogador matar alguém na fogueira, com o nome. Toda manhã depois de uma
+# morte (pela mão do jogador ou pela maldição) começa na fogueira de dia, com cada corpo coberto
+# pela esteira onde a pessoa sentava (cenas/dia.py, manha_na_fogueira).
+# condicao: "morto_ontem" (morreu na noite passada) ou "morto".
 def corpo_de(nome, condicao="morto_ontem"):
     return {"tipo": "se", condicao: nome, "passos": [
-        {"tipo": "fundo", "fundo": "fogueira_perto", "filtro": "dia"},
         {"tipo": "fala", "quem": "", "texto": "O corpo de %s amanheceu coberto com uma esteira." % nome},
-        {"tipo": "fundo", "fundo": "aldeia", "filtro": "dia"},
     ]}
 
 # --- Dia 3: a primeira das três visitas do Irmão Aleixo (dias 3, 6 e 9) ---

@@ -36,9 +36,9 @@ class PessoaNoCenario:
     def desenhar(self, tela):
         tela.blit(self.imagem, self.rect)
 
-    def desenhar_destaque(self, tela, texto=None):
-        """O contorno aceso e uma etiqueta com o nome acima da cabeça."""
-        if len(self.contorno) > 2:
+    def desenhar_destaque(self, tela, texto=None, contorno=True):
+        """O contorno aceso e uma etiqueta com o nome acima da cabeça (contorno=False: só o nome)."""
+        if contorno and len(self.contorno) > 2:
             pygame.draw.lines(tela, config.URUCUM, True, self.contorno, 3)
         fonte = fontes.fonte_escalada("sans", config.TAMANHO_PEQUENO)
         imagem = fonte.render(texto or self.nome, True, config.TABATINGA)
@@ -54,7 +54,10 @@ class PessoaNoCenario:
 ESCALA_ESTEIRA = 0.6
 
 
-def corpo_no_cenario(corpo, filtro):
+def corpo_no_cenario(corpo, filtro, lugar=None):
+    """lugar: {"posicao", "escala", "espelhar"} (ex.: corpo["fogueira"]); sem ele, o lugar
+    onde a pessoa morreu."""
+    lugar = lugar or corpo
     imagem = "esteira_amaldicoado" if corpo.get("amaldicoado") else "esteira"
-    return PessoaNoCenario(corpo["nome"], imagem, tuple(corpo["posicao"]),
-                           corpo["escala"] * ESCALA_ESTEIRA, filtro, espelhar=corpo.get("espelhar", False))
+    return PessoaNoCenario(corpo["nome"], imagem, tuple(lugar["posicao"]),
+                           lugar["escala"] * ESCALA_ESTEIRA, filtro, espelhar=lugar.get("espelhar", False))

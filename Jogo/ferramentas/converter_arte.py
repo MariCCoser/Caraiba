@@ -29,6 +29,8 @@ CENARIOS = [
     ("Ar_livre/Aldeia.png", "cenarios/cenario-aldeia.jpg"),
     ("Ar_livre/FogueiraLonge.png", "cenarios/cenario-fogueira-longe.jpg"),
     ("Ar_livre/FogueiraPerto.png", "cenarios/cenario-fogueira-perto.jpg"),
+    # A mesma fogueira de perto, de dia (os troncos no mesmo lugar): a manhã depois de uma morte.
+    ("Ar_livre/FogueiraDia.png", "cenarios/cenario-fogueira-dia.jpg"),
     ("Ar_livre/floresta_atras_personag.png", "cenarios/cenario-floresta.jpg"),
     # Por dentro das ocas (Arte/Ocas/). A oca 1 tem uma imagem só, para o dia e a noite.
     ("Ocas/Yorixiriamori_DN.png", "cenarios/cenario-oca1.jpg"),
@@ -41,17 +43,27 @@ CENARIOS = [
     # O tapiri por dentro: uma imagem só, para o dia e a noite.
     ("Ocas/Tabiri.png", "cenarios/cenario-tapiri.jpg"),
     # O Anhangá: a mata para onde o pajé aponta, a 1ª, a 2ª e a 3ª vez (o veado cada vez mais
-    # à vista), e a imagem atrás das telas do final Anhangá.
+    # à vista).
     ("Ar_livre/Anhanga_um.png", "cenarios/anhanga-1.jpg"),
     ("Ar_livre/Anhanga_dois.png", "cenarios/anhanga-2.jpg"),
     ("Ar_livre/Anhanga_tres.png", "cenarios/anhanga-3.jpg"),
-    ("Ar_livre/Anhanga_final.png", "cenarios/anhanga-final.jpg"),
+    # As imagens atrás das telas de cada final (Arte/Ar_livre/Finais/).
+    ("Ar_livre/Finais/Anhanga_final.png", "cenarios/anhanga-final.jpg"),
+    ("Ar_livre/Finais/batismo.png", "cenarios/final-batismo.jpg"),
 ]
 
 # Cenários que saem mais claros que o original (1 = igual; 1.3 = 30% mais claro).
 CLAREAR = {
     "cenarios/cenario-oca3-dia.jpg": 1.3,     # a oca Wanadi, onde Potira fica
     "cenarios/cenario-oca3-noite.jpg": 1.3,
+    # O Anhangá veio muito escuro: com o filtro da noite por cima, o veado quase sumia.
+    "cenarios/anhanga-1.jpg": 2.2,
+    "cenarios/anhanga-2.jpg": 2.2,
+    "cenarios/anhanga-3.jpg": 2.0,
+    "cenarios/anhanga-final.jpg": 1.8,
+    # As esteiras (o corpo coberto) se misturavam com o chão escuro da fogueira.
+    "personagens/esteira.png": 2.1,
+    "personagens/esteira-amaldicoado.png": 2.1,
 }
 
 # CORTE PADRÃO DAS PESSOAS: do topo da cabeça até o meio das coxas, sempre com esta
@@ -321,6 +333,11 @@ def converter_sentado(origem, destino):
     imagem = imagem.crop(imagem.getchannel("A").getbbox())   # só a pessoa, sem a sobra em volta
     escala = ALTURA_SENTADO / imagem.height
     imagem = imagem.resize((round(imagem.width * escala), ALTURA_SENTADO), Image.LANCZOS)
+    if destino in CLAREAR:
+        # Clareia só a cor: a transparência fica como estava.
+        alfa = imagem.getchannel("A")
+        imagem = ImageEnhance.Brightness(imagem.convert("RGB")).enhance(CLAREAR[destino])
+        imagem.putalpha(alfa)
     imagem.save(caminho_destino, optimize=True)
     tamanho_kb = os.path.getsize(caminho_destino) // 1024
     print("  ok  %-22s -> %-36s %4d KB" % (origem.split("/")[-1], destino, tamanho_kb))

@@ -78,6 +78,7 @@ FINAIS = [
         "condicao": [{"converteu": ">= 1"}],
         "antecipado": True,
         "a_partir_da_noite": 9,
+        "fundo": "batismo_final",
         "cena": "A água escorre pela sua testa, e você ganha um nome que não é o seu. Na vila, o "
                 "mesmo padre derrama a mesma água na testa de um doente, que morre logo depois.",
         "fato": "Em abril de 1563, na aldeia de Santiago, na Bahia, os jesuítas batizaram 84 "

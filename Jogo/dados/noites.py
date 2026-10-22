@@ -244,13 +244,21 @@ ZONAS_POTIRA = [
     {"pergunta": "Respiração",
      "resposta": "Respira fundo, sem tosse."},
 ]
+# Da noite 5 em diante, Potira já dorme na aldeia: o cansaço e o frio não são mais do caminho.
+ZONAS_POTIRA_DEPOIS = [dict(zona) for zona in ZONAS_POTIRA]
+ZONAS_POTIRA_DEPOIS[1] = {"pergunta": "Olhos", "imagem": "olho_potira",
+                          "resposta": "[É sono]. Desde que voltei, durmo pouco."}
+ZONAS_POTIRA_DEPOIS[3] = {"pergunta": "Boca", "imagem": "boca_potira",
+                          "resposta": ["Os lábios? Estão secos.", "[É do frio]. As noites esfriaram."]}
 # Se Potira pegou a febre na oca e mostra: o olho vermelho e a boca ferida.
-ZONAS_POTIRA = pode_pegar_febre(ZONAS_POTIRA, "Potira", {
+POTIRA_COM_FEBRE = {
     "Olhos": {"sinal": True, "imagem": "olho_potira_doente",
               "resposta": "(treme) [Dormi mal], só isso."},
     "Boca": {"sinal": True, "imagem": "boca_potira_doente",
              "resposta": "(tosse) Arde por dentro."},
-})
+}
+ZONAS_POTIRA = pode_pegar_febre(ZONAS_POTIRA, "Potira", POTIRA_COM_FEBRE)
+ZONAS_POTIRA_DEPOIS = pode_pegar_febre(ZONAS_POTIRA_DEPOIS, "Potira", POTIRA_COM_FEBRE)
 
 
 # --- Noite 5: Tamandaré-mirim, com a maldição ---
@@ -367,6 +375,13 @@ def com_pescoco(zonas, pescoco=PESCOCO_LIMPO):
 ZONAS_TAMANDARE_NOITE_9 = com_pescoco(ZONAS_TAMANDARE_NOITE_6, {
     "pergunta": "Pescoço", "sinal": True,
     "resposta": "As manchas brancas já desceram até o pescoço."})
+# Atrás das orelhas, as manchas não estão mais "começando": já desceram.
+ZONAS_TAMANDARE_NOITE_9[3] = {"pergunta": "Orelhas", "sinal": True,
+                              "resposta": "Atrás das orelhas, manchas brancas que descem pelo pescoço."}
+# Na noite 8, Iandé já dormiu na aldeia (não mais na vila).
+ZONAS_IANDE_NOITE_8 = [dict(zona) for zona in ZONAS_IANDE]
+ZONAS_IANDE_NOITE_8[1] = {"pergunta": "Olhos", "imagem": "olho_iande",
+                          "resposta": "[Dormi bem]. A rede daqui é macia."}
 # Na noite 9 a maldição de Iandé aparece também no olho e na boca.
 ZONAS_IANDE_NOITE_9 = [dict(zona) for zona in ZONAS_IANDE]
 ZONAS_IANDE_NOITE_9[1] = {"pergunta": "Olhos", "sinal": True, "imagem": "olho_iande_doente",
@@ -787,7 +802,7 @@ NOITES = {
                         barulho_na_mata(),
                     ]},
                     {"tipo": "exame", "quem": "Potira", "liberadas": ["Olhos", "Boca"],
-                     "texto": TEXTO_EXAME, "zonas": ZONAS_POTIRA},
+                     "texto": TEXTO_EXAME, "zonas": ZONAS_POTIRA_DEPOIS},
                     escolha_onde_dorme("Potira", "Durmo na rede de sempre.",
                                        "Sozinha? Se você manda, eu vou."),
                     {"tipo": "visitante", "visitante": None},
@@ -889,7 +904,7 @@ NOITES = {
                          "resposta": "Vi rede vazia pendurada. Não entrei."},
                     ]},
                     {"tipo": "exame", "quem": "Potira", "liberadas": LIBERADAS_NOITE_6,
-                     "texto": TEXTO_EXAME, "zonas": ZONAS_POTIRA},
+                     "texto": TEXTO_EXAME, "zonas": ZONAS_POTIRA_DEPOIS},
                     escolha_onde_dorme("Potira", "Durmo na rede de sempre.",
                                        "Sozinha? Se você manda, eu vou."),
                     {"tipo": "visitante", "visitante": None},
@@ -988,7 +1003,7 @@ NOITES = {
                          "resposta": "Vi rede vazia pendurada. Não entrei."},
                     ]},
                     {"tipo": "exame", "quem": "Potira", "liberadas": LIBERADAS_NOITE_6,
-                     "texto": TEXTO_EXAME, "zonas": ZONAS_POTIRA},
+                     "texto": TEXTO_EXAME, "zonas": ZONAS_POTIRA_DEPOIS},
                     escolha_onde_dorme("Potira", "Durmo na rede de sempre.",
                                        "Sozinha? Se você manda, eu vou."),
                     {"tipo": "visitante", "visitante": None},
@@ -1129,7 +1144,7 @@ NOITES = {
                          "resposta": "Vi rede vazia pendurada. Não entrei."},
                     ]},
                     {"tipo": "exame", "quem": "Potira", "liberadas": LIBERADAS_NOITE_6,
-                     "texto": TEXTO_EXAME, "zonas": ZONAS_POTIRA},
+                     "texto": TEXTO_EXAME, "zonas": ZONAS_POTIRA_DEPOIS},
                     escolha_onde_dorme("Potira", "Durmo na rede de sempre.",
                                        "Sozinha? Se você manda, eu vou."),
                     {"tipo": "visitante", "visitante": None},
@@ -1162,7 +1177,7 @@ NOITES = {
                          "resposta": "Vi uma casa fechada, com uma cruz na porta."},
                     ]},
                     {"tipo": "exame", "quem": "Iandé", "liberadas": LIBERADAS_NOITE_6,
-                     "texto": TEXTO_EXAME, "zonas": ZONAS_IANDE},
+                     "texto": TEXTO_EXAME, "zonas": ZONAS_IANDE_NOITE_8},
                     escolha_onde_dorme("Iandé", "Na minha rede de sempre. Que saudade.",
                                        "Sozinha? O que foi que eu fiz?"),
                     {"tipo": "visitante", "visitante": None},
@@ -1244,7 +1259,7 @@ NOITES = {
                          "resposta": "Vi rede vazia pendurada. Não entrei."},
                     ]},
                     {"tipo": "exame", "quem": "Potira", "liberadas": LIBERADAS_NOITE_9,
-                     "texto": TEXTO_EXAME, "zonas": com_pescoco(ZONAS_POTIRA)},
+                     "texto": TEXTO_EXAME, "zonas": com_pescoco(ZONAS_POTIRA_DEPOIS)},
                     escolha_onde_dorme("Potira", "Durmo na rede de sempre.",
                                        "Sozinha? Se você manda, eu vou."),
                     {"tipo": "visitante", "visitante": None},
@@ -1377,7 +1392,7 @@ NOITES = {
                          "resposta": "Vi rede vazia pendurada. Não entrei."},
                     ]},
                     {"tipo": "exame", "quem": "Potira", "liberadas": LIBERADAS_NOITE_10,
-                     "texto": TEXTO_EXAME, "zonas": com_pescoco(ZONAS_POTIRA)},
+                     "texto": TEXTO_EXAME, "zonas": com_pescoco(ZONAS_POTIRA_DEPOIS)},
                     escolha_onde_dorme("Potira", "Durmo na rede de sempre.",
                                        "Sozinha? Se você manda, eu vou."),
                     {"tipo": "visitante", "visitante": None},
