@@ -382,6 +382,16 @@ DETALHES = [
     (DOENCAS + "Araci/OlhoDoenteAraci.png", "detalhes/olho-araci-doente.png"),
     (DOENCAS + "Araci/BocaAraci.png", "detalhes/boca-araci.png"),
     (DOENCAS + "Araci/BocaAraciDoente.png", "detalhes/boca-araci-doente.png"),
+    # Atrás da orelha e o pescoço: a saudável vale para as duas zonas (PessoaOrelhaPescoco);
+    # a doente é uma para cada (PessoaOrelhaDoente, PessoaPescocoDoente).
+    (DOENCAS + "Yara/YaraOrelhaPescoco.png", "detalhes/orelha-pescoco-yara.png"),
+    (DOENCAS + "Yara/YaraOrelhaDoente.png", "detalhes/orelha-yara-doente.png"),
+    (DOENCAS + "Yara/YaraPescocoDoenete.png", "detalhes/pescoco-yara-doente.png"),
+    (DOENCAS + "Mbaé/MbaeOrelhaPescoco.png", "detalhes/orelha-pescoco-mbae.png"),
+    (DOENCAS + "Mbaé/MbaeOrelhaDoente.png", "detalhes/orelha-mbae-doente.png"),
+    (DOENCAS + "Mbaé/MbaePescocoDoente.png", "detalhes/pescoco-mbae-doente.png"),
+    # O nome diz "saudável", mas a arte já tem as manchas: Araci sempre chega doente.
+    (DOENCAS + "Araci/AraciOrelhaPescoco.png", "detalhes/orelha-pescoco-araci-doente.png"),
 ]
 # Detalhes com o fundo xadrez desenhado na imagem (sem transparência de verdade).
 DETALHES_XADREZ = [DOENCAS + "Mbaé/OlhoDoenteMbaé.png", DOENCAS + "Tama/OlhoTamaDoente.png",

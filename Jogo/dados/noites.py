@@ -131,8 +131,8 @@ ZONAS_YARA = [
      "resposta": "Fresca. Nenhum suor."},
     {"pergunta": "Olhos", "sinal": True, "imagem": "olho_yara_vermelho",
      "resposta": "[Dormi perto do fogo]."},
-    {"pergunta": "Orelhas",
-     "resposta": "Nada atrás das orelhas. A pele está limpa."},
+    {"pergunta": "Orelhas", "imagem": "orelha_pescoco_yara",
+     "resposta": "Só poeira do caminho."},
     {"pergunta": "Boca", "imagem": "boca_yara",
      "resposta": "Pode olhar. Não tenho nada."},
     {"pergunta": "Mãos",
@@ -163,8 +163,13 @@ ZONAS_MBAE = [
     {"pergunta": "Olhos", "sinal": True, "imagem": "olho_mbae_doente",
      "noites_na_oca_ao_menos": {"Mbaé": NOITES_ATE_O_OLHO_PIORAR},
      "resposta": "(tosse) [É o vento do rio]. De noite arde mais."},
-    {"pergunta": "Orelhas",
-     "resposta": "Nada atrás das orelhas. Só a pintura de jenipapo."},
+    # Como o olho: as manchas atrás da orelha aparecem depois de 3 noites dormindo na oca.
+    {"pergunta": "Orelhas", "imagem": "orelha_pescoco_mbae",
+     "noites_na_oca_menos_de": {"Mbaé": NOITES_ATE_O_OLHO_PIORAR},
+     "resposta": "Só a pintura de jenipapo."},
+    {"pergunta": "Orelhas", "sinal": True, "imagem": "orelha_mbae_doente",
+     "noites_na_oca_ao_menos": {"Mbaé": NOITES_ATE_O_OLHO_PIORAR},
+     "resposta": "(tosse) [É a pintura de jenipapo descascando]."},
     {"pergunta": "Boca", "sinal": True, "imagem": "boca_mbae_doente",
      "resposta": "(tosse) [Mordi a língua comendo peixe]."},
     {"pergunta": "Mãos",
@@ -240,6 +245,8 @@ ZONAS_YARA_NOITE_3[1] = {"pergunta": "Olhos", "imagem": "olho_yara",
 ZONAS_YARA_NOITE_3 = pode_pegar_febre(ZONAS_YARA_NOITE_3, "Yara", {
     "Olhos": {"sinal": True, "imagem": "olho_yara_vermelho",
               "resposta": "(treme) [É frio], só isso."},
+    "Orelhas": {"sinal": True, "imagem": "orelha_yara_doente",
+                "resposta": "(treme) Coça. [É mordida de mosquito]."},
     "Boca": {"sinal": True, "imagem": "boca_yara_doente",
              "resposta": "(tosse) Dói para engolir."},
 })
@@ -393,8 +400,26 @@ PESCOCO_LIMPO = {"pergunta": "Pescoço", "resposta": "Nada no pescoço. A pele e
 
 
 def com_pescoco(zonas, pescoco=PESCOCO_LIMPO):
-    """As zonas do rosto e mais o pescoço (a zona nova da noite 9)."""
-    return [dict(zona) for zona in zonas] + [pescoco]
+    """As zonas do rosto e mais o pescoço (a zona nova da noite 9). pescoco pode ser uma lista:
+    a mesma zona em versões com condições opostas (ex.: sem e com febre)."""
+    pescocos = pescoco if isinstance(pescoco, list) else [pescoco]
+    return [dict(zona) for zona in zonas] + [dict(zona) for zona in pescocos]
+
+
+# Yara: o pescoço limpo, ou com as manchas, se pegou a febre na oca e mostra.
+PESCOCO_YARA = pode_pegar_febre([{"pergunta": "Pescoço", "imagem": "orelha_pescoco_yara",
+                                  "resposta": "Pode olhar. Não tem nada."}], "Yara", {
+    "Pescoço": {"sinal": True, "imagem": "pescoco_yara_doente", "resposta": "(tosse) [É do sol], só isso."},
+})
+# Mbaé: o pescoço limpo até 3 noites na oca; depois, as manchas.
+PESCOCO_MBAE = [
+    {"pergunta": "Pescoço", "imagem": "orelha_pescoco_mbae",
+     "noites_na_oca_menos_de": {"Mbaé": NOITES_ATE_O_OLHO_PIORAR},
+     "resposta": "(tosse) Pode olhar."},
+    {"pergunta": "Pescoço", "sinal": True, "imagem": "pescoco_mbae_doente",
+     "noites_na_oca_ao_menos": {"Mbaé": NOITES_ATE_O_OLHO_PIORAR},
+     "resposta": "(tosse) [Picada de formiga, na caça]."},
+]
 
 
 ZONAS_TAMANDARE_NOITE_9 = com_pescoco(ZONAS_TAMANDARE_NOITE_6, {
@@ -432,12 +457,12 @@ LIBERADAS_NOITE_10 = LIBERADAS_NOITE_9
 ZONAS_ARACI = [
     {"pergunta": "Olhos", "sinal": True, "imagem": "olho_araci_doente",
      "resposta": "Não durmo. [A criança não deixa]."},
-    {"pergunta": "Orelhas", "sinal": True,
-     "resposta": "Atrás das orelhas, manchas que já desceram."},
+    {"pergunta": "Orelhas", "sinal": True, "imagem": "orelha_pescoco_araci_doente",
+     "resposta": "Começou aqui, atrás da orelha."},
     {"pergunta": "Boca", "sinal": True, "imagem": "boca_araci_doente",
      "resposta": "[É sede]. Andei o dia inteiro."},
-    {"pergunta": "Pescoço", "sinal": True,
-     "resposta": "Manchas no pescoço, pequenas, todas juntas."},
+    {"pergunta": "Pescoço", "sinal": True, "imagem": "orelha_pescoco_araci_doente",
+     "resposta": "Agora desce pelo pescoço. [Não dói]."},
 ]
 
 # O que fazer com Araci: as linhas do roteiro, e nenhuma é recompensada.
@@ -462,6 +487,8 @@ MBAE_CURADO = {
     "Olhos": {"imagem": "olho_mbae", "resposta": "O tapiri me fez bem."},
     "Boca": {"imagem": "boca_mbae", "resposta": "Pode olhar. As feridas fecharam."},
     "Respiração": {"resposta": "Respira fundo, sem chiado."},
+    "Orelhas": {"imagem": "orelha_pescoco_mbae", "resposta": "Só a pintura de jenipapo."},
+    "Pescoço": {"imagem": "orelha_pescoco_mbae", "resposta": "Pode olhar. Não tem nada."},
 }
 TAMANDARE_CURADO = {
     "Olhos": {"imagem": "olho_tamandare", "resposta": "O sol da estrada já não arde."},
@@ -475,6 +502,7 @@ IANDE_CURADA = {
     "Boca": {"imagem": "boca_iande", "resposta": "Pode olhar. Está tudo bem."},
     "Pescoço": {"resposta": "No pescoço, as manchas estão secando."},
 }
+ZONAS_MBAE_NOITE_9 = pode_se_curar(com_pescoco(ZONAS_MBAE, PESCOCO_MBAE), "Mbaé", MBAE_CURADO)
 ZONAS_MBAE = pode_se_curar(ZONAS_MBAE, "Mbaé", MBAE_CURADO)
 ZONAS_TAMANDARE = pode_se_curar(ZONAS_TAMANDARE, "Tamandaré-mirim", TAMANDARE_CURADO)
 ZONAS_TAMANDARE_NOITE_6 = pode_se_curar(ZONAS_TAMANDARE_NOITE_6, "Tamandaré-mirim", TAMANDARE_CURADO)
@@ -1284,7 +1312,7 @@ NOITES = {
                     {"tipo": "fala", "quem": "Yara", "texto": "O caraíba não sorriu nem uma vez."},
                     {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa_yara()},
                     {"tipo": "exame", "quem": "Yara", "liberadas": LIBERADAS_NOITE_9,
-                     "texto": TEXTO_EXAME, "zonas": com_pescoco(ZONAS_YARA_NOITE_3)},
+                     "texto": TEXTO_EXAME, "zonas": com_pescoco(ZONAS_YARA_NOITE_3, PESCOCO_YARA)},
                     escolha_onde_dorme("Yara", "Mais uma noite, então. Obrigada.",
                                        "Sozinha, então. Já dormi em lugar pior."),
                     {"tipo": "visitante", "visitante": None},
@@ -1300,7 +1328,7 @@ NOITES = {
                                     "Já posso subir o rio de novo."),
                     {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa_mbae()},
                     {"tipo": "exame", "quem": "Mbaé", "liberadas": LIBERADAS_NOITE_9,
-                     "texto": TEXTO_EXAME, "zonas": com_pescoco(ZONAS_MBAE)},
+                     "texto": TEXTO_EXAME, "zonas": ZONAS_MBAE_NOITE_9},
                     escolha_onde_dorme("Mbaé", "Durmo no canto. Não incomodo ninguém.",
                                        "Sozinho no escuro. Já passei noite pior na caça."),
                     {"tipo": "visitante", "visitante": None},
@@ -1419,7 +1447,7 @@ NOITES = {
                     {"tipo": "fala", "quem": "Yara", "texto": "Amanhã o cacique volta. Vai olhar para todos nós."},
                     {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa_yara()},
                     {"tipo": "exame", "quem": "Yara", "liberadas": LIBERADAS_NOITE_10,
-                     "texto": TEXTO_EXAME, "zonas": com_pescoco(ZONAS_YARA_NOITE_3)},
+                     "texto": TEXTO_EXAME, "zonas": com_pescoco(ZONAS_YARA_NOITE_3, PESCOCO_YARA)},
                     escolha_onde_dorme("Yara", "Mais uma noite, então. Obrigada.",
                                        "Sozinha, então. Já dormi em lugar pior."),
                     {"tipo": "visitante", "visitante": None},
@@ -1435,7 +1463,7 @@ NOITES = {
                                     "Quando o cacique voltar, eu sigo caminho."),
                     {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": conversa_mbae()},
                     {"tipo": "exame", "quem": "Mbaé", "liberadas": LIBERADAS_NOITE_10,
-                     "texto": TEXTO_EXAME, "zonas": com_pescoco(ZONAS_MBAE)},
+                     "texto": TEXTO_EXAME, "zonas": ZONAS_MBAE_NOITE_9},
                     escolha_onde_dorme("Mbaé", "Durmo no canto. Não incomodo ninguém.",
                                        "Sozinho no escuro. Já passei noite pior na caça."),
                     {"tipo": "visitante", "visitante": None},

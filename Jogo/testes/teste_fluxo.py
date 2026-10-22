@@ -121,7 +121,7 @@ def testar_sinais_no_rosto():
     # Yara: vermelho da fumaça nas noites 1 e 2; na 3, sã, o olho volta ao normal.
     assert imagens(noites.ZONAS_YARA, estado)["Olhos"] == "olho_yara_vermelho"
     assert imagens(noites.ZONAS_YARA_NOITE_3, estado) == {
-        "Testa": None, "Olhos": "olho_yara", "Orelhas": None, "Boca": "boca_yara",
+        "Testa": None, "Olhos": "olho_yara", "Orelhas": "orelha_pescoco_yara", "Boca": "boca_yara",
         "Mãos": None, "Respiração": None}
     # Pegou a febre de Mbaé na noite 2 e mostra: o olho segue vermelho, a boca ferida.
     estado.febre = [{"nome": "Yara", "de": "Mbaé", "noite": 2, "visivel": True}]
@@ -133,8 +133,15 @@ def testar_sinais_no_rosto():
     # Mbaé: o olho piora depois de 3 noites dormindo na oca; a boca já chega ferida.
     vistas = imagens(noites.ZONAS_MBAE, estado)
     assert vistas["Olhos"] == "olho_mbae" and vistas["Boca"] == "boca_mbae_doente", vistas
+    assert imagens(noites.ZONAS_MBAE_NOITE_9, estado)["Orelhas"] == "orelha_pescoco_mbae"
     estado.noites_na_oca = {"Mbaé": 3}
     assert imagens(noites.ZONAS_MBAE, estado)["Olhos"] == "olho_mbae_doente"
+    vistas = imagens(noites.ZONAS_MBAE_NOITE_9, estado)
+    assert vistas["Orelhas"] == "orelha_mbae_doente" and vistas["Pescoço"] == "pescoco_mbae_doente", vistas
+    # Yara com febre: a orelha e o pescoço também.
+    estado.febre = [{"nome": "Yara", "de": "Mbaé", "noite": 2, "visivel": True}]
+    vistas = imagens(noites.com_pescoco(noites.ZONAS_YARA_NOITE_3, noites.PESCOCO_YARA), estado)
+    assert vistas["Orelhas"] == "orelha_yara_doente" and vistas["Pescoço"] == "pescoco_yara_doente", vistas
     print("ok sinais no rosto: olho e boca mudam com a doença")
 
 

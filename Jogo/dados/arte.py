@@ -100,6 +100,14 @@ DETALHES = {
     "olho_araci_doente": "detalhes/olho-araci-doente.png",
     "boca_araci": "detalhes/boca-araci.png",                  # (sem uso: Araci já chega doente)
     "boca_araci_doente": "detalhes/boca-araci-doente.png",
+    # Atrás da orelha e o pescoço: uma imagem saudável para as duas zonas; a doente, uma de cada.
+    "orelha_pescoco_yara": "detalhes/orelha-pescoco-yara.png",
+    "orelha_yara_doente": "detalhes/orelha-yara-doente.png",
+    "pescoco_yara_doente": "detalhes/pescoco-yara-doente.png",
+    "orelha_pescoco_mbae": "detalhes/orelha-pescoco-mbae.png",                 # até 3 noites na oca
+    "orelha_mbae_doente": "detalhes/orelha-mbae-doente.png",                   # depois de 3 noites
+    "pescoco_mbae_doente": "detalhes/pescoco-mbae-doente.png",
+    "orelha_pescoco_araci_doente": "detalhes/orelha-pescoco-araci-doente.png",
 }
 
 # Onde fica o fogo em cada cenário (x, y na tela 1600x900).

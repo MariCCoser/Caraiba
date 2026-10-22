@@ -7,8 +7,10 @@ pessoa, com a maldição e sem ela, e **quando** a imagem muda.
   (feitas por `Jogo/ferramentas/converter_arte.py`).
 - Onde isso está no jogo: `Jogo/dados/noites.py` (as zonas do exame de cada noite) e
   `Jogo/dados/arte.py` (lista `DETALHES`).
-- Só os **olhos** e a **boca** têm imagem. Orelhas, pescoço, testa, mãos e respiração
-  continuam descritos em texto.
+- Os **olhos** e a **boca** têm imagem para todos. **Atrás da orelha** e o **pescoço** têm
+  imagem para Yara, Mbaé e Araci (a saudável vale para as duas zonas). Para os outros, e para
+  testa, mãos e respiração, o exame ainda descreve em texto.
+- **O tapiri cura:** quem era amaldiçoado e completa as 3 noites lá volta com o rosto saudável.
 
 ## As regras
 
@@ -64,3 +66,12 @@ jogador não tem como conferir).
 | Tamandaré-mirim | "É o sol da estrada." | "É o sol da estrada. Agora arde." | — | "Rouco de pregar. Só isso." |
 | Iandé | "Dormi bem na vila." | "Não dormi. É a dor nas costas." | "Pode olhar. Está tudo bem." | "(tosse) Comi farinha velha na vila." |
 | Araci | — | "Não durmo. A criança não deixa." | — | "É sede. Andei o dia inteiro." |
+
+## Atrás da orelha e pescoço (noite 6 em diante a orelha; noite 9 em diante o pescoço)
+
+| Pessoa | Saudável (orelha e pescoço) | Doente |
+|---|---|---|
+| Yara | `YaraOrelhaPescoco.png` | se pegou a febre e mostra: `YaraOrelhaDoente.png` e `YaraPescocoDoenete.png` |
+| Mbaé | `MbaeOrelhaPescoco.png` (até 3 noites na oca, ou curado no tapiri) | depois de 3 noites na oca: `MbaeOrelhaDoente.png` e `MbaePescocoDoente.png` |
+| Araci | — | `AraciOrelhaPescoco.png` (o nome diz saudável, mas a arte tem as manchas: ela sempre chega doente) |
+| Potira, Tamandaré-mirim, Iandé | ainda sem imagem (texto) | ainda sem imagem (texto) |
