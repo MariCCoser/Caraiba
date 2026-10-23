@@ -95,8 +95,6 @@ DETALHES = {
     "olho_iande_doente": "detalhes/olho-iande-doente.png",    # noites 9 e 10
     "boca_iande": "detalhes/boca-iande.png",
     "boca_iande_doente": "detalhes/boca-iande-doente.png",
-    "olho_krenan": "detalhes/olho-krenan.png",                # (sem uso: Krenan não é examinado)
-    "olho_krenan_doente": "detalhes/olho-krenan-doente.png",
     "olho_araci_doente": "detalhes/olho-araci-doente.png",
     "boca_araci": "detalhes/boca-araci.png",                  # (sem uso: Araci já chega doente)
     "boca_araci_doente": "detalhes/boca-araci-doente.png",

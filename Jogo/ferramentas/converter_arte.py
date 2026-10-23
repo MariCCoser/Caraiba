@@ -377,8 +377,6 @@ DETALHES = [
     (DOENCAS + "Iandé/OlhoIandé_Doente.png", "detalhes/olho-iande-doente.png"),
     (DOENCAS + "Iandé/BocaIandé.png", "detalhes/boca-iande.png"),
     (DOENCAS + "Iandé/BocaIandéDoente.png", "detalhes/boca-iande-doente.png"),
-    (DOENCAS + "Krenan/OlhoKrenan.png", "detalhes/olho-krenan.png"),
-    (DOENCAS + "Krenan/OlhoKrenan_Doente.png", "detalhes/olho-krenan-doente.png"),
     (DOENCAS + "Araci/OlhoDoenteAraci.png", "detalhes/olho-araci-doente.png"),
     (DOENCAS + "Araci/BocaAraci.png", "detalhes/boca-araci.png"),
     (DOENCAS + "Araci/BocaAraciDoente.png", "detalhes/boca-araci-doente.png"),

@@ -48,9 +48,9 @@ pessoa, com a maldição e sem ela, e **quando** a imagem muda.
 | Iandé | `OlhoIandé.png`, `BocaIandé.png` (noites 7 e 8) | `OlhoIandé_Doente.png`, `BocaIandéDoente.png` (noites 9 e 10) |
 | Araci | — | `OlhoDoenteAraci.png`, `BocaAraciDoente.png` |
 
-**Convertidas, mas sem uso no jogo** (a pessoa já chega doente, ou não é examinada):
-`BocaMbaé.png`, `BocaTama.png`, `BocaAraci.png`, `OlhoKrenan.png`, `OlhoKrenan_Doente.png`,
-`OlhoMbaé.png` (igual ao `OlhoMbaé_ate3.png`).
+**Sem uso no jogo:** `BocaAraci.png` (Araci sempre chega doente) e `OlhoMbaé.png` (igual ao
+`OlhoMbaé_ate3.png`). As bocas saudáveis de Mbaé e Tamandaré-mirim aparecem quando eles saem
+curados do tapiri.
 
 ## O que a pessoa diz quando o jogador olha
 
