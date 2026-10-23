@@ -89,6 +89,8 @@ PASTA_JOGO = os.path.dirname(os.path.abspath(__file__))
 PASTA_ASSETS = os.path.join(PASTA_JOGO, "assets")
 PASTA_FONTES = os.path.join(PASTA_ASSETS, "fontes")
 PASTA_SAVES = os.path.join(PASTA_JOGO, "saves")
+# Temporários (testes, simulador): ficam no projeto (Caraiba/.tmp), não no disco do computador.
+PASTA_TEMPORARIOS = os.path.join(os.path.dirname(PASTA_JOGO), ".tmp")
 
 # Arquivos de fonte. Sempre carregados do arquivo (no navegador não há fontes do sistema).
 FONTES = {

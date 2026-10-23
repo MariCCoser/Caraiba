@@ -15,8 +15,10 @@
 # dormir, dorme com chance CHANCE_DE_DORMIR. Com uma estratégia, ele prefere certas opções
 # (ESTRATEGIAS) e, no resto, continua ao acaso.
 
+import atexit
 import os
 import random
+import shutil
 import sys
 import tempfile
 from collections import Counter
@@ -26,7 +28,9 @@ os.environ.setdefault("SDL_AUDIODRIVER", "dummy")
 
 import config  # noqa: E402
 
-config.PASTA_SAVES = tempfile.mkdtemp(prefix="caraiba-simulacao-")
+os.makedirs(config.PASTA_TEMPORARIOS, exist_ok=True)   # no projeto (Caraiba/.tmp), não no computador
+config.PASTA_SAVES = tempfile.mkdtemp(prefix="caraiba-simulacao-", dir=config.PASTA_TEMPORARIOS)
+atexit.register(shutil.rmtree, config.PASTA_SAVES, True)
 
 from cenas.dia import Dia  # noqa: E402
 from dados.aldeia import TAPIRI  # noqa: E402

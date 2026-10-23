@@ -353,52 +353,53 @@ def converter_sentado(origem, destino):
 # em vez de uma descrição. Saem quadrados, em cores (a interface não passa pelo filtro da noite).
 # Quem mostra cada um e quando: Textos/Caraiba_Sinais_dos_Personagens.md.
 TAMANHO_DETALHE = 420
+QUALIDADE_DETALHE = 88
 DOENCAS = "Doenças/"
 DETALHES = [
     # Yara: o olho vermelho da fumaça nas noites 1 e 2 (e se pegar a febre); depois, o normal.
-    (DOENCAS + "Yara/OlhoYara_Doente.png", "detalhes/olho-yara-vermelho.png"),
-    (DOENCAS + "Yara/OlhoYara.png", "detalhes/olho-yara.png"),
-    (DOENCAS + "Yara/BocaYara.png", "detalhes/boca-yara.png"),
-    (DOENCAS + "Yara/BocaYaraDoente.png", "detalhes/boca-yara-doente.png"),
+    (DOENCAS + "Yara/OlhoYara_Doente.png", "detalhes/olho-yara-vermelho.jpg"),
+    (DOENCAS + "Yara/OlhoYara.png", "detalhes/olho-yara.jpg"),
+    (DOENCAS + "Yara/BocaYara.png", "detalhes/boca-yara.jpg"),
+    (DOENCAS + "Yara/BocaYaraDoente.png", "detalhes/boca-yara-doente.jpg"),
     # Mbaé: o olho até o 3º dia na oca; depois, o doente. A boca já chega ferida.
-    (DOENCAS + "Mbaé/OlhoMbaé_ate3.png", "detalhes/olho-mbae.png"),
-    (DOENCAS + "Mbaé/OlhoDoenteMbaé.png", "detalhes/olho-mbae-doente.png"),
-    (DOENCAS + "Mbaé/BocaMbaé.png", "detalhes/boca-mbae.png"),
-    (DOENCAS + "Mbaé/BocaMbaéDoente.png", "detalhes/boca-mbae-doente.png"),
-    (DOENCAS + "Potira/OlhoPotira.png", "detalhes/olho-potira.png"),
-    (DOENCAS + "Potira/OlharPotiraDoente.png", "detalhes/olho-potira-doente.png"),
-    (DOENCAS + "Potira/BocaPotira.png", "detalhes/boca-potira.png"),
-    (DOENCAS + "Potira/BocaPotiraDoente.png", "detalhes/boca-potira-doente.png"),
-    (DOENCAS + "Tama/OlhoTama.png", "detalhes/olho-tamandare.png"),
-    (DOENCAS + "Tama/OlhoTamaDoente.png", "detalhes/olho-tamandare-doente.png"),
-    (DOENCAS + "Tama/BocaTama.png", "detalhes/boca-tamandare.png"),
-    (DOENCAS + "Tama/BocaTamaDoente.png", "detalhes/boca-tamandare-doente.png"),
-    (DOENCAS + "Iandé/OlhoIandé.png", "detalhes/olho-iande.png"),
-    (DOENCAS + "Iandé/OlhoIandé_Doente.png", "detalhes/olho-iande-doente.png"),
-    (DOENCAS + "Iandé/BocaIandé.png", "detalhes/boca-iande.png"),
-    (DOENCAS + "Iandé/BocaIandéDoente.png", "detalhes/boca-iande-doente.png"),
-    (DOENCAS + "Araci/OlhoDoenteAraci.png", "detalhes/olho-araci-doente.png"),
-    (DOENCAS + "Araci/BocaAraci.png", "detalhes/boca-araci.png"),
-    (DOENCAS + "Araci/BocaAraciDoente.png", "detalhes/boca-araci-doente.png"),
+    (DOENCAS + "Mbaé/OlhoMbaé_ate3.png", "detalhes/olho-mbae.jpg"),
+    (DOENCAS + "Mbaé/OlhoDoenteMbaé.png", "detalhes/olho-mbae-doente.jpg"),
+    (DOENCAS + "Mbaé/BocaMbaé.png", "detalhes/boca-mbae.jpg"),
+    (DOENCAS + "Mbaé/BocaMbaéDoente.png", "detalhes/boca-mbae-doente.jpg"),
+    (DOENCAS + "Potira/OlhoPotira.png", "detalhes/olho-potira.jpg"),
+    (DOENCAS + "Potira/OlharPotiraDoente.png", "detalhes/olho-potira-doente.jpg"),
+    (DOENCAS + "Potira/BocaPotira.png", "detalhes/boca-potira.jpg"),
+    (DOENCAS + "Potira/BocaPotiraDoente.png", "detalhes/boca-potira-doente.jpg"),
+    (DOENCAS + "Tama/OlhoTama.png", "detalhes/olho-tamandare.jpg"),
+    (DOENCAS + "Tama/OlhoTamaDoente.png", "detalhes/olho-tamandare-doente.jpg"),
+    (DOENCAS + "Tama/BocaTama.png", "detalhes/boca-tamandare.jpg"),
+    (DOENCAS + "Tama/BocaTamaDoente.png", "detalhes/boca-tamandare-doente.jpg"),
+    (DOENCAS + "Iandé/OlhoIandé.png", "detalhes/olho-iande.jpg"),
+    (DOENCAS + "Iandé/OlhoIandé_Doente.png", "detalhes/olho-iande-doente.jpg"),
+    (DOENCAS + "Iandé/BocaIandé.png", "detalhes/boca-iande.jpg"),
+    (DOENCAS + "Iandé/BocaIandéDoente.png", "detalhes/boca-iande-doente.jpg"),
+    (DOENCAS + "Araci/OlhoDoenteAraci.png", "detalhes/olho-araci-doente.jpg"),
+    (DOENCAS + "Araci/BocaAraci.png", "detalhes/boca-araci.jpg"),
+    (DOENCAS + "Araci/BocaAraciDoente.png", "detalhes/boca-araci-doente.jpg"),
     # Atrás da orelha e o pescoço: a saudável vale para as duas zonas (PessoaOrelhaPescoco);
     # a doente é uma para cada (PessoaOrelhaDoente, PessoaPescocoDoente).
-    (DOENCAS + "Yara/YaraOrelhaPescoco.png", "detalhes/orelha-pescoco-yara.png"),
-    (DOENCAS + "Yara/YaraOrelhaDoente.png", "detalhes/orelha-yara-doente.png"),
-    (DOENCAS + "Yara/YaraPescocoDoenete.png", "detalhes/pescoco-yara-doente.png"),
-    (DOENCAS + "Mbaé/MbaeOrelhaPescoco.png", "detalhes/orelha-pescoco-mbae.png"),
-    (DOENCAS + "Mbaé/MbaeOrelhaDoente.png", "detalhes/orelha-mbae-doente.png"),
-    (DOENCAS + "Mbaé/MbaePescocoDoente.png", "detalhes/pescoco-mbae-doente.png"),
+    (DOENCAS + "Yara/YaraOrelhaPescoco.png", "detalhes/orelha-pescoco-yara.jpg"),
+    (DOENCAS + "Yara/YaraOrelhaDoente.png", "detalhes/orelha-yara-doente.jpg"),
+    (DOENCAS + "Yara/YaraPescocoDoenete.png", "detalhes/pescoco-yara-doente.jpg"),
+    (DOENCAS + "Mbaé/MbaeOrelhaPescoco.png", "detalhes/orelha-pescoco-mbae.jpg"),
+    (DOENCAS + "Mbaé/MbaeOrelhaDoente.png", "detalhes/orelha-mbae-doente.jpg"),
+    (DOENCAS + "Mbaé/MbaePescocoDoente.png", "detalhes/pescoco-mbae-doente.jpg"),
     # O nome diz "saudável", mas a arte já tem as manchas: Araci sempre chega doente.
-    (DOENCAS + "Araci/AraciOrelhaPescoco.png", "detalhes/orelha-pescoco-araci-doente.png"),
-    (DOENCAS + "Potira/PotiraOrelhaPescoco.png", "detalhes/orelha-pescoco-potira.png"),
-    (DOENCAS + "Potira/PotiraOrelhaDoente.png", "detalhes/orelha-potira-doente.png"),
-    (DOENCAS + "Potira/PotiraPescocoDoente.png", "detalhes/pescoco-potira-doente.png"),
-    (DOENCAS + "Tama/TamaOrelhaPescoco.png", "detalhes/orelha-pescoco-tamandare.png"),
-    (DOENCAS + "Tama/TamaOrelhaDoente.png", "detalhes/orelha-tamandare-doente.png"),
-    (DOENCAS + "Tama/TamaPescocoDoente.png", "detalhes/pescoco-tamandare-doente.png"),
-    (DOENCAS + "Iandé/IandeOrelhaPescoco.png", "detalhes/orelha-pescoco-iande.png"),
-    (DOENCAS + "Iandé/IandeOrelhaDoente.png", "detalhes/orelha-iande-doente.png"),
-    (DOENCAS + "Iandé/IandePescocoDoente.png", "detalhes/pescoco-iande-doente.png"),
+    (DOENCAS + "Araci/AraciOrelhaPescoco.png", "detalhes/orelha-pescoco-araci-doente.jpg"),
+    (DOENCAS + "Potira/PotiraOrelhaPescoco.png", "detalhes/orelha-pescoco-potira.jpg"),
+    (DOENCAS + "Potira/PotiraOrelhaDoente.png", "detalhes/orelha-potira-doente.jpg"),
+    (DOENCAS + "Potira/PotiraPescocoDoente.png", "detalhes/pescoco-potira-doente.jpg"),
+    (DOENCAS + "Tama/TamaOrelhaPescoco.png", "detalhes/orelha-pescoco-tamandare.jpg"),
+    (DOENCAS + "Tama/TamaOrelhaDoente.png", "detalhes/orelha-tamandare-doente.jpg"),
+    (DOENCAS + "Tama/TamaPescocoDoente.png", "detalhes/pescoco-tamandare-doente.jpg"),
+    (DOENCAS + "Iandé/IandeOrelhaPescoco.png", "detalhes/orelha-pescoco-iande.jpg"),
+    (DOENCAS + "Iandé/IandeOrelhaDoente.png", "detalhes/orelha-iande-doente.jpg"),
+    (DOENCAS + "Iandé/IandePescocoDoente.png", "detalhes/pescoco-iande-doente.jpg"),
 ]
 # Detalhes com o fundo xadrez desenhado na imagem (sem transparência de verdade).
 DETALHES_XADREZ = [DOENCAS + "Mbaé/OlhoDoenteMbaé.png", DOENCAS + "Tama/OlhoTamaDoente.png",
@@ -467,7 +468,8 @@ def converter_detalhe(origem, destino):
         imagem = tirar_fundo_preto(imagem)
     imagem = recorte_opaco(imagem).convert("RGB")
     imagem = imagem.resize((TAMANHO_DETALHE, TAMANHO_DETALHE), Image.LANCZOS)
-    imagem.save(caminho_destino, optimize=True)
+    # JPG: o detalhe é quadrado e cheio (sem transparência), e fica bem menor que em PNG.
+    imagem.save(caminho_destino, quality=QUALIDADE_DETALHE, optimize=True)
     tamanho_kb = os.path.getsize(caminho_destino) // 1024
     print("  ok  %-22s -> %-36s %4d KB" % (origem.split("/")[-1], destino, tamanho_kb))
 

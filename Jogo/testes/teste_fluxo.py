@@ -8,8 +8,10 @@
 # Se aparecer "TUDO CERTO" no fim, o fluxo funciona. Se der erro, o Python
 # mostra a linha do problema.
 
+import atexit
 import os
 import random
+import shutil
 import tempfile
 
 # Sem janela e sem som: precisa vir ANTES de importar o pygame.
@@ -20,8 +22,11 @@ import pygame  # noqa: E402
 
 import config  # noqa: E402
 
-# Preferências do teste vão para uma pasta temporária (não estraga as suas).
-config.PASTA_SAVES = tempfile.mkdtemp(prefix="caraiba-teste-")
+# Preferências do teste vão para uma pasta temporária (não estraga as suas), dentro do projeto
+# (Caraiba/.tmp), e ela é apagada no fim.
+os.makedirs(config.PASTA_TEMPORARIOS, exist_ok=True)
+config.PASTA_SAVES = tempfile.mkdtemp(prefix="caraiba-teste-", dir=config.PASTA_TEMPORARIOS)
+atexit.register(shutil.rmtree, config.PASTA_SAVES, True)
 
 from dados.textos import INTRODUCAO  # noqa: E402
 from estado import Estado  # noqa: E402
