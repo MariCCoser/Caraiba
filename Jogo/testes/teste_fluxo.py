@@ -1408,7 +1408,7 @@ def testar_dia6_e_noite6(jogo):
     assert estado.entregues_nomes == ["Yara", "Mbaé"] and estado.proximidade_vila == 1 and estado.vivos == 2
 
     # O sinal do pajé: o 4º risco da tábua, na noite 6.
-    assert estado.tabua[-1] == "Manchas brancas atrás da orelha." and estado.tabua_noites == [1, 2, 4, 6]
+    assert estado.tabua[-1] == "Manchas avermelhadas atrás da orelha." and estado.tabua_noites == [1, 2, 4, 6]
     print("ok Dia 6: o Irmão Aleixo volta sozinho (caderno, o que mudou, onde está Yara, entregar) e o 4º sinal")
 
     # A fogueira: pajé, Potira e Tamandaré-mirim. Agora dá para olhar atrás das orelhas.
@@ -1444,7 +1444,7 @@ def testar_dia7_e_noite7(jogo):
     estado.dentro = ["Yara"]
     estado.vivos = 1
     estado.tabua = ["Olho vermelho, com o branco raiado.", "Boca com feridas.",
-                    "Pontos brancos por dentro da bochecha.", "Manchas brancas atrás da orelha."]
+                    "Pontos brancos por dentro da bochecha.", "Manchas avermelhadas atrás da orelha."]
     estado.tabua_noites = [1, 2, 4, 6]
     jogo.ir_para("aldeia")
     esperar_transicao(jogo)
@@ -1535,7 +1535,7 @@ def testar_dia8_e_noite8(jogo):
     estado.dentro = ["Yara", "Iandé"]
     estado.vivos = 2
     estado.tabua = ["Olho vermelho, com o branco raiado.", "Boca com feridas.",
-                    "Pontos brancos por dentro da bochecha.", "Manchas brancas atrás da orelha."]
+                    "Pontos brancos por dentro da bochecha.", "Manchas avermelhadas atrás da orelha."]
     estado.tabua_noites = [1, 2, 4, 6]
     jogo.ir_para("aldeia")
     esperar_transicao(jogo)
@@ -1598,7 +1598,7 @@ def testar_dia8_e_noite8(jogo):
 
 def testar_dia9_e_noite9(jogo):
     """Dia 9 (a última visita do Irmão Aleixo: tudo o que faltava, o cordão de Iandé, entregar ou
-    negar) e a Noite 9 (o 5º sinal: manchas brancas no pescoço; Krenan não está)."""
+    negar) e a Noite 9 (o 5º sinal: manchas avermelhadas no pescoço; Krenan não está)."""
     jogo.nova_partida()
     estado = jogo.estado
     estado.dia = 8
@@ -1607,7 +1607,7 @@ def testar_dia9_e_noite9(jogo):
     estado.krenan_volta = 1
     estado.rio_acima, estado.rio_acima_nomes = 1, ["Yara"]
     estado.tabua = ["Olho vermelho, com o branco raiado.", "Boca com feridas.",
-                    "Pontos brancos por dentro da bochecha.", "Manchas brancas atrás da orelha."]
+                    "Pontos brancos por dentro da bochecha.", "Manchas avermelhadas atrás da orelha."]
     estado.tabua_noites = [1, 2, 4, 6]
     jogo.ir_para("aldeia")
     esperar_transicao(jogo)
@@ -1640,7 +1640,7 @@ def testar_dia9_e_noite9(jogo):
     assert estado.dentro == ["Iandé"] and estado.energia_hoje == 1
 
     # O sinal do pajé: o 5º risco da tábua.
-    assert estado.tabua[-1] == "Manchas brancas no pescoço." and estado.tabua_noites[-1] == 9
+    assert estado.tabua[-1] == "Manchas avermelhadas no pescoço." and estado.tabua_noites[-1] == 9
     print("ok Dia 9: a última visita do Irmão Aleixo (tudo o que faltava, o cordão) e o 5º sinal")
 
     # A fogueira: Krenan não está (volta só na noite 10). Iandé, que parecia perfeita, tem as
@@ -1711,8 +1711,8 @@ def testar_dia10_e_noite10(jogo):
     # Já matou dois: se o final fosse calculado depois de matar Araci, seria A Loucura.
     estado.mortos = estado.mortos_por_sua_mao = 2
     estado.tabua = ["Olho vermelho, com o branco raiado.", "Boca com feridas.",
-                    "Pontos brancos por dentro da bochecha.", "Manchas brancas atrás da orelha.",
-                    "Manchas brancas no pescoço."]
+                    "Pontos brancos por dentro da bochecha.", "Manchas avermelhadas atrás da orelha.",
+                    "Manchas avermelhadas no pescoço."]
     estado.tabua_noites = [1, 2, 4, 6, 9]
     jogo.ir_para("aldeia")
     esperar_transicao(jogo)

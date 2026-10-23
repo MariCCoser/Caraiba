@@ -326,7 +326,7 @@ LIBERADAS_NOITE_6 = ["Olhos", "Boca", "Orelhas"]
 # Tamandaré-mirim na noite 6: as primeiras manchas atrás da orelha. Três sinais da tábua.
 ZONAS_TAMANDARE_NOITE_6 = [dict(zona) for zona in ZONAS_TAMANDARE]
 ZONAS_TAMANDARE_NOITE_6[3] = {"pergunta": "Orelhas", "sinal": True,
-                              "resposta": "Atrás das orelhas, manchas brancas começando a descer."}
+                              "resposta": "Atrás das orelhas, manchas avermelhadas começando a descer."}
 
 
 # --- Noite 7: Iandé, a que está perfeita ---
@@ -394,7 +394,7 @@ def oferta_krenan(ir_junto=False):
 
 # --- Noite 9: o pescoço (o 5º sinal da tábua) ---
 # Agora dá para olhar também o pescoço. Tamandaré-mirim tem as manchas descendo até lá; Iandé,
-# que parecia perfeita, mostra as primeiras manchas brancas no pescoço.
+# que parecia perfeita, mostra as primeiras manchas avermelhadas no pescoço.
 LIBERADAS_NOITE_9 = ["Olhos", "Boca", "Orelhas", "Pescoço"]
 PESCOCO_LIMPO = {"pergunta": "Pescoço", "resposta": "Nada no pescoço. A pele está lisa."}
 
@@ -424,10 +424,10 @@ PESCOCO_MBAE = [
 
 ZONAS_TAMANDARE_NOITE_9 = com_pescoco(ZONAS_TAMANDARE_NOITE_6, {
     "pergunta": "Pescoço", "sinal": True,
-    "resposta": "As manchas brancas já desceram até o pescoço."})
+    "resposta": "As manchas avermelhadas já desceram até o pescoço."})
 # Atrás das orelhas, as manchas não estão mais "começando": já desceram.
 ZONAS_TAMANDARE_NOITE_9[3] = {"pergunta": "Orelhas", "sinal": True,
-                              "resposta": "Atrás das orelhas, manchas brancas que descem pelo pescoço."}
+                              "resposta": "Atrás das orelhas, manchas avermelhadas que descem pelo pescoço."}
 # Na noite 8, Iandé já dormiu na aldeia (não mais na vila).
 ZONAS_IANDE_NOITE_8 = [dict(zona) for zona in ZONAS_IANDE]
 ZONAS_IANDE_NOITE_8[1] = {"pergunta": "Olhos", "imagem": "olho_iande",
@@ -440,7 +440,7 @@ ZONAS_IANDE_NOITE_9[3] = {"pergunta": "Boca", "sinal": True, "imagem": "boca_ian
                           "resposta": "(tosse) [Comi farinha velha na vila]."}
 ZONAS_IANDE_NOITE_9 = com_pescoco(ZONAS_IANDE_NOITE_9, {
     "pergunta": "Pescoço", "sinal": True,
-    "resposta": ["Do lado do pescoço, umas manchas brancas, pequenas.", "[É da alça do cesto]."]})
+    "resposta": ["Do lado do pescoço, umas manchas avermelhadas, pequenas.", "[É da alça do cesto]."]})
 
 
 # --- Noite 10: Araci, a última porta ---
@@ -1293,7 +1293,7 @@ NOITES = {
                     {"tipo": "fala", "quem": "Pajé", "texto": "Sente. O homem da cruz não volta mais."},
                     {"tipo": "perguntas", "botao": "Voltar para a fogueira", "perguntas": [
                         {"pergunta": "O que você viu no sono?",
-                         "resposta": "Um pescoço marcado. Manchas brancas, pequenas, todas juntas."},
+                         "resposta": "Um pescoço marcado. Manchas avermelhadas, pequenas, todas juntas."},
                         {"pergunta": "Como eu vejo isso?",
                          "resposta": "Olhe a pele de perto. O fogo engana."},
                         ACUSACAO,

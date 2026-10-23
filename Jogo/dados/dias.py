@@ -601,7 +601,7 @@ DIAS = {
             {"tipo": "visitante", "visitante": "paje"},
             {"tipo": "fala", "quem": "Pajé",
              "texto": "Sonhei com manchas pelo corpo. Começam [atrás da orelha] e descem pela pele."},
-            {"tipo": "sinal", "texto": "Manchas brancas atrás da orelha."},
+            {"tipo": "sinal", "texto": "Manchas avermelhadas atrás da orelha."},
 
             {"tipo": "noite"},
         ],
@@ -721,7 +721,7 @@ DIAS = {
     # --- Dia 9: a última vez que ele vem (Textos/Caraíba — Dez Dias, Dez Fogueiras.pdf) ---
     # A terceira e última visita do Irmão Aleixo. Ele diz tudo o que ainda não tinha dito,
     # e o cordão no pescoço dele é o de Iandé. O pedido é o mesmo: entregar alguém ou negar.
-    # De noite, o pajé conta o 5º sinal: manchas brancas no pescoço.
+    # De noite, o pajé conta o 5º sinal: manchas avermelhadas no pescoço.
     9: {
         "titulo": "Dia 9",
         "passos": [
@@ -762,8 +762,8 @@ DIAS = {
             {"tipo": "fundo", "fundo": "fogueira_longe", "filtro": "noite"},
             {"tipo": "visitante", "visitante": "paje"},
             {"tipo": "fala", "quem": "Pajé",
-             "texto": "Sonhei com um pescoço marcado. O mal deixa [manchas brancas no pescoço]."},
-            {"tipo": "sinal", "texto": "Manchas brancas no pescoço."},
+             "texto": "Sonhei com um pescoço marcado. O mal deixa [manchas avermelhadas no pescoço]."},
+            {"tipo": "sinal", "texto": "Manchas avermelhadas no pescoço."},
 
             # A Água do Batismo: quem entregou alguém hoje sem nunca perguntar por quem o Aleixo
             # levou recebe, ao cair da noite, o padre novo da vila. Aceitar acaba o jogo no fim
