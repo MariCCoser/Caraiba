@@ -392,6 +392,15 @@ DETALHES = [
     (DOENCAS + "Mbaé/MbaePescocoDoente.png", "detalhes/pescoco-mbae-doente.png"),
     # O nome diz "saudável", mas a arte já tem as manchas: Araci sempre chega doente.
     (DOENCAS + "Araci/AraciOrelhaPescoco.png", "detalhes/orelha-pescoco-araci-doente.png"),
+    (DOENCAS + "Potira/PotiraOrelhaPescoco.png", "detalhes/orelha-pescoco-potira.png"),
+    (DOENCAS + "Potira/PotiraOrelhaDoente.png", "detalhes/orelha-potira-doente.png"),
+    (DOENCAS + "Potira/PotiraPescocoDoente.png", "detalhes/pescoco-potira-doente.png"),
+    (DOENCAS + "Tama/TamaOrelhaPescoco.png", "detalhes/orelha-pescoco-tamandare.png"),
+    (DOENCAS + "Tama/TamaOrelhaDoente.png", "detalhes/orelha-tamandare-doente.png"),
+    (DOENCAS + "Tama/TamaPescocoDoente.png", "detalhes/pescoco-tamandare-doente.png"),
+    (DOENCAS + "Iandé/IandeOrelhaPescoco.png", "detalhes/orelha-pescoco-iande.png"),
+    (DOENCAS + "Iandé/IandeOrelhaDoente.png", "detalhes/orelha-iande-doente.png"),
+    (DOENCAS + "Iandé/IandePescocoDoente.png", "detalhes/pescoco-iande-doente.png"),
 ]
 # Detalhes com o fundo xadrez desenhado na imagem (sem transparência de verdade).
 DETALHES_XADREZ = [DOENCAS + "Mbaé/OlhoDoenteMbaé.png", DOENCAS + "Tama/OlhoTamaDoente.png",

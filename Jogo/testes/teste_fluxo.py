@@ -142,6 +142,18 @@ def testar_sinais_no_rosto():
     estado.febre = [{"nome": "Yara", "de": "Mbaé", "noite": 2, "visivel": True}]
     vistas = imagens(noites.com_pescoco(noites.ZONAS_YARA_NOITE_3, noites.PESCOCO_YARA), estado)
     assert vistas["Orelhas"] == "orelha_yara_doente" and vistas["Pescoço"] == "pescoco_yara_doente", vistas
+    # Tamandaré-mirim: a orelha limpa na noite 5, doente da noite 6; o pescoço doente da 9.
+    assert imagens(noites.ZONAS_TAMANDARE, estado)["Orelhas"] == "orelha_pescoco_tamandare"
+    assert imagens(noites.ZONAS_TAMANDARE_NOITE_6, estado)["Orelhas"] == "orelha_tamandare_doente"
+    assert imagens(noites.ZONAS_TAMANDARE_NOITE_9, estado)["Pescoço"] == "pescoco_tamandare_doente"
+    # Iandé: limpa nas noites 7 e 8; orelha e pescoço doentes na 9.
+    assert imagens(noites.ZONAS_IANDE_NOITE_8, estado)["Orelhas"] == "orelha_pescoco_iande"
+    vistas = imagens(noites.ZONAS_IANDE_NOITE_9, estado)
+    assert vistas["Orelhas"] == "orelha_iande_doente" and vistas["Pescoço"] == "pescoco_iande_doente", vistas
+    # Potira com febre: orelha e pescoço doentes.
+    estado.febre.append({"nome": "Potira", "de": "Mbaé", "noite": 2, "visivel": True})
+    vistas = imagens(noites.com_pescoco(noites.ZONAS_POTIRA_DEPOIS, noites.PESCOCO_POTIRA), estado)
+    assert vistas["Orelhas"] == "orelha_potira_doente" and vistas["Pescoço"] == "pescoco_potira_doente", vistas
     print("ok sinais no rosto: olho e boca mudam com a doença")
 
 

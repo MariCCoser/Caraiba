@@ -7,9 +7,8 @@ pessoa, com a maldição e sem ela, e **quando** a imagem muda.
   (feitas por `Jogo/ferramentas/converter_arte.py`).
 - Onde isso está no jogo: `Jogo/dados/noites.py` (as zonas do exame de cada noite) e
   `Jogo/dados/arte.py` (lista `DETALHES`).
-- Os **olhos** e a **boca** têm imagem para todos. **Atrás da orelha** e o **pescoço** têm
-  imagem para Yara, Mbaé e Araci (a saudável vale para as duas zonas). Para os outros, e para
-  testa, mãos e respiração, o exame ainda descreve em texto.
+- Os **olhos**, a **boca**, **atrás da orelha** e o **pescoço** têm imagem para todos (a
+  saudável de orelha e pescoço é uma só). Testa, mãos e respiração continuam em texto.
 - **O tapiri cura:** quem era amaldiçoado e completa as 3 noites lá volta com o rosto saudável.
 
 ## As regras
@@ -74,4 +73,6 @@ jogador não tem como conferir).
 | Yara | `YaraOrelhaPescoco.png` | se pegou a febre e mostra: `YaraOrelhaDoente.png` e `YaraPescocoDoenete.png` |
 | Mbaé | `MbaeOrelhaPescoco.png` (até 3 noites na oca, ou curado no tapiri) | depois de 3 noites na oca: `MbaeOrelhaDoente.png` e `MbaePescocoDoente.png` |
 | Araci | — | `AraciOrelhaPescoco.png` (o nome diz saudável, mas a arte tem as manchas: ela sempre chega doente) |
-| Potira, Tamandaré-mirim, Iandé | ainda sem imagem (texto) | ainda sem imagem (texto) |
+| Potira | `PotiraOrelhaPescoco.png` | se pegou a febre e mostra: `PotiraOrelhaDoente.png` e `PotiraPescocoDoente.png` |
+| Tamandaré-mirim | `TamaOrelhaPescoco.png` (noite 5, ou curado no tapiri) | orelha da noite 6: `TamaOrelhaDoente.png`; pescoço da noite 9: `TamaPescocoDoente.png` |
+| Iandé | `IandeOrelhaPescoco.png` (noites 7 e 8, ou curada no tapiri) | noite 9 em diante: `IandeOrelhaDoente.png` e `IandePescocoDoente.png` |

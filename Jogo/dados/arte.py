@@ -108,6 +108,15 @@ DETALHES = {
     "orelha_mbae_doente": "detalhes/orelha-mbae-doente.png",                   # depois de 3 noites
     "pescoco_mbae_doente": "detalhes/pescoco-mbae-doente.png",
     "orelha_pescoco_araci_doente": "detalhes/orelha-pescoco-araci-doente.png",
+    "orelha_pescoco_potira": "detalhes/orelha-pescoco-potira.png",
+    "orelha_potira_doente": "detalhes/orelha-potira-doente.png",
+    "pescoco_potira_doente": "detalhes/pescoco-potira-doente.png",
+    "orelha_pescoco_tamandare": "detalhes/orelha-pescoco-tamandare.png",
+    "orelha_tamandare_doente": "detalhes/orelha-tamandare-doente.png",
+    "pescoco_tamandare_doente": "detalhes/pescoco-tamandare-doente.png",
+    "orelha_pescoco_iande": "detalhes/orelha-pescoco-iande.png",
+    "orelha_iande_doente": "detalhes/orelha-iande-doente.png",
+    "pescoco_iande_doente": "detalhes/pescoco-iande-doente.png",
 }
 
 # Onde fica o fogo em cada cenário (x, y na tela 1600x900).

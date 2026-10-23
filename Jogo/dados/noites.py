@@ -264,8 +264,8 @@ ZONAS_POTIRA = [
      "resposta": "Fresca. Poeira do caminho, nenhum suor."},
     {"pergunta": "Olhos", "imagem": "olho_potira",
      "resposta": "[É sono]. Andei desde antes do sol."},
-    {"pergunta": "Orelhas",
-     "resposta": "Nada atrás das orelhas. A pele está limpa."},
+    {"pergunta": "Orelhas", "imagem": "orelha_pescoco_potira",
+     "resposta": "Pode olhar. A pele está boa."},
     {"pergunta": "Boca", "imagem": "boca_potira",
      "resposta": [
          "Os lábios? Estão secos.",
@@ -288,6 +288,8 @@ POTIRA_COM_FEBRE = {
               "resposta": "(treme) [Dormi mal], só isso."},
     "Boca": {"sinal": True, "imagem": "boca_potira_doente",
              "resposta": "(tosse) Arde por dentro."},
+    "Orelhas": {"sinal": True, "imagem": "orelha_potira_doente",
+                "resposta": "(treme) Coça. [É do mato]."},
 }
 ZONAS_POTIRA = pode_pegar_febre(ZONAS_POTIRA, "Potira", POTIRA_COM_FEBRE)
 ZONAS_POTIRA_DEPOIS = pode_pegar_febre(ZONAS_POTIRA_DEPOIS, "Potira", POTIRA_COM_FEBRE)
@@ -308,8 +310,8 @@ ZONAS_TAMANDARE = [
     {"pergunta": "Olhos", "sinal": True, "imagem": "olho_tamandare_doente",
      "noites_na_oca_ao_menos": {"Tamandaré-mirim": NOITES_ATE_O_OLHO_PIORAR},
      "resposta": "[É o sol da estrada]. Agora arde."},
-    {"pergunta": "Orelhas",
-     "resposta": "Nada atrás das orelhas."},
+    {"pergunta": "Orelhas", "imagem": "orelha_pescoco_tamandare",
+     "resposta": "Nada aí. [Só a poeira da estrada]."},
     {"pergunta": "Boca", "sinal": True, "imagem": "boca_tamandare_doente",
      "resposta": "[Rouco de pregar]. Só isso."},
     {"pergunta": "Mãos",
@@ -325,8 +327,8 @@ LIBERADAS_NOITE_6 = ["Olhos", "Boca", "Orelhas"]
 
 # Tamandaré-mirim na noite 6: as primeiras manchas atrás da orelha. Três sinais da tábua.
 ZONAS_TAMANDARE_NOITE_6 = [dict(zona) for zona in ZONAS_TAMANDARE]
-ZONAS_TAMANDARE_NOITE_6[3] = {"pergunta": "Orelhas", "sinal": True,
-                              "resposta": "Atrás das orelhas, manchas avermelhadas começando a descer."}
+ZONAS_TAMANDARE_NOITE_6[3] = {"pergunta": "Orelhas", "sinal": True, "imagem": "orelha_tamandare_doente",
+                              "resposta": "[O sol da estrada queimou a pele]."}
 
 
 # --- Noite 7: Iandé, a que está perfeita ---
@@ -339,8 +341,8 @@ ZONAS_IANDE = [
      "resposta": "Fresca. Nenhum suor."},
     {"pergunta": "Olhos", "imagem": "olho_iande",
      "resposta": "[Dormi bem na vila]."},
-    {"pergunta": "Orelhas",
-     "resposta": "Nada atrás das orelhas. A pele está limpa."},
+    {"pergunta": "Orelhas", "imagem": "orelha_pescoco_iande",
+     "resposta": "Pode olhar. Está tudo bem."},
     {"pergunta": "Boca", "imagem": "boca_iande",
      "resposta": "Pode olhar. Está tudo bem."},
     {"pergunta": "Mãos",
@@ -411,6 +413,11 @@ PESCOCO_YARA = pode_pegar_febre([{"pergunta": "Pescoço", "imagem": "orelha_pesc
                                   "resposta": "Pode olhar. Não tem nada."}], "Yara", {
     "Pescoço": {"sinal": True, "imagem": "pescoco_yara_doente", "resposta": "(tosse) [É do sol], só isso."},
 })
+# Potira: o pescoço limpo, ou com as manchas, se pegou a febre na oca e mostra.
+PESCOCO_POTIRA = pode_pegar_febre([{"pergunta": "Pescoço", "imagem": "orelha_pescoco_potira",
+                                    "resposta": "Nada aí. Pode olhar."}], "Potira", {
+    "Pescoço": {"sinal": True, "imagem": "pescoco_potira_doente", "resposta": "(tosse) [É do sol da roça]."},
+})
 # Mbaé: o pescoço limpo até 3 noites na oca; depois, as manchas.
 PESCOCO_MBAE = [
     {"pergunta": "Pescoço", "imagem": "orelha_pescoco_mbae",
@@ -423,11 +430,11 @@ PESCOCO_MBAE = [
 
 
 ZONAS_TAMANDARE_NOITE_9 = com_pescoco(ZONAS_TAMANDARE_NOITE_6, {
-    "pergunta": "Pescoço", "sinal": True,
-    "resposta": "As manchas avermelhadas já desceram até o pescoço."})
-# Atrás das orelhas, as manchas não estão mais "começando": já desceram.
-ZONAS_TAMANDARE_NOITE_9[3] = {"pergunta": "Orelhas", "sinal": True,
-                              "resposta": "Atrás das orelhas, manchas avermelhadas que descem pelo pescoço."}
+    "pergunta": "Pescoço", "sinal": True, "imagem": "pescoco_tamandare_doente",
+    "resposta": "[A terra sem mal marca quem anda até ela]."})
+# Atrás das orelhas, as manchas não estão mais "começando": já descem pelo pescoço.
+ZONAS_TAMANDARE_NOITE_9[3] = {"pergunta": "Orelhas", "sinal": True, "imagem": "orelha_tamandare_doente",
+                              "resposta": "Agora desce pelo pescoço. [Não dói]."}
 # Na noite 8, Iandé já dormiu na aldeia (não mais na vila).
 ZONAS_IANDE_NOITE_8 = [dict(zona) for zona in ZONAS_IANDE]
 ZONAS_IANDE_NOITE_8[1] = {"pergunta": "Olhos", "imagem": "olho_iande",
@@ -438,9 +445,11 @@ ZONAS_IANDE_NOITE_9[1] = {"pergunta": "Olhos", "sinal": True, "imagem": "olho_ia
                           "resposta": "Não dormi. [É a dor nas costas]."}
 ZONAS_IANDE_NOITE_9[3] = {"pergunta": "Boca", "sinal": True, "imagem": "boca_iande_doente",
                           "resposta": "(tosse) [Comi farinha velha na vila]."}
+ZONAS_IANDE_NOITE_9[2] = {"pergunta": "Orelhas", "sinal": True, "imagem": "orelha_iande_doente",
+                          "resposta": "Coça um pouco. [É do cabelo sujo da viagem]."}
 ZONAS_IANDE_NOITE_9 = com_pescoco(ZONAS_IANDE_NOITE_9, {
-    "pergunta": "Pescoço", "sinal": True,
-    "resposta": ["Do lado do pescoço, umas manchas avermelhadas, pequenas.", "[É da alça do cesto]."]})
+    "pergunta": "Pescoço", "sinal": True, "imagem": "pescoco_iande_doente",
+    "resposta": "[É da alça do cesto]."})
 
 
 # --- Noite 10: Araci, a última porta ---
@@ -493,14 +502,15 @@ MBAE_CURADO = {
 TAMANDARE_CURADO = {
     "Olhos": {"imagem": "olho_tamandare", "resposta": "O sol da estrada já não arde."},
     "Boca": {"imagem": "boca_tamandare", "resposta": "A rouquidão foi embora."},
-    "Orelhas": {"resposta": "Atrás das orelhas, as manchas estão secando."},
-    "Pescoço": {"resposta": "No pescoço, as manchas estão secando."},
+    "Orelhas": {"imagem": "orelha_pescoco_tamandare", "resposta": "As manchas secaram. [A terra sem mal me poupou]."},
+    "Pescoço": {"imagem": "orelha_pescoco_tamandare", "resposta": "Pode olhar. Secou tudo."},
     "Respiração": {"resposta": "Respira fundo, sem tosse."},
 }
 IANDE_CURADA = {
     "Olhos": {"imagem": "olho_iande", "resposta": "Dormi bem, enfim."},
     "Boca": {"imagem": "boca_iande", "resposta": "Pode olhar. Está tudo bem."},
-    "Pescoço": {"resposta": "No pescoço, as manchas estão secando."},
+    "Orelhas": {"imagem": "orelha_pescoco_iande", "resposta": "Não coça mais."},
+    "Pescoço": {"imagem": "orelha_pescoco_iande", "resposta": "As manchas sumiram. [Foi o tapiri]."},
 }
 ZONAS_MBAE_NOITE_9 = pode_se_curar(com_pescoco(ZONAS_MBAE, PESCOCO_MBAE), "Mbaé", MBAE_CURADO)
 ZONAS_MBAE = pode_se_curar(ZONAS_MBAE, "Mbaé", MBAE_CURADO)
@@ -1347,7 +1357,7 @@ NOITES = {
                          "resposta": "Vi rede vazia pendurada. Não entrei."},
                     ]},
                     {"tipo": "exame", "quem": "Potira", "liberadas": LIBERADAS_NOITE_9,
-                     "texto": TEXTO_EXAME, "zonas": com_pescoco(ZONAS_POTIRA_DEPOIS)},
+                     "texto": TEXTO_EXAME, "zonas": com_pescoco(ZONAS_POTIRA_DEPOIS, PESCOCO_POTIRA)},
                     escolha_onde_dorme("Potira", "Durmo na rede de sempre.",
                                        "Sozinha? Se você manda, eu vou."),
                     {"tipo": "visitante", "visitante": None},
@@ -1482,7 +1492,7 @@ NOITES = {
                          "resposta": "Vi rede vazia pendurada. Não entrei."},
                     ]},
                     {"tipo": "exame", "quem": "Potira", "liberadas": LIBERADAS_NOITE_10,
-                     "texto": TEXTO_EXAME, "zonas": com_pescoco(ZONAS_POTIRA_DEPOIS)},
+                     "texto": TEXTO_EXAME, "zonas": com_pescoco(ZONAS_POTIRA_DEPOIS, PESCOCO_POTIRA)},
                     escolha_onde_dorme("Potira", "Durmo na rede de sempre.",
                                        "Sozinha? Se você manda, eu vou."),
                     {"tipo": "visitante", "visitante": None},
