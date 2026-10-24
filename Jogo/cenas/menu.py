@@ -1,5 +1,5 @@
 # Menu inicial: a fogueira ao fundo (luz pulsando), o título e os botões Continuar, Começar,
-# Como se joga, Finais, Opções e Sair. "Continuar" só aparece se houver uma partida guardada;
+# Finais, Opções e Sair ("Como se joga" fica dentro de Opções). "Continuar" só aparece se houver uma partida guardada;
 # "Finais", depois do primeiro final visto (para ler de novo o que estava escrito).
 
 import pygame
@@ -26,7 +26,6 @@ class Menu(Cena):
 
         self.botao_continuar = botao(MENU["continuar"])
         self.botao_comecar = botao(MENU["comecar"])
-        self.botao_tutorial = botao(MENU["tutorial"])
         self.botao_finais = botao(MENU["finais"])
         self.botao_opcoes = botao(MENU["opcoes"])
         self.botao_testar = botao(TESTE["menu"])
@@ -38,7 +37,7 @@ class Menu(Cena):
         self.botao_finais.visivel = bool(finais.vistos())
         # No navegador não dá para "fechar o jogo": o botão Sair some.
         self.botao_sair.visivel = not config.NO_NAVEGADOR
-        self.botoes = [self.botao_continuar, self.botao_comecar, self.botao_tutorial,
+        self.botoes = [self.botao_continuar, self.botao_comecar,
                        self.botao_finais, self.botao_testar, self.botao_opcoes, self.botao_sair]
         # Empilha só os visíveis, sem deixar buraco.
         y = Y_PRIMEIRO_BOTAO
@@ -55,8 +54,6 @@ class Menu(Cena):
             self.jogo.continuar()
         elif self.botao_comecar.clicado(evento):
             self.comecar()
-        elif self.botao_tutorial.clicado(evento):
-            self.jogo.ir_para("tutorial")
         elif self.botao_finais.clicado(evento):
             self.jogo.ir_para("finais")
         elif self.botao_testar.clicado(evento):

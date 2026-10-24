@@ -8,7 +8,7 @@
 # - "filtro" é "noite" (âmbar, luz de fogo) ou "dia" (frio e sem cor).
 
 # As regras do jogo, em poucas frases. Aparecem no último cartão da introdução e no
-# botão "Como se joga" do menu (o mesmo texto nos dois lugares).
+# botão "Como se joga" das Opções (o mesmo texto nos dois lugares).
 # O que é o tapiri, o que é matar e onde a maldição passa ficam de fora de propósito:
 # o jogador descobre conversando com o pajé.
 REGRAS = ("• [De dia], alguém chega à entrada. Converse e decida se a pessoa entra.\n"
@@ -160,7 +160,7 @@ TABUA = {
     "dica": "Tábua de barro",
 }
 
-# Tela "Como se joga", aberta pelo menu a qualquer momento.
+# Tela "Como se joga", aberta pelas Opções.
 # Modo de teste (config.MODO_TESTE): pular direto para uma noite.
 TESTE = {
     "menu": "Testar uma noite",

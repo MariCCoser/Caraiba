@@ -1886,8 +1886,11 @@ def testar_continuar_tabua_tutorial(jogo):
     assert nome_cena(jogo) == "Aldeia", "depois do Dia 1, Continuar leva à aldeia, de noite"
     print("ok Continuar depois do fim do Dia 1")
 
-    # Como se joga, pelo menu.
+    # Como se joga: fica dentro das Opções (o menu principal não tem mais o botão).
     jogo.ir_para("menu")
+    esperar_transicao(jogo)
+    assert not hasattr(jogo.cenas.atual, "botao_tutorial")
+    clicar_botao(jogo, jogo.cenas.atual.botao_opcoes)
     esperar_transicao(jogo)
     clicar_botao(jogo, jogo.cenas.atual.botao_tutorial)
     esperar_transicao(jogo)
@@ -1896,8 +1899,8 @@ def testar_continuar_tabua_tutorial(jogo):
     capturar(jogo, "15-como-se-joga")
     tecla(jogo, pygame.K_ESCAPE)
     esperar_transicao(jogo)
-    assert nome_cena(jogo) == "Menu"
-    print("ok Como se joga, pelo menu")
+    assert nome_cena(jogo) == "Opcoes", nome_cena(jogo)
+    print("ok Como se joga, pelas Opções")
 
 
 def testar_escala(jogo):

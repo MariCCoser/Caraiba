@@ -541,7 +541,10 @@ NOITES = {
                         {"pergunta": "Todo olho vermelho é o mal?",
                          "resposta": "O sonho mostra o sinal. Quem olha de perto é você."},
                         {"pergunta": "O que é o tapiri?",
-                         "resposta": "O abrigo longe das ocas. Quem dorme lá não divide a rede."},
+                         "resposta": [
+                             "O abrigo longe das ocas. Quem dorme lá não divide a rede, e o mal não passa para ninguém.",
+                             "E quem tem a maldição e fica as três noites lá volta curado.",
+                         ]},
                         # O que "Como se joga" não conta (dados/textos.py, REGRAS): o jogador descobre aqui.
                         {"pergunta": "O mal passa aqui no fogo?",
                          "resposta": "Ao ar livre, não. O mal passa nas redes, dentro da oca."},
@@ -605,7 +608,10 @@ NOITES = {
                              "Contam histórias do outro lado do rio desde antes de eu nascer.",
                          ]},
                         {"pergunta": "O tapiri tem lugar?",
-                         "resposta": "Um lugar só. Quem entra fica três noites, longe de todos."},
+                         "resposta": [
+                             "Um lugar só. Quem entra fica três noites, longe de todos.",
+                             "Lá o mal não passa para ninguém. E quem tem a maldição sai curado.",
+                         ]},
                         ACUSACAO,
                         barulho_na_mata(),
                     ]},
@@ -750,11 +756,14 @@ NOITES = {
                              "Ainda não vi em ninguém. [Mas vai chegar].",
                          ]},
                         {"pergunta": "O tapiri tem lugar?",
-                         "resposta": "Um lugar só. Quem entra fica três noites, longe de todos."},
+                         "resposta": [
+                             "Um lugar só. Quem entra fica três noites, longe de todos.",
+                             "Lá o mal não passa para ninguém. E quem tem a maldição sai curado.",
+                         ]},
                         {"pergunta": "E quem sai do tapiri?",
                          "resposta": [
-                             "Quem passa as três noites e não piora volta para a rede.",
-                             "Quem piora, [não leva o mal para ninguém]. É para isso que ele serve.",
+                             "Quem passa as três noites lá volta para a rede curado da maldição.",
+                             "E enquanto está lá, o mal não passa para ninguém. É para isso que ele serve.",
                          ]},
                         {"pergunta": "E a Potira?", "se_dentro": "Potira",
                          "resposta": "Essa eu vi nascer. Senta perto do fogo, menina."},

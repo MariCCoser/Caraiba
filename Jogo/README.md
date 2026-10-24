@@ -52,7 +52,7 @@ Todo o texto do jogo fica na pasta **`dados/`**. Abra com qualquer editor de tex
 | Quero mudar... | Arquivo |
 |---|---|
 | Título, botões do menu, textos das Opções | `dados/textos.py` |
-| As regras ("Como se joga" do menu e último cartão da introdução) | `dados/textos.py`, parte `REGRAS` |
+| As regras ("Como se joga", nas Opções, e último cartão da introdução) | `dados/textos.py`, parte `REGRAS` |
 | Os textos da tábua de barro | `dados/textos.py`, parte `TABUA` |
 | Os cartões da introdução (e o cenário de cada um) | `dados/textos.py`, parte `INTRODUCAO` |
 | O que acontece em cada dia: falas do pajé, visitante, perguntas, escolhas, sinal | `dados/dias.py` (as instruções estão no topo do arquivo) |

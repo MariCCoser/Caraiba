@@ -1,4 +1,5 @@
-# Tela de Opções: tamanho do texto (normal / grande) e tela cheia. As escolhas ficam salvas.
+# Tela de Opções: tamanho do texto (normal / grande), tela cheia e "Como se joga" (as regras, que
+# voltam para cá). As escolhas ficam salvas.
 
 import pygame
 
@@ -21,7 +22,8 @@ class Opcoes(Cena):
         self.botao_grande = ui.Botao(OPCOES["grande"], (X_DIREITA, 300), largura_minima=260)
         self.botao_desligada = ui.Botao(OPCOES["desligada"], (X_ESQUERDA, 500), largura_minima=260)
         self.botao_ligada = ui.Botao(OPCOES["ligada"], (X_DIREITA, 500), largura_minima=260)
-        self.botao_voltar = ui.Botao(OPCOES["voltar"], (800, 830), largura_minima=260)
+        self.botao_tutorial = ui.Botao(MENU["tutorial"], (800, 760), largura_minima=360)
+        self.botao_voltar = ui.Botao(OPCOES["voltar"], (800, 850), largura_minima=260)
 
         if config.NO_NAVEGADOR:
             # No navegador quem controla a tela cheia é a página; mostramos o porquê.
@@ -30,9 +32,9 @@ class Opcoes(Cena):
             self.botao_ligada.motivo = OPCOES["motivo_navegador"]
 
         self.botoes = [self.botao_normal, self.botao_grande, self.botao_desligada,
-                       self.botao_ligada, self.botao_voltar]
+                       self.botao_ligada, self.botao_tutorial, self.botao_voltar]
 
-        self.exemplo = ui.CaixaTexto(OPCOES["exemplo"], 1100, (800, 690), ancora="centro",
+        self.exemplo = ui.CaixaTexto(OPCOES["exemplo"], 1100, (800, 640), ancora="centro",
                                      max_linhas=3)
 
     def tratar_evento(self, evento):
@@ -41,6 +43,8 @@ class Opcoes(Cena):
             self.jogo.ir_para("menu")
         elif self.botao_voltar.clicado(evento):
             self.jogo.ir_para("menu")
+        elif self.botao_tutorial.clicado(evento):
+            self.jogo.ir_para("tutorial")
         elif self.botao_normal.clicado(evento):
             preferencias.tamanho_texto = "normal"
             preferencias.salvar()
