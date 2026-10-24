@@ -100,7 +100,7 @@ def testar_estado_inicial():
                 "proximidade_vila": 0, "rio_acima": 0, "memoria": 0, "recusas_aleixo": 0, "levados": 0,
                 "pistas": 0, "sanidade": 10, "tapiri_usos": 0, "tapiri_saos": 0, "viu_anhanga": 0, "seguiu_paje": 0, "converteu": 0,
                 "padre_entrou": 0,
-                "inocentes": 0, "machado": 0, "energia_hoje": 0, "krenan_volta": 0, "subiu_o_rio": 0, "rio_acima_nomes": [], "convidados": [], "dentro": [], "tapiri": [], "tapiri_desde": {}, "febre": [], "noites_na_oca": {}, "curados": [], "manha": [],
+                "inocentes": 0, "machado": 0, "pulseira": 0, "energia_hoje": 0, "krenan_volta": 0, "subiu_o_rio": 0, "rio_acima_nomes": [], "convidados": [], "dentro": [], "tapiri": [], "tapiri_desde": {}, "febre": [], "noites_na_oca": {}, "curados": [], "manha": [],
                 "historias": [], "entregues_nomes": [],
                 "mortos_nomes": [], "mortos_quando": {}, "corpos": [], "tabua": [], "tabua_noites": [],
                 "final_calculado": None, "final": None}
@@ -1198,7 +1198,8 @@ def testar_dia4_e_noite4(jogo):
     print("ok Dia 4: Potira (curta na entrada, longa na oca) e o 3º sinal na tábua")
 
     # A fogueira: pajé, Mbaé e Potira. Os dois de fora são obrigatórios.
-    assert dia.titulo == "Noite 4" and dia.modo == "fogueira" and dia.energia == 1
+    # A mandioca que Potira deu na entrada: +1 olhar só nesta noite.
+    assert dia.titulo == "Noite 4" and dia.modo == "fogueira" and dia.energia == 2, dia.energia
     # Potira senta no chão, à esquerda do pajé, e o pajé chega para o lado.
     assert [p.nome for p in dia.na_fogueira] == ["Pajé", "Mbaé", "Potira"]
     from dados.noites import POSICAO_PAJE_COM_POTIRA
@@ -1222,6 +1223,9 @@ def testar_dia4_e_noite4(jogo):
     dia.caixa.completar()
     clicar(jogo, (800, 300))
     assert "frio" in dia.caixa.texto, dia.caixa.texto
+    passar_falas(jogo)
+    assert dia.sinais.get("Potira", 0) == 0 and dia.energia == 1
+    clicar_opcao(jogo, "Olhos")
     passar_falas(jogo)
     assert dia.sinais.get("Potira", 0) == 0 and dia.energia == 0
     clicar_opcao(jogo, "Terminar o exame")
@@ -1485,6 +1489,12 @@ def testar_dia7_e_noite7(jogo):
     rodar(jogo, 60)
     capturar(jogo, "41-dia7-iande")
     clicar_opcao(jogo, "Decidir")
+    # A pulseira de contas de vidro: aceitar dá +1 olhar das noites 7 a 10.
+    passar_falas(jogo)
+    assert textos_dos_botoes(jogo) == ["Aceitar a pulseira", "Recusar"], textos_dos_botoes(jogo)
+    clicar_opcao(jogo, "Aceitar a pulseira")
+    passar_falas(jogo)
+    assert estado.pulseira == 1
     clicar_opcao(jogo, "Deixar entrar")
     passar_falas(jogo, seguir_seta=False)
     assert estado.dentro == ["Yara", "Iandé"] and estado.vivos == 2
@@ -1496,7 +1506,8 @@ def testar_dia7_e_noite7(jogo):
     capturar(jogo, "42-dia7-iande-na-oca")
     clicar_pessoa(jogo, "Iandé")
     passar_falas(jogo)
-    assert textos_dos_botoes(jogo) == ["Como estava a vila?", "Viu alguém amaldiçoado?", "Que conta é essa no pulso?",
+    # Ela deu a pulseira: a pergunta sobre a conta no pulso não aparece.
+    assert textos_dos_botoes(jogo) == ["Como estava a vila?", "Viu alguém amaldiçoado?",
                                        "Conte da viagem.", "Terminar a conversa"], textos_dos_botoes(jogo)
     clicar_opcao(jogo, "Viu alguém amaldiçoado?")
     dia = jogo.cenas.atual
@@ -1532,7 +1543,8 @@ def testar_dia7_e_noite7(jogo):
     assert textos_dos_botoes(jogo) == ["Viu alguém amaldiçoado?", "Examinar o rosto"], textos_dos_botoes(jogo)
     clicar_opcao(jogo, "Examinar o rosto")
     assert textos_dos_botoes(jogo) == ["Olhos", "Orelhas", "Boca", "Terminar o exame"], textos_dos_botoes(jogo)
-    examinar(jogo, ["Orelhas"])
+    # Com a pulseira de Iandé, a noite 7 tem um olhar a mais.
+    examinar(jogo, ["Orelhas", "Boca"])
     assert dia.sinais.get("Iandé", 0) == 0 and dia.energia == 0
     clicar_opcao(jogo, "Terminar o exame")
     clicar_opcao(jogo, "Deixar na oca")

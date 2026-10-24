@@ -216,6 +216,8 @@ class Dia(Cena):
             elif tipo == "se":
                 if self._condicao(passo):
                     self.fila[0:0] = passo["passos"]
+            elif tipo == "efeitos":
+                self._aplicar(passo["efeitos"])
             elif tipo == "noite":
                 self._comecar_noite()
                 return

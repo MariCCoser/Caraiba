@@ -10,7 +10,7 @@
 #   "titulo"   o que aparece no canto de cima (ex.: "Noite 1")
 #   "energia"  quantos olhares o jogador tem na noite inteira
 #   "energia_extra"  olhares a mais, se o estado.py bate: {"machado": 1} = +1 para quem aceitou
-#              o machado de Yara
+#              o machado de Yara; {"pulseira": 1} = +1 para quem aceitou a pulseira de Iandé
 #   "fundo"    o cenário da fogueira (dados/arte.py)
 #   "dica"     a frase embaixo da tela, enquanto o jogador escolhe com quem falar
 #   "dormir"   o texto da seta de ir dormir. Ela só aparece depois de falar com quem é
@@ -813,7 +813,7 @@ NOITES = {
                 "de_fora": True, "uma_vez": True, "obrigatorio": True,
                 "passos": [
                     {"tipo": "visitante", "visitante": "potira"},
-                    {"tipo": "fala", "quem": "Potira", "texto": "Não achei nada. Desculpa."},
+                    {"tipo": "fala", "quem": "Potira", "texto": "Só achei aquela mandioca. Desculpa."},
                     # Na fogueira a conversa é curta: a conversa inteira fica na oca Wanadi.
                     {"tipo": "perguntas", "botao": "Examinar o rosto", "perguntas": [
                         {"pergunta": "Viu gente amaldiçoada?",
@@ -1042,7 +1042,7 @@ NOITES = {
         "titulo": "Noite 7",
         # 1 olhar (2 com o machado); os olhos, a boca e atrás das orelhas, como na noite 6.
         "energia": 1,
-        "energia_extra": {"machado": 1},
+        "energia_extra": {"machado": 1, "pulseira": 1},
         "fundo": "fogueira_perto",
         "amaldicoados": True,
         "dica": "Clique em quem está perto do fogo para conversar.",
@@ -1161,7 +1161,7 @@ NOITES = {
         "titulo": "Noite 8",
         # 1 olhar (2 com o machado); os olhos, a boca e atrás das orelhas.
         "energia": 1,
-        "energia_extra": {"machado": 1},
+        "energia_extra": {"machado": 1, "pulseira": 1},
         "fundo": "fogueira_perto",
         "amaldicoados": True,
         "dica": "Clique em quem está perto do fogo para conversar.",
@@ -1299,7 +1299,7 @@ NOITES = {
         "titulo": "Noite 9",
         # 1 olhar (2 com o machado); os olhos, a boca, atrás das orelhas e, agora, o pescoço.
         "energia": 1,
-        "energia_extra": {"machado": 1},
+        "energia_extra": {"machado": 1, "pulseira": 1},
         "fundo": "fogueira_perto",
         "amaldicoados": True,
         "dica": "Clique em quem está perto do fogo para conversar.",
@@ -1461,7 +1461,7 @@ NOITES = {
         "titulo": "Noite 10",
         # 2 olhares (3 com o machado): os olhos, a boca, atrás das orelhas e o pescoço.
         "energia": 2,
-        "energia_extra": {"machado": 1},
+        "energia_extra": {"machado": 1, "pulseira": 1},
         "fundo": "fogueira_perto",
         "dica": "Clique em quem está perto do fogo para conversar.",
         "dormir": "Ir dormir",

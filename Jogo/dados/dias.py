@@ -27,6 +27,8 @@
 #                             (o nome da oca em dados/aldeia.py): aí ela aparece lá dentro,
 #                             no lugar de ONDE_DORME (dados/aldeia.py).
 #   "noite"      começa a noite na fogueira: o roteiro dela fica em dados/noites.py
+#   "efeitos"    soma valores às variáveis do estado.py sem o jogador escolher nada:
+#                {"tipo": "efeitos", "efeitos": {"energia_hoje": 1}} (ex.: a mandioca de Potira)
 #   "se"         os "passos" de dentro só acontecem se a condição bate:
 #                "morto": "Yara" (o jogador matou Yara), "morto_ontem": "Yara" (matou Yara na
 #                noite passada), "dentro": "Yara" (Yara está na aldeia), "tapiri": "Yara"
@@ -453,7 +455,11 @@ DIAS = {
             # A chegada de Potira. Ninguém comenta nem descreve: o jogador vê e ouve.
             {"tipo": "fundo", "fundo": "floresta", "filtro": "dia"},
             {"tipo": "visitante", "visitante": "potira"},
-            {"tipo": "fala", "quem": "Potira", "texto": "Sou eu, Potira. O cesto voltou vazio."},
+            {"tipo": "fala", "quem": "Potira", "texto": "Sou eu, Potira. Na roça, só achei uma mandioca."},
+            # A mandioca é do jogador, deixando Potira entrar ou não: +1 energia na noite de hoje.
+            {"tipo": "fala", "quem": "Potira", "texto": "Tome. É sua. Você guarda a entrada, precisa comer."},
+            {"tipo": "fala", "quem": "", "texto": "Você come a mandioca. Hoje à noite, terá mais um olhar."},
+            {"tipo": "efeitos", "efeitos": {"energia_hoje": 1}},
             {"tipo": "perguntas", "perguntas": [
                 {"pergunta": "Onde você estava?",
                  "resposta": "Nas roças do outro lado do morro. [Não encontrei ninguém]."},
@@ -642,6 +648,18 @@ DIAS = {
                 {"pergunta": "Como estava a vila?",
                  "resposta": "Todo mundo bem. Tinha festa de santo."},
             ]},
+            # A pulseira de contas de vidro, da festa do santo na vila: aceitar dá +1 energia em
+            # todas as noites seguintes (dados/noites.py, "energia_extra"), como o machado de Yara.
+            # No dia 9, o Aleixo a reconhece.
+            {"tipo": "fala", "quem": "Iandé", "texto": "Trouxe isto da festa do santo. É para você."},
+            {"tipo": "escolha", "texto": "Iandé estende uma pulseira de contas de vidro.", "opcoes": [
+                {"texto": "Aceitar a pulseira", "efeitos": {"pulseira": 1}, "passos": [
+                    {"tipo": "fala", "quem": "Iandé", "texto": "Olha como brilha no sol!"},
+                ]},
+                {"texto": "Recusar", "passos": [
+                    {"tipo": "fala", "quem": "Iandé", "texto": "Tudo bem. Fica comigo, então."},
+                ]},
+            ]},
             {"tipo": "escolha", "opcoes": [
                 {"texto": "Deixar entrar", "efeitos": {"vivos": 1}, "entra": "Iandé", "passos": [
                     {"tipo": "fala", "quem": "Iandé", "texto": "Eu sabia! Ninguém fecha a porta para mim."},
@@ -757,6 +775,12 @@ DIAS = {
             {"tipo": "visitante", "visitante": "aleixo"},
             {"tipo": "fala", "quem": ALEIXO, "texto": "Esta é a última vez que consigo ficar aqui."},
             {"tipo": "fala", "quem": ALEIXO, "texto": "Depois disso, não depende mais de mim."},
+            # Se o jogador aceitou a pulseira de Iandé, o Aleixo a reconhece.
+            {"tipo": "se", "ao_menos": {"pulseira": 1}, "passos": [
+                {"tipo": "fala", "quem": ALEIXO, "texto": "Essa pulseira no seu pulso. São as contas da festa do santo."},
+                {"tipo": "fala", "quem": ALEIXO,
+                 "texto": "Iandé usava uma igual no domingo em que a batizei. [Ela pediu que eu rezasse por ela]."},
+            ]},
             {"tipo": "perguntas", "botao": "Seguir",
              "perguntas": PERGUNTAS_ALEIXO[9]},
 

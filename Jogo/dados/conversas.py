@@ -92,7 +92,7 @@ def conversa_iande():
          "resposta": "Todo mundo bem. Tinha festa de santo."},
         {"pergunta": "Viu alguém amaldiçoado?",
          "resposta": "Vi uma casa fechada, com uma cruz na porta."},
-        {"pergunta": "Que conta é essa no pulso?",
+        {"pergunta": "Que conta é essa no pulso?", "no_maximo": {"pulseira": 0},   # se não a deu
          "resposta": "Ganhei na festa. É de vidro, brilha no sol."},
         {"pergunta": "Conte da viagem.",
          "resposta": [
