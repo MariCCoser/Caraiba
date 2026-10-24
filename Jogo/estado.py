@@ -63,6 +63,9 @@ class Estado:
         self.semente = random.randrange(1_000_000_000)
         # Quem morreu pela mão do jogador (o corpo aparece com o nome no dia seguinte)
         self.mortos_nomes = []
+        # Desses, quem era são; e quem era são e foi levado ao tapiri (o final Ferida diz o nome)
+        self.saos_mortos_nomes = []
+        self.tapiri_saos_nomes = []
         # Em que noite cada um morreu pela mão do jogador (o corpo aparece na manhã seguinte)
         self.mortos_quando = {}
         # Os corpos cobertos com a esteira, no lugar onde a pessoa estava (cenas/dia.py, cenas/oca.py):

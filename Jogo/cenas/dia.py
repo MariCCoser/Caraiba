@@ -615,6 +615,7 @@ class Dia(Cena):
                 self.estado.tapiri_usos += 1
             else:
                 self.estado.tapiri_saos += 1
+                self.estado.tapiri_saos_nomes.append(nome)
             if nome == self.acusado:
                 # Seguiu o pajé (A Água do Batismo). Se a pessoa era sã, é um inocente.
                 self.estado.seguiu_paje += 1
@@ -638,6 +639,7 @@ class Dia(Cena):
             # Matar alguém são fecha A Honra (dados/finais.py); matar um amaldiçoado, não.
             if not amaldicoado:
                 self.estado.mortos_saos_por_sua_mao += 1
+                self.estado.saos_mortos_nomes.append(nome)
             # O corpo fica coberto com a esteira onde a pessoa sentava, na fogueira.
             if self.noite and nome in self.noite["pessoas"]:
                 febre.deixar_corpo(self.estado, nome, self.estado.dia, "fogueira",

@@ -102,7 +102,7 @@ def testar_estado_inicial():
                 "padre_entrou": 0,
                 "inocentes": 0, "machado": 0, "pulseira": 0, "energia_hoje": 0, "krenan_volta": 0, "subiu_o_rio": 0, "rio_acima_nomes": [], "convidados": [], "dentro": [], "tapiri": [], "tapiri_desde": {}, "febre": [], "noites_na_oca": {}, "curados": [], "manha": [],
                 "historias": [], "entregues_nomes": [],
-                "mortos_nomes": [], "mortos_quando": {}, "corpos": [], "tabua": [], "tabua_noites": [],
+                "mortos_nomes": [], "saos_mortos_nomes": [], "tapiri_saos_nomes": [], "mortos_quando": {}, "corpos": [], "tabua": [], "tabua_noites": [],
                 "final_calculado": None, "final": None}
     dados = estado.para_dicionario()
     assert isinstance(dados.pop("semente"), int), "cada partida tem a sua sorte"
@@ -574,18 +574,35 @@ def testar_finais():
         ({"memoria": 5, "vivos": 1}, "vazio"),
         ({"memoria": 5, "vivos": 3, "entregues": 1}, "honra"),          # entregar não impede
         ({"memoria": 5, "vivos": 3, "mortos_por_sua_mao": 1}, "honra"),  # matou um amaldiçoado
-        ({"memoria": 5, "vivos": 3, "mortos_saos_por_sua_mao": 1, "mortos_por_sua_mao": 1}, "vazio"),
-        ({"memoria": 5, "vivos": 3, "tapiri_saos": 1}, "vazio"),         # levou alguém são ao tapiri
+        ({"memoria": 5, "vivos": 3, "mortos_saos_por_sua_mao": 1, "mortos_por_sua_mao": 1}, "ferida"),
+        ({"memoria": 5, "vivos": 3, "tapiri_saos": 1}, "ferida"),        # levou alguém são ao tapiri
+        ({"vivos": 2, "mortos_saos_por_sua_mao": 1, "mortos_por_sua_mao": 1}, "vazio"),  # Ferida pede 3
+        ({"vivos": 4, "mortos_saos_por_sua_mao": 3, "mortos_por_sua_mao": 3}, "loucura"),
         ({"memoria": 4, "vivos": 5, "tapiri_usos": 3}, "tapiri"),
         ({"tapiri_usos": 3, "vivos": 1}, "vazio"),
         ({"tapiri_usos": 2, "vivos": 4}, "tapiri"),                    # 2 amaldiçoados bastam
-        ({"tapiri_usos": 3, "tapiri_saos": 1, "vivos": 4}, "vazio"),    # levou alguém são: fecha
+        ({"tapiri_usos": 3, "tapiri_saos": 1, "vivos": 4}, "ferida"),   # levou alguém são: fecha O Tapiri
+        ({"tapiri_usos": 2, "vivos": 4, "entregues": 1}, "tapiri"),     # entregar 1 não impede
+        ({"tapiri_usos": 2, "vivos": 4, "mortos_por_sua_mao": 1}, "tapiri"),  # matou um amaldiçoado
+        ({"tapiri_usos": 2, "vivos": 4, "mortos_por_sua_mao": 1, "mortos_saos_por_sua_mao": 1}, "ferida"),
         ({}, "vazio"),
     ]
     for valores, esperado in casos:
         estado = estado_com(dia=10, **valores)
         assert finais.escolher(estado)["id"] == esperado, (valores, finais.escolher(estado)["id"])
         assert finais.fim_da_noite(estado)["id"] == esperado
+
+    # Ferida: a cena diz o nome de quem era são e quantos sobraram.
+    ferida = finais.por_id("ferida")
+    estado = estado_com(vivos=3, saos_mortos_nomes=["Yara"], tapiri_saos_nomes=["Tama"], dentro=["Tama"])
+    assert "três pessoas" in finais.texto_da_cena(ferida, estado)
+    assert "Ninguém fala de Yara." in finais.texto_da_cena(ferida, estado)
+    estado = estado_com(vivos=4, tapiri_saos_nomes=["Tama"], dentro=["Tama"])
+    assert "Tama voltou do tapiri." in finais.texto_da_cena(ferida, estado)
+    estado = estado_com(vivos=4, tapiri_saos_nomes=["Tama"], dentro=[])   # Tama não está mais na aldeia
+    assert "Ninguém fala de Tama." in finais.texto_da_cena(ferida, estado)
+    assert "{" not in finais.texto_da_cena(ferida, None)
+    assert finais.texto_da_cena(finais.por_id("honra"), None) == finais.por_id("honra")["cena"]
 
     # Antes do dia 10: só os finais antecipados (ou a aldeia vazia) acabam o jogo.
     antes = [
@@ -1754,7 +1771,7 @@ def testar_padre_e_batismo(jogo):
 
 
 def testar_rever_finais(jogo):
-    """Depois do primeiro final visto, o menu tem "Finais": ler de novo, com "Final N/8" e a chance."""
+    """Depois do primeiro final visto, o menu tem "Finais": ler de novo, com "Final N/9" e a chance."""
     from motor import finais
     vistos = finais.vistos()
     assert vistos, "a noite 10 acabou num final: ele fica guardado como visto"
@@ -1764,7 +1781,7 @@ def testar_rever_finais(jogo):
     esperar_transicao(jogo)
     lista = jogo.cenas.atual
     assert nome_cena(jogo) == "Finais" and [i for _, i in lista.linhas] == vistos
-    assert len(lista.linhas) + len(lista.escondidos) == 8
+    assert len(lista.linhas) + len(lista.escondidos) == 9
     clicar_botao(jogo, lista.linhas[0][0])
     esperar_transicao(jogo)
     fim = jogo.cenas.atual
@@ -1783,7 +1800,7 @@ def testar_rever_finais(jogo):
     clicar_botao(jogo, jogo.cenas.atual.botao_voltar)
     esperar_transicao(jogo)
     assert nome_cena(jogo) == "Menu"
-    print("ok Finais: ler de novo um final já visto (Final N/8 e a chance)")
+    print("ok Finais: ler de novo um final já visto (Final N/9 e a chance)")
 
 
 def testar_dia10_e_noite10(jogo):

@@ -24,7 +24,7 @@
 # Os textos das cenas são um rascunho: o grupo pode reescrever.
 # "fundo": a imagem atrás das três telas (dados/arte.py); sem ele, TELA_FINAL["fundo"].
 #
-# A chance de cada final (aparece na tela da fonte, com "Final 5/8": a posição na fila). Os
+# A chance de cada final (aparece na tela da fonte, com "Final 5/9": a posição na fila). Os
 # números vêm do simulador (Jogo/ferramentas/simular_finais.py; Textos/Caraiba_Porcentagens_dos_Finais.md):
 #   "chance_acaso"     em quantas partidas (%) o final acontece, jogando ao acaso
 #   "chance_tentando"  em quantas partidas (%) dá certo, para quem tenta esse final
@@ -116,7 +116,7 @@ FINAIS = [
         "id": "anhanga",
         "chance_acaso": 0, "chance_tentando": None,
         "nome": "Anhangá",
-        "povo": "Potiguara",
+        "povo": "Tremembé",
         # As três vezes em que o pajé aponta para a mata (noites 2, 5 e 9); no fim da noite 9,
         # a da 3ª vez, o jogo vai para o final, com a imagem do veado atrás das telas.
         # Entregar alguém ao Aleixo não impede (com 2 entregas, A Troca vem antes na fila).
@@ -126,10 +126,12 @@ FINAIS = [
         "fundo": "anhanga_final",
         "cena": "Na nona noite, o veado branco sai da mata e para diante do fogo. O pajé abaixa a "
                 "cabeça. Depois, o veado some entre as árvores.",
-        "fato": "Os missionários transformaram o Anhangá, protetor dos animais, em demônio: o "
-                "bandeirante Bartolomeu Bueno da Silva ganhou o apelido de Anhanguera, “diabo "
-                "velho”. É o mesmo caminho da palavra caraíba: de sagrado a invasor.",
-        "fonte": "José Vieira Couto de Magalhães, O Selvagem (1876); autos de José de Anchieta.",
+        "fato": "Os missionários chamaram de demônio o Anhangá, protetor dos animais. No "
+                "aldeamento de Almofala (CE), os Tremembé continuaram dançando o torém, em roda, "
+                "para os encantados da terra. No século XIX, o governo do Ceará disse que eles não "
+                "existiam mais. Em 2023, a Terra Indígena Tremembé da Barra do Mundaú foi homologada.",
+        "fonte": "José Vieira Couto de Magalhães, O Selvagem (1876); Encantes da Terra: os Tremembé "
+                 "de Almofala (revista Ilha, UFSC, 2019); Decreto nº 11.506, de 28 de abril de 2023.",
     },
     {
         "id": "tapiri",
@@ -167,6 +169,35 @@ FINAIS = [
                 "voltou ao Museu Nacional, no Rio, em 2024. Os Tupinambá de Olivença (BA) lutam "
                 "hoje pela demarcação da terra.",
         "fonte": "Museu Nacional/UFRJ (2024); Instituto Socioambiental: Tupinambá.",
+    },
+    {
+        "id": "ferida",
+        "chance_acaso": 0, "chance_tentando": None,
+        "nome": "Ferida",
+        "povo": "Potiguara",
+        # A aldeia sobreviveu (3 ou mais vivos), mas o jogador matou alguém são ou levou alguém
+        # são ao tapiri. Quem matou 3 ou mais vai para A Loucura antes. Fonte: Textos/Caraíba —
+        # nono final Ferida (Potiguara).pdf. {vivos} e {nome} vêm do estado (motor/finais.py):
+        # "cena" quando alguém são morreu; "cena_tapiri" quando quem era são voltou do tapiri.
+        "condicao": [{"mortos_saos_por_sua_mao": ">= 1", "vivos": ">= 3"},
+                     {"tapiri_saos": ">= 1", "vivos": ">= 3"}],
+        "antecipado": False,
+        "cena": "Quando o cacique volta da mata, encontra a fogueira acesa e {vivos} pessoas em "
+                "volta dela. A aldeia ainda existe. Ninguém fala de {nome}. O vento traz areia e "
+                "cobre o lugar onde dormia. Todo dia alguém varre. Todo dia a areia volta.",
+        "cena_tapiri": "Quando o cacique volta da mata, encontra a fogueira acesa e {vivos} pessoas "
+                       "em volta dela. A aldeia ainda existe. {nome} voltou do tapiri. Não senta "
+                       "mais perto de você. O vento traz areia. Todo dia alguém varre. Todo dia a "
+                       "areia volta.",
+        # Lendo de novo pelo menu, sem a partida.
+        "cena_sem_estado": {"vivos": "poucas", "nome": "quem se foi"},
+        "fato": "Em 1645, na guerra entre portugueses e holandeses, os Potiguara ficaram "
+                "divididos. Felipe Camarão, do lado português, escreveu cartas em tupi ao primo "
+                "Pedro Poti, do lado holandês, pedindo que mudasse de lado. Poti não mudou. Os "
+                "Potiguara vivem até hoje na Baía da Traição (PB), na terra dos seus antepassados.",
+        "fonte": "Cartas dos índios Camarões, escritas em 1645 em tupi antigo (arquivo da "
+                 "Companhia das Índias Ocidentais, Haia), traduzidas por Eduardo Navarro (USP, "
+                 "2022); Instituto Socioambiental: Potiguara.",
     },
     {
         "id": "vazio",

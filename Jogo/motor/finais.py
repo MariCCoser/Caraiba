@@ -8,7 +8,9 @@
 # - vistos() e marcar_visto(id): os finais que o jogador já viu, em qualquer partida (ficam
 #   guardados à parte, como as preferências: começar uma partida nova não apaga). O menu mostra
 #   o botão "Finais" depois do primeiro, para ler de novo o que estava escrito.
-# - numero(id): a posição do final na fila (1 a 8) e quantos finais há.
+# - numero(id): a posição do final na fila (1 a 9) e quantos finais há.
+# - texto_da_cena(final, estado): a cena, com o nome e o número de vivos quando o final pede
+#   (Ferida). Sem estado (lendo de novo pelo menu), usa as palavras de "cena_sem_estado".
 
 from dados.finais import DIA_DO_CALCULO, FINAIS
 from motor import salvamento
@@ -46,6 +48,27 @@ def numero(identificador):
     """(posição na fila, contando de 1, total de finais): ex.: (5, 8)."""
     ids = [final["id"] for final in FINAIS]
     return ids.index(identificador) + 1, len(ids)
+
+
+NUMEROS = {1: "uma", 2: "duas", 3: "três", 4: "quatro", 5: "cinco"}
+
+
+def texto_da_cena(final, estado):
+    """A cena do final. Com "cena_tapiri" (Ferida): quem era são e morreu pela mão do jogador
+    dá a cena normal; se ninguém são morreu, mas alguém são foi ao tapiri e ainda está na
+    aldeia, a cena do tapiri."""
+    if "cena_tapiri" not in final:
+        return final["cena"]
+    if estado is None:
+        return final["cena"].format(**final["cena_sem_estado"])
+    vivos = NUMEROS.get(estado.vivos, str(estado.vivos))
+    if estado.saos_mortos_nomes:
+        return final["cena"].format(vivos=vivos, nome=estado.saos_mortos_nomes[0])
+    nome = estado.tapiri_saos_nomes[0] if estado.tapiri_saos_nomes else None
+    if nome is None:
+        return final["cena"].format(**final["cena_sem_estado"])
+    texto = final["cena_tapiri"] if nome in estado.dentro else final["cena"]
+    return texto.format(vivos=vivos, nome=nome)
 
 
 def vistos():

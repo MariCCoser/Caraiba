@@ -51,7 +51,7 @@ class Final(Cena):
             finais.marcar_visto(self.final["id"])
         # Cada tela: (título, texto).
         self.telas = [
-            (self.final["nome"], self.final["cena"]),
+            (self.final["nome"], finais.texto_da_cena(self.final, None if self.revendo else jogo.estado)),
             (self.final["povo"], TELA_FINAL["povo"] % self.final["povo"] + "\n\n" + self.final["fato"]),
             (TELA_FINAL["fonte"], self.final["fonte"]),
         ]
