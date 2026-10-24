@@ -74,15 +74,15 @@ FINAIS = [
         "chance_acaso": 0, "chance_tentando": None,
         "nome": "A Água do Batismo",
         "povo": "Caeté",
-        # No dia 9, o jogador entrega 1 pessoa ao Aleixo sem nunca ter perguntado por quem ele
-        # levou; na noite 9, o padre novo da vila chega e oferece o batismo (dados/dias.py).
-        # Aceitar acaba o jogo no fim da noite 9.
+        # No dia 9, o jogador deixa o padre novo entrar (dados/dias.py); na noite 9, na fogueira,
+        # aceita ser batizado e batizar os outros. Acaba o jogo no fim da noite 9.
         "condicao": [{"converteu": ">= 1"}],
         "antecipado": True,
         "a_partir_da_noite": 9,
         "fundo": "batismo_final",
-        "cena": "A água escorre pela sua testa, e você ganha um nome que não é o seu. Na vila, o "
-                "mesmo padre derrama a mesma água na testa de um doente, que morre logo depois.",
+        "cena": "De manhã, o padre derrama água na sua testa e na de cada um da aldeia. Todos "
+                "ganham nomes que não são os seus. Na vila, a mesma água cai na testa de um doente, "
+                "que morre logo depois.",
         "fato": "Em abril de 1563, na aldeia de Santiago, na Bahia, os jesuítas batizaram 84 "
                 "indígenas à beira da morte, e todos morreram. No mesmo período, o governador "
                 "Mem de Sá declarou que os Caeté podiam ser escravizados onde fossem encontrados.",

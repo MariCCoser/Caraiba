@@ -34,7 +34,7 @@ atexit.register(shutil.rmtree, config.PASTA_SAVES, True)
 
 from cenas.dia import Dia  # noqa: E402
 from dados.aldeia import TAPIRI  # noqa: E402
-from dados.dias import DIAS, PERGUNTAS_ALEIXO, PERGUNTOU_LEVADOS, perguntas_sobre_os_levados  # noqa: E402
+from dados.dias import DIAS  # noqa: E402
 from dados.febre import DOENTES  # noqa: E402
 from dados.finais import FINAIS  # noqa: E402
 from dados.noites import QUEM_SOBE  # noqa: E402
@@ -82,11 +82,10 @@ ESTRATEGIAS = {
                                            "Deixar levar alguém"]
                   + (["Ir com ele"] if dia.estado.dia >= 10 else DOENTES + QUEM_SOBE)
                   + _onde_dorme_tapiri(dia)},
-    # Entrega 1 pessoa só no dia 9, nunca pergunta por quem o Aleixo levou e aceita o batismo.
-    "batismo": {"evitar": [p["pergunta"] for p in PERGUNTAS_ALEIXO[9] + perguntas_sobre_os_levados()
-                           if p.get("efeitos") == PERGUNTOU_LEVADOS],
-                "preferir": lambda dia: (_entregar(dia)[:1] if dia.estado.dia == 9 else [])
-                + ["Deixar entrar", "Negar", "Não deixar", "Aceitar o batismo", "Deixar na oca"]},
+    # Deixa o padre novo entrar no dia 9 e, na fogueira, aceita o batismo.
+    "batismo": {"perguntar": ["Por que você veio?"],
+                "preferir": lambda dia: ["Deixar entrar", "Negar", "Não deixar", "Aceitar o batismo",
+                                         "Deixar na oca"]},
     "anhanga": {"perguntar": ["Que barulho é esse na mata?"], "paje_primeiro": True,
                 "preferir": lambda dia: ["Deixar entrar", "Negar", "Não deixar", "Ficar na aldeia",
                                          "Deixar na oca"]},

@@ -31,8 +31,7 @@ class Estado:
         self.viu_anhanga = 0           # noites em que olhou o veado na mata (final Anhangá)
         self.seguiu_paje = 0           # vezes que levou ao tapiri quem o pajé acusou
         self.converteu = 0             # 1 se aceitou o batismo do padre novo (A Água do Batismo)
-        self.entregou_ultima_visita = 0   # 1 se entregou alguém ao Aleixo no dia 9
-        self.perguntou_levados = 0     # perguntas ao Aleixo sobre quem ele levou (dias 6 e 9)
+        self.padre_entrou = 0          # 1 se deixou o padre novo entrar no dia 9 (A Água do Batismo)
         self.inocentes = 0             # dessas vezes, quantas a pessoa era sã
         self.machado = 0               # 1 se aceitou o machado de Yara (dá mais energia nas noites 2 e 3)
         self.energia_hoje = 0          # energia a mais só na noite de hoje (negar o Aleixo); zera de manhã

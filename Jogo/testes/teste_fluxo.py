@@ -99,7 +99,7 @@ def testar_estado_inicial():
     esperado = {"dia": 1, "vivos": 0, "mortos": 0, "mortos_por_sua_mao": 0, "mortos_saos_por_sua_mao": 0, "entregues": 0,
                 "proximidade_vila": 0, "rio_acima": 0, "memoria": 0, "recusas_aleixo": 0, "levados": 0,
                 "pistas": 0, "sanidade": 10, "tapiri_usos": 0, "tapiri_saos": 0, "viu_anhanga": 0, "seguiu_paje": 0, "converteu": 0,
-                "entregou_ultima_visita": 0, "perguntou_levados": 0,
+                "padre_entrou": 0,
                 "inocentes": 0, "machado": 0, "energia_hoje": 0, "krenan_volta": 0, "subiu_o_rio": 0, "rio_acima_nomes": [], "convidados": [], "dentro": [], "tapiri": [], "tapiri_desde": {}, "febre": [], "noites_na_oca": {}, "curados": [], "manha": [],
                 "historias": [], "entregues_nomes": [],
                 "mortos_nomes": [], "mortos_quando": {}, "corpos": [], "tabua": [], "tabua_noites": [],
@@ -605,7 +605,7 @@ def testar_finais():
         ({"dia": 9, "viu_anhanga": 3, "entregues": 1}, "anhanga"),     # entregar não impede
         ({"dia": 9, "viu_anhanga": 3, "entregues": 2}, "troca"),        # 2 entregas: A Troca antes
         ({"dia": 9, "viu_anhanga": 3, "mortos_por_sua_mao": 1}, None),
-        ({"dia": 9, "converteu": 1, "entregues": 1}, "batismo"),       # o padre novo, na noite 9
+        ({"dia": 9, "converteu": 1}, "batismo"),                        # o padre novo, na noite 9
     ]
     for valores, esperado in antes:
         final = finais.fim_da_noite(estado_com(**valores))
@@ -1639,10 +1639,17 @@ def testar_dia9_e_noite9(jogo):
     esperar_transicao(jogo)
     assert estado.dia == 9
 
-    # Na entrada: Aleixo, pela última vez, com tudo o que faltava dizer.
+    # Na entrada, primeiro o padre novo, que pede para entrar. Aqui o jogador nega: o Aleixo,
+    # depois, pede alguém como nas outras visitas.
     passar_falas(jogo)
     dia = jogo.cenas.atual
-    assert dia.visitante == "aleixo"
+    assert dia.visitante == "padre", dia.visitante
+    clicar_opcao(jogo, "Decidir")
+    passar_falas(jogo)
+    clicar_opcao(jogo, "Não deixar entrar")
+    # De volta à aldeia; a seta leva de novo à entrada: Aleixo, pela última vez.
+    passar_falas(jogo)
+    assert dia.visitante == "aleixo" and estado.padre_entrou == 0
     assert textos_dos_botoes(jogo) == ["Os que você levou voltam?", "Isso é ameaça?", "Quem são os outros?",
                                        "Que cordão é esse no seu pescoço?", "Seguir"], textos_dos_botoes(jogo)
     clicar_opcao(jogo, "Que cordão é esse no seu pescoço?")
@@ -1664,7 +1671,7 @@ def testar_dia9_e_noite9(jogo):
 
     # O sinal do pajé: o 5º risco da tábua.
     assert estado.tabua[-1] == "Manchas avermelhadas no pescoço." and estado.tabua_noites[-1] == 9
-    print("ok Dia 9: a última visita do Irmão Aleixo (tudo o que faltava, o cordão) e o 5º sinal")
+    print("ok Dia 9: o padre negado, a última visita do Irmão Aleixo (o cordão) e o 5º sinal")
 
     # A fogueira: Krenan não está (volta só na noite 10). Iandé, que parecia perfeita, tem as
     # manchas no pescoço.
@@ -1684,6 +1691,52 @@ def testar_dia9_e_noite9(jogo):
     passar_falas(jogo)
     assert dia.botao_dormir.visivel
     print("ok Noite 9: manchas no pescoço de Iandé, e Krenan fora da aldeia")
+    jogo.ir_para("menu")
+    esperar_transicao(jogo)
+
+
+def testar_padre_e_batismo(jogo):
+    """Dia 9 com o padre novo lá dentro: o Aleixo não pede ninguém; na noite 9, o padre na
+    fogueira, e aceitar o batismo acaba o jogo em A Água do Batismo."""
+    jogo.nova_partida()
+    estado = jogo.estado
+    estado.dia = 8
+    estado.dentro = ["Potira", "Iandé"]
+    estado.vivos = 2
+    jogo.ir_para("aldeia")
+    esperar_transicao(jogo)
+    clicar(jogo, jogo.cenas.atual.rect_seta.center)
+    esperar_transicao(jogo)
+    esperar_transicao(jogo)
+    passar_falas(jogo)
+    dia = jogo.cenas.atual
+    assert dia.visitante == "padre"
+    clicar_opcao(jogo, "Decidir")
+    passar_falas(jogo)
+    clicar_opcao(jogo, "Deixar entrar")
+    passar_falas(jogo)
+    assert estado.padre_entrou == 1 and dia.visitante == "aleixo"
+    clicar_opcao(jogo, "Seguir")
+    dia.caixa.completar()
+    assert "não levo ninguém" in dia.caixa.texto, dia.caixa.texto
+    passar_falas(jogo)
+    assert estado.dentro == ["Potira", "Iandé"] and estado.entregues == 0
+    assert dia.titulo == "Noite 9" and "Padre" in [p.nome for p in dia.na_fogueira]
+    clicar_pessoa(jogo, "Padre")
+    passar_falas(jogo)
+    clicar_opcao(jogo, "Ouvir o pedido")
+    passar_falas(jogo)
+    assert textos_dos_botoes(jogo) == ["Aceitar o batismo e batizar os outros", "Recusar"]
+    clicar_opcao(jogo, "Aceitar o batismo e batizar os outros")
+    passar_falas(jogo)
+    assert estado.converteu == 1
+    dia.energia = 0
+    dia._mostrar_fogueira()
+    clicar_botao(jogo, dia.botao_dormir)
+    passar_falas(jogo)
+    esperar_transicao(jogo)
+    assert nome_cena(jogo) == "Final" and estado.final == "batismo", (nome_cena(jogo), estado.final)
+    print("ok Dia 9 com o padre lá dentro: o Aleixo não pede ninguém; o batismo na noite 9")
     jogo.ir_para("menu")
     esperar_transicao(jogo)
 
@@ -1999,6 +2052,7 @@ def testar_fluxo():
     testar_dia7_e_noite7(jogo)
     testar_dia8_e_noite8(jogo)
     testar_dia9_e_noite9(jogo)
+    testar_padre_e_batismo(jogo)
     testar_dia10_e_noite10(jogo)
     testar_rever_finais(jogo)
     testar_aldeia_de_dia(jogo)

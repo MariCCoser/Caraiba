@@ -359,6 +359,7 @@ ZONAS_IANDE = [
 # ele volta na noite 10 para levar mais gente (estado.krenan_volta). Se negou, não volta.
 # Ele fala um português antigo, rebuscado e duro. Na fogueira, senta no tronco da esquerda.
 POSICAO_KRENAN, ESCALA_KRENAN = (140, 462), 0.45
+POSICAO_PADRE, ESCALA_PADRE = (170, 560), 0.5   # noite 9: em pé, no lugar do Krenan
 QUEM_SOBE = ["Yara", "Mbaé", "Potira", "Tamandaré-mirim", "Iandé"]
 FALA_KRENAN_VAI = {"tipo": "fala", "quem": "Krenan",
                    "texto": "Assim seja. Se a lua mo consentir, tornarei a este fogo."}
@@ -1309,15 +1310,58 @@ NOITES = {
                 "posicao_com": {"Potira": POSICAO_PAJE_COM_POTIRA},
                 "passos": [
                     {"tipo": "visitante", "visitante": "paje"},
-                    {"tipo": "fala", "quem": "Pajé", "texto": "Sente. O homem da cruz não volta mais."},
+                    {"tipo": "se", "no_maximo": {"padre_entrou": 0}, "passos": [
+                        {"tipo": "fala", "quem": "Pajé", "texto": "Sente. O homem da cruz não volta mais."},
+                    ]},
+                    {"tipo": "se", "ao_menos": {"padre_entrou": 1}, "passos": [
+                        {"tipo": "fala", "quem": "Pajé",
+                         "texto": "Sente. Você deixou entrar o homem de preto. Cuidado com a água dele."},
+                    ]},
                     {"tipo": "perguntas", "botao": "Voltar para a fogueira", "perguntas": [
                         {"pergunta": "O que você viu no sono?",
                          "resposta": "Um pescoço marcado. Manchas avermelhadas, pequenas, todas juntas."},
                         {"pergunta": "Como eu vejo isso?",
                          "resposta": "Olhe a pele de perto. O fogo engana."},
+                        {"pergunta": "O que você acha do padre?", "ao_menos": {"padre_entrou": 1},
+                         "resposta": [
+                             "Ele fala de cura. Mas os que ele molha morrem do mesmo jeito.",
+                             "A escolha é sua. Só não esqueça que [a água não tira a maldição].",
+                         ]},
                         ACUSACAO,
                         # A 3ª vez do Anhangá: no fim desta noite, o final (dados/finais.py).
                         barulho_na_mata(),
+                    ]},
+                    {"tipo": "visitante", "visitante": None},
+                ],
+            },
+
+            # O padre novo, se o jogador o deixou entrar de dia (dados/dias.py): em pé, atrás do
+            # tronco da esquerda, onde o Krenan sentou na noite 8. Tenta convencer o jogador a ser
+            # batizado e a batizar os outros. Aceitar é A Água do Batismo, no fim desta noite.
+            "Padre": {
+                "imagem": "padre", "posicao": POSICAO_PADRE, "escala": ESCALA_PADRE,
+                "condicao": {"ao_menos": {"padre_entrou": 1}},
+                "uma_vez": True, "atras": True,
+                "passos": [
+                    {"tipo": "visitante", "visitante": "padre"},
+                    {"tipo": "fala", "quem": "Padre", "texto": "Sente comigo. O fogo de vocês é bom."},
+                    {"tipo": "perguntas", "botao": "Ouvir o pedido", "perguntas": [
+                        {"pergunta": "Por que você veio?",
+                         "resposta": "Para salvar quem ainda dá tempo. [Em quem é batizado, a maldição não fica]."},
+                        {"pergunta": "E os que você batizou na vila?",
+                         "resposta": ["Rezam por vocês todos os dias.", "[Os que morreram, morreram em paz]."]},
+                        {"pergunta": "Por que eu?",
+                         "resposta": "Você guarda a entrada. Se você aceitar, os outros aceitam."},
+                    ]},
+                    {"tipo": "fala", "quem": "Padre",
+                     "texto": "Aceite a água hoje, e amanhã cedo eu batizo todos os seus."},
+                    {"tipo": "escolha", "texto": "O padre espera a sua resposta.", "opcoes": [
+                        {"texto": "Aceitar o batismo e batizar os outros", "efeitos": {"converteu": 1}, "passos": [
+                            {"tipo": "fala", "quem": "Padre", "texto": "Ajoelhe. Amanhã cedo, eu batizo os outros."},
+                        ]},
+                        {"texto": "Recusar", "passos": [
+                            {"tipo": "fala", "quem": "Padre", "texto": "A porta da igreja fica aberta. Por pouco tempo."},
+                        ]},
                     ]},
                     {"tipo": "visitante", "visitante": None},
                 ],

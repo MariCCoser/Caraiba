@@ -3,7 +3,7 @@
 # ir_para_noite(jogo, noite) começa uma partida nova e monta o Estado como se o jogador tivesse
 # chegado até ali deixando todos entrarem e sem matar nem entregar ninguém: quem já chegou está
 # na aldeia (dormindo nas ocas desde que chegou), os sinais do pajé estão na tábua e, na noite
-# 8, Krenan foi chamado para a fogueira (na 10, ele volta). Quem chega e em que dia, e os
+# 8, Krenan foi chamado para a fogueira (na 10, ele volta); na 9, o padre novo entrou. Quem chega e em que dia, e os
 # sinais, saem do próprio roteiro (dados/dias.py): se ele mudar, isto acompanha.
 # A partida guardada não muda durante a noite de teste (cenas/dia.py, so_a_noite); se o jogador
 # seguir jogando depois dela (a aldeia, o dia seguinte), o jogo passa a guardar por cima.
@@ -62,6 +62,8 @@ def ir_para_noite(jogo, noite):
     estado.tabua, estado.tabua_noites = sinais_ate(noite)
     if noite == 8:
         estado.convidados = ["Krenan"]
+    if noite == 9:
+        estado.padre_entrou = 1   # o padre novo na fogueira (A Água do Batismo)
     if noite >= 10:
         estado.krenan_volta = 1
         finais.calcular_na_manha(estado)

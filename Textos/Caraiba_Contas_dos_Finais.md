@@ -64,7 +64,7 @@ entram, e Araci chega depois do cálculo.
 |---|---|---|---|
 | 1 | A Troca | `entregues` ≥ 2 **ou** `proximidade_vila` ≥ 3 | **noite 3** |
 | 2 | A Loucura | `mortos_por_sua_mao` ≥ 3 | **noite 4** |
-| 3 | A Água do Batismo | `converteu` ≥ 1 (aceitou o batismo do padre novo) | noite 9 |
+| 3 | A Água do Batismo | `converteu` ≥ 1 (deixou o padre entrar no dia 9 e aceitou o batismo na noite 9) | noite 9 |
 | 4 | Rio Acima | `rio_acima` ≥ 4 e `entregues` = 0 | **noite 9** |
 | 5 | Anhangá | `viu_anhanga` ≥ 3, sem mortes pela mão (entregar ao Aleixo não impede) | noite 9 |
 | 6 | A Honra | `memoria` ≥ 5, `vivos` ≥ 2, nunca matar alguém são, nunca levar alguém são ao tapiri | dia 10 |
@@ -95,13 +95,14 @@ entram, e Araci chega depois do cálculo.
 
 ### 3. A Água do Batismo: noite 9
 
-- No dia 9 (a última visita do Aleixo), **entregar 1 pessoa** a ele.
-- **Nunca perguntar por quem ele levou:** nem as perguntas do dia 6 sobre cada levado ("Yara
-  está curada?", "Onde Yara está?"…), nem as do dia 9 ("Os que você levou voltam?", "Os meus
-  estão curados?", "Onde os meus estão?"). Qualquer uma delas fecha o caminho.
-- Ao cair da noite 9, o padre novo da vila sobe a trilha e oferece o batismo. **Aceitar** acaba
-  o jogo no fim da noite 9. Recusar segue o jogo.
-- Quem já entregou alguém no dia 3 ou no dia 6 chega a 2 entregas e cai antes em A Troca.
+- No dia 9, o **padre novo da vila** chega à entrada antes do Aleixo e pede para entrar.
+- **Deixar entrar:** depois de voltar à aldeia e ir de novo à entrada, o Aleixo chega e **não
+  pede ninguém**. Na noite 9, o padre está em pé perto do fogo e tenta convencer o jogador a
+  ser batizado e a batizar os outros. **"Aceitar o batismo e batizar os outros"** acaba o jogo
+  no fim da noite 9. "Recusar" segue o jogo.
+- **Não deixar entrar:** o Aleixo pede alguém, como nas outras visitas (entregar quem o
+  jogador escolher, ou negar, e ele leva um sorteado). O padre não aparece à noite.
+- Quem já entregou 2 pessoas cai antes em A Troca.
 
 ### 4. Rio Acima: a partir da noite 9
 
