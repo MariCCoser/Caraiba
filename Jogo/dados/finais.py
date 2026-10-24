@@ -38,6 +38,14 @@
 
 DIA_DO_CALCULO = 10
 
+# "Voltar a honra": a Honra já pediu ouvir as 5 histórias (memoria >= 5), o que obriga a
+# conversar com todos os visitantes. Por enquanto está desligado; para voltar, troque para True.
+# (Com as histórias desligadas, O Tapiri vem antes da Honra na fila: senão ele nunca aconteceria.)
+HONRA_PEDE_HISTORIAS = False
+CONDICAO_HONRA = {"vivos": ">= 2", "mortos_saos_por_sua_mao": "== 0", "tapiri_saos": "== 0"}
+if HONRA_PEDE_HISTORIAS:
+    CONDICAO_HONRA["memoria"] = ">= 5"
+
 FINAIS = [
     {
         "id": "troca",
@@ -124,32 +132,15 @@ FINAIS = [
         "fonte": "José Vieira Couto de Magalhães, O Selvagem (1876); autos de José de Anchieta.",
     },
     {
-        "id": "honra",
-        "chance_acaso": 0, "chance_tentando": None,
-        "nome": "A Honra",
-        "povo": "Tupinambá",
-        # As 5 histórias, pelo menos 2 vivos, nunca matar quem era são e nunca levar alguém são
-        # ao tapiri. Matar um amaldiçoado ou entregar alguém ao Aleixo não impede (com 2 entregas,
-        # A Troca vem antes na fila).
-        "condicao": [{"vivos": ">= 2", "memoria": ">= 5", "mortos_saos_por_sua_mao": "== 0",
-                      "tapiri_saos": "== 0"}],
-        "antecipado": False,
-        "fundo": "honra_final",
-        "cena": "A aldeia chega ao fim da febre com as histórias de quem entrou guardadas.",
-        "fato": "Um manto tupinambá de penas vermelhas, levado para a Europa no século XVII, "
-                "voltou ao Museu Nacional, no Rio, em 2024. Os Tupinambá de Olivença (BA) lutam "
-                "hoje pela demarcação da terra.",
-        "fonte": "Museu Nacional/UFRJ (2024); Instituto Socioambiental: Tupinambá.",
-    },
-    {
         "id": "tapiri",
         "chance_acaso": 0, "chance_tentando": None,
         "nome": "O Tapiri",
         "povo": "Korubo",
         # Levar ao tapiri 2 amaldiçoados (chegaram com a maldição ou pegaram a febre) e nunca
-        # ninguém são, até o fim do jogo.
-        "condicao": [{"tapiri_usos": ">= 2", "tapiri_saos": "== 0", "vivos": ">= 2", "mortos_por_sua_mao": "== 0",
-                      "entregues": "== 0"}],
+        # ninguém são, até o fim do jogo. Matar um amaldiçoado ou entregar alguém ao Aleixo não
+        # impede (com 2 entregas, A Troca vem antes na fila); matar alguém são impede.
+        "condicao": [{"tapiri_usos": ">= 2", "tapiri_saos": "== 0", "vivos": ">= 2",
+                      "mortos_saos_por_sua_mao": "== 0"}],
         "antecipado": False,
         "fundo": "tapiri_final",
         "cena": "Poucas redes em volta da fogueira. Ao longe, o tapiri com uma luz acesa: "
@@ -158,6 +149,24 @@ FINAIS = [
                 "mundo. Em 2020, na covid-19, o STF mandou erguer barreiras sanitárias nas terras "
                 "de povos isolados (ADPF 709). O tapiri de 1562 virou decisão da Justiça.",
         "fonte": "Instituto Socioambiental, agosto de 2020: o referendo da ADPF 709 no STF.",
+    },
+    {
+        "id": "honra",
+        "chance_acaso": 0, "chance_tentando": None,
+        "nome": "A Honra",
+        "povo": "Tupinambá",
+        # Pelo menos 2 vivos, nunca matar quem era são e nunca levar alguém são ao tapiri. Matar
+        # um amaldiçoado ou entregar alguém ao Aleixo não impede (com 2 entregas, A Troca vem
+        # antes). As 5 histórias (memoria >= 5) estão desligadas por enquanto: HONRA_PEDE_HISTORIAS.
+        "condicao": [CONDICAO_HONRA],
+        "antecipado": False,
+        "fundo": "honra_final",
+        "cena": "A febre vai embora devagar. Ninguém são morreu por sua mão, e os que "
+                "sobreviveram ainda se sentam com você em volta do fogo.",
+        "fato": "Um manto tupinambá de penas vermelhas, levado para a Europa no século XVII, "
+                "voltou ao Museu Nacional, no Rio, em 2024. Os Tupinambá de Olivença (BA) lutam "
+                "hoje pela demarcação da terra.",
+        "fonte": "Museu Nacional/UFRJ (2024); Instituto Socioambiental: Tupinambá.",
     },
     {
         "id": "vazio",
