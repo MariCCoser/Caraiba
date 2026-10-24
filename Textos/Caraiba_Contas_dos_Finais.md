@@ -67,8 +67,8 @@ entram, e Araci chega depois do cálculo.
 | 3 | A Água do Batismo | `converteu` ≥ 1 (aceitou o batismo do padre novo) | noite 9 |
 | 4 | Rio Acima | `rio_acima` ≥ 4 e `entregues` = 0 | **noite 9** |
 | 5 | Anhangá | `viu_anhanga` ≥ 3, sem mortes pela mão (entregar ao Aleixo não impede) | noite 9 |
-| 6 | A Honra | `vivos` ≥ 9, `memoria` ≥ 5, sem mortes pela mão, sem entregas | dia 10 |
-| 7 | O Tapiri | `tapiri_usos` ≥ 3, `vivos` ≥ 7, sem mortes pela mão, sem entregas | dia 10 |
+| 6 | A Honra | `memoria` ≥ 5, `vivos` ≥ 2, nunca matar alguém são, nunca levar alguém são ao tapiri | dia 10 |
+| 7 | O Tapiri | `tapiri_usos` ≥ 2 e `tapiri_saos` = 0, `vivos` ≥ 2, sem mortes pela mão, sem entregas | dia 10 |
 | 8 | O Vazio | nenhuma das anteriores; ou `vivos` ≤ 7 no fim de uma noite | **noite 9** (ou dia 10) |
 
 ### 1. A Troca: a partir da noite 3
@@ -121,29 +121,26 @@ entram, e Araci chega depois do cálculo.
 
 ### 6. A Honra: dia 10
 
-- `memoria` ≥ 5 é a parte difícil: como há **uma história por visitante**, o jogador precisa
-  deixar entrar **os cinco** (inclusive os três doentes) e ouvir a história de todos.
-- Os vivos: com os cinco dentro são 17. Se os três doentes dormirem na oca, morrem de 6 a 12
-  (sorteio), e sobram de 5 a 11: A Honra fica por conta da sorte.
-- Com **Iandé ou Tamandaré-mirim** no tapiri, A Honra é garantida: no pior sorteio sobram
-  17 − 3 − 4 = 10 ou 17 − 3 − 5 = 9.
-- Com **só Mbaé** no tapiri, não é garantida: o pior sorteio deixa 17 − 4 − 5 = 8.
-- **Atenção:** a Proposta fala em "não deixar ninguém morrer sob o seu teto", mas a condição só
-  pede 9 vivos. Se Mbaé dormir na oca, de 1 a 3 morrem e mesmo assim pode dar A Honra. O grupo
-  decide se a condição deve exigir `mortos` = 0.
+- Ouvir **as 5 histórias** (`memoria` ≥ 5): uma por visitante, então é preciso deixar entrar
+  **os cinco** (Yara, Mbaé, Potira, Tamandaré-mirim e Iandé) e perguntar a história de cada um.
+- Chegar ao dia 10 com **pelo menos 2** pessoas de fora vivas na aldeia.
+- **Nunca matar alguém são** (`mortos_saos_por_sua_mao` = 0). Matar um amaldiçoado não impede.
+- **Nunca levar alguém são ao tapiri** (`tapiri_saos` = 0).
+- Entregar alguém ao Irmão Aleixo **não impede** (com 2 entregas, A Troca vem antes na fila).
+- A Honra vem antes d'O Tapiri: quem cumpre as duas cai na Honra.
 
 ### 7. O Tapiri: dia 10
 
-- Precisa levar ao tapiri **os três doentes**, Mbaé (noite 2), Tamandaré-mirim (noite 5) e
-  Iandé (noite 7), porque só eles contam.
+- Precisa levar ao tapiri **2 amaldiçoados**: quem chegou com a maldição (Mbaé, Tamandaré-mirim,
+  Iandé) ou quem pegou a febre na oca, mesmo sem mostrar.
+- **Não pode levar ninguém são, em nenhuma noite** (`tapiri_saos`). Quem já saiu curado do
+  tapiri conta como são.
 - **O tapiri cura:** quem era amaldiçoado e completa as 3 noites lá volta curado. Não passa
   mais a febre, não conta como amaldiçoado para os deuses do pajé, e o rosto (olho, boca,
-  manchas secando) e a fala mostram que sarou. Mbaé sai curado na noite 5, Tamandaré-mirim na
-  noite 8 e Iandé na noite 10.
-- Conta das vagas: Mbaé ocupa a vaga das noites 2 a 4. Tamandaré-mirim ocupa a mesma vaga das
-  noites 5 a 7. Na noite 7 ela ainda está ocupada, então Iandé só cabe na **2ª vaga, que só
-  existe se Potira entrou**. Ou seja, O Tapiri também exige deixar Potira entrar.
-- Vivos: sem contágio nenhum, ficam pelo menos 16. O "≥ 7" quase nunca impede.
+  manchas secando) e a fala mostram que sarou.
+- O jeito mais simples: Mbaé na noite 2 (sai curado na noite 5) e Tamandaré-mirim na noite 5
+  (sai curado na noite 8). O tapiri tem 1 vaga, e cada um fica 3 noites.
+- Também: sem mortes pela sua mão, sem entregas ao Aleixo, e pelo menos 2 vivos de fora no dia 10.
 - Quem também ouviu as cinco histórias cai antes em A Honra.
 
 ### 8. O Vazio: a partir da noite 9 (ou no dia 10)

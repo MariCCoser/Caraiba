@@ -15,6 +15,7 @@ class Estado:
         self.vivos = 0                 # quem é de fora e está vivo na aldeia (além do jogador e do pajé)
         self.mortos = 0                # doença sob o seu teto + mortos por sua mão + mortos na trilha
         self.mortos_por_sua_mao = 0    # quem você matou, doente ou não
+        self.mortos_saos_por_sua_mao = 0   # desses, quem não era amaldiçoado (fecha A Honra)
         self.entregues = 0             # pessoas entregues a Aleixo numa oferta
         self.levados = 0               # pessoas que o Irmão Aleixo levou mesmo negando (sorteadas)
         self.proximidade_vila = 0      # machado, entregas, doente mandado seguir de dia
@@ -25,7 +26,8 @@ class Estado:
         self.recusas_aleixo = 0        # vezes que você recusou uma oferta
         self.pistas = 0                # caderno de Aleixo, colar, notícia (máximo 3)
         self.sanidade = 10             # não decide final; muda a tela (tremor, grão, tábua)
-        self.tapiri_usos = 0           # doentes de verdade levados ao tapiri (final O Tapiri)
+        self.tapiri_usos = 0           # amaldiçoados levados ao tapiri (final O Tapiri)
+        self.tapiri_saos = 0           # gente sã levada ao tapiri (fecha o final O Tapiri)
         self.viu_anhanga = 0           # noites em que olhou o veado na mata (final Anhangá)
         self.seguiu_paje = 0           # vezes que levou ao tapiri quem o pajé acusou
         self.converteu = 0             # 1 se aceitou o batismo do padre novo (A Água do Batismo)

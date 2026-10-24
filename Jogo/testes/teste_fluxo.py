@@ -96,9 +96,9 @@ def testar_marcacao():
 
 def testar_estado_inicial():
     estado = Estado()
-    esperado = {"dia": 1, "vivos": 0, "mortos": 0, "mortos_por_sua_mao": 0, "entregues": 0,
+    esperado = {"dia": 1, "vivos": 0, "mortos": 0, "mortos_por_sua_mao": 0, "mortos_saos_por_sua_mao": 0, "entregues": 0,
                 "proximidade_vila": 0, "rio_acima": 0, "memoria": 0, "recusas_aleixo": 0, "levados": 0,
-                "pistas": 0, "sanidade": 10, "tapiri_usos": 0, "viu_anhanga": 0, "seguiu_paje": 0, "converteu": 0,
+                "pistas": 0, "sanidade": 10, "tapiri_usos": 0, "tapiri_saos": 0, "viu_anhanga": 0, "seguiu_paje": 0, "converteu": 0,
                 "entregou_ultima_visita": 0, "perguntou_levados": 0,
                 "inocentes": 0, "machado": 0, "energia_hoje": 0, "krenan_volta": 0, "subiu_o_rio": 0, "rio_acima_nomes": [], "convidados": [], "dentro": [], "tapiri": [], "tapiri_desde": {}, "febre": [], "noites_na_oca": {}, "curados": [], "manha": [],
                 "historias": [], "entregues_nomes": [],
@@ -474,7 +474,7 @@ def testar_dia1(jogo):
     assert nome_cena(jogo) == "Aldeia", nome_cena(jogo)
     estado = jogo.estado
     assert estado.dentro == ["Yara"] and estado.tapiri == ["Yara"] and estado.proximidade_vila == 0
-    assert estado.tapiri_usos == 0, "Yara é sã: levar ao tapiri não conta para o final O Tapiri"
+    assert estado.tapiri_usos == 0 and estado.tapiri_saos == 1, "Yara é sã: levar ao tapiri fecha O Tapiri"
     print("ok Noite 1 levando Yara ao tapiri")
     testar_aldeia_e_oca(jogo, yara_dentro=False)
 
@@ -572,8 +572,14 @@ def testar_finais():
         ({"viu_anhanga": 3, "mortos_por_sua_mao": 1}, "vazio"),
         ({"memoria": 5, "vivos": 2}, "honra"),
         ({"memoria": 5, "vivos": 1}, "vazio"),
+        ({"memoria": 5, "vivos": 3, "entregues": 1}, "honra"),          # entregar não impede
+        ({"memoria": 5, "vivos": 3, "mortos_por_sua_mao": 1}, "honra"),  # matou um amaldiçoado
+        ({"memoria": 5, "vivos": 3, "mortos_saos_por_sua_mao": 1, "mortos_por_sua_mao": 1}, "vazio"),
+        ({"memoria": 5, "vivos": 3, "tapiri_saos": 1}, "vazio"),         # levou alguém são ao tapiri
         ({"memoria": 4, "vivos": 5, "tapiri_usos": 3}, "tapiri"),
         ({"tapiri_usos": 3, "vivos": 1}, "vazio"),
+        ({"tapiri_usos": 2, "vivos": 4}, "tapiri"),                    # 2 amaldiçoados bastam
+        ({"tapiri_usos": 3, "tapiri_saos": 1, "vivos": 4}, "vazio"),    # levou alguém são: fecha
         ({}, "vazio"),
     ]
     for valores, esperado in casos:

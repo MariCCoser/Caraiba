@@ -128,8 +128,11 @@ FINAIS = [
         "chance_acaso": 0, "chance_tentando": None,
         "nome": "A Honra",
         "povo": "Tupinambá",
-        "condicao": [{"vivos": ">= 2", "memoria": ">= 5", "mortos_por_sua_mao": "== 0",
-                      "entregues": "== 0"}],
+        # As 5 histórias, pelo menos 2 vivos, nunca matar quem era são e nunca levar alguém são
+        # ao tapiri. Matar um amaldiçoado ou entregar alguém ao Aleixo não impede (com 2 entregas,
+        # A Troca vem antes na fila).
+        "condicao": [{"vivos": ">= 2", "memoria": ">= 5", "mortos_saos_por_sua_mao": "== 0",
+                      "tapiri_saos": "== 0"}],
         "antecipado": False,
         "fundo": "honra_final",
         "cena": "A aldeia chega ao fim da febre com as histórias de quem entrou guardadas.",
@@ -143,7 +146,9 @@ FINAIS = [
         "chance_acaso": 0, "chance_tentando": None,
         "nome": "O Tapiri",
         "povo": "Korubo",
-        "condicao": [{"tapiri_usos": ">= 3", "vivos": ">= 2", "mortos_por_sua_mao": "== 0",
+        # Levar ao tapiri 2 amaldiçoados (chegaram com a maldição ou pegaram a febre) e nunca
+        # ninguém são, até o fim do jogo.
+        "condicao": [{"tapiri_usos": ">= 2", "tapiri_saos": "== 0", "vivos": ">= 2", "mortos_por_sua_mao": "== 0",
                       "entregues": "== 0"}],
         "antecipado": False,
         "fundo": "tapiri_final",

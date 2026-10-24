@@ -607,8 +607,12 @@ class Dia(Cena):
             self.estado.dentro.append(opcao["entra"])
         if opcao.get("tapiri"):
             nome = opcao["tapiri"]
-            if nome in DOENTES:
+            # O Tapiri: conta quem era amaldiçoado (chegou com a maldição ou pegou a febre, e não
+            # está curado); levar alguém são fecha o final (tapiri_saos).
+            if febre.era_amaldicoado(self.estado, nome):
                 self.estado.tapiri_usos += 1
+            else:
+                self.estado.tapiri_saos += 1
             if nome == self.acusado:
                 # Seguiu o pajé (A Água do Batismo). Se a pessoa era sã, é um inocente.
                 self.estado.seguiu_paje += 1
@@ -628,10 +632,14 @@ class Dia(Cena):
             self._acompanhar(nome)
         if opcao.get("morre"):
             nome = opcao["morre"]
+            amaldicoado = febre.era_amaldicoado(self.estado, nome)
+            # Matar alguém são fecha A Honra (dados/finais.py); matar um amaldiçoado, não.
+            if not amaldicoado:
+                self.estado.mortos_saos_por_sua_mao += 1
             # O corpo fica coberto com a esteira onde a pessoa sentava, na fogueira.
             if self.noite and nome in self.noite["pessoas"]:
                 febre.deixar_corpo(self.estado, nome, self.estado.dia, "fogueira",
-                                   self._lugar_na_fogueira(nome), febre.era_amaldicoado(self.estado, nome))
+                                   self._lugar_na_fogueira(nome), amaldicoado)
             self._sair_da_aldeia(nome)
             self.estado.mortos_nomes.append(nome)
             self.estado.mortos_quando[nome] = self.estado.dia
