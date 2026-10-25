@@ -362,7 +362,7 @@ DETALHES = [
     (DOENCAS + "Yara/BocaYara.png", "detalhes/boca-yara.jpg"),
     (DOENCAS + "Yara/BocaYaraDoente.png", "detalhes/boca-yara-doente.jpg"),
     # Mbaé: o olho até o 3º dia na oca; depois, o doente. A boca já chega ferida.
-    (DOENCAS + "Mbaé/OlhoMbaé_ate3.png", "detalhes/olho-mbae.jpg"),
+    (DOENCAS + "Mbaé/OlhoMbaé.png", "detalhes/olho-mbae.jpg"),
     (DOENCAS + "Mbaé/OlhoDoenteMbaé.png", "detalhes/olho-mbae-doente.jpg"),
     (DOENCAS + "Mbaé/BocaMbaé.png", "detalhes/boca-mbae.jpg"),
     (DOENCAS + "Mbaé/BocaMbaéDoente.png", "detalhes/boca-mbae-doente.jpg"),
@@ -379,7 +379,6 @@ DETALHES = [
     (DOENCAS + "Iandé/BocaIandé.png", "detalhes/boca-iande.jpg"),
     (DOENCAS + "Iandé/BocaIandéDoente.png", "detalhes/boca-iande-doente.jpg"),
     (DOENCAS + "Araci/OlhoDoenteAraci.png", "detalhes/olho-araci-doente.jpg"),
-    (DOENCAS + "Araci/BocaAraci.png", "detalhes/boca-araci.jpg"),
     (DOENCAS + "Araci/BocaAraciDoente.png", "detalhes/boca-araci-doente.jpg"),
     # Atrás da orelha e o pescoço: a saudável vale para as duas zonas (PessoaOrelhaPescoco);
     # a doente é uma para cada (PessoaOrelhaDoente, PessoaPescocoDoente).

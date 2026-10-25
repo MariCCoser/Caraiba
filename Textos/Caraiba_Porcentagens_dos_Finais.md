@@ -1,5 +1,28 @@
 # Caraíba — As porcentagens dos finais
 
+## Atualização de 25/10/2026: os dez finais
+
+400 partidas jogadas ao acaso pelo simulador (`Jogo/ferramentas/simular_finais.py`), com as
+regras de hoje. Estes números são os que aparecem na tela da fonte de cada final.
+
+| Nº | Final | Ao acaso | Em que noite acabou |
+|---|---|---|---|
+| 1 | Guerra Justa | 1,8% | noite 9 |
+| 2 | A Troca | 13,8% | noite 6 (36), noite 9 (19) |
+| 3 | A Loucura | 2,2% | noites 4 a 8 |
+| 4 | A Água do Batismo | 8,2% | noite 9 |
+| 5 | Rio Acima | 1,0% | noite 10 |
+| 6 | Anhangá | 0,5% | noite 9 |
+| 7 | O Tapiri | 0% | — |
+| 8 | A Honra | 0% | — |
+| 9 | Ferida | 0% | — |
+| 10 | O Vazio | 72,5% | 176 no dia 10; o resto antes, quando a aldeia esvaziou |
+
+Jogando ao acaso, quase ninguém chega ao Tapiri, à Honra ou ao Ferida: eles pedem escolhas
+pensadas até o dia 10. O resto deste documento é a análise anterior (oito finais), guardada
+como histórico.
+
+
 Com que frequência cada um dos oito finais acontece e o que o jogador precisa fazer para chegar
 a cada um. Versão de 17/10/2026, com o jogo como está hoje (dias e noites 1 a 10).
 

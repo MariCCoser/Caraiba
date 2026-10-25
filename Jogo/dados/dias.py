@@ -1,6 +1,6 @@
 # Roteiro de cada Dia: o que acontece, na ordem. Edite à vontade: aqui não há lógica.
 #
-# Fonte: Proposta.docx. Um dia segue sempre a mesma ordem: alguém chega à entrada,
+# Fonte: Documentos/Proposta.docx. Um dia segue sempre a mesma ordem: alguém chega à entrada,
 # o jogador conversa e decide se a pessoa entra, e, entre o dia e a noite, o pajé
 # conta o sinal da doença, que fica riscado na tábua de barro.
 #

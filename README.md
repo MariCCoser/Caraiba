@@ -8,26 +8,31 @@ Inspirado em *No, I'm Not a Human*.
 
 ## Sobre o jogo
 
-Durante **10 dias**, o jogador decide quem entra na aldeia. Cada dia tem quatro momentos:
+Durante **10 dias**, o jogador guarda a entrada da aldeia. Cada dia tem dois momentos:
 
-1. **Manhã, na oca**: as consequências da noite (quem adoeceu, quem morreu, sempre com nome) e uma ação sobre os de dentro.
-2. **Dia, na entrada**: o visitante chega de longe. Aleixo dá a leitura europeia (botica, lei e batismo). Você o chama para a fogueira ou o manda seguir.
-3. **Noite, na fogueira**: você examina o rosto (olhos, boca, pele, pescoço e mãos), faz perguntas, ouve a história e o sonho do pajé. Depois decide: dormir na oca, dormir no tapiri, mandar seguir ou matar.
-4. **Tela de fato**: um fato histórico ligado ao tema do dia, com a fonte.
+1. **Dia, na entrada**: alguém chega pela trilha e pede para entrar. Nos dias 3, 6 e 9, o Irmão Aleixo, um jesuíta, vem pedir gente para levar à vila. Entre uma visita e outra, dá para andar pela aldeia e conversar nas ocas.
+2. **Noite, na fogueira**: o pajé conta o que sonhou e risca o sinal na tábua de barro. Com poucos olhares (a energia da noite), você examina o rosto de quem entrou (olhos, orelhas, boca e pescoço), conversa e decide: deixar dormir na oca, levar ao tapiri (o abrigo isolado, onde o mal não passa e quem é amaldiçoado sai curado) ou matar.
 
-As regras são fixas e sem sorte. A doença passa só dentro da oca, de noite. Os sintomas seguem as fases reais da varíola, do sarampo e da gripe, e os nomes das doenças nunca aparecem na tela, porque os povos indígenas não tinham nome para essas enfermidades novas.
+A doença passa só dentro da oca, de noite. Os sinais seguem as fases reais da varíola e do sarampo, e os nomes das doenças nunca aparecem na tela: para a aldeia, é uma maldição.
 
-### Os cinco finais
+### Os dez finais
 
-Cada final mostra um povo real que seguiu o mesmo caminho do jogador e o que aconteceu com ele depois:
+Cada final mostra um povo real que seguiu um caminho parecido com o do jogador e o que aconteceu com ele depois. A ordem é a da fila: vale o primeiro que bater.
 
-| Final | Paralelo histórico |
+| Final | Povo |
 |---|---|
+| Guerra Justa | Caeté |
 | A Troca | Tupiniquim |
-| A Loucura | Santidade de Jaguaripe |
-| Rio Acima | Aimoré / Botocudo → Krenak |
+| A Loucura | Tupinambá (Santidade de Jaguaripe) |
+| A Água do Batismo | Caeté |
+| Rio Acima | Aimoré, hoje Krenak |
+| Anhangá | Tremembé |
+| O Tapiri | Korubo |
 | A Honra | Tupinambá |
+| Ferida | Potiguara |
 | O Vazio | Goitacá |
+
+As condições de cada um estão em [`Textos/Caraiba_Contas_dos_Finais.md`](Textos/Caraiba_Contas_dos_Finais.md).
 
 ## Como rodar
 
@@ -47,13 +52,16 @@ python main.py
 
 ```
 Caraiba/
-├── Jogo/          Código do jogo (pygame)
-├── Arte/          Artes desenhadas pelo grupo, paleta e guia de personagens
-│   └── PP/        Personagens
+├── Jogo/          Código do jogo (pygame); instruções em Jogo/README.md
+├── Arte/          Artes originais do grupo (o jogo usa as cópias leves em Jogo/assets/)
+│   ├── Ar_livre/          Cenários ao ar livre e fundos dos finais
+│   ├── Ocas/              O dentro das ocas e do tapiri
+│   ├── Doenças/           Os detalhes do exame (olhos, boca, orelha, pescoço)
+│   ├── personagens_png/   Personagens em pé
+│   └── Personagens_sentados_png/  Personagens sentados na fogueira
 ├── Pesquisa/      Pesquisa histórica (doenças, epidemia, povos originários)
-├── Textos/        Documento de design: "Dez Dias, Dez Fogueiras"
-├── Proposta.docx  Proposta original do jogo
-├── requisitos.docx Requisitos e rubrica do projeto
+├── Textos/        Documentos de design: história, noites, finais, sinais e conversas
+├── Documentos/    Proposta original e requisitos do projeto
 └── .claude/agents/ Agentes de IA usados no desenvolvimento
 ```
 

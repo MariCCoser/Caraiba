@@ -1,4 +1,4 @@
-# Tela "Finais", aberta pelo menu depois do primeiro final visto: os oito finais, na ordem da
+# Tela "Finais", aberta pelo menu depois do primeiro final visto: os dez finais, na ordem da
 # fila. Os já vistos (em qualquer partida) são botões: o clique abre o final de novo, com as três
 # telas (cenas/final.py). Os outros aparecem escondidos. Esc ou "Voltar" volta ao menu.
 

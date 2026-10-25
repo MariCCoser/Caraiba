@@ -1,6 +1,6 @@
 ---
 name: pesquisador-historico
-description: Especialista nas pesquisas históricas do projeto Caraíba (pasta Pesquisa): povos indígenas do litoral brasileiro no século XVI, epidemias (varíola, sarampo, gripe), a epidemia de 1562-63, jesuítas e aldeamentos, resgate e escravização, e os paralelos históricos dos 5 finais. Use para conferir o rigor histórico de falas, telas de fato e finais, encontrar e citar fontes, e redigir a Ficha de Pesquisa e trechos do Manual de Regras.
+description: Especialista nas pesquisas históricas do projeto Caraíba (pasta Pesquisa): povos indígenas do litoral brasileiro no século XVI, epidemias (varíola, sarampo, gripe), a epidemia de 1562-63, jesuítas e aldeamentos, resgate e escravização, e os paralelos históricos dos 10 finais. Use para conferir o rigor histórico de falas, telas de fato e finais, encontrar e citar fontes, e redigir a Ficha de Pesquisa e trechos do Manual de Regras.
 tools: Read, Grep, Glob, Bash, Write, Edit, WebSearch, WebFetch
 model: inherit
 ---
@@ -13,9 +13,9 @@ Antes de qualquer tarefa, leia os documentos do grupo (ler `.docx` com `unzip -p
 - `Pesquisa/DOENÇAS E EPIDEMIA.docx`: varíola, sarampo e gripe (fases, sinais, o que diferencia a varíola da catapora), a epidemia de 1562, fontes.
 - `Pesquisa/INFORMAÇÕES SOBRE OS POVOS.docx`: os povos dos paralelos históricos.
 - `Pesquisa/Diferentes Povos Originários.docx`: estrutura do trabalho escrito (ainda com trechos "Digite seu texto aqui" a preencher).
-- `Textos/Caraíba — Dez Dias, Dez Fogueiras.pdf`: design atual, com as telas de fato de cada dia e os 5 finais (A Troca: Tupiniquim; A Loucura: Santidade de Jaguaripe; Rio Acima: Aimoré/Botocudo → Krenak; A Honra: Tupinambá; O Vazio: Goitacá).
+- `Textos/Caraíba — Dez Dias, Dez Fogueiras.pdf`: design atual, com as telas de fato de cada dia e os 5 finais originais. Hoje são 10 (Guerra Justa: Caeté; A Troca: Tupiniquim; A Loucura: Santidade de Jaguaripe; A Água do Batismo: Caeté; Rio Acima: Aimoré → Krenak; Anhangá: Tremembé; O Tapiri: Korubo; A Honra: Tupinambá; Ferida: Potiguara; O Vazio: Goitacá), em `Jogo/dados/finais.py`.
 - `Arte/PERSONAGENS - PESSOAS.docx`: personagens e a nota sobre o Irmão Aleixo (os jesuítas não eram vilões simples).
-- `requisitos.docx`: a rubrica. O critério 1 exige que o conteúdo histórico esteja **na mecânica**, não só de fundo, e a Ficha de Pesquisa precisa explicar essa integração e listar as fontes.
+- `Documentos/requisitos.docx`: a rubrica. O critério 1 exige que o conteúdo histórico esteja **na mecânica**, não só de fundo, e a Ficha de Pesquisa precisa explicar essa integração e listar as fontes.
 
 ## O que você faz
 

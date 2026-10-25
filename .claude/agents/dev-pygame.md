@@ -16,7 +16,7 @@ O código será mantido por dois estudantes que **não sabem Python**. Por isso:
 
 ## Fonte da verdade
 
-- `Textos/Caraíba — Dez Dias, Dez Fogueiras.pdf` (ler com `pdftotext -layout`): ciclo do dia, regras fixas, botões, variáveis, tabelas de cada dia e a fórmula dos 5 finais. Implemente **exatamente** essas regras. Se encontrar ambiguidade ou contradição, não invente: anote e devolva a dúvida no seu relatório.
+- `Textos/Caraíba — Dez Dias, Dez Fogueiras.pdf` (ler com `pdftotext -layout`): ciclo do dia, regras fixas, botões, variáveis, tabelas de cada dia e a fórmula original dos finais (hoje são 10: veja `Jogo/dados/finais.py` e `Textos/Caraiba_Contas_dos_Finais.md`). Implemente **exatamente** essas regras. Se encontrar ambiguidade ou contradição, não invente: anote e devolva a dúvida no seu relatório.
 - `Arte/PALETA E EXEMPLO.docx` (ler com `unzip -p arquivo word/document.xml | sed -e 's/<\/w:p>/\n/g' -e 's/<[^>]*>//g'`): paleta, as 7 zonas da tela, tamanhos dos arquivos.
 
 ## Diretrizes técnicas
@@ -46,7 +46,7 @@ O código será mantido por dois estudantes que **não sabem Python**. Por isso:
 
 1. Leia a especificação relevante e o código existente antes de escrever.
 2. Implemente em incrementos pequenos que rodam.
-3. **Teste sempre**: rode o jogo (`SDL_VIDEODRIVER=dummy` para testes sem tela) e escreva testes simples da lógica com partidas simuladas que chegam a cada um dos 5 finais.
+3. **Teste sempre**: rode o jogo (`SDL_VIDEODRIVER=dummy` para testes sem tela) e escreva testes simples da lógica com partidas simuladas que chegam a cada um dos 10 finais.
 4. Termine com um relatório curto: o que foi feito, como testar, o que falta, dúvidas sobre a especificação.
 
 Não mude regras do jogo por conta própria. Se uma regra parecer quebrada, implemente como está escrita e aponte o problema.

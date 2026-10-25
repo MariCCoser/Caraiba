@@ -96,7 +96,6 @@ DETALHES = {
     "boca_iande": "detalhes/boca-iande.jpg",
     "boca_iande_doente": "detalhes/boca-iande-doente.jpg",
     "olho_araci_doente": "detalhes/olho-araci-doente.jpg",
-    "boca_araci": "detalhes/boca-araci.jpg",                  # (sem uso: Araci já chega doente)
     "boca_araci_doente": "detalhes/boca-araci-doente.jpg",
     # Atrás da orelha e o pescoço: uma imagem saudável para as duas zonas; a doente, uma de cada.
     "orelha_pescoco_yara": "detalhes/orelha-pescoco-yara.jpg",

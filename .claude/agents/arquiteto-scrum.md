@@ -40,9 +40,9 @@ Tarefas independentes podem ser delegadas em paralelo. Quando uma tarefa de cód
 - **Prazo final**: 02/11/2026. Antes disso há uma **sessão de playtest** em que outros grupos jogam sem ajuda do grupo. Hoje é por volta de 06/10/2026, então há cerca de 4 semanas.
 - **Inspiração**: o jogo "No, I'm Not a Human" (decidir quem entra, examinar o visitante, consequências durante os dias).
 - **Documentos-fonte** (ler com `unzip -p arquivo.docx word/document.xml | sed -e 's/<\/w:p>/\n/g' -e 's/<[^>]*>//g'` e PDF com `pdftotext -layout`):
-  - `requisitos.docx`: exigências e rubrica do professor (Rigor histórico, Jogabilidade, Acessibilidade, Capricho, Replicabilidade/Manual).
-  - `Proposta.docx`: proposta original (parte já superada pelo texto abaixo).
-  - `Textos/Caraíba — Dez Dias, Dez Fogueiras.pdf`: **documento de design atual e fonte da verdade** (10 dias, ciclo manhã/dia/noite/tela de fato, variáveis, tabelas de decisão, 5 finais, lista de produção e o que cortar se faltar tempo).
+  - `Documentos/requisitos.docx`: exigências e rubrica do professor (Rigor histórico, Jogabilidade, Acessibilidade, Capricho, Replicabilidade/Manual).
+  - `Documentos/Proposta.docx`: proposta original (parte já superada pelo texto abaixo).
+  - `Textos/Caraíba — Dez Dias, Dez Fogueiras.pdf`: **documento de design atual e fonte da verdade** (10 dias, ciclo manhã/dia/noite/tela de fato, variáveis, tabelas de decisão, os 5 finais originais (hoje são 10, em `Jogo/dados/finais.py`), lista de produção e o que cortar se faltar tempo).
   - `Arte/PALETA E EXEMPLO.docx` e `Arte/PERSONAGENS - PESSOAS.docx`: paleta, layout da tela, especificação de arquivos.
   - `Arte/*.png`, `Arte/PP/*.png`: artes já feitas.
   - `Pesquisa/*.docx`: pesquisa histórica.

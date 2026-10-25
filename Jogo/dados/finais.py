@@ -31,7 +31,7 @@
 #   "chance_tentando"  em quantas partidas (%) dá certo, para quem tenta esse final
 #                      (None: não se mostra, como em O Vazio, que é o que sobra)
 # Mudou o roteiro ou as condições? Rode o simulador de novo e troque os números.
-# Ao acaso: 500 partidas em 21/10/2026. "Tentando" ainda sem números atuais (a simulação por
+# Ao acaso: 400 partidas em 25/10/2026. "Tentando" ainda sem números atuais (a simulação por
 # estratégia não terminou): enquanto for None, a tela mostra só a chance ao acaso.
 #
 # "vivos" conta só quem é de fora e está vivo na aldeia: a aldeia é o jogador, o pajé e quem
@@ -50,7 +50,7 @@ if HONRA_PEDE_HISTORIAS:
 FINAIS = [
     {
         "id": "guerra_justa",
-        "chance_acaso": 0, "chance_tentando": None,
+        "chance_acaso": 1.8, "chance_tentando": None,
         "nome": "Guerra Justa",
         "povo": "Caeté",
         # No dia 9, o jogador atira no Irmão Aleixo com o arco (dados/dias.py, ARCO). É o primeiro
@@ -86,7 +86,7 @@ FINAIS = [
     },
     {
         "id": "loucura",
-        "chance_acaso": 3.4, "chance_tentando": None,
+        "chance_acaso": 2.2, "chance_tentando": None,
         "nome": "A Loucura",
         "povo": "Tupinambá (Santidade de Jaguaripe)",
         "condicao": [{"mortos_por_sua_mao": ">= 3"}],
@@ -101,7 +101,7 @@ FINAIS = [
     },
     {
         "id": "batismo",
-        "chance_acaso": 0, "chance_tentando": None,
+        "chance_acaso": 8.2, "chance_tentando": None,
         "nome": "A Água do Batismo",
         "povo": "Caeté",
         # No dia 9, o jogador deixa o padre novo entrar (dados/dias.py); na noite 9, na fogueira,
@@ -120,7 +120,7 @@ FINAIS = [
     },
     {
         "id": "rio_acima",
-        "chance_acaso": 0.4, "chance_tentando": None,
+        "chance_acaso": 1.0, "chance_tentando": None,
         "nome": "Rio Acima",
         "povo": "Aimoré, hoje Krenak",
         # Na noite 10, Krenan (se voltou) faz o mesmo pedido, e o jogador escolhe ir com ele.
@@ -136,7 +136,7 @@ FINAIS = [
     },
     {
         "id": "anhanga",
-        "chance_acaso": 0, "chance_tentando": None,
+        "chance_acaso": 0.5, "chance_tentando": None,
         "nome": "Anhangá",
         "povo": "Tremembé",
         # As três vezes em que o pajé aponta para a mata (noites 2, 5 e 9); no fim da noite 9,
@@ -226,7 +226,7 @@ FINAIS = [
     },
     {
         "id": "vazio",
-        "chance_acaso": 82.4, "chance_tentando": None,
+        "chance_acaso": 72.5, "chance_tentando": None,
         "nome": "O Vazio",
         "povo": "Goitacá",
         # Sempre bate (é o que sobra). Antes do dia 10, só acaba o jogo se a aldeia esvaziar.

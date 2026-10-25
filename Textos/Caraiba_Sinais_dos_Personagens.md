@@ -42,14 +42,13 @@ pessoa, com a maldição e sem ela, e **quando** a imagem muda.
 | Pessoa | Sem a maldição (são) | Com a maldição (doente) |
 |---|---|---|
 | Yara | `OlhoYara.png`, `BocaYara.png` | `OlhoYara_Doente.png` (também o da fumaça), `BocaYaraDoente.png` |
-| Mbaé | `OlhoMbaé_ate3.png` (até 3 noites na oca) | `OlhoDoenteMbaé.png`, `BocaMbaéDoente.png` |
+| Mbaé | `OlhoMbaé.png` (até 3 noites na oca) | `OlhoDoenteMbaé.png`, `BocaMbaéDoente.png` |
 | Potira | `OlhoPotira.png`, `BocaPotira.png` | `OlharPotiraDoente.png`, `BocaPotiraDoente.png` |
 | Tamandaré-mirim | `OlhoTama.png` (até 3 noites na oca; já levemente vermelho) | `OlhoTamaDoente.png`, `BocaTamaDoente.png` |
 | Iandé | `OlhoIandé.png`, `BocaIandé.png` (noites 7 e 8) | `OlhoIandé_Doente.png`, `BocaIandéDoente.png` (noites 9 e 10) |
 | Araci | — | `OlhoDoenteAraci.png`, `BocaAraciDoente.png` |
 
-**Sem uso no jogo:** `BocaAraci.png` (Araci sempre chega doente) e `OlhoMbaé.png` (igual ao
-`OlhoMbaé_ate3.png`). As bocas saudáveis de Mbaé e Tamandaré-mirim aparecem quando eles saem
+Araci sempre chega doente: não há boca saudável dela. As bocas saudáveis de Mbaé e Tamandaré-mirim aparecem quando eles saem
 curados do tapiri.
 
 ## O que a pessoa diz quando o jogador olha
