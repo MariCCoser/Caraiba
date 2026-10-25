@@ -160,3 +160,16 @@ pygbag Jogo          (rodado da pasta Caraiba)
 ```
 e abra <http://localhost:8000>. No navegador o botão **Sair** some e a tela cheia é
 controlada pela página.
+
+**Para entregar (itch.io).** O pygbag empacota a pasta inteira, então monte antes uma cópia só
+com o que o jogo usa (sem `.venv`, `saves`, `testes` e `ferramentas`) e gere o zip:
+```
+mkdir -p .tmp/web/caraiba
+cp Jogo/main.py Jogo/config.py Jogo/estado.py .tmp/web/caraiba/
+cp -r Jogo/cenas Jogo/dados Jogo/motor Jogo/assets .tmp/web/caraiba/
+cd .tmp/web
+python -m pygbag --build --archive --title "Caraíba" caraiba
+```
+O zip sai em `.tmp/web/caraiba/build/web.zip` (a cópia entregue fica em `Entrega/`, fora do
+git). No itch.io: projeto do tipo HTML, enviar o zip e marcar "This file will be played in the
+browser".
