@@ -99,7 +99,7 @@ def testar_estado_inicial():
     esperado = {"dia": 1, "vivos": 0, "mortos": 0, "mortos_por_sua_mao": 0, "mortos_saos_por_sua_mao": 0, "entregues": 0,
                 "proximidade_vila": 0, "rio_acima": 0, "memoria": 0, "recusas_aleixo": 0, "levados": 0,
                 "pistas": 0, "sanidade": 10, "tapiri_usos": 0, "tapiri_saos": 0, "viu_anhanga": 0, "seguiu_paje": 0, "converteu": 0,
-                "padre_entrou": 0,
+                "padre_entrou": 0, "aleixo_morto": 0,
                 "inocentes": 0, "machado": 0, "pulseira": 0, "energia_hoje": 0, "krenan_volta": 0, "subiu_o_rio": 0, "rio_acima_nomes": [], "convidados": [], "dentro": [], "tapiri": [], "tapiri_desde": {}, "febre": [], "noites_na_oca": {}, "curados": [], "manha": [],
                 "historias": [], "entregues_nomes": [],
                 "mortos_nomes": [], "saos_mortos_nomes": [], "tapiri_saos_nomes": [], "mortos_quando": {}, "corpos": [], "tabua": [], "tabua_noites": [],
@@ -576,6 +576,9 @@ def testar_finais():
         ({"memoria": 5, "vivos": 3, "mortos_por_sua_mao": 1}, "honra"),  # matou um amaldiçoado
         ({"memoria": 5, "vivos": 3, "mortos_saos_por_sua_mao": 1, "mortos_por_sua_mao": 1}, "ferida"),
         ({"memoria": 5, "vivos": 3, "tapiri_saos": 1}, "ferida"),        # levou alguém são ao tapiri
+        ({"vivos": 5, "tapiri_saos": 1}, "vazio"),                       # Ferida: só com 3 ou 4 vivos
+        ({"aleixo_morto": 1, "mortos_por_sua_mao": 1, "vivos": 4}, "guerra_justa"),
+        ({"aleixo_morto": 1, "entregues": 2, "converteu": 1, "viu_anhanga": 3}, "guerra_justa"),  # vence todos
         ({"vivos": 2, "mortos_saos_por_sua_mao": 1, "mortos_por_sua_mao": 1}, "vazio"),  # Ferida pede 3
         ({"vivos": 4, "mortos_saos_por_sua_mao": 3, "mortos_por_sua_mao": 3}, "loucura"),
         ({"memoria": 4, "vivos": 5, "tapiri_usos": 3}, "tapiri"),
@@ -606,6 +609,8 @@ def testar_finais():
 
     # Antes do dia 10: só os finais antecipados (ou a aldeia vazia) acabam o jogo.
     antes = [
+        ({"dia": 9, "aleixo_morto": 1, "mortos_por_sua_mao": 3}, "guerra_justa"),  # antes da Loucura
+        ({"dia": 9, "aleixo_morto": 1, "converteu": 1}, "guerra_justa"),          # antes do Batismo
         ({"dia": 1, "mortos_por_sua_mao": 1}, None),
         ({"dia": 4, "mortos_por_sua_mao": 3}, "loucura"),
         ({"dia": 3, "proximidade_vila": 3}, "troca"),
@@ -1696,7 +1701,12 @@ def testar_dia9_e_noite9(jogo):
     dia.caixa.completar()
     assert dia.caixa.texto == "Chega. Eu levo quem eu quiser.", dia.caixa.texto
     passar_falas(jogo)
+    # Enquanto ele se afasta com Tamandaré-mirim: o arco (Guerra Justa) ou deixar ir.
+    assert textos_dos_botoes(jogo) == ["Pegar o arco", "Deixar ir"], textos_dos_botoes(jogo)
+    clicar_opcao(jogo, "Deixar ir")
+    passar_falas(jogo)
     assert estado.dentro == ["Iandé"] and estado.energia_hoje == 1
+    assert estado.entregues == 1 and estado.aleixo_morto == 0, "deixar ir conta como entregue"
 
     # O sinal do pajé: o 5º risco da tábua.
     assert estado.tabua[-1] == "Manchas avermelhadas no pescoço." and estado.tabua_noites[-1] == 9
@@ -1720,6 +1730,49 @@ def testar_dia9_e_noite9(jogo):
     passar_falas(jogo)
     assert dia.botao_dormir.visivel
     print("ok Noite 9: manchas no pescoço de Iandé, e Krenan fora da aldeia")
+    jogo.ir_para("menu")
+    esperar_transicao(jogo)
+
+
+def testar_arco_e_guerra_justa(jogo):
+    """Dia 9: negar, e o Aleixo leva alguém; pegar o arco traz a pessoa de volta e acaba o jogo
+    no fim da noite 9, em Guerra Justa (antes de todos os outros finais)."""
+    jogo.nova_partida()
+    estado = jogo.estado
+    estado.dia = 8
+    estado.dentro = ["Tamandaré-mirim", "Iandé"]
+    estado.vivos = 2
+    jogo.ir_para("aldeia")
+    esperar_transicao(jogo)
+    clicar(jogo, jogo.cenas.atual.rect_seta.center)
+    esperar_transicao(jogo)
+    esperar_transicao(jogo)
+    passar_falas(jogo)
+    dia = jogo.cenas.atual
+    assert dia.visitante == "padre", dia.visitante
+    clicar_opcao(jogo, "Decidir")
+    passar_falas(jogo)
+    clicar_opcao(jogo, "Não deixar entrar")
+    passar_falas(jogo)
+    clicar_opcao(jogo, "Seguir")
+    estado.semente = next(n for n in range(1000)
+                          if random.Random("%s:aleixo:9" % n).choice(estado.dentro) == "Iandé")
+    clicar_opcao(jogo, "Negar")
+    passar_falas(jogo)
+    assert estado.dentro == ["Tamandaré-mirim"] and estado.levados == 1
+    clicar_opcao(jogo, "Pegar o arco")
+    dia.caixa.completar()
+    assert dia.caixa.texto == "Você pega o arco e puxa a corda.", dia.caixa.texto
+    passar_falas(jogo)
+    assert estado.aleixo_morto == 1 and estado.mortos_por_sua_mao == 1 and estado.sanidade == 8
+    assert sorted(estado.dentro) == ["Iandé", "Tamandaré-mirim"] and estado.vivos == 2
+    assert estado.levados == 0 and estado.entregues == 0 and "Iandé" not in estado.entregues_nomes
+    # A noite 9: dormir acaba o jogo em Guerra Justa.
+    assert dia.titulo == "Noite 9" and dia.modo == "fogueira"
+    dia.terminar()   # o fim da noite (a seta de dormir)
+    esperar_transicao(jogo)
+    assert estado.final == "guerra_justa", estado.final
+    print("ok Dia 9: o arco traz Iandé de volta, e a noite 9 acaba em Guerra Justa")
     jogo.ir_para("menu")
     esperar_transicao(jogo)
 
@@ -1771,7 +1824,7 @@ def testar_padre_e_batismo(jogo):
 
 
 def testar_rever_finais(jogo):
-    """Depois do primeiro final visto, o menu tem "Finais": ler de novo, com "Final N/9" e a chance."""
+    """Depois do primeiro final visto, o menu tem "Finais": ler de novo, com "Final N/10" e a chance."""
     from motor import finais
     vistos = finais.vistos()
     assert vistos, "a noite 10 acabou num final: ele fica guardado como visto"
@@ -1781,7 +1834,7 @@ def testar_rever_finais(jogo):
     esperar_transicao(jogo)
     lista = jogo.cenas.atual
     assert nome_cena(jogo) == "Finais" and [i for _, i in lista.linhas] == vistos
-    assert len(lista.linhas) + len(lista.escondidos) == 9
+    assert len(lista.linhas) + len(lista.escondidos) == 10
     clicar_botao(jogo, lista.linhas[0][0])
     esperar_transicao(jogo)
     fim = jogo.cenas.atual
@@ -1800,7 +1853,7 @@ def testar_rever_finais(jogo):
     clicar_botao(jogo, jogo.cenas.atual.botao_voltar)
     esperar_transicao(jogo)
     assert nome_cena(jogo) == "Menu"
-    print("ok Finais: ler de novo um final já visto (Final N/9 e a chance)")
+    print("ok Finais: ler de novo um final já visto (Final N/10 e a chance)")
 
 
 def testar_dia10_e_noite10(jogo):
@@ -2081,6 +2134,7 @@ def testar_fluxo():
     testar_dia7_e_noite7(jogo)
     testar_dia8_e_noite8(jogo)
     testar_dia9_e_noite9(jogo)
+    testar_arco_e_guerra_justa(jogo)
     testar_padre_e_batismo(jogo)
     testar_dia10_e_noite10(jogo)
     testar_rever_finais(jogo)

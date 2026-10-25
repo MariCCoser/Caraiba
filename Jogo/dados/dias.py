@@ -232,6 +232,35 @@ PADRE_NA_ENTRADA = [
 ]
 
 
+# --- Dia 9: o arco (Guerra Justa) ---
+# Depois da recusa do dia 9, o Aleixo leva alguém (sorteado) pela trilha. Enquanto ele se
+# afasta, o jogador escolhe: "Pegar o arco" (aleixo_morto = 1, mortos_por_sua_mao +1,
+# sanidade -2; a pessoa volta para a aldeia) ou "Deixar ir" (a pessoa conta como entregue).
+# O tiro não exige sinais nem pistas. A cena corta no disparo: a flecha acertando não aparece.
+# Fonte: o documento "Dois finais novos: Ferida (Potiguara) e Guerra Justa (Caeté)".
+ARCO = {
+    "leva": "Ele leva %s pela trilha.",
+    "escolha": "Ele se afasta com %s.",
+    "pegar": "Pegar o arco",
+    "pegar_falas": ["Você pega o arco e puxa a corda.", "%s volta pela trilha, sozinho. Ninguém pergunta nada."],
+    "efeitos_pegar": {"aleixo_morto": 1, "mortos_por_sua_mao": 1, "sanidade": -2},
+    "deixar": "Deixar ir",
+    "deixar_falas": ["%s some na curva da trilha."],
+    "efeitos_deixar": {"entregues": 1},
+}
+
+
+def escolha_do_arco(nome):
+    """A escolha do dia 9, com o nome de quem o Aleixo leva (cenas/dia.py, _aleixo_leva)."""
+    def falas(textos):
+        return [{"tipo": "fala", "quem": "", "texto": texto.replace("%s", nome)} for texto in textos]
+    return {"tipo": "escolha", "texto": ARCO["escolha"] % nome, "opcoes": [
+        {"texto": ARCO["pegar"], "arco": nome, "efeitos": ARCO["efeitos_pegar"],
+         "passos": falas(ARCO["pegar_falas"])},
+        {"texto": ARCO["deixar"], "efeitos": ARCO["efeitos_deixar"], "passos": falas(ARCO["deixar_falas"])},
+    ]}
+
+
 def oferta_aleixo(dia):
     """O pedido de Aleixo: o jogador entrega alguém de fora ou nega. Negando, ele leva alguém
     que ele quer mesmo assim (sorteado: o passo "aleixo_leva"), menos nos DIAS_SEM_LEVAR."""
@@ -244,8 +273,9 @@ def oferta_aleixo(dia):
             *falas_aleixo_negado(dia),
         ] + ([] if dia in DIAS_SEM_LEVAR else [
             {"tipo": "aleixo_leva",
-             "de_fora": "Ele leva %s pela trilha. Ninguém consegue impedir.",
-             "ninguem": "Ele olha as redes, não acha quem levar e fecha o caderno."},
+             "de_fora": ARCO["leva"] if dia == 9 else "Ele leva %s pela trilha. Ninguém consegue impedir.",
+             "ninguem": "Ele olha as redes, não acha quem levar e fecha o caderno.",
+             "arco": dia == 9},
         ])},
     ]}
 
@@ -790,7 +820,10 @@ DIAS = {
                 {"tipo": "fala", "quem": ALEIXO, "texto": "O padre novo já está com vocês. Hoje não levo ninguém."},
             ]},
             {"tipo": "se", "no_maximo": {"padre_entrou": 0}, "passos": [oferta_aleixo(9)]},
-            {"tipo": "fala", "quem": ALEIXO, "texto": "Que Deus guarde esta aldeia. Eu não posso mais."},
+            # Se o jogador atirou nele (o arco), o Aleixo não se despede.
+            {"tipo": "se", "no_maximo": {"aleixo_morto": 0}, "passos": [
+                {"tipo": "fala", "quem": ALEIXO, "texto": "Que Deus guarde esta aldeia. Eu não posso mais."},
+            ]},
             {"tipo": "visitante", "visitante": None},
             {"tipo": "fala", "quem": "", "texto": "A cruz fica na entrada."},
 

@@ -32,6 +32,7 @@ class Estado:
         self.seguiu_paje = 0           # vezes que levou ao tapiri quem o pajé acusou
         self.converteu = 0             # 1 se aceitou o batismo do padre novo (A Água do Batismo)
         self.padre_entrou = 0          # 1 se deixou o padre novo entrar no dia 9 (A Água do Batismo)
+        self.aleixo_morto = 0          # 1 se atirou no Irmão Aleixo na trilha, no dia 9 (Guerra Justa)
         self.inocentes = 0             # dessas vezes, quantas a pessoa era sã
         self.machado = 0               # 1 se aceitou o machado de Yara (+1 energia em toda noite)
         self.pulseira = 0              # 1 se aceitou a pulseira de Iandé (+1 energia das noites 7 a 10)

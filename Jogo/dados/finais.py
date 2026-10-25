@@ -15,7 +15,8 @@
 #
 # A "condicao" é uma lista de jeitos de chegar ao final (basta UM deles). Cada jeito é um
 # dicionário com as variáveis do estado.py e a conta que elas precisam passar; todas as
-# contas do mesmo jeito precisam bater juntas. As contas podem ser ">= 2", "<= 7" ou "== 0".
+# contas do mesmo jeito precisam bater juntas. As contas podem ser ">= 2", "<= 7" ou "== 0";
+# para duas contas na mesma variável, uma lista: "vivos": [">= 3", "<= 4"].
 #   Exemplo: [{"entregues": ">= 2"}, {"proximidade_vila": ">= 3"}]
 #            = entregou 2 ou mais pessoas, OU ficou próximo demais da vila (3 ou mais).
 #
@@ -24,7 +25,7 @@
 # Os textos das cenas são um rascunho: o grupo pode reescrever.
 # "fundo": a imagem atrás das três telas (dados/arte.py); sem ele, TELA_FINAL["fundo"].
 #
-# A chance de cada final (aparece na tela da fonte, com "Final 5/9": a posição na fila). Os
+# A chance de cada final (aparece na tela da fonte, com "Final 5/10": a posição na fila). Os
 # números vêm do simulador (Jogo/ferramentas/simular_finais.py; Textos/Caraiba_Porcentagens_dos_Finais.md):
 #   "chance_acaso"     em quantas partidas (%) o final acontece, jogando ao acaso
 #   "chance_tentando"  em quantas partidas (%) dá certo, para quem tenta esse final
@@ -47,6 +48,27 @@ if HONRA_PEDE_HISTORIAS:
     CONDICAO_HONRA["memoria"] = ">= 5"
 
 FINAIS = [
+    {
+        "id": "guerra_justa",
+        "chance_acaso": 0, "chance_tentando": None,
+        "nome": "Guerra Justa",
+        "povo": "Caeté",
+        # No dia 9, o jogador atira no Irmão Aleixo com o arco (dados/dias.py, ARCO). É o primeiro
+        # da fila e vence todos os outros: acaba o jogo no fim da noite 9.
+        "condicao": [{"aleixo_morto": ">= 1"}],
+        "antecipado": True,
+        "a_partir_da_noite": 9,
+        "cena": "No dia 10, a trilha amanhece cheia de homens do governador. Trazem a flecha. "
+                "Ninguém pergunta quem tem febre. Ninguém pergunta quem atirou. O morador que você "
+                "salvou na trilha sai amarrado com os outros. Na vila, um papel já diz que a guerra "
+                "contra esta aldeia é justa.",
+        "fato": "Em 1562, o governador Mem de Sá declarou guerra contra os Caeté, como castigo pela "
+                "morte do bispo Sardinha seis anos antes. Em poucos meses, mais de 50 mil pessoas "
+                "foram capturadas. Cerca de 10 mil chegaram aos engenhos; o resto morreu de varíola "
+                "e maus-tratos.",
+        "fonte": "John Monteiro, “O escravo índio, esse desconhecido” (1992); Mecenas Santos, "
+                 "Embates entre a cruz e a espada (ANPUH, 2011).",
+    },
     {
         "id": "troca",
         "chance_acaso": 13.8, "chance_tentando": None,
@@ -175,29 +197,32 @@ FINAIS = [
         "chance_acaso": 0, "chance_tentando": None,
         "nome": "Ferida",
         "povo": "Potiguara",
-        # A aldeia sobreviveu (3 ou mais vivos), mas o jogador matou alguém são ou levou alguém
-        # são ao tapiri. Quem matou 3 ou mais vai para A Loucura antes. Fonte: Textos/Caraíba —
-        # nono final Ferida (Potiguara).pdf. {vivos} e {nome} vêm do estado (motor/finais.py):
-        # "cena" quando alguém são morreu; "cena_tapiri" quando quem era são voltou do tapiri.
-        "condicao": [{"mortos_saos_por_sua_mao": ">= 1", "vivos": ">= 3"},
-                     {"tapiri_saos": ">= 1", "vivos": ">= 3"}],
+        # A aldeia sobreviveu com 3 ou 4 vivos, mas o jogador matou alguém são ou levou alguém são
+        # ao tapiri. Quem matou 3 ou mais vai para A Loucura antes. Fonte: o documento "Dois finais
+        # novos: Ferida (Potiguara) e Guerra Justa (Caeté)". {vivos} e {nome} vêm do estado
+        # (motor/finais.py): "cena" quando alguém são morreu; "cena_tapiri" quando quem era são
+        # voltou do tapiri.
+        "condicao": [{"mortos_saos_por_sua_mao": ">= 1", "vivos": [">= 3", "<= 4"]},
+                     {"tapiri_saos": ">= 1", "vivos": [">= 3", "<= 4"]}],
         "antecipado": False,
         "cena": "Quando o cacique volta da mata, encontra a fogueira acesa e {vivos} pessoas em "
-                "volta dela. A aldeia ainda existe. Ninguém fala de {nome}. O vento traz areia e "
-                "cobre o lugar onde dormia. Todo dia alguém varre. Todo dia a areia volta.",
+                "volta dela. A aldeia ainda existe. Ninguém fala de {nome}. Mas, à noite, cada um "
+                "dorme virado para a entrada. Na mata, um parente aprende a desconfiar de outro "
+                "parente. A doença foi embora. Isso ficou.",
         "cena_tapiri": "Quando o cacique volta da mata, encontra a fogueira acesa e {vivos} pessoas "
                        "em volta dela. A aldeia ainda existe. {nome} voltou do tapiri. Não senta "
-                       "mais perto de você. O vento traz areia. Todo dia alguém varre. Todo dia a "
-                       "areia volta.",
+                       "mais perto de você. À noite, cada um dorme virado para a entrada. Na mata, "
+                       "um parente aprende a desconfiar de outro parente. A doença foi embora. "
+                       "Isso ficou.",
         # Lendo de novo pelo menu, sem a partida.
         "cena_sem_estado": {"vivos": "poucas", "nome": "quem se foi"},
-        "fato": "Em 1645, na guerra entre portugueses e holandeses, os Potiguara ficaram "
-                "divididos. Felipe Camarão, do lado português, escreveu cartas em tupi ao primo "
-                "Pedro Poti, do lado holandês, pedindo que mudasse de lado. Poti não mudou. Os "
-                "Potiguara vivem até hoje na Baía da Traição (PB), na terra dos seus antepassados.",
-        "fonte": "Cartas dos índios Camarões, escritas em 1645 em tupi antigo (arquivo da "
-                 "Companhia das Índias Ocidentais, Haia), traduzidas por Eduardo Navarro (USP, "
-                 "2022); Instituto Socioambiental: Potiguara.",
+        "fato": "Em 1645, os Potiguara lutaram dos dois lados da guerra entre portugueses e "
+                "holandeses. Os primos Felipe Camarão e Pedro Poti trocaram cartas em tupi: um pedia "
+                "ao outro que não matasse o próprio sangue. Poti recusou e morreu preso em 1649. Os "
+                "Potiguara vivem até hoje no litoral norte da Paraíba, em três terras indígenas. A "
+                "última foi homologada em 2024.",
+        "fonte": "Regina Célia Gonçalves, “Os Potiguara na Guerra dos Brancos” (ANPUH, 2005); "
+                 "Eduardo Navarro, tradução das cartas tupis (USP); Decreto nº 12.288/2024.",
     },
     {
         "id": "vazio",

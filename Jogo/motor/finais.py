@@ -8,7 +8,7 @@
 # - vistos() e marcar_visto(id): os finais que o jogador já viu, em qualquer partida (ficam
 #   guardados à parte, como as preferências: começar uma partida nova não apaga). O menu mostra
 #   o botão "Finais" depois do primeiro, para ler de novo o que estava escrito.
-# - numero(id): a posição do final na fila (1 a 9) e quantos finais há.
+# - numero(id): a posição do final na fila (1 a 10) e quantos finais há.
 # - texto_da_cena(final, estado): a cena, com o nome e o número de vivos quando o final pede
 #   (Ferida). Sem estado (lendo de novo pelo menu), usa as palavras de "cena_sem_estado".
 
@@ -31,8 +31,11 @@ def conta_bate(valor, conta):
 
 
 def jeito_bate(estado, jeito):
-    """Todas as contas do dicionário batem juntas (dicionário vazio sempre bate)."""
-    return all(conta_bate(getattr(estado, nome), conta) for nome, conta in jeito.items())
+    """Todas as contas do dicionário batem juntas (dicionário vazio sempre bate). Uma lista de
+    contas para a mesma variável precisa bater inteira: {"vivos": [">= 3", "<= 4"]}."""
+    return all(conta_bate(getattr(estado, nome), conta)
+               for nome, contas in jeito.items()
+               for conta in (contas if isinstance(contas, list) else [contas]))
 
 
 def condicao_bate(estado, final):

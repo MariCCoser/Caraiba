@@ -19,7 +19,7 @@ import pygame
 import config
 from dados.aldeia import TAPIRI
 from dados.arte import EM_PE
-from dados.dias import DIAS
+from dados.dias import DIAS, escolha_do_arco
 from dados.febre import DOENTES
 from dados.noites import NOITES
 from dados.textos import DIA
@@ -623,6 +623,14 @@ class Dia(Cena):
                     self.estado.inocentes += 1
             self.estado.tapiri.append(nome)
             self.estado.tapiri_desde[nome] = self.estado.dia
+        if opcao.get("arco"):
+            # Guerra Justa: o jogador atira no Irmão Aleixo na trilha; quem ele levava volta.
+            nome = opcao["arco"]
+            self.estado.levados -= 1
+            self.estado.vivos += 1
+            self.estado.entregues_nomes.remove(nome)
+            self.estado.dentro.append(nome)
+            self.acompanhante = None
         if opcao.get("convida"):
             self.estado.convidados.append(opcao["convida"])
         if opcao.get("rio_acima"):
@@ -665,6 +673,9 @@ class Dia(Cena):
         self._sair_da_aldeia(nome)
         estado.entregues_nomes.append(nome)
         self._acompanhar(nome)
+        if passo.get("arco"):
+            # Dia 9: enquanto ele se afasta, o jogador pode pegar o arco (dados/dias.py, ARCO).
+            self.fila[0:0] = [escolha_do_arco(nome)]
         self._mostrar_fala("", passo["de_fora"] % nome)
 
     def _subir_o_rio(self, nome):
