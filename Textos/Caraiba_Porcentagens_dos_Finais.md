@@ -14,12 +14,13 @@ regras de hoje. Estes números são os que aparecem na tela da fonte de cada fin
 | 5 | Rio Acima | 1,0% | noite 10 |
 | 6 | Anhangá | 0,5% | noite 9 |
 | 7 | O Tapiri | 0% | — |
-| 8 | A Honra | 0% | — |
-| 9 | Ferida | 0% | — |
-| 10 | O Vazio | 72,5% | 176 no dia 10; o resto antes, quando a aldeia esvaziou |
+| 8 | A Honra | 1,8% | noite 10 |
+| 9 | Ferida | 5,8% | noite 10 |
+| 10 | O Vazio | 65,0% | 146 no dia 10; o resto antes, quando a aldeia esvaziou |
 
-Jogando ao acaso, quase ninguém chega ao Tapiri, à Honra ou ao Ferida: eles pedem escolhas
-pensadas até o dia 10. O resto deste documento é a análise anterior (oito finais), guardada
+Depois de facilitar A Honra (1 vivo ou mais, nenhuma morte pela sua mão, 1 amaldiçoado no
+tapiri) e o Ferida (1 vivo ou mais), os dois já aparecem jogando ao acaso. O Tapiri continua
+pedindo escolhas pensadas até o dia 10. O resto deste documento é a análise anterior (oito finais), guardada
 como histórico.
 
 

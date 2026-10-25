@@ -60,8 +60,8 @@ ninguém. Quem era amaldiçoado sai curado.
 | 5 | Rio Acima | `subiu_o_rio` = 1 | noite 10 |
 | 6 | Anhangá | `viu_anhanga` ≥ 3 e nenhuma morte pela sua mão | noite 9 |
 | 7 | O Tapiri | `tapiri_usos` ≥ 2, `tapiri_saos` = 0, `vivos` ≥ 2, nunca matar alguém são | dia 10 |
-| 8 | A Honra | `vivos` ≥ 2, nunca matar alguém são, nunca levar alguém são ao tapiri | dia 10 |
-| 9 | Ferida | matou alguém são **ou** levou alguém são ao tapiri, com 3 ou 4 vivos | dia 10 |
+| 8 | A Honra | `vivos` ≥ 1, nunca matar ninguém, levar ao tapiri 1 amaldiçoado e nunca alguém são | dia 10 |
+| 9 | Ferida | matou alguém são **ou** levou alguém são ao tapiri, com 1 vivo ou mais | dia 10 |
 | 10 | O Vazio | nenhum dos anteriores; ou a aldeia esvaziou | dia 10 (ou antes, se esvaziar) |
 
 ### 1. Guerra Justa: noite 9
@@ -106,19 +106,27 @@ ninguém. Quem era amaldiçoado sai curado.
 - O jeito mais simples: Mbaé na noite 2 (sai curado na noite 5) e Tamandaré-mirim na noite 5.
 - Pelo menos 2 vivos no dia 10. Matar um amaldiçoado ou entregar alguém não impede; matar
   alguém são impede.
+- Também não impedem: o Aleixo levar gente (sorteada, ou 1 entrega: com 2, é A Troca), ver o veado até 2 vezes
+  (na 3ª, é Anhangá) e deixar Krenan levar alguém na noite 8 (só não pode ir com ele na noite 10,
+  que é Rio Acima).
 
 ### 8. A Honra: dia 10
 
-- Pelo menos 2 vivos no dia 10, nunca matar alguém são e nunca levar alguém são ao tapiri.
+- Pelo menos 1 vivo no dia 10 (sem ninguém além do jogador e do pajé, é O Vazio).
+- Nunca matar ninguém (nem amaldiçoado).
+- Levar ao tapiri pelo menos 1 amaldiçoado, e nunca alguém são. O jeito mais simples: Mbaé na
+  noite 2. Negar Tamandaré-mirim e Iandé (ou deixá-los entrar sem levar ao tapiri, correndo o
+  risco da febre).
+- Entregar 1 pessoa ao Aleixo, ver o veado até 2 vezes e deixar Krenan levar alguém não impedem.
 - As 5 histórias estão desligadas (`HONRA_PEDE_HISTORIAS` em `dados/finais.py`; a palavra-chave
   para religar é "voltar a honra").
-- O Tapiri vem antes na fila: quem cumpre os dois cai no Tapiri.
+- O Tapiri vem antes na fila: com 2 amaldiçoados no tapiri (e 2 vivos ou mais), cai no Tapiri.
 
 ### 9. Ferida: dia 10
 
-- A aldeia sobreviveu com 3 ou 4 vivos, mas o jogador matou alguém são ou levou alguém são ao
-  tapiri. A cena diz o nome dessa pessoa.
-- Quem matou 3 ou mais cai antes em A Loucura. Com 5 vivos, ou com 2 ou menos, é O Vazio.
+- A aldeia sobreviveu (pelo menos 1 vivo), mas o jogador matou alguém são ou levou alguém são
+  ao tapiri. A cena diz o nome dessa pessoa.
+- Quem matou 3 ou mais cai antes em A Loucura. Sem nenhum vivo, é O Vazio.
 
 ### 10. O Vazio
 
@@ -140,6 +148,5 @@ ninguém. Quem era amaldiçoado sai curado.
 ## 5. O que o grupo ainda precisa decidir
 
 - [ ] Os Caeté são o povo de dois finais (A Água do Batismo e Guerra Justa). Trocar um deles?
-- [ ] Ferida pede 3 ou 4 vivos. Com 5 vivos e um erro contra alguém são, o jogo cai em O Vazio.
 - [ ] Algum final deve usar as perguntas ao Aleixo sobre quem ele levou (`perguntou_levados`)?
 - [ ] Religar as 5 histórias na Honra ("voltar a honra")?

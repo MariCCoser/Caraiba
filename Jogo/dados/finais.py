@@ -43,7 +43,7 @@ DIA_DO_CALCULO = 10
 # conversar com todos os visitantes. Por enquanto está desligado; para voltar, troque para True.
 # (Com as histórias desligadas, O Tapiri vem antes da Honra na fila: senão ele nunca aconteceria.)
 HONRA_PEDE_HISTORIAS = False
-CONDICAO_HONRA = {"vivos": ">= 2", "mortos_saos_por_sua_mao": "== 0", "tapiri_saos": "== 0"}
+CONDICAO_HONRA = {"vivos": ">= 1", "mortos_por_sua_mao": "== 0", "tapiri_usos": ">= 1", "tapiri_saos": "== 0"}
 if HONRA_PEDE_HISTORIAS:
     CONDICAO_HONRA["memoria"] = ">= 5"
 
@@ -176,17 +176,19 @@ FINAIS = [
     },
     {
         "id": "honra",
-        "chance_acaso": 0, "chance_tentando": None,
+        "chance_acaso": 1.8, "chance_tentando": None,
         "nome": "A Honra",
         "povo": "Tupinambá",
-        # Pelo menos 2 vivos, nunca matar quem era são e nunca levar alguém são ao tapiri. Matar
-        # um amaldiçoado ou entregar alguém ao Aleixo não impede (com 2 entregas, A Troca vem
-        # antes). As 5 histórias (memoria >= 5) estão desligadas por enquanto: HONRA_PEDE_HISTORIAS.
+        # Pelo menos 1 vivo (sem ninguém além do jogador e do pajé, é O Vazio), nunca matar
+        # ninguém e levar ao tapiri pelo menos 1 amaldiçoado, nunca alguém são. Com 2 amaldiçoados
+        # no tapiri, O Tapiri vem antes. Entregar alguém ao Aleixo não impede (com 2 entregas,
+        # A Troca vem antes). As 5 histórias (memoria >= 5) estão desligadas por enquanto:
+        # HONRA_PEDE_HISTORIAS.
         "condicao": [CONDICAO_HONRA],
         "antecipado": False,
         "fundo": "honra_final",
-        "cena": "A febre vai embora devagar. Ninguém são morreu por sua mão, e os que "
-                "sobreviveram ainda se sentam com você em volta do fogo.",
+        "cena": "A febre vai embora devagar. Ninguém morreu por sua mão, e quem "
+                "sobreviveu ainda se senta com você em volta do fogo.",
         "fato": "Um manto tupinambá de penas vermelhas, levado para a Europa no século XVII, "
                 "voltou ao Museu Nacional, no Rio, em 2024. Os Tupinambá de Olivença (BA) lutam "
                 "hoje pela demarcação da terra.",
@@ -194,28 +196,28 @@ FINAIS = [
     },
     {
         "id": "ferida",
-        "chance_acaso": 0, "chance_tentando": None,
+        "chance_acaso": 5.8, "chance_tentando": None,
         "nome": "Ferida",
         "povo": "Potiguara",
-        # A aldeia sobreviveu com 3 ou 4 vivos, mas o jogador matou alguém são ou levou alguém são
-        # ao tapiri. Quem matou 3 ou mais vai para A Loucura antes. Fonte: o documento "Dois finais
+        # A aldeia sobreviveu (pelo menos 1 vivo), mas o jogador matou alguém são ou levou alguém
+        # são ao tapiri. Quem matou 3 ou mais vai para A Loucura antes. Fonte: o documento "Dois finais
         # novos: Ferida (Potiguara) e Guerra Justa (Caeté)". {vivos} e {nome} vêm do estado
         # (motor/finais.py): "cena" quando alguém são morreu; "cena_tapiri" quando quem era são
         # voltou do tapiri.
-        "condicao": [{"mortos_saos_por_sua_mao": ">= 1", "vivos": [">= 3", "<= 4"]},
-                     {"tapiri_saos": ">= 1", "vivos": [">= 3", "<= 4"]}],
+        "condicao": [{"mortos_saos_por_sua_mao": ">= 1", "vivos": ">= 1"},
+                     {"tapiri_saos": ">= 1", "vivos": ">= 1"}],
         "antecipado": False,
-        "cena": "Quando o cacique volta da mata, encontra a fogueira acesa e {vivos} pessoas em "
+        "cena": "Quando o cacique volta da mata, encontra a fogueira acesa e {vivos} em "
                 "volta dela. A aldeia ainda existe. Ninguém fala de {nome}. Mas, à noite, cada um "
                 "dorme virado para a entrada. Na mata, um parente aprende a desconfiar de outro "
                 "parente. A doença foi embora. Isso ficou.",
-        "cena_tapiri": "Quando o cacique volta da mata, encontra a fogueira acesa e {vivos} pessoas "
+        "cena_tapiri": "Quando o cacique volta da mata, encontra a fogueira acesa e {vivos} "
                        "em volta dela. A aldeia ainda existe. {nome} voltou do tapiri. Não senta "
                        "mais perto de você. À noite, cada um dorme virado para a entrada. Na mata, "
                        "um parente aprende a desconfiar de outro parente. A doença foi embora. "
                        "Isso ficou.",
         # Lendo de novo pelo menu, sem a partida.
-        "cena_sem_estado": {"vivos": "poucas", "nome": "quem se foi"},
+        "cena_sem_estado": {"vivos": "poucas pessoas", "nome": "quem se foi"},
         "fato": "Em 1645, os Potiguara lutaram dos dois lados da guerra entre portugueses e "
                 "holandeses. Os primos Felipe Camarão e Pedro Poti trocaram cartas em tupi: um pedia "
                 "ao outro que não matasse o próprio sangue. Poti recusou e morreu preso em 1649. Os "
@@ -226,7 +228,7 @@ FINAIS = [
     },
     {
         "id": "vazio",
-        "chance_acaso": 72.5, "chance_tentando": None,
+        "chance_acaso": 65.0, "chance_tentando": None,
         "nome": "O Vazio",
         "povo": "Goitacá",
         # Sempre bate (é o que sobra). Antes do dia 10, só acaba o jogo se a aldeia esvaziar.

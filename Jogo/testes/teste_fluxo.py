@@ -578,19 +578,23 @@ def testar_finais():
         ({"rio_acima": 4}, "vazio"),                                     # levar gente com Krenan não basta
         ({"viu_anhanga": 3, "memoria": 5, "vivos": 5}, "anhanga"),     # Anhangá antes da Honra
         ({"viu_anhanga": 3, "mortos_por_sua_mao": 1}, "vazio"),
-        ({"memoria": 5, "vivos": 2}, "honra"),
-        ({"memoria": 5, "vivos": 1}, "vazio"),
-        ({"memoria": 5, "vivos": 3, "entregues": 1}, "honra"),          # entregar não impede
-        ({"memoria": 5, "vivos": 3, "mortos_por_sua_mao": 1}, "honra"),  # matou um amaldiçoado
+        ({"tapiri_usos": 1, "vivos": 2}, "honra"),
+        ({"tapiri_usos": 1, "vivos": 1}, "honra"),                       # 1 vivo basta
+        ({"tapiri_usos": 1, "vivos": 0}, "vazio"),                       # só o jogador e o pajé
+        ({"vivos": 3}, "vazio"),                                         # a Honra pede o tapiri 1 vez
+        ({"tapiri_usos": 1, "vivos": 3, "entregues": 1}, "honra"),       # entregar não impede
+        ({"tapiri_usos": 1, "vivos": 3, "mortos_por_sua_mao": 1}, "vazio"),  # matar alguém impede
         ({"memoria": 5, "vivos": 3, "mortos_saos_por_sua_mao": 1, "mortos_por_sua_mao": 1}, "ferida"),
         ({"memoria": 5, "vivos": 3, "tapiri_saos": 1}, "ferida"),        # levou alguém são ao tapiri
-        ({"vivos": 5, "tapiri_saos": 1}, "vazio"),                       # Ferida: só com 3 ou 4 vivos
+        ({"vivos": 5, "tapiri_saos": 1}, "ferida"),                      # Ferida: 1 vivo ou mais
+        ({"vivos": 1, "tapiri_saos": 1}, "ferida"),
+        ({"vivos": 0, "tapiri_saos": 1}, "vazio"),
         ({"aleixo_morto": 1, "mortos_por_sua_mao": 1, "vivos": 4}, "guerra_justa"),
         ({"aleixo_morto": 1, "entregues": 2, "converteu": 1, "viu_anhanga": 3}, "guerra_justa"),  # vence todos
-        ({"vivos": 2, "mortos_saos_por_sua_mao": 1, "mortos_por_sua_mao": 1}, "vazio"),  # Ferida pede 3
+        ({"vivos": 2, "mortos_saos_por_sua_mao": 1, "mortos_por_sua_mao": 1}, "ferida"),
         ({"vivos": 4, "mortos_saos_por_sua_mao": 3, "mortos_por_sua_mao": 3}, "loucura"),
         ({"memoria": 4, "vivos": 5, "tapiri_usos": 3}, "tapiri"),
-        ({"tapiri_usos": 3, "vivos": 1}, "vazio"),
+        ({"tapiri_usos": 3, "vivos": 1}, "honra"),                     # O Tapiri pede 2 vivos
         ({"tapiri_usos": 2, "vivos": 4}, "tapiri"),                    # 2 amaldiçoados bastam
         ({"tapiri_usos": 3, "tapiri_saos": 1, "vivos": 4}, "ferida"),   # levou alguém são: fecha O Tapiri
         ({"tapiri_usos": 2, "vivos": 4, "entregues": 1}, "tapiri"),     # entregar 1 não impede
@@ -628,7 +632,7 @@ def testar_finais():
         ({"dia": 9, "vivos": 0, "mortos": 1}, None),
         ({"dia": 2, "vivos": 0}, None),                                 # ninguém entrou ainda
         ({"dia": 9, "vivos": 1, "mortos": 4}, None),
-        ({"dia": 5, "memoria": 5, "vivos": 5}, None),                   # A Honra só no dia 10
+        ({"dia": 5, "tapiri_usos": 1, "vivos": 5}, None),               # A Honra só no dia 10
         ({"dia": 7, "tapiri_usos": 3}, None),                           # O Tapiri só no dia 10
         ({"dia": 8, "viu_anhanga": 3}, None),                           # Anhangá fecha na noite 9
         ({"dia": 9, "viu_anhanga": 3}, "anhanga"),

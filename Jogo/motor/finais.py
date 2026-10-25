@@ -53,7 +53,8 @@ def numero(identificador):
     return ids.index(identificador) + 1, len(ids)
 
 
-NUMEROS = {1: "uma", 2: "duas", 3: "três", 4: "quatro", 5: "cinco"}
+NUMEROS = {1: "uma pessoa", 2: "duas pessoas", 3: "três pessoas", 4: "quatro pessoas",
+           5: "cinco pessoas"}
 
 
 def texto_da_cena(final, estado):
@@ -64,7 +65,7 @@ def texto_da_cena(final, estado):
         return final["cena"]
     if estado is None:
         return final["cena"].format(**final["cena_sem_estado"])
-    vivos = NUMEROS.get(estado.vivos, str(estado.vivos))
+    vivos = NUMEROS.get(estado.vivos, "%d pessoas" % estado.vivos)
     if estado.saos_mortos_nomes:
         return final["cena"].format(vivos=vivos, nome=estado.saos_mortos_nomes[0])
     nome = estado.tapiri_saos_nomes[0] if estado.tapiri_saos_nomes else None
