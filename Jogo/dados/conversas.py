@@ -88,8 +88,7 @@ def conversa_iande():
     """As perguntas de sempre para Iandé (a conversa dela na oca Yorixiriamori, com Yara).
     Na entrada da aldeia, a conversa é mais curta (dados/dias.py, Dia 7)."""
     return [
-        {"pergunta": "Como estava a vila?",
-         "resposta": "Todo mundo bem. Tinha festa de santo."},
+        # "Como estava a vila?" ela já respondeu na entrada (dados/dias.py, Dia 7).
         {"pergunta": "Viu alguém amaldiçoado?",
          "resposta": "Vi uma casa fechada, com uma cruz na porta."},
         {"pergunta": "Que conta é essa no pulso?", "no_maximo": {"pulseira": 0},   # se não a deu

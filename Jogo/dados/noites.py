@@ -757,11 +757,6 @@ NOITES = {
                              "Pontos brancos, por dentro da bochecha.",
                              "Ainda não vi em ninguém. [Mas vai chegar].",
                          ]},
-                        {"pergunta": "O tapiri tem lugar?",
-                         "resposta": [
-                             "Um lugar só. Quem entra fica três noites, longe de todos.",
-                             "Lá o mal não passa para ninguém. E quem tem a maldição sai curado.",
-                         ]},
                         {"pergunta": "E quem sai do tapiri?",
                          "resposta": [
                              "Quem passa as três noites lá volta para a rede curado da maldição.",
@@ -1355,10 +1350,10 @@ NOITES = {
                          "resposta": "Você guarda a entrada. Se você aceitar, os outros aceitam."},
                     ]},
                     {"tipo": "fala", "quem": "Padre",
-                     "texto": "Aceite a água hoje, e amanhã cedo eu batizo todos os seus."},
+                     "texto": "Aceite a água hoje, e antes de o fogo apagar eu batizo todos os seus."},
                     {"tipo": "escolha", "texto": "O padre espera a sua resposta.", "opcoes": [
                         {"texto": "Aceitar o batismo e batizar os outros", "efeitos": {"converteu": 1}, "passos": [
-                            {"tipo": "fala", "quem": "Padre", "texto": "Ajoelhe. Amanhã cedo, eu batizo os outros."},
+                            {"tipo": "fala", "quem": "Padre", "texto": "Ajoelhe. Antes de a noite acabar, eu batizo os outros."},
                         ]},
                         {"texto": "Recusar", "passos": [
                             {"tipo": "fala", "quem": "Padre", "texto": "A porta da igreja fica aberta. Por pouco tempo."},
@@ -1610,3 +1605,56 @@ NOITES = {
         ],
     },
 }
+
+
+# --- As conversas da noite (dados/historias.py) ---
+# Em toda noite, quem é de fora tem uma fala nova: "Conversar" (a oca, o agora) antes do exame,
+# no lugar das perguntas que se repetiam, e "Sentar perto" (a fogueira, o passado) depois de
+# decidir onde ela dorme. A pergunta da história de cada um (a memória, para a Honra) continua
+# aparecendo até ser ouvida. Krenan só tem "Sentar perto", no fim da conversa dele.
+from dados.conversas import conversa_iande, conversa_potira  # noqa: E402
+from dados.historias import CONVERSAR, OCA, SENTAR_PERTO, VOLTAR  # noqa: E402
+
+HISTORIA_DE = {}
+for _conversa in (conversa_yara(), conversa_mbae(), conversa_potira(), conversa_tamandare(),
+                  conversa_iande(), conversa_araci()):
+    for _pergunta in _conversa:
+        if _pergunta.get("historia"):
+            HISTORIA_DE[_pergunta["historia"]] = _pergunta
+NOME_DA_HISTORIA = {"aldeia_yara": "Yara", "antes_mbae": "Mbaé", "antes_potira": "Potira",
+                    "prega_tamandare": "Tamandaré-mirim", "viagem_iande": "Iandé", "filho_araci": "Araci"}
+
+
+def conversa_da_noite(nome):
+    """"Conversar" e, se ainda não foi ouvida, a pergunta da história da pessoa."""
+    perguntas = []
+    if nome in OCA:
+        perguntas.append({"pergunta": CONVERSAR, "fala_da_noite": ("oca", nome)})
+    for historia, quem in NOME_DA_HISTORIA.items():
+        if quem == nome and historia in HISTORIA_DE:
+            perguntas.append(dict(HISTORIA_DE[historia], nao_ouviu=historia))
+    return perguntas
+
+
+def sentar_perto(nome):
+    return {"tipo": "perguntas", "botao": VOLTAR,
+            "perguntas": [{"pergunta": SENTAR_PERTO, "fala_da_noite": ("fogueira", nome)}]}
+
+
+for _noite in NOITES.values():
+    for _nome, _pessoa in _noite["pessoas"].items():
+        _passos = _pessoa["passos"]
+        if _nome == "Krenan":
+            # No fim da conversa, antes de ele sair da tela.
+            _passos.insert(len(_passos) - 1, sentar_perto(_nome))
+            continue
+        if not _pessoa.get("de_fora"):
+            continue
+        for _i, _passo in enumerate(_passos):
+            if _passo["tipo"] == "perguntas" and _passo.get("botao") == "Examinar o rosto":
+                _passos[_i] = dict(_passo, perguntas=conversa_da_noite(_nome))
+        for _i, _passo in enumerate(list(_passos)):
+            if _passo["tipo"] == "escolha" and _passo.get("quem") == _nome:
+                # Depois da decisão; se a pessoa morreu ou foi levada, não há com quem sentar.
+                _passos.insert(_i + 1, {"tipo": "se", "dentro": _nome, "passos": [sentar_perto(_nome)]})
+                break

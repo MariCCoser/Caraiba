@@ -24,6 +24,7 @@ class Estado:
         self.subiu_o_rio = 0           # 1 se, na noite 10, a aldeia inteira subiu o rio com Krenan
         self.memoria = 0               # histórias ouvidas
         self.recusas_aleixo = 0        # vezes que você recusou uma oferta
+        self.perguntou_levados = 0     # visitas em que perguntou ao Aleixo sobre quem ele levou
         self.pistas = 0                # caderno de Aleixo, colar, notícia (máximo 3)
         self.sanidade = 10             # não decide final; muda a tela (tremor, grão, tábua)
         self.tapiri_usos = 0           # amaldiçoados levados ao tapiri (final O Tapiri)
@@ -53,6 +54,9 @@ class Estado:
         self.curados = []
         # As histórias já ouvidas (dados/conversas.py): a memória sobe uma vez por história
         self.historias = []
+        # Quantas conversas da noite cada um já teve (dados/historias.py): a próxima fala é a seguinte
+        self.conversas_oca = {}
+        self.conversas_fogueira = {}
         # Quem o jogador chamou para a fogueira sem deixar entrar na aldeia (ex.: Krenan)
         self.convidados = []
         # Quem subiu o rio com Krenan (nomes)

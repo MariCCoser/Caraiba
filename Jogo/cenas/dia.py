@@ -23,7 +23,7 @@ from dados.dias import DIAS, escolha_do_arco
 from dados.febre import DOENTES
 from dados.noites import NOITES
 from dados.textos import DIA
-from motor import efeitos, febre, finais, fontes, imagens, progresso, ui
+from motor import efeitos, febre, finais, fontes, historias, imagens, progresso, ui
 from motor.pessoas import PessoaNoCenario, corpo_no_cenario
 from motor.cena import Cena, desenhar_cenario
 from motor.tabua import Tabua
@@ -251,7 +251,8 @@ class Dia(Cena):
         "com_febre" e "sem_febre" levam o nome de quem pegou a febre na oca e mostra
         (motor/febre.py, mostra_febre); "noites_na_oca_ao_menos": {"Mbaé": 3} e
         "noites_na_oca_menos_de": {"Mbaé": 3} contam as noites que a pessoa dormiu na oca;
-        "curado" e "nao_curado" levam o nome de quem saiu (ou não) curado do tapiri.
+        "curado" e "nao_curado" levam o nome de quem saiu (ou não) curado do tapiri;
+        "nao_ouviu": "aldeia_yara" só aparece se essa história ainda não foi ouvida.
         """
         estado = self.estado
         if "morto_ontem" in item and estado.mortos_quando.get(item["morto_ontem"]) != estado.dia - 1:
@@ -261,6 +262,8 @@ class Dia(Cena):
         if "amaldicoado" in item and not febre.amaldicoado(estado, item["amaldicoado"]):
             return False
         if "sao" in item and febre.amaldicoado(estado, item["sao"]):
+            return False
+        if "nao_ouviu" in item and item["nao_ouviu"] in estado.historias:
             return False
         if "curado" in item and item["curado"] not in estado.curados:
             return False
@@ -540,6 +543,11 @@ class Dia(Cena):
         if passo["tipo"] == "exame" and item.get("sinal"):
             self.sinais[passo["quem"]] = self.sinais.get(passo["quem"], 0) + 1
         resposta = item.get("resposta")
+        if "fala_da_noite" in item:
+            # "Conversar" (oca) ou "Sentar perto" (fogueira): a próxima fala da pessoa
+            # (dados/historias.py), uma diferente a cada noite.
+            onde, nome = item["fala_da_noite"]
+            resposta = historias.proxima(self.estado, onde, nome)
         if "acusa" in item:
             # O pajé acusa pelo nome: levar essa pessoa ao tapiri nesta noite é seguir o pajé.
             self.acusado, resposta = self._acusado_da_pergunta(item)

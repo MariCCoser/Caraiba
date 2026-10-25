@@ -110,7 +110,7 @@ FINAIS = [
         "antecipado": True,
         "a_partir_da_noite": 9,
         "fundo": "batismo_final",
-        "cena": "De manhã, o padre derrama água na sua testa e na de cada um da aldeia. Todos "
+        "cena": "Antes de a noite acabar, o padre derrama água na sua testa e na de cada um da aldeia. Todos "
                 "ganham nomes que não são os seus. Na vila, a mesma água cai na testa de um doente, "
                 "que morre logo depois.",
         "fato": "Em abril de 1563, na aldeia de Santiago, na Bahia, os jesuítas batizaram 84 "

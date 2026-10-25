@@ -91,44 +91,64 @@ DEUSES_FELIZES = {"tipo": "se", "amaldicoados_menos_de": DEUSES, "passos": [
 DEUSES_INFELIZES = {"tipo": "se", "amaldicoados_ao_menos": DEUSES, "passos": [
     {"tipo": "fala", "quem": "Pajé", "texto": "Os deuses estão infelizes. Há maldição demais entre as redes."},
 ]}
+# Em cada visita, o jogador escolhe UM de dois caminhos de perguntas (perguntas_aleixo):
+#   "vila":    sobre ele, a vila e o que vem; nada a ver com quem ele levou.
+#   "levados": sobre quem ele levou (perguntou_levados +1 no estado.py, para os finais usarem).
+# As perguntas não se repetem de uma visita para outra.
 PERGUNTAS_ALEIXO = {
-    3: [
-        {"pergunta": "O que você quer?",
-         "resposta": "Levar para a vila quem precisa de cuidado."},
-        {"pergunta": "Por que a cruz?",
-         "resposta": "Para eu achar o caminho de volta."},
-    ],
-    # Dia 6: só o caderno e o que mudou (Textos/Caraíba — Dez Dias, Dez Fogueiras.pdf).
-    6: [
-        {"pergunta": "O que tem nesse caderno?",
-         "resposta": "Os nomes dos que levei. Cada um com o seu número.",
-         "efeitos": {"pistas": 1}},
-        {"pergunta": "O que mudou?",
-         "resposta": [
-             "Na vila falam desta aldeia.",
-             "Dizem que aqui se esconde gente que devia estar [sob a lei].",
-         ]},
-    ],
-    # Dia 9: tudo o que ele ainda não disse, e o cordão (o da Iandé, que ele batizou).
-    9: [
-        {"pergunta": "Os que você levou voltam?",
-         "resposta": "[Estão bem na vila]. É longe para voltar."},
-        # Sobre quem ele já levou: no dia 9, sem repetir as perguntas de cada um (dia 6).
-        {"pergunta": "Os meus estão curados?", "levou_alguem": True,
-         "resposta": "Rezam todos os dias. [Deus vai curá-los]."},
-        {"pergunta": "Onde os meus estão?", "levou_alguem": True,
-         "resposta": "Na vila, cada um no seu lugar. [Lá cuidam deles]."},
-        {"pergunta": "Isso é ameaça?",
-         "resposta": "É aviso. Eu gosto de vocês. Por isso vim antes dos outros."},
-        {"pergunta": "Quem são os outros?",
-         "resposta": "Homens com ordem do governador. Não dependem de mim."},
-        {"pergunta": "Que cordão é esse no seu pescoço?",
-         "resposta": [
-             "Uma moça me deu, no domingo em que a batizei. Iandé, do seu povo.",
-             "Pediu que eu rezasse por ela. [Eu rezo].",
-         ],
-         "efeitos": {"pistas": 1}},
-    ],
+    3: {
+        "vila": [
+            {"pergunta": "O que você quer?",
+             "resposta": "Levar para a vila quem precisa de cuidado."},
+            {"pergunta": "Por que a cruz?",
+             "resposta": "Para eu achar o caminho de volta."},
+        ],
+        # Na 1ª visita, ele ainda não levou ninguém daqui: fala dos das outras aldeias.
+        "levados": [
+            {"pergunta": "Quem você já levou?",
+             "resposta": ["Gente das aldeias do rio.", "Na vila, [cada um ganhou um nome novo]."]},
+            {"pergunta": "Eles voltam para casa?",
+             "resposta": "A vila é a casa deles agora."},
+        ],
+    },
+    # Dia 6: o que mudou; ou o caderno e cada um que ele levou (perguntas_sobre_os_levados).
+    6: {
+        "vila": [
+            {"pergunta": "O que mudou?",
+             "resposta": [
+                 "Na vila falam desta aldeia.",
+                 "Dizem que aqui se esconde gente que devia estar [sob a lei].",
+             ]},
+        ],
+        "levados": [
+            {"pergunta": "O que tem nesse caderno?",
+             "resposta": "Os nomes dos que levei. Cada um com o seu número.",
+             "efeitos": {"pistas": 1}},
+        ],
+    },
+    # Dia 9: o aviso e os outros; ou se os que ele levou voltam (sem repetir as perguntas de
+    # cada um, do dia 6). A pulseira de Iandé ele mesmo comenta, se o jogador a aceitou.
+    9: {
+        "vila": [
+            {"pergunta": "Isso é ameaça?",
+             "resposta": "É aviso. Eu gosto de vocês. Por isso vim antes dos outros."},
+            {"pergunta": "Quem são os outros?",
+             "resposta": "Homens com ordem do governador. Não dependem de mim."},
+        ],
+        "levados": [
+            {"pergunta": "Os que você levou voltam?",
+             "resposta": "[Estão bem na vila]. É longe para voltar."},
+            {"pergunta": "Os meus estão curados?", "levou_alguem": True,
+             "resposta": "Rezam todos os dias. [Deus vai curá-los]."},
+            {"pergunta": "Onde os meus estão?", "levou_alguem": True,
+             "resposta": "Na vila, cada um no seu lugar. [Lá cuidam deles]."},
+        ],
+    },
+}
+CAMINHOS_ALEIXO = {
+    "texto": "O que perguntar ao Irmão Aleixo?",
+    "vila": "Perguntar sobre a vila",
+    "levados": "Perguntar sobre quem ele levou",
 }
 
 # Sobre quem ele já levou (entregue ou à força): se está curado da maldição e onde está.
@@ -169,6 +189,18 @@ FALA_ALEIXO_NEGADO = {
 FALA_ALEIXO_NEGADO_PRIMEIRA = {
     6: ["Sério, não? Pois levo do mesmo jeito.", "Eu escolho."],
 }
+
+
+def perguntas_aleixo(dia):
+    """Os dois caminhos de perguntas de uma visita do Aleixo: o jogador escolhe um."""
+    perguntas = PERGUNTAS_ALEIXO[dia]
+    levados = perguntas["levados"] + (perguntas_sobre_os_levados() if dia == 6 else [])
+    return {"tipo": "escolha", "texto": CAMINHOS_ALEIXO["texto"], "opcoes": [
+        {"texto": CAMINHOS_ALEIXO["vila"], "passos": [
+            {"tipo": "perguntas", "botao": "Seguir", "perguntas": perguntas["vila"]}]},
+        {"texto": CAMINHOS_ALEIXO["levados"], "efeitos": {"perguntou_levados": 1}, "passos": [
+            {"tipo": "perguntas", "botao": "Seguir", "perguntas": levados}]},
+    ]}
 
 
 def falas_aleixo_negado(dia):
@@ -444,7 +476,7 @@ DIAS = {
              "texto": "Ninguém chega pela trilha. Um homem de batina preta finca uma cruz ao lado da entrada."},
             {"tipo": "visitante", "visitante": "aleixo"},
             {"tipo": "fala", "quem": ALEIXO, "texto": "Sou o Irmão Aleixo, da vila. Vim buscar quem precisa de cuidado."},
-            {"tipo": "perguntas", "botao": "Seguir", "perguntas": PERGUNTAS_ALEIXO[3]},
+            perguntas_aleixo(3),
 
             # O pedido: entregar alguém ou negar (negando, ele leva alguém do mesmo jeito).
             oferta_aleixo(3),
@@ -629,8 +661,7 @@ DIAS = {
             ]},
             {"tipo": "visitante", "visitante": "aleixo"},
             {"tipo": "fala", "quem": ALEIXO, "texto": "Voltei, como disse que voltaria."},
-            {"tipo": "perguntas", "botao": "Seguir",
-             "perguntas": PERGUNTAS_ALEIXO[6] + perguntas_sobre_os_levados()},
+            perguntas_aleixo(6),
 
             # O pedido, como no dia 3: entregar alguém ou negar.
             oferta_aleixo(6),
@@ -812,8 +843,7 @@ DIAS = {
                 {"tipo": "fala", "quem": ALEIXO,
                  "texto": "Iandé usava uma igual no domingo em que a batizei. [Ela pediu que eu rezasse por ela]."},
             ]},
-            {"tipo": "perguntas", "botao": "Seguir",
-             "perguntas": PERGUNTAS_ALEIXO[9]},
+            perguntas_aleixo(9),
 
             # Com o padre lá dentro, o Aleixo não pede ninguém. Sem ele, o pedido de sempre:
             # entregar alguém ou negar (e ele leva um, sorteado).
@@ -881,7 +911,8 @@ DIAS = {
                             {"tipo": "fundo", "fundo": "oca3_dia", "filtro": "dia"},
                             {"tipo": "visitante", "visitante": "araci"},
                             {"tipo": "fala", "quem": "Araci", "texto": "A cama é macia. Faz tempo que eu não deito."},
-                            {"tipo": "perguntas", "botao": "Terminar a conversa", "perguntas": conversa_araci()},
+                            # Sem as duas que ela já respondeu na entrada.
+                            {"tipo": "perguntas", "botao": "Terminar a conversa", "perguntas": conversa_araci()[2:]},
                             {"tipo": "visitante", "visitante": None},
                         ]},
                      ]},

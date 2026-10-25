@@ -97,11 +97,11 @@ def testar_marcacao():
 def testar_estado_inicial():
     estado = Estado()
     esperado = {"dia": 1, "vivos": 0, "mortos": 0, "mortos_por_sua_mao": 0, "mortos_saos_por_sua_mao": 0, "entregues": 0,
-                "proximidade_vila": 0, "rio_acima": 0, "memoria": 0, "recusas_aleixo": 0, "levados": 0,
+                "proximidade_vila": 0, "rio_acima": 0, "memoria": 0, "recusas_aleixo": 0, "perguntou_levados": 0, "levados": 0,
                 "pistas": 0, "sanidade": 10, "tapiri_usos": 0, "tapiri_saos": 0, "viu_anhanga": 0, "seguiu_paje": 0, "converteu": 0,
                 "padre_entrou": 0, "aleixo_morto": 0,
                 "inocentes": 0, "machado": 0, "pulseira": 0, "mandioca": 0, "energia_hoje": 0, "krenan_volta": 0, "subiu_o_rio": 0, "rio_acima_nomes": [], "convidados": [], "dentro": [], "tapiri": [], "tapiri_desde": {}, "febre": [], "noites_na_oca": {}, "curados": [], "manha": [],
-                "historias": [], "entregues_nomes": [],
+                "historias": [], "conversas_oca": {}, "conversas_fogueira": {}, "entregues_nomes": [],
                 "mortos_nomes": [], "saos_mortos_nomes": [], "tapiri_saos_nomes": [], "mortos_quando": {}, "corpos": [], "tabua": [], "tabua_noites": [],
                 "final_calculado": None, "final": None}
     dados = estado.para_dicionario()
@@ -307,14 +307,22 @@ def testar_cartoes_introducao():
     print("ok ordem dos cartões da introdução (aviso ... regras)")
 
 
-def passar_falas(jogo, seguir_seta=True):
+def passar_falas(jogo, seguir_seta=True, sentar_perto=False):
     """No Dia: clica nas falas (completar e seguir) até aparecerem botões ou a cena acabar.
 
     Se o roteiro levar à aldeia de dia, segue a seta e continua (ou para lá, com seguir_seta=False).
+    Depois de decidir onde alguém dorme, vem "Sentar perto" (dados/historias.py): sem
+    sentar_perto=True, o teste volta direto para a fogueira.
     """
+    from dados.historias import SENTAR_PERTO, VOLTAR
     for _ in range(100):
         esperar_transicao(jogo)
         cena = jogo.cenas.atual
+        if (not sentar_perto and nome_cena(jogo) == "Dia" and cena.modo == "perguntas"
+                and [b.texto for b, _ in cena.botoes] in ([SENTAR_PERTO, VOLTAR], [VOLTAR])
+                and cena.passo_atual["perguntas"][0].get("fala_da_noite")):
+            clicar_opcao(jogo, VOLTAR)
+            continue
         if nome_cena(jogo) == "Aldeia" and cena.de_dia:
             if not seguir_seta:
                 return
@@ -743,14 +751,22 @@ def testar_noite1_com_yara(jogo):
     clicar_opcao(jogo, "Voltar para a fogueira")
     assert dia.modo == "fogueira" and dia.visitante is None
 
-    # Yara: a conversa de sempre, a mesma da oca. A história já ouvida não soma memória de novo.
+    # Yara: "Conversar" mostra a 1ª fala dela na oca (dados/historias.py); a história da aldeia,
+    # se ainda não foi ouvida de dia, também aparece.
+    from dados.historias import OCA
     clicar_pessoa(jogo, "Yara")
     assert dia.visitante == "yara"
     passar_falas(jogo)
-    assert textos_dos_botoes(jogo) == ["Conte da sua aldeia.", "Por que saiu de lá?",
-                                       "A maldição chegou lá?", "Examinar o rosto"]
-    clicar_opcao(jogo, "Conte da sua aldeia.")
+    assert textos_dos_botoes(jogo)[0] == "Conversar" and textos_dos_botoes(jogo)[-1] == "Examinar o rosto", (
+        textos_dos_botoes(jogo))
+    clicar_opcao(jogo, "Conversar")
+    dia.caixa.completar()
+    assert dia.caixa.texto == OCA["Yara"][0], dia.caixa.texto
     passar_falas(jogo)
+    assert jogo.estado.conversas_oca == {"Yara": 1}
+    if "Conte da sua aldeia." in textos_dos_botoes(jogo):
+        clicar_opcao(jogo, "Conte da sua aldeia.")
+        passar_falas(jogo)
     assert jogo.estado.memoria == 1 and jogo.estado.historias == ["aldeia_yara"]
 
     # O exame: na noite 1 só os olhos (1 de energia).
@@ -786,7 +802,17 @@ def testar_noite1_com_yara(jogo):
     rodar(jogo, 5)
     capturar(jogo, "10e-noite1-decisao")
     clicar_opcao(jogo, "Deixar na oca")
-    passar_falas(jogo)
+    # Depois da decisão, "Sentar perto": a 1ª fala dela na fogueira (o passado).
+    from dados.historias import FOGUEIRA
+    passar_falas(jogo, sentar_perto=True)
+    assert textos_dos_botoes(jogo) == ["Sentar perto", "Voltar para a fogueira"], textos_dos_botoes(jogo)
+    clicar_opcao(jogo, "Sentar perto")
+    dia.caixa.completar()
+    from motor.historias import partes
+    assert dia.caixa.texto == partes(FOGUEIRA["Yara"][0])[0], dia.caixa.texto
+    passar_falas(jogo, sentar_perto=True)
+    assert jogo.estado.conversas_fogueira == {"Yara": 1}
+    clicar_opcao(jogo, "Voltar para a fogueira")
 
     # De volta à fogueira: Yara foi dormir, só sobra o pajé, e agora dá para ir dormir.
     assert dia.modo == "fogueira" and [p.nome for p in dia.na_fogueira] == ["Pajé"]
@@ -949,15 +975,14 @@ def testar_dia2_e_noite2(jogo):
     passar_falas(jogo)
     clicar_opcao(jogo, "Voltar para a fogueira")
 
-    # Mbaé: a conversa de sempre, a mesma da oca (e a história não soma memória de novo).
+    # Mbaé: a fala desta noite ("Conversar"); a história ele já contou de dia, na oca.
     # Na noite 2, 1 olhar só, e só os olhos ou a boca (a tosse).
     clicar_pessoa(jogo, "Mbaé")
     passar_falas(jogo)
-    assert textos_dos_botoes(jogo) == ["Conte de antes.", "Por que olham torto para você?",
-                                       "Examinar o rosto"], textos_dos_botoes(jogo)
-    clicar_opcao(jogo, "Conte de antes.")
+    assert textos_dos_botoes(jogo) == ["Conversar", "Examinar o rosto"], textos_dos_botoes(jogo)
+    clicar_opcao(jogo, "Conversar")
     passar_falas(jogo)
-    assert estado.memoria == 1
+    assert estado.conversas_oca["Mbaé"] == 1
     clicar_opcao(jogo, "Examinar o rosto")
     assert textos_dos_botoes(jogo) == ["Olhos", "Boca", "Terminar o exame"], textos_dos_botoes(jogo)
     clicar_opcao(jogo, "Boca")
@@ -1072,7 +1097,11 @@ def testar_dia3_e_noite3(jogo):
     # A entrada: ninguém chega; o Irmão Aleixo finca a cruz, responde e pede alguém.
     passar_falas(jogo)
     dia = jogo.cenas.atual
-    assert dia.modo == "perguntas" and dia.visitante == "aleixo", (dia.modo, dia.visitante)
+    assert dia.modo == "escolha" and dia.visitante == "aleixo", (dia.modo, dia.visitante)
+    # Dois caminhos: perguntar sobre a vila ou sobre quem ele levou.
+    assert textos_dos_botoes(jogo) == ["Perguntar sobre a vila", "Perguntar sobre quem ele levou"], (
+        textos_dos_botoes(jogo))
+    clicar_opcao(jogo, "Perguntar sobre a vila")
     rodar(jogo, 60)
     capturar(jogo, "26-dia3-aleixo")
     assert textos_dos_botoes(jogo) == ["O que você quer?", "Por que a cruz?", "Seguir"], textos_dos_botoes(jogo)
@@ -1238,7 +1267,7 @@ def testar_dia4_e_noite4(jogo):
     # Potira é sã: nada bate com a tábua. Na fogueira, a conversa dela é curta.
     clicar_pessoa(jogo, "Potira")
     passar_falas(jogo)
-    assert textos_dos_botoes(jogo) == ["Viu gente amaldiçoada?", "Examinar o rosto"], textos_dos_botoes(jogo)
+    assert textos_dos_botoes(jogo) == ["Conversar", "Examinar o rosto"], textos_dos_botoes(jogo)
     clicar_opcao(jogo, "Examinar o rosto")
     assert textos_dos_botoes(jogo) == ["Olhos", "Boca", "Terminar o exame"], textos_dos_botoes(jogo)
     # A boca: os lábios rachados, e ela se justifica (o frio, longe da fogueira).
@@ -1430,8 +1459,11 @@ def testar_dia6_e_noite6(jogo):
     assert dia.caixa.texto.startswith("Ele veio sozinho"), dia.caixa.texto
     passar_falas(jogo)
     assert dia.visitante == "aleixo"
-    # Ele levou Yara no dia 3: dá para perguntar se ela está curada e onde está (só dela).
-    assert textos_dos_botoes(jogo) == ["O que tem nesse caderno?", "O que mudou?",
+    # Ele levou Yara no dia 3: no caminho de quem ele levou, dá para perguntar se ela está
+    # curada e onde está (só dela).
+    clicar_opcao(jogo, "Perguntar sobre quem ele levou")
+    assert estado.perguntou_levados == 1
+    assert textos_dos_botoes(jogo) == ["O que tem nesse caderno?",
                                        "Yara está curada da maldição?", "Onde Yara está?",
                                        "Seguir"], textos_dos_botoes(jogo)
     clicar_opcao(jogo, "O que tem nesse caderno?")
@@ -1530,7 +1562,7 @@ def testar_dia7_e_noite7(jogo):
     clicar_pessoa(jogo, "Iandé")
     passar_falas(jogo)
     # Ela deu a pulseira: a pergunta sobre a conta no pulso não aparece.
-    assert textos_dos_botoes(jogo) == ["Como estava a vila?", "Viu alguém amaldiçoado?",
+    assert textos_dos_botoes(jogo) == ["Viu alguém amaldiçoado?",
                                        "Conte da viagem.", "Terminar a conversa"], textos_dos_botoes(jogo)
     clicar_opcao(jogo, "Viu alguém amaldiçoado?")
     dia = jogo.cenas.atual
@@ -1563,7 +1595,7 @@ def testar_dia7_e_noite7(jogo):
     clicar_opcao(jogo, "Voltar para a fogueira")
     clicar_pessoa(jogo, "Iandé")
     passar_falas(jogo)
-    assert textos_dos_botoes(jogo) == ["Viu alguém amaldiçoado?", "Examinar o rosto"], textos_dos_botoes(jogo)
+    assert textos_dos_botoes(jogo) == ["Conversar", "Examinar o rosto"], textos_dos_botoes(jogo)
     clicar_opcao(jogo, "Examinar o rosto")
     assert textos_dos_botoes(jogo) == ["Olhos", "Orelhas", "Boca", "Terminar o exame"], textos_dos_botoes(jogo)
     # Com a pulseira de Iandé, a noite 7 tem um olhar a mais.
@@ -1655,7 +1687,7 @@ def testar_dia8_e_noite8(jogo):
 
 
 def testar_dia9_e_noite9(jogo):
-    """Dia 9 (a última visita do Irmão Aleixo: tudo o que faltava, o cordão de Iandé, entregar ou
+    """Dia 9 (a última visita do Irmão Aleixo: o caminho da vila, entregar ou
     negar) e a Noite 9 (o 5º sinal: manchas avermelhadas no pescoço; Krenan não está)."""
     jogo.nova_partida()
     estado = jogo.estado
@@ -1685,13 +1717,11 @@ def testar_dia9_e_noite9(jogo):
     # De volta à aldeia; a seta leva de novo à entrada: Aleixo, pela última vez.
     passar_falas(jogo)
     assert dia.visitante == "aleixo" and estado.padre_entrou == 0
-    assert textos_dos_botoes(jogo) == ["Os que você levou voltam?", "Isso é ameaça?", "Quem são os outros?",
-                                       "Que cordão é esse no seu pescoço?", "Seguir"], textos_dos_botoes(jogo)
-    clicar_opcao(jogo, "Que cordão é esse no seu pescoço?")
-    dia.caixa.completar()
-    assert "Iandé" in dia.caixa.texto, dia.caixa.texto
+    clicar_opcao(jogo, "Perguntar sobre a vila")
+    assert textos_dos_botoes(jogo) == ["Isso é ameaça?", "Quem são os outros?", "Seguir"], textos_dos_botoes(jogo)
+    clicar_opcao(jogo, "Quem são os outros?")
     passar_falas(jogo)
-    assert estado.pistas == 1
+    assert estado.perguntou_levados == 0
     rodar(jogo, 60)
     capturar(jogo, "46-dia9-aleixo")
     clicar_opcao(jogo, "Seguir")
@@ -1711,7 +1741,7 @@ def testar_dia9_e_noite9(jogo):
 
     # O sinal do pajé: o 5º risco da tábua.
     assert estado.tabua[-1] == "Manchas avermelhadas no pescoço." and estado.tabua_noites[-1] == 9
-    print("ok Dia 9: o padre negado, a última visita do Irmão Aleixo (o cordão) e o 5º sinal")
+    print("ok Dia 9: o padre negado, a última visita do Irmão Aleixo e o 5º sinal")
 
     # A fogueira: Krenan não está (volta só na noite 10). Iandé, que parecia perfeita, tem as
     # manchas no pescoço.
@@ -1755,6 +1785,7 @@ def testar_arco_e_guerra_justa(jogo):
     passar_falas(jogo)
     clicar_opcao(jogo, "Não deixar entrar")
     passar_falas(jogo)
+    clicar_opcao(jogo, "Perguntar sobre a vila")
     clicar_opcao(jogo, "Seguir")
     estado.semente = next(n for n in range(1000)
                           if random.Random("%s:aleixo:9" % n).choice(estado.dentro) == "Iandé")
@@ -1799,6 +1830,7 @@ def testar_padre_e_batismo(jogo):
     clicar_opcao(jogo, "Deixar entrar")
     passar_falas(jogo)
     assert estado.padre_entrou == 1 and dia.visitante == "aleixo"
+    clicar_opcao(jogo, "Perguntar sobre a vila")
     clicar_opcao(jogo, "Seguir")
     dia.caixa.completar()
     assert "não levo ninguém" in dia.caixa.texto, dia.caixa.texto
@@ -1903,8 +1935,8 @@ def testar_dia10_e_noite10(jogo):
     capturar(jogo, "49-dia10-araci-na-oca")
     clicar_pessoa(jogo, "Araci")
     passar_falas(jogo)
-    assert textos_dos_botoes(jogo) == ["De onde você vem?", "Desde quando as manchas?",
-                                       "Como ela vai se chamar?", "Onde está o pai da criança?",
+    # Sem as duas perguntas que ela já respondeu na entrada.
+    assert textos_dos_botoes(jogo) == ["Como ela vai se chamar?", "Onde está o pai da criança?",
                                        "Você sente dor?",
                                        "Terminar a conversa"], textos_dos_botoes(jogo)
     clicar_opcao(jogo, "Como ela vai se chamar?")
@@ -1914,7 +1946,7 @@ def testar_dia10_e_noite10(jogo):
     esperar_transicao(jogo)
     clicar_botao(jogo, jogo.cenas.atual.botao_sair)
     esperar_transicao(jogo)
-    print("ok Dia 10: Araci (duas perguntas na entrada, a conversa inteira na oca Wanadi)")
+    print("ok Dia 10: Araci (duas perguntas na entrada, o resto da conversa na oca Wanadi)")
 
     # A fogueira: o pajé e Araci, em cima do tronco de baixo, à esquerda. 2 olhares.
     passar_falas(jogo)
@@ -1938,9 +1970,8 @@ def testar_dia10_e_noite10(jogo):
     capturar(jogo, "50-noite10-fogueira")
     clicar_pessoa(jogo, "Araci")
     passar_falas(jogo)
-    # Na fogueira, sem as perguntas da criança (só na oca).
-    assert textos_dos_botoes(jogo) == ["De onde você vem?", "Desde quando as manchas?",
-                                       "Você sente dor?", "Examinar o rosto"], textos_dos_botoes(jogo)
+    # Na fogueira, a fala desta noite; a história (a criança) ela já contou na oca.
+    assert textos_dos_botoes(jogo) == ["Conversar", "Examinar o rosto"], textos_dos_botoes(jogo)
     clicar_opcao(jogo, "Examinar o rosto")
     assert textos_dos_botoes(jogo) == ["Olhos", "Orelhas", "Boca", "Pescoço",
                                        "Terminar o exame"], textos_dos_botoes(jogo)
