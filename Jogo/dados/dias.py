@@ -28,7 +28,7 @@
 #                             no lugar de ONDE_DORME (dados/aldeia.py).
 #   "noite"      começa a noite na fogueira: o roteiro dela fica em dados/noites.py
 #   "efeitos"    soma valores às variáveis do estado.py sem o jogador escolher nada:
-#                {"tipo": "efeitos", "efeitos": {"energia_hoje": 1}} (ex.: a mandioca de Potira)
+#                {"tipo": "efeitos", "efeitos": {"mandioca": 1}} (ex.: a mandioca de Potira)
 #   "se"         os "passos" de dentro só acontecem se a condição bate:
 #                "morto": "Yara" (o jogador matou Yara), "morto_ontem": "Yara" (matou Yara na
 #                noite passada), "dentro": "Yara" (Yara está na aldeia), "tapiri": "Yara"
@@ -486,10 +486,11 @@ DIAS = {
             {"tipo": "fundo", "fundo": "floresta", "filtro": "dia"},
             {"tipo": "visitante", "visitante": "potira"},
             {"tipo": "fala", "quem": "Potira", "texto": "Sou eu, Potira. Na roça, só achei uma mandioca."},
-            # A mandioca é do jogador, deixando Potira entrar ou não: +1 energia na noite de hoje.
+            # A mandioca é do jogador, deixando Potira entrar ou não: +1 energia em todas as noites,
+            # da 4 à 10 (dados/noites.py, "energia_extra"), como o machado de Yara.
             {"tipo": "fala", "quem": "Potira", "texto": "Tome. É sua. Você guarda a entrada, precisa comer."},
-            {"tipo": "fala", "quem": "", "texto": "Você come a mandioca. Hoje à noite, terá mais um olhar."},
-            {"tipo": "efeitos", "efeitos": {"energia_hoje": 1}},
+            {"tipo": "fala", "quem": "", "texto": "Você come a mandioca. Daqui em diante, terá mais um olhar em cada noite."},
+            {"tipo": "efeitos", "efeitos": {"mandioca": 1}},
             {"tipo": "perguntas", "perguntas": [
                 {"pergunta": "Onde você estava?",
                  "resposta": "Nas roças do outro lado do morro. [Não encontrei ninguém]."},

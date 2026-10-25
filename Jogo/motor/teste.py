@@ -60,6 +60,8 @@ def ir_para_noite(jogo, noite):
     # Noites dormidas na oca até aqui (o olho de Mbaé piora com elas).
     estado.noites_na_oca = {nome: noite - quando[nome] for nome in estado.dentro}
     estado.tabua, estado.tabua_noites = sinais_ate(noite)
+    if noite >= 4:
+        estado.mandioca = 1   # Potira dá a mandioca no dia 4, entrando ou não
     if noite == 8:
         estado.convidados = ["Krenan"]
     if noite == 9:

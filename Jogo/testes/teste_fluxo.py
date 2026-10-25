@@ -100,7 +100,7 @@ def testar_estado_inicial():
                 "proximidade_vila": 0, "rio_acima": 0, "memoria": 0, "recusas_aleixo": 0, "levados": 0,
                 "pistas": 0, "sanidade": 10, "tapiri_usos": 0, "tapiri_saos": 0, "viu_anhanga": 0, "seguiu_paje": 0, "converteu": 0,
                 "padre_entrou": 0, "aleixo_morto": 0,
-                "inocentes": 0, "machado": 0, "pulseira": 0, "energia_hoje": 0, "krenan_volta": 0, "subiu_o_rio": 0, "rio_acima_nomes": [], "convidados": [], "dentro": [], "tapiri": [], "tapiri_desde": {}, "febre": [], "noites_na_oca": {}, "curados": [], "manha": [],
+                "inocentes": 0, "machado": 0, "pulseira": 0, "mandioca": 0, "energia_hoje": 0, "krenan_volta": 0, "subiu_o_rio": 0, "rio_acima_nomes": [], "convidados": [], "dentro": [], "tapiri": [], "tapiri_desde": {}, "febre": [], "noites_na_oca": {}, "curados": [], "manha": [],
                 "historias": [], "entregues_nomes": [],
                 "mortos_nomes": [], "saos_mortos_nomes": [], "tapiri_saos_nomes": [], "mortos_quando": {}, "corpos": [], "tabua": [], "tabua_noites": [],
                 "final_calculado": None, "final": None}
@@ -1220,8 +1220,9 @@ def testar_dia4_e_noite4(jogo):
     print("ok Dia 4: Potira (curta na entrada, longa na oca) e o 3º sinal na tábua")
 
     # A fogueira: pajé, Mbaé e Potira. Os dois de fora são obrigatórios.
-    # A mandioca que Potira deu na entrada: +1 olhar só nesta noite.
+    # A mandioca que Potira deu na entrada: +1 olhar em todas as noites, da 4 à 10.
     assert dia.titulo == "Noite 4" and dia.modo == "fogueira" and dia.energia == 2, dia.energia
+    assert estado.mandioca == 1 and estado.energia_hoje == 0
     # Potira senta no chão, à esquerda do pajé, e o pajé chega para o lado.
     assert [p.nome for p in dia.na_fogueira] == ["Pajé", "Mbaé", "Potira"]
     from dados.noites import POSICAO_PAJE_COM_POTIRA
