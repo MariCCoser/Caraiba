@@ -89,11 +89,20 @@ def personagem(apelido, filtro=None):
 
 
 def detalhe(apelido, largura):
-    """Um detalhe do exame (dados/arte.py, DETALHES), em cores, com essa largura."""
+    """Um detalhe do exame (dados/arte.py, DETALHES), em cores, com essa largura.
+
+    A borda "comida" vem num arquivo à parte, com o mesmo nome e "-borda.png" no fim (só a
+    transparência, ferramentas/converter_arte.py): ela recorta a pintura do .jpg."""
     chave = ("detalhe", apelido, largura)
     if chave not in _cache:
         if apelido in arte.DETALHES:
-            imagem = carregar(arte.DETALHES[apelido], transparente=True)
+            caminho = arte.DETALHES[apelido]
+            imagem = carregar(caminho, transparente=True)
+            caminho_borda = caminho[:-len(".jpg")] + "-borda.png"
+            if os.path.exists(os.path.join(config.PASTA_ASSETS, caminho_borda)):
+                imagem = imagem.copy()
+                imagem.blit(carregar(caminho_borda, transparente=True), (0, 0),
+                            special_flags=pygame.BLEND_RGBA_MULT)
         else:
             print("Aviso: detalhe sem entrada em dados/arte.py:", apelido)
             imagem = provisorio(apelido, (largura, largura))

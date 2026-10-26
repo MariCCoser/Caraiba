@@ -7,10 +7,13 @@
 #
 # Como rodar (de dentro da pasta Jogo, com o ambiente ativado):
 #     python ferramentas/converter_arte.py
+#     python ferramentas/converter_arte.py detalhes     (só os detalhes do exame)
 #
 # Chegou arte nova? Acrescente uma linha na lista CENARIOS (ou PERSONAGENS) abaixo e rode de novo.
 
 import os
+import random
+import sys
 from PIL import Image, ImageChops, ImageDraw, ImageEnhance, ImageFilter
 
 # Pasta Jogo/ (este arquivo está em Jogo/ferramentas/)
@@ -352,7 +355,11 @@ def converter_sentado(origem, destino):
 
 
 # DETALHES DO EXAME (Arte/Doenças/): o olho e a boca de perto, que aparecem no exame da noite
-# em vez de uma descrição. Saem quadrados, em cores (a interface não passa pelo filtro da noite).
+# em vez de uma descrição. Saem em cores (a interface não passa pelo filtro da noite), com a
+# borda "comida" (rasgada) de cada arte. Cada detalhe vira dois arquivos: o .jpg com a pintura
+# (leve) e o -borda.png com a forma da borda (a transparência). O jogo junta os dois
+# (motor/imagens.py). A arte que vem sem borda rasgada, ou com uma borda quase reta (que entra
+# menos que BORDA_MINIMA), ganha uma parecida com a do olho vermelho da Yara (borda_rasgada).
 # Quem mostra cada um e quando: Textos/Caraiba_Sinais_dos_Personagens.md.
 TAMANHO_DETALHE = 420
 QUALIDADE_DETALHE = 88
@@ -425,33 +432,85 @@ def tirar_fundo_preto(imagem):
     return imagem
 
 
-def recorte_opaco(imagem):
-    """O maior quadrado no meio da pintura sem nenhum pixel transparente.
+PROFUNDIDADE_BORDA = 0.04   # o quanto a borda gerada "come" para dentro (fração do lado)
+BORDA_MINIMA = 0.08         # borda mais rasa que isto (fração do lado, em média) ganha a gerada
 
-    As artes novas vêm com a borda rasgada (e transparente) em volta: o quadrado corta a
-    borda, para todo detalhe sair cheio, como os olhos de antes.
-    """
-    alfa = imagem.getchannel("A").point(lambda v: 255 if v >= OPACO else 0)
-    esquerda, topo, direita, baixo = alfa.getbbox()
-    # Fecha o retângulo, um lado de cada vez, até nenhuma borda dele tocar o transparente.
-    while esquerda < direita and topo < baixo:
-        lados = {
-            "esquerda": alfa.crop((esquerda, topo, esquerda + 1, baixo)),
-            "direita": alfa.crop((direita - 1, topo, direita, baixo)),
-            "topo": alfa.crop((esquerda, topo, direita, topo + 1)),
-            "baixo": alfa.crop((esquerda, baixo - 1, direita, baixo)),
-        }
-        furados = [lado for lado, linha in lados.items() if linha.getextrema()[0] < 255]
-        if not furados:
-            break
-        esquerda += "esquerda" in furados
-        direita -= "direita" in furados
-        topo += "topo" in furados
-        baixo -= "baixo" in furados
-    lado = min(direita - esquerda, baixo - topo)
-    x = (esquerda + direita - lado) // 2
-    y = (topo + baixo - lado) // 2
-    return imagem.crop((x, y, x + lado, y + lado))
+
+def profundidade_da_borda(imagem):
+    """Quanto a parte transparente entra, em média, vindo de cada lado (fração do lado)."""
+    alfa = imagem.getchannel("A")
+    alfa = alfa.crop(alfa.getbbox())
+    largura, altura = alfa.size
+    pixels = alfa.load()
+    total = vezes = 0
+    for fixo, comprimento, ponto in [(altura, largura, lambda a, b: (b, a)),
+                                     (largura, altura, lambda a, b: (a, b))]:
+        for a in range(0, fixo, 6):
+            for caminho in (range(comprimento), range(comprimento - 1, -1, -1)):
+                entra = 0
+                for b in caminho:
+                    if pixels[ponto(a, b)] >= 128:
+                        break
+                    entra += 1
+                total += entra
+                vezes += 1
+    return total / vezes / min(largura, altura)
+
+
+def borda_rasgada(imagem, semente):
+    """Come a borda de uma arte que veio com o canto reto, parecida com as outras (cada arte
+    tem o seu desenho, sorteado pela semente: rodar de novo dá a mesma borda)."""
+    sorte = random.Random(semente)
+    largura, altura = imagem.size
+    fundo = round(min(largura, altura) * PROFUNDIDADE_BORDA)
+    passo = max(3, min(largura, altura) // 150)
+
+    def recuos(quantos):
+        """Quanto cada ponto do lado entra: ondulado, com umas mordidas mais fundas."""
+        valores = [sorte.uniform(0.1, 1.0) for _ in range(quantos)]
+        valores = [(valores[i - 1] + 2 * valores[i] + valores[(i + 1) % quantos]) / 4
+                   for i in range(quantos)]
+        # Umas pinceladas que entram mais fundo, como na borda do olho da Yara.
+        return [fundo * (v * sorte.uniform(1.6, 2.4) if sorte.random() < 0.08 else v)
+                for v in valores]
+
+    pontos = []
+    xs = list(range(0, largura, passo)) + [largura]
+    ys = list(range(0, altura, passo)) + [altura]
+    pontos += [(x, r) for x, r in zip(xs, recuos(len(xs)))]                       # em cima
+    pontos += [(largura - r, y) for y, r in zip(ys, recuos(len(ys)))]             # direita
+    pontos += [(x, altura - r) for x, r in zip(reversed(xs), recuos(len(xs)))]    # embaixo
+    pontos += [(r, y) for y, r in zip(reversed(ys), recuos(len(ys)))]             # esquerda
+    forma = Image.new("L", imagem.size, 0)
+    ImageDraw.Draw(forma).polygon(pontos, fill=255)
+    forma = forma.filter(ImageFilter.GaussianBlur(1))
+    imagem.putalpha(ImageChops.darker(imagem.getchannel("A"), forma))
+    return imagem
+
+
+def so_a_pintura(imagem):
+    """Tira os pedaços soltos fora da borda (os pontinhos do xadrez que sobram): fica só o
+    que está ligado ao meio da pintura."""
+    alfa = imagem.getchannel("A")
+    pintura = alfa.point(lambda v: 255 if v >= 128 else 0)
+    ImageDraw.floodfill(pintura, (pintura.width // 2, pintura.height // 2), 128)
+    ligado = pintura.point(lambda v: 255 if v == 128 else 0).filter(ImageFilter.MaxFilter(3))
+    imagem.putalpha(ImageChops.darker(alfa, ligado))
+    return imagem
+
+
+def caminho_borda(caminho_jpg):
+    """detalhes/olho-yara.jpg -> detalhes/olho-yara-borda.png (motor/imagens.py usa o mesmo nome)."""
+    return caminho_jpg[:-len(".jpg")] + "-borda.png"
+
+
+def quadrado_com_borda(imagem):
+    """Só a pintura (sem a sobra transparente em volta), no meio de um quadrado transparente."""
+    imagem = imagem.crop(imagem.getchannel("A").getbbox())
+    lado = max(imagem.size)
+    quadrado = Image.new("RGBA", (lado, lado), (0, 0, 0, 0))
+    quadrado.paste(imagem, ((lado - imagem.width) // 2, (lado - imagem.height) // 2))
+    return quadrado
 
 
 def converter_detalhe(origem, destino):
@@ -467,15 +526,30 @@ def converter_detalhe(origem, destino):
                                     area_cercado=AREA_MINIMA_BRANCO_CERCADO_XADREZ)
     elif origem in DETALHES_FUNDO_PRETO:
         imagem = tirar_fundo_preto(imagem)
-    imagem = recorte_opaco(imagem).convert("RGB")
+    imagem = so_a_pintura(imagem)
+    if profundidade_da_borda(imagem) < BORDA_MINIMA:
+        imagem = borda_rasgada(imagem, origem)   # veio com o canto reto, ou quase
+    imagem = quadrado_com_borda(imagem)
     imagem = imagem.resize((TAMANHO_DETALHE, TAMANHO_DETALHE), Image.LANCZOS)
-    # JPG: o detalhe é quadrado e cheio (sem transparência), e fica bem menor que em PNG.
-    imagem.save(caminho_destino, quality=QUALIDADE_DETALHE, optimize=True)
-    tamanho_kb = os.path.getsize(caminho_destino) // 1024
+    alfa = imagem.getchannel("A")
+    # A pintura em JPG (bem menor que PNG), com preto onde é transparente...
+    pintura = Image.new("RGB", imagem.size, (0, 0, 0))
+    pintura.paste(imagem.convert("RGB"), mask=alfa)
+    pintura.save(caminho_destino, quality=QUALIDADE_DETALHE, optimize=True)
+    # ...e a borda num PNG branco, só com a transparência (fica pequeno).
+    borda = Image.new("RGBA", imagem.size, (255, 255, 255, 0))
+    borda.putalpha(alfa)
+    borda.save(caminho_borda(caminho_destino), optimize=True)
+    tamanho_kb = (os.path.getsize(caminho_destino) + os.path.getsize(caminho_borda(caminho_destino))) // 1024
     print("  ok  %-22s -> %-36s %4d KB" % (origem.split("/")[-1], destino, tamanho_kb))
 
 
 def main():
+    if sys.argv[1:] == ["detalhes"]:   # só os detalhes do exame
+        print("Convertendo detalhes do exame")
+        for origem, destino in DETALHES:
+            converter_detalhe(origem, destino)
+        return
     print("Convertendo cenários de", PASTA_ARTE)
     for origem, destino in CENARIOS:
         converter_cenario(origem, destino)

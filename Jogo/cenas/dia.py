@@ -956,7 +956,6 @@ class Dia(Cena):
         if self.caixa and self.imagem_fala:
             # Em cores (a interface não passa pelo filtro da noite): o vermelho do olho aparece.
             tela.blit(imagens.detalhe(self.imagem_fala, LARGURA_DETALHE), self.rect_imagem)
-            pygame.draw.rect(tela, config.FUMACA, self.rect_imagem, 2, border_radius=6)
 
         for bloco, _ in self.botoes:
             bloco.desenhar(tela)
