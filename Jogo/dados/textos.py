@@ -41,7 +41,7 @@ OPCOES = {
     "tela_cheia": "Tela cheia (atalho: F11)",
     "ligada": "Ligada",
     "desligada": "Desligada",
-    "motivo_navegador": "No navegador, use o botão de tela cheia da página",
+    "tela_cheia_navegador": "Tela cheia (Esc para sair)",
     "som": "Som",
     "som_ligado": "Ligado",
     "som_desligado": "Desligado",

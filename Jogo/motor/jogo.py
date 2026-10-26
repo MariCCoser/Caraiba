@@ -103,9 +103,30 @@ class Jogo:
         else:
             self.janela = pygame.display.set_mode(self.tamanho_janela, pygame.RESIZABLE)
 
+    def em_tela_cheia(self):
+        """No navegador, pergunta à página (o jogador pode sair com Esc a qualquer hora)."""
+        if config.NO_NAVEGADOR:
+            try:
+                import platform  # no pygbag, "platform" dá acesso ao navegador
+                return bool(platform.window.document.fullscreenElement)
+            except Exception:
+                return False
+        return self.preferencias.tela_cheia
+
     def alternar_tela_cheia(self):
         if config.NO_NAVEGADOR:
-            return  # no navegador quem controla isso é o próprio navegador
+            # O navegador só aceita entrar em tela cheia logo depois de um clique (o botão das
+            # Opções). Se ele recusar, nada acontece: o jogo segue na página.
+            try:
+                import platform
+                documento = platform.window.document
+                if documento.fullscreenElement:
+                    documento.exitFullscreen()
+                else:
+                    documento.documentElement.requestFullscreen()
+            except Exception as erro:
+                print("Aviso: o navegador não deixou mudar a tela cheia -", erro)
+            return
         self.preferencias.tela_cheia = not self.preferencias.tela_cheia
         self.preferencias.salvar()
         self._abrir_janela()

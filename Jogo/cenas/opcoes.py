@@ -32,12 +32,6 @@ class Opcoes(Cena):
         self.botao_tutorial = botao(MENU["tutorial"], (800, 740), largura=300)
         self.botao_voltar = botao(OPCOES["voltar"], (800, 800))
 
-        if config.NO_NAVEGADOR:
-            # No navegador quem controla a tela cheia é a página; mostramos o porquê.
-            for botao in (self.botao_desligada, self.botao_ligada):
-                botao.habilitado = False
-            self.botao_ligada.motivo = OPCOES["motivo_navegador"]
-
         self.botoes = [self.botao_normal, self.botao_grande, self.botao_desligada,
                        self.botao_ligada, self.botao_som_desligado, self.botao_som_ligado,
                        self.botao_tutorial, self.botao_voltar]
@@ -64,10 +58,10 @@ class Opcoes(Cena):
             preferencias.tamanho_texto = "grande"
             preferencias.salvar()
         elif self.botao_ligada.clicado(evento):
-            if not preferencias.tela_cheia:
+            if not self.jogo.em_tela_cheia():
                 self.jogo.alternar_tela_cheia()
         elif self.botao_desligada.clicado(evento):
-            if preferencias.tela_cheia:
+            if self.jogo.em_tela_cheia():
                 self.jogo.alternar_tela_cheia()
         elif self.botao_som_ligado.clicado(evento) or self.botao_som_desligado.clicado(evento):
             preferencias.som = self.botao_som_ligado.clicado(evento)
@@ -81,8 +75,9 @@ class Opcoes(Cena):
         # O "●" e o contorno mostram a escolha atual.
         self.botao_normal.selecionado = preferencias.tamanho_texto == "normal"
         self.botao_grande.selecionado = preferencias.tamanho_texto == "grande"
-        self.botao_ligada.selecionado = preferencias.tela_cheia
-        self.botao_desligada.selecionado = not preferencias.tela_cheia
+        tela_cheia = self.jogo.em_tela_cheia()
+        self.botao_ligada.selecionado = tela_cheia
+        self.botao_desligada.selecionado = not tela_cheia
         self.botao_som_ligado.selecionado = preferencias.som
         self.botao_som_desligado.selecionado = not preferencias.som
         for botao in self.botoes:
@@ -97,7 +92,9 @@ class Opcoes(Cena):
         ui.texto_simples(tela, OPCOES["titulo"], (800, 90), config.TAMANHO_SUBTITULO + 8,
                          nome_fonte="serif_negrito")
         ui.texto_simples(tela, OPCOES["tamanho_texto"], (800, 155), TAMANHO, cor=config.BARRO)
-        ui.texto_simples(tela, OPCOES["tela_cheia"], (800, 270), TAMANHO, cor=config.BARRO)
+        # No navegador, o F11 é do próprio navegador: o atalho não aparece.
+        titulo = OPCOES["tela_cheia_navegador"] if config.NO_NAVEGADOR else OPCOES["tela_cheia"]
+        ui.texto_simples(tela, titulo, (800, 270), TAMANHO, cor=config.BARRO)
         ui.texto_simples(tela, OPCOES["som"], (800, 385), TAMANHO, cor=config.BARRO)
         for botao in self.botoes:
             botao.desenhar(tela)
