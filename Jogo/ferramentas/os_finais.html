@@ -64,7 +64,7 @@ a { color: #8b3a1f; text-decoration: none; }
 <tr><td>5</td><td>Rio Acima</td><td>Aimoré, hoje Krenak</td><td>foi com Krenan na noite 10</td><td>noite 10</td></tr>
 <tr><td>6</td><td>Anhangá</td><td>Tremembé</td><td>viu o veado 3 vezes, nenhuma morte pela sua mão</td><td>noite 9</td></tr>
 <tr><td>7</td><td>O Tapiri</td><td>Korubo</td><td>2 amaldiçoados no tapiri, nenhum são, 2 vivos ou mais, nunca matou alguém são</td><td>dia 10</td></tr>
-<tr><td>8</td><td>A Honra</td><td>Tupinambá</td><td>conversou com 5 pessoas e nunca matou alguém são; <b>ou</b> nunca matou ninguém e levou 1 amaldiçoado ao tapiri (nenhum são). Sempre com 1 vivo ou mais</td><td>dia 10</td></tr>
+<tr><td>8</td><td>A Honra</td><td>Tupinambá</td><td>conversou com os 5 de fora e nunca matou alguém são; <b>ou</b> nunca matou ninguém e levou 1 amaldiçoado ao tapiri (nenhum são). Sempre com 1 vivo ou mais; com 2 amaldiçoados no tapiri, é O Tapiri</td><td>dia 10</td></tr>
 <tr><td>9</td><td>Ferida</td><td>Potiguara</td><td>matou alguém são <b>ou</b> levou alguém são ao tapiri, com 1 vivo ou mais</td><td>dia 10</td></tr>
 <tr><td>10</td><td>O Vazio</td><td>Goitacá</td><td>nenhum dos anteriores, ou a aldeia esvaziou</td><td>dia 10 (ou antes, se esvaziar)</td></tr>
 </table>
@@ -74,7 +74,7 @@ a { color: #8b3a1f; text-decoration: none; }
 <table>
 <tr><th>O que acontece</th><th>Efeito nas variáveis</th></tr>
 <tr><td>Deixar alguém entrar</td><td><code>vivos</code> +1</td></tr>
-<tr><td>Conversar com alguém de dia, na oca, ou de noite, na fogueira (qualquer pergunta)</td><td>o nome entra em <code>conversou</code>, uma vez por pessoa. A conversa da entrada e a do pajé não contam</td></tr>
+<tr><td>Conversar com um dos cinco de fora, de dia na oca ou de noite na fogueira (qualquer pergunta)</td><td>o nome entra em <code>conversou</code>, uma vez por pessoa. A conversa da entrada não conta, nem a do pajé, do Krenan ou do padre</td></tr>
 <tr><td>Aceitar o machado de Yara (dia 1)</td><td><code>proximidade_vila</code> +1; +1 energia em toda noite</td></tr>
 <tr><td>Comer a mandioca de Potira (dia 4)</td><td>+1 energia em toda noite, da 4 à 10</td></tr>
 <tr><td>Aceitar a pulseira de Iandé (dia 7)</td><td>+1 energia em toda noite, da 7 à 10</td></tr>
@@ -91,8 +91,8 @@ a { color: #8b3a1f; text-decoration: none; }
 <tr><td>Ir com Krenan na noite 10</td><td><code>subiu_o_rio</code> = 1</td></tr>
 <tr><td>Ouvir a história de quem entrou</td><td><code>memoria</code> +1 (uma por pessoa; hoje nenhum final pede)</td></tr>
 </table>
-<p><b>Conhecidos.</b> A Honra usa <code>conhecidos</code>: com quantas pessoas o jogador conversou, mais quem foi levado (pelo Aleixo ou por Krenan) antes de dar tempo de conversar. Cada pessoa conta uma vez só. Todo mundo com quem dá para conversar conta: os cinco de fora, e também Krenan e o padre novo na fogueira.</p>
-<p><b>A marca.</b> Na aldeia, na oca e na fogueira, uma brasa pequena acima da cabeça mostra quem o jogador ainda não conversou. Ela some depois da primeira pergunta. O “Como se joga” explica a marca.</p>
+<p><b>Conhecidos.</b> A Honra usa <code>conhecidos</code>: com quantos dos cinco de fora (Yara, Mbaé, Potira, Tamandaré-mirim e Iandé) o jogador conversou, mais quem deles foi levado (pelo Aleixo ou por Krenan) antes de dar tempo de conversar. Cada pessoa conta uma vez só. Krenan, o padre novo e o pajé não contam.</p>
+<p><b>A marca.</b> Na aldeia, na oca e na fogueira, uma brasa pequena acima da cabeça mostra quem dos cinco o jogador ainda não conversou. Ela some depois da primeira pergunta. O “Como se joga” explica a marca.</p>
 <p><b>A febre.</b> Se um amaldiçoado dorme na oca, a febre passa para alguns de fora que dormem nas ocas. Quantos pegam é sorteado a cada partida (<code>Jogo/dados/febre.py</code>). Quem pega acorda doente no dia seguinte e morre no 2º dia. O “Continuar” repete a mesma sorte.</p>
 <p><b>O tapiri.</b> Tem 1 vaga. Quem entra fica 3 noites, longe de todos, e o mal não passa para ninguém. Quem era amaldiçoado sai curado.</p>
 
@@ -183,10 +183,10 @@ a { color: #8b3a1f; text-decoration: none; }
 <p class="povo">Povo: Tupinambá · 8º da fila · dia 10</p>
 <p><b>Como se chega:</b> há dois jeitos, e os dois pedem pelo menos 1 vivo no dia 10.</p>
 <ul>
-  <li><b>Conhecer quem chegou:</b> conversar com 5 pessoas (qualquer pergunta, de dia na oca ou de noite na fogueira) e nunca matar alguém são. Matar um amaldiçoado não impede. Quem foi levado pelo Aleixo ou por Krenan antes de o jogador conversar com ele conta como conversado, então um levado não estraga a Honra. A brasa acima da cabeça mostra quem falta.</li>
-  <li><b>O tapiri:</b> nunca matar ninguém (nem amaldiçoado) e levar ao tapiri pelo menos 1 amaldiçoado, nunca alguém são. O jeito mais simples: Mbaé na noite 2.</li>
+  <li><b>Conhecer quem chegou:</b> conversar com os cinco de fora, Yara, Mbaé, Potira, Tamandaré-mirim e Iandé (qualquer pergunta, de dia na oca ou de noite na fogueira), e nunca matar alguém são. Matar um amaldiçoado não impede. Quem foi levado pelo Aleixo ou por Krenan antes de o jogador conversar com ele conta como conversado, então um levado não estraga a Honra. A brasa acima da cabeça mostra quem falta.</li>
+  <li><b>O tapiri:</b> nunca matar ninguém (nem amaldiçoado) e levar ao tapiri 1 amaldiçoado, nunca alguém são. O jeito mais simples: Mbaé na noite 2.</li>
 </ul>
-<p>Entregar 1 pessoa, ver o veado até 2 vezes e deixar Krenan levar alguém não impedem. Com 2 amaldiçoados no tapiri (e 2 vivos ou mais), cai antes em O Tapiri.</p>
+<p>Nos dois jeitos, o tapiri só pode receber <b>um</b> amaldiçoado: com 2 (e 2 vivos ou mais), a partida cai antes em O Tapiri. Entregar 1 pessoa, ver o veado até 2 vezes e deixar Krenan levar alguém não impedem.</p>
 <p><b>As 5 histórias:</b> a Honra já pediu ouvir as 5 histórias (<code>memoria</code> ≥ 5). Isso está desligado (<code>HONRA_PEDE_HISTORIAS</code> em <code>dados/finais.py</code>); a palavra-chave para religar é “voltar a honra”.</p>
 <p><b>Cena</b> (rascunho, o grupo pode reescrever):</p>
 <blockquote>A febre vai embora devagar. Os nomes de quem chegou ficam guardados na aldeia, e quem sobreviveu ainda se senta com você em volta do fogo.</blockquote>
@@ -198,7 +198,7 @@ a { color: #8b3a1f; text-decoration: none; }
 <div class="final">
 <h3>9. Ferida</h3>
 <p class="povo">Povo: Potiguara · 9º da fila · dia 10</p>
-<p><b>Como se chega:</b> a aldeia sobreviveu (pelo menos 1 vivo), mas o jogador matou alguém são ou levou alguém são ao tapiri. A cena diz o nome dessa pessoa. Quem matou 3 ou mais cai antes em A Loucura; sem nenhum vivo, é O Vazio. Quem conversou com 5 pessoas e só levou alguém são ao tapiri (sem matar ninguém são) cai antes na Honra.</p>
+<p><b>Como se chega:</b> a aldeia sobreviveu (pelo menos 1 vivo), mas o jogador matou alguém são ou levou alguém são ao tapiri. A cena diz o nome dessa pessoa. Quem matou 3 ou mais cai antes em A Loucura; sem nenhum vivo, é O Vazio. Quem conversou com os 5 de fora e só levou alguém são ao tapiri (sem matar ninguém são) cai antes na Honra.</p>
 <p><b>Cena</b> (quando alguém são morreu):</p>
 <blockquote>Quando o cacique volta da mata, encontra a fogueira acesa e {vivos} em volta dela. A aldeia ainda existe. Ninguém fala de {nome}. Mas, à noite, cada um dorme virado para a entrada. Na mata, um parente aprende a desconfiar de outro parente. A doença foi embora. Isso ficou.</blockquote>
 <p>Se o erro foi o tapiri, a terceira frase vira: <i>“{nome} voltou do tapiri. Não senta mais perto de você.”</i> Assim o final nomeia o erro sem falar em “redes vazias”.</p>

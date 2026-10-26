@@ -10,19 +10,19 @@ import math
 import pygame
 
 import config
+from dados.finais import QUEM_CONTA_NA_HONRA
 from motor import fontes, imagens, ui
 
 # A marca de quem o jogador ainda não conversou (A Honra pede conversar com 5): uma brasa
 # pequena acima da cabeça, que pulsa devagar. Some quando o mouse está em cima (aparece o nome).
-# O pajé fala com o jogador toda noite: conversar com ele não conta, e ele não tem marca.
-NAO_CONTA_COMO_CONVERSA = ["Pajé"]
+# Só os cinco de fora contam (dados/finais.py): o pajé, Krenan e o padre não têm marca.
 MARCA_RAIO = 5
 MARCA_ACIMA_DA_CABECA = 22
 MARCA_PULSO_SEGUNDOS = 2.4
 
 
 def falta_conversar(estado, nome):
-    return nome not in NAO_CONTA_COMO_CONVERSA and nome not in estado.conversou
+    return nome in QUEM_CONTA_NA_HONRA and nome not in estado.conversou
 
 
 class PessoaNoCenario:

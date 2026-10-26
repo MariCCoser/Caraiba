@@ -47,9 +47,11 @@ CONDICAO_HONRA = {"vivos": ">= 1", "mortos_por_sua_mao": "== 0", "tapiri_usos": 
 if HONRA_PEDE_HISTORIAS:
     CONDICAO_HONRA["memoria"] = ">= 5"
 # O outro jeito de chegar à Honra: conhecer quem chegou. "conhecidos" (estado.py) conta com
-# quantos o jogador conversou (qualquer pergunta, de dia na oca ou de noite na fogueira; a
-# entrada e o pajé não contam), mais quem foi levado pelo Aleixo ou por Krenan antes disso.
-# Pode matar amaldiçoado; matar alguém são fecha a Honra.
+# quantos dos cinco de fora (QUEM_CONTA_NA_HONRA) o jogador conversou (qualquer pergunta, de dia
+# na oca ou de noite na fogueira; a entrada não conta), mais quem foi levado pelo Aleixo ou por
+# Krenan antes disso. Krenan, o padre e o pajé não contam. Pode matar amaldiçoado; matar alguém
+# são fecha a Honra. Levar 2 amaldiçoados ao tapiri leva a O Tapiri, que vem antes na fila.
+QUEM_CONTA_NA_HONRA = ["Yara", "Mbaé", "Potira", "Tamandaré-mirim", "Iandé"]
 CONVERSAS_DA_HONRA = 5
 CONDICAO_HONRA_CONVERSAS = {"conhecidos": ">= %d" % CONVERSAS_DA_HONRA, "mortos_saos_por_sua_mao": "== 0",
                             "vivos": ">= 1"}

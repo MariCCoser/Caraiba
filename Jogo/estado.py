@@ -5,6 +5,8 @@
 
 import random
 
+from dados.finais import QUEM_CONTA_NA_HONRA
+
 
 class Estado:
     def __init__(self):
@@ -92,8 +94,10 @@ class Estado:
     @property
     def conhecidos(self):
         """Quantas pessoas o jogador conheceu (A Honra): com quem conversou, mais quem foi levado
-        (pelo Irmão Aleixo ou por Krenan) antes de dar tempo de conversar."""
-        return len(set(self.conversou) | set(self.entregues_nomes) | set(self.rio_acima_nomes))
+        (pelo Irmão Aleixo ou por Krenan) antes de dar tempo de conversar. Só os cinco de fora
+        contam (dados/finais.py, QUEM_CONTA_NA_HONRA)."""
+        conhecidos = set(self.conversou) | set(self.entregues_nomes) | set(self.rio_acima_nomes)
+        return len(conhecidos & set(QUEM_CONTA_NA_HONRA))
 
     def para_dicionario(self):
         """Copia as variáveis num dicionário simples (para salvar a partida)."""

@@ -614,6 +614,7 @@ def testar_finais():
         ({"conversou": CINCO, "vivos": 2, "mortos_por_sua_mao": 1}, "honra"),    # matou um amaldiçoado
         ({"conversou": CINCO, "vivos": 2, "mortos_por_sua_mao": 1, "mortos_saos_por_sua_mao": 1}, "ferida"),
         ({"conversou": CINCO[:4], "vivos": 2}, "vazio"),                          # 4 não bastam
+        ({"conversou": CINCO[:4] + ["Krenan", "Padre"], "vivos": 2}, "vazio"),   # Krenan e o padre não contam
         ({"conversou": CINCO[:3], "entregues_nomes": ["Tamandaré-mirim"],
           "rio_acima_nomes": ["Iandé"], "vivos": 1}, "honra"),                    # levados contam
         ({"conversou": CINCO[:4], "entregues_nomes": ["Yara"], "vivos": 2}, "vazio"),  # sem contar 2 vezes
