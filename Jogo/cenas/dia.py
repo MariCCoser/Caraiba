@@ -22,7 +22,7 @@ from dados.arte import EM_PE
 from dados.dias import DIAS, escolha_do_arco
 from dados.febre import DOENTES
 from dados.noites import NOITES
-from dados.sons import CENARIO_DOS_PASSOS
+from dados.sons import AMBIENTE_DO_CENARIO, CENARIO_DOS_PASSOS
 from dados.textos import DIA
 from motor import efeitos, febre, finais, fontes, historias, imagens, progresso, sons, ui
 from motor.pessoas import PessoaNoCenario, corpo_no_cenario
@@ -467,8 +467,11 @@ class Dia(Cena):
 
     def som_ambiente(self):
         """De noite (o sinal do pajé e a fogueira), o fogo e o maracá; dentro de uma oca, a mata
-        mais baixa; no resto do dia, a mata."""
+        mais baixa; no resto do dia, a mata. A visão do Anhangá tem o som dela."""
         apelido, filtro = self.fundo
+        for comeco, nome in AMBIENTE_DO_CENARIO.items():
+            if apelido.startswith(comeco):
+                return nome   # a visão do Anhangá
         if self.modo == "fogueira" or filtro == "noite":
             return "fogueira"
         return "dia_na_oca" if apelido.startswith("oca") else "dia"

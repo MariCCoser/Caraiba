@@ -10,6 +10,7 @@ import pygame
 
 import config
 from dados.finais import TELA_FINAL
+from dados.sons import AMBIENTE_DO_FINAL
 from motor import efeitos, finais, progresso, ui
 from motor.cena import Cena, desenhar_cenario
 
@@ -92,7 +93,7 @@ class Final(Cena):
             self.jogo.ir_para("finais" if self.revendo else "menu")
 
     def som_ambiente(self):
-        return "final"
+        return AMBIENTE_DO_FINAL.get(self.final["id"], "final")
 
     def tratar_evento(self, evento):
         if self.botao.clicado(evento):

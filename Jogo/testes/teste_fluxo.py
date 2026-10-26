@@ -2106,6 +2106,8 @@ def testar_fluxo():
     for camadas in dados_sons.AMBIENTES.values():
         assert set(camadas) <= set(dados_sons.SONS), camadas
     assert set(dados_sons.EFEITOS) <= set(dados_sons.SONS)
+    extras = list(dados_sons.AMBIENTE_DO_FINAL.values()) + list(dados_sons.AMBIENTE_DO_CENARIO.values())
+    assert set(extras) <= set(dados_sons.AMBIENTES), extras
     for arquivo in dados_sons.SONS.values():
         assert os.path.exists(os.path.join(config.PASTA_ASSETS, arquivo)), arquivo
     assert jogo.cenas.atual.som_ambiente() in dados_sons.AMBIENTES

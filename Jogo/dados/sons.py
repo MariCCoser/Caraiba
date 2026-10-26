@@ -15,6 +15,7 @@ SONS = {
     "maraca": "sons/Maraca.ogg",
     "flauta": "sons/Flauta.ogg",
     "passos": "sons/Passos.ogg",
+    "anhanga": "sons/Anhanga.ogg",
 }
 
 AMBIENTES = {
@@ -30,9 +31,18 @@ AMBIENTES = {
     "noite_na_oca": {"floresta_noite": 0.3, "fogueira": 0.1},
     # De noite, na fogueira (o sinal do pajé e a conversa em volta do fogo): o maracá do pajé.
     "fogueira": {"fogueira": 0.6, "floresta_noite": 0.25, "maraca": 0.3},
+    # A visão do Anhangá: o pajé aponta a mata (noites 2, 5 e 9, "Que barulho é esse na mata?").
+    "anhanga": {"anhanga": 0.7, "floresta_noite": 0.2},
     # As telas do final.
     "final": {"flauta": 0.55, "fogueira": 0.25},
+    "final_anhanga": {"anhanga": 0.6, "flauta": 0.25},
 }
+
+# Finais com um ambiente próprio (o "id" de dados/finais.py); os outros tocam o "final".
+AMBIENTE_DO_FINAL = {"anhanga": "final_anhanga"}
+
+# Cenários com um ambiente próprio, no Dia (o apelido de dados/arte.py começando assim).
+AMBIENTE_DO_CENARIO = {"anhanga_": "anhanga"}
 
 # Sons curtos, tocados uma vez: o volume e em quantos milissegundos ele some (0 = toca inteiro).
 # "passos": alguém novo sobe a trilha até a entrada da aldeia (o passo "visitante" de
