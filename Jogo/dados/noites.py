@@ -456,12 +456,11 @@ ZONAS_IANDE_NOITE_9 = com_pescoco(ZONAS_IANDE_NOITE_9, {
 
 # --- Noite 10: Araci, a última porta ---
 # Pela primeira vez não falta informação: tudo o que o pajé contou está no rosto dela.
-# Na fogueira, o pajé e Araci (e Krenan, se voltou); ela senta em cima do tronco de baixo,
-# à esquerda.
+# Na fogueira, o pajé e Araci (e Krenan, se voltou); ela senta no chão, na frente, à direita,
+# virada para o fogo (o lugar de Yara, à esquerda, fica com Yara se ela também está lá).
 # O final já foi calculado de manhã (motor/finais.py): nenhuma das decisões é recompensada.
 # A linha escolhida aparece e, no fim da noite, vem a tela do final.
-POSICAO_ARACI, ESCALA_ARACI = (290, 700), 0.62
-POSICAO_YARA_NOITE_10 = (1420, 880)
+POSICAO_ARACI, ESCALA_ARACI = (1420, 880), 0.62
 # Como nas outras noites, só os olhos, a boca, atrás das orelhas e o pescoço.
 LIBERADAS_NOITE_10 = LIBERADAS_NOITE_9
 
@@ -1496,10 +1495,8 @@ NOITES = {
             },
 
             # Quem o jogador deixou entrar (e não morreu nem foi levado) também está no fogo.
-            # Araci senta no lugar de Yara: Yara passa para a frente, à direita, virada para o fogo.
             "Yara": {
-                "imagem": "yara_sentada", "posicao": POSICAO_YARA_NOITE_10, "escala": ESCALA_YARA,
-                "espelhar": True,
+                "imagem": "yara_sentada", "posicao": POSICAO_YARA, "escala": ESCALA_YARA,
                 "de_fora": True, "uma_vez": True,
                 "passos": [
                     {"tipo": "visitante", "visitante": "yara"},
@@ -1583,10 +1580,9 @@ NOITES = {
                 ],
             },
 
-            # Araci, em cima do tronco de baixo, à esquerda. Obrigatório: decidir onde dorme.
+            # Araci, no chão, na frente, à direita. Obrigatório: decidir onde dorme.
             "Araci": {
                 "imagem": "araci_sentada", "posicao": POSICAO_ARACI, "escala": ESCALA_ARACI,
-                "espelhar": True,
                 "de_fora": True, "uma_vez": True, "obrigatorio": True,
                 "passos": [
                     {"tipo": "visitante", "visitante": "araci"},

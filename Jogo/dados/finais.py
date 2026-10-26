@@ -1,7 +1,7 @@
 # Os finais do jogo, na ordem da fila. Edite à vontade: aqui não há lógica.
 #
-# Fonte: Textos/Caraiba_Os_Finais.pdf. As contas de cada final (o que o jogador precisa
-# fazer e em que noite, no mínimo, o final pode acontecer): Textos/Caraiba_Contas_dos_Finais.md.
+# Fonte: Textos/Caraíba — Os Finais.pdf (tudo sobre os finais: as contas de cada um, o que o jogador
+# precisa fazer e em que noite, no mínimo, o final pode acontecer, os povos e as fontes).
 #
 # Como o jogo escolhe o final:
 # - No fim de CADA noite, o jogo testa os finais que têm "antecipado": True, na ordem da
@@ -26,7 +26,7 @@
 # "fundo": a imagem atrás das três telas (dados/arte.py); sem ele, TELA_FINAL["fundo"].
 #
 # A chance de cada final (aparece na tela da fonte, com "Final 5/10": a posição na fila). Os
-# números vêm do simulador (Jogo/ferramentas/simular_finais.py; Textos/Caraiba_Porcentagens_dos_Finais.md):
+# números vêm do simulador (Jogo/ferramentas/simular_finais.py; Textos/Caraíba — Os Finais.pdf):
 #   "chance_acaso"     em quantas partidas (%) o final acontece, jogando ao acaso
 #   "chance_tentando"  em quantas partidas (%) dá certo, para quem tenta esse final
 #                      (None: não se mostra, como em O Vazio, que é o que sobra)
@@ -201,8 +201,8 @@ FINAIS = [
         "nome": "Ferida",
         "povo": "Potiguara",
         # A aldeia sobreviveu (pelo menos 1 vivo), mas o jogador matou alguém são ou levou alguém
-        # são ao tapiri. Quem matou 3 ou mais vai para A Loucura antes. Fonte: o documento "Dois finais
-        # novos: Ferida (Potiguara) e Guerra Justa (Caeté)". {vivos} e {nome} vêm do estado
+        # são ao tapiri. Quem matou 3 ou mais vai para A Loucura antes. Fonte: Textos/Caraíba — Os
+        # Finais.pdf. {vivos} e {nome} vêm do estado
         # (motor/finais.py): "cena" quando alguém são morreu; "cena_tapiri" quando quem era são
         # voltou do tapiri.
         "condicao": [{"mortos_saos_por_sua_mao": ">= 1", "vivos": ">= 1"},

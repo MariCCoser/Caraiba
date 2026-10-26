@@ -307,7 +307,7 @@ PADRE_NA_ENTRADA = [
 # afasta, o jogador escolhe: "Pegar o arco" (aleixo_morto = 1, mortos_por_sua_mao +1,
 # sanidade -2; a pessoa volta para a aldeia) ou "Deixar ir" (a pessoa conta como entregue).
 # O tiro não exige sinais nem pistas. A cena corta no disparo: a flecha acertando não aparece.
-# Fonte: o documento "Dois finais novos: Ferida (Potiguara) e Guerra Justa (Caeté)".
+# Fonte: Textos/Caraíba — Os Finais.pdf.
 ARCO = {
     "leva": "Ele leva %s pela trilha.",
     "escolha": "Ele se afasta com %s.",

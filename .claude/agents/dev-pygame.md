@@ -16,7 +16,7 @@ O código será mantido por dois estudantes que **não sabem Python**. Por isso:
 
 ## Fonte da verdade
 
-- `Textos/Caraíba — Dez Dias, Dez Fogueiras.pdf` (ler com `pdftotext -layout`): ciclo do dia, regras fixas, botões, variáveis, tabelas de cada dia e a fórmula original dos finais (hoje são 10: veja `Jogo/dados/finais.py` e `Textos/Caraiba_Contas_dos_Finais.md`). Implemente **exatamente** essas regras. Se encontrar ambiguidade ou contradição, não invente: anote e devolva a dúvida no seu relatório.
+- `Textos/Caraíba — Dez Dias, Dez Fogueiras.pdf` (ler com `pdftotext -layout`): ciclo do dia, regras fixas, botões, variáveis, tabelas de cada dia e a fórmula original dos finais (hoje são 10: veja `Jogo/dados/finais.py` e `Textos/Caraíba — Os Finais.pdf`). Implemente **exatamente** essas regras. Se encontrar ambiguidade ou contradição, não invente: anote e devolva a dúvida no seu relatório.
 - `Arte/PALETA E EXEMPLO.docx` (ler com `unzip -p arquivo word/document.xml | sed -e 's/<\/w:p>/\n/g' -e 's/<[^>]*>//g'`): paleta, as 7 zonas da tela, tamanhos dos arquivos.
 
 ## Diretrizes técnicas

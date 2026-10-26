@@ -74,6 +74,7 @@ class Jogo:
         cursor.usar()             # o cursor do mouse é uma tocha (motor/cursor.py)
 
         efeitos.preparar_texturas()
+        imagens.ler_de_antemao()
 
         self.cenas = GerenciadorCenas()
         self.ir_para("menu", com_fade=False)

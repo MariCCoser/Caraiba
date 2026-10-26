@@ -1,15 +1,42 @@
 # Carrega cada imagem do disco UMA vez só e guarda na memória (cache); se faltar arte, gera um provisório.
 
+import io
 import os
+import threading
 
 import pygame
 
 import config
 from dados import arte
-from motor import efeitos, fontes
+from motor import efeitos, fontes, sons
 
 # {caminho ou chave: Surface já convertida}
 _cache = {}
+# {caminho relativo: o conteúdo do arquivo}, lido de antemão (ler_de_antemao), até ser usado.
+_lidos = {}
+
+
+def ler_de_antemao():
+    """Lê do disco, numa thread à parte, todas as imagens e sons de assets (só no computador).
+
+    O pendrive é lento: ler um arquivo na primeira vez que ele aparece fazia o jogo engasgar
+    no meio da noite. Assim tudo já está na memória quando o jogador chega lá (o menu dá tempo);
+    se ainda não estiver, carregar() lê do disco, como antes."""
+    if config.NO_NAVEGADOR:
+        return   # no navegador não há threads (e os arquivos já estão na memória)
+
+    def ler():
+        for pasta, _, arquivos in os.walk(config.PASTA_ASSETS):
+            for arquivo in arquivos:
+                if arquivo.endswith((".jpg", ".png")):
+                    caminho = os.path.join(pasta, arquivo)
+                    relativo = os.path.relpath(caminho, config.PASTA_ASSETS).replace(os.sep, "/")
+                    if ("arquivo", relativo, False) not in _cache and ("arquivo", relativo, True) not in _cache:
+                        with open(caminho, "rb") as aberto:
+                            _lidos[relativo] = aberto.read()
+        sons.carregar_tudo()
+
+    threading.Thread(target=ler, daemon=True).start()
 
 
 def carregar(caminho_relativo, transparente=False):
@@ -23,8 +50,9 @@ def carregar(caminho_relativo, transparente=False):
         return _cache[chave]
 
     caminho = os.path.join(config.PASTA_ASSETS, caminho_relativo)
-    if os.path.exists(caminho):
-        imagem = pygame.image.load(caminho)
+    lido = _lidos.pop(caminho_relativo, None)
+    if lido or os.path.exists(caminho):
+        imagem = pygame.image.load(io.BytesIO(lido), caminho_relativo) if lido else pygame.image.load(caminho)
         # convert() deixa a imagem no formato da tela: desenha muito mais rápido.
         imagem = imagem.convert_alpha() if transparente else imagem.convert()
     else:

@@ -32,7 +32,7 @@ Cada final mostra um povo real que seguiu um caminho parecido com o do jogador e
 | Ferida | Potiguara |
 | O Vazio | Goitacá |
 
-As condições de cada um estão em [`Textos/Caraiba_Contas_dos_Finais.md`](Textos/Caraiba_Contas_dos_Finais.md).
+As condições de cada um estão em [`Textos/Caraíba — Os Finais.pdf`](Textos/Cara%C3%ADba%20%E2%80%94%20Os%20Finais.pdf).
 
 ## Como rodar
 

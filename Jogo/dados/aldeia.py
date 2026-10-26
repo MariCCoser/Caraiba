@@ -31,7 +31,7 @@ ALDEIA = {
 
 # O tapiri: o abrigo isolado, longe das ocas. Quem é levado para lá fica "noites" noites
 # (e a vaga abre de novo); a doença não passa de lá para ninguém.
-# (Textos/Caraiba_Contas_dos_Finais.md: 1 vaga; Potira ergue a 2ª no dia 5.)
+# (Textos/Caraíba — Os Finais.pdf: 1 vaga; Potira ergue a 2ª no dia 5.)
 TAPIRI = {
     "vagas": 1,
     "noites": 3,

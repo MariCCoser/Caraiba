@@ -48,6 +48,14 @@ def _som(nome):
     return _sons[nome]
 
 
+def carregar_tudo():
+    """Carrega todos os sons de uma vez (motor/imagens.py, ler_de_antemao, numa thread à parte):
+    carregar um som na hora em que ele começa a tocar fazia o jogo engasgar."""
+    if _audio_ok():
+        for nome in SONS:
+            _som(nome)
+
+
 def _alvos(nome, intensidade):
     """O volume final de cada som do ambiente (os de CRESCEM, vezes a intensidade)."""
     crescem = CRESCEM.get(nome, [])

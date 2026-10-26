@@ -564,7 +564,7 @@ def jogar_ate_matar_yara(jogo, mortes_antes=0):
 
 
 def testar_finais():
-    """As contas de cada final (Textos/Caraiba_Contas_dos_Finais.md), sem jogar."""
+    """As contas de cada final (Textos/Caraíba — Os Finais.pdf), sem jogar."""
     from motor import finais
 
     def estado_com(**valores):

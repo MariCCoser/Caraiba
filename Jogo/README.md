@@ -57,7 +57,7 @@ Todo o texto do jogo fica na pasta **`dados/`**. Abra com qualquer editor de tex
 | Os cartões da introdução (e o cenário de cada um) | `dados/textos.py`, parte `INTRODUCAO` |
 | O que acontece em cada dia: falas do pajé, visitante, perguntas, escolhas, sinal | `dados/dias.py` (as instruções estão no topo do arquivo) |
 | O que acontece em cada noite, na fogueira: conversa, zonas do exame, energia, decisão | `dados/noites.py` (as instruções estão no topo do arquivo) |
-| Os finais: a fila, as condições, os textos das três telas e a chance de cada um ("Final 5/10") | `dados/finais.py` (as contas: `Textos/Caraiba_Contas_dos_Finais.md`; as chances: `Textos/Caraiba_Porcentagens_dos_Finais.md`) |
+| Os finais: a fila, as condições, os textos das três telas e a chance de cada um ("Final 5/10") | `dados/finais.py` (as contas, as chances, os povos e as fontes: `Textos/Caraíba — Os Finais.pdf`) |
 | A tela "Finais" do menu (ler de novo os finais já vistos) | `dados/finais.py`, parte `LISTA_FINAIS` |
 | Quem está doente de verdade e quantos pegam a febre na oca (sorteio) | `dados/febre.py` |
 | Qual arquivo de imagem é cada cenário | `dados/arte.py` |
