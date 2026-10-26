@@ -40,7 +40,7 @@ a { color: #8b3a1f; text-decoration: none; }
 <body>
 
 <h1>Caraíba — Os Finais</h1>
-<p class="sub">Tudo sobre os dez finais em um documento só: como o jogo escolhe o final, o que o jogador precisa fazer para chegar a cada um, os textos das telas, o povo de cada final, as porcentagens e as fontes. Versão de 26/10/2026, com A Honra pelas conversas.</p>
+<p class="sub">Tudo sobre os dez finais em um documento só: como o jogo escolhe o final, o que o jogador precisa fazer para chegar a cada um, os textos das telas, o povo de cada final, as porcentagens e as fontes. Versão de 26/10/2026, com A Honra pelas conversas e as porcentagens de 2000 partidas.</p>
 
 <h2>1. Como os finais funcionam</h2>
 <p>O jogo dura 10 dias. Cada escolha do jogador (deixar entrar, recusar, conversar, levar ao tapiri, matar, entregar ao Irmão Aleixo, olhar a mata) soma pontos em contadores escondidos, as <b>variáveis</b>. O jogador não vê esse cálculo.</p>
@@ -240,23 +240,24 @@ a { color: #8b3a1f; text-decoration: none; }
 </table>
 
 <h2>6. As porcentagens</h2>
-<p>Os números não são contas feitas à mão: um robô jogou 400 partidas inteiras ao acaso no jogo de verdade (<code>Jogo/ferramentas/simular_finais.py</code>), sem janela, com os mesmos roteiros, a mesma febre sorteada e o mesmo cálculo dos finais (25/10/2026). São os números que aparecem na tela da fonte de cada final. Cada botão tem a mesma chance, e o robô faz mais ou menos metade das perguntas.</p>
-<div class="caixa"><b>Atenção:</b> estes números são de antes da Honra pelas conversas (26/10). Agora a Honra deve aparecer mais vezes, e O Vazio e o Ferida, menos. É preciso rodar o simulador de novo.</div>
+<p>Os números não são contas feitas à mão: um robô jogou 2000 partidas inteiras ao acaso no jogo de verdade (<code>Jogo/ferramentas/simular_finais.py</code>), sem janela, com os mesmos roteiros, a mesma febre sorteada e o mesmo cálculo dos finais (26/10/2026, com a Honra pelas conversas). São os números que aparecem na tela da fonte de cada final. Cada botão tem a mesma chance, e o robô faz mais ou menos metade das perguntas.</p>
 <table>
-<tr><th>Nº</th><th>Final</th><th>Ao acaso</th><th>Em que noite acabou</th></tr>
-<tr><td>1</td><td>Guerra Justa</td><td>1,8%</td><td>noite 9</td></tr>
-<tr><td>2</td><td>A Troca</td><td>13,8%</td><td>noite 6 (36 partidas), noite 9 (19)</td></tr>
-<tr><td>3</td><td>A Loucura</td><td>2,2%</td><td>noites 4 a 8</td></tr>
-<tr><td>4</td><td>A Água do Batismo</td><td>8,2%</td><td>noite 9</td></tr>
-<tr><td>5</td><td>Rio Acima</td><td>1,0%</td><td>noite 10</td></tr>
-<tr><td>6</td><td>Anhangá</td><td>0,5%</td><td>noite 9</td></tr>
-<tr><td>7</td><td>O Tapiri</td><td>0%</td><td>— (pede escolhas pensadas até o dia 10)</td></tr>
-<tr><td>8</td><td>A Honra</td><td>1,8%</td><td>noite 10</td></tr>
-<tr><td>9</td><td>Ferida</td><td>5,8%</td><td>noite 10</td></tr>
-<tr><td>10</td><td>O Vazio</td><td>65,0%</td><td>146 no dia 10; o resto antes, quando a aldeia esvaziou</td></tr>
+<tr><th>Nº</th><th>Final</th><th>Ao acaso</th><th>Partidas</th><th>Em que noite acabou</th></tr>
+<tr><td>1</td><td>Guerra Justa</td><td>2,7%</td><td>54</td><td>noite 9 (54)</td></tr>
+<tr><td>2</td><td>A Troca</td><td>12,9%</td><td>258</td><td>noite 6 (174), noite 9 (84)</td></tr>
+<tr><td>3</td><td>A Loucura</td><td>4%</td><td>79</td><td>noite 4 (5), noite 5 (43), noite 6 (6), noite 7 (10), noite 8 (10), noite 9 (5)</td></tr>
+<tr><td>4</td><td>A Água do Batismo</td><td>6,4%</td><td>128</td><td>noite 9 (128)</td></tr>
+<tr><td>5</td><td>Rio Acima</td><td>0,6%</td><td>12</td><td>noite 10 (12)</td></tr>
+<tr><td>6</td><td>Anhangá</td><td>menos de 0,1%</td><td>0</td><td>— (só para quem tenta: as escolhas certas, noite após noite)</td></tr>
+<tr><td>7</td><td>O Tapiri</td><td>menos de 0,1%</td><td>0</td><td>— (só para quem tenta: as escolhas certas, noite após noite)</td></tr>
+<tr><td>8</td><td>A Honra</td><td>1,1%</td><td>21</td><td>noite 10 (21)</td></tr>
+<tr><td>9</td><td>Ferida</td><td>4,8%</td><td>96</td><td>noite 10 (96)</td></tr>
+<tr><td>10</td><td>O Vazio</td><td>67,6%</td><td>1352</td><td>709 no dia 10; 643 antes, quando a aldeia esvaziou (noites 2 a 9)</td></tr>
 </table>
-<p>Se o grupo mudar o roteiro ou as condições, é só rodar de novo, de dentro da pasta <code>Jogo</code>, e trocar os números em <code>dados/finais.py</code> (<code>chance_acaso</code>). Como as partidas são sorteadas, os números variam cerca de 1 a 3 pontos de uma rodada para outra. O simulador é lento no pendrive: 400 partidas levam algumas horas.</p>
-<p><code>python -m ferramentas.simular_finais 400</code> (ao acaso)<br><code>python -m ferramentas.simular_finais 300 tapiri</code> (quem tenta O Tapiri)</p>
+<p><b>Leitura:</b> quem joga sem plano cai em O Vazio em cerca de 2 de cada 3 partidas: quase tudo que dá errado nos outros cai aqui. A soma passa um pouco de 100% por causa dos arredondamentos.</p>
+<p><b>Anhangá e O Tapiri</b> não aconteceram nenhuma vez ao acaso: pedem a mesma escolha certa em várias noites seguidas (o veado nas noites 2, 5 e 9; dois amaldiçoados no tapiri e ninguém são). Mas acontecem para quem tenta: o robô que segue o caminho do Anhangá chegou a ele em 23 de 40 partidas. Na tela, aparecem como “menos de 0,1%”.</p>
+<p>Se o grupo mudar o roteiro ou as condições, é só rodar de novo, de dentro da pasta <code>Jogo</code>, e trocar os números em <code>dados/finais.py</code> (<code>chance_acaso</code>). Como as partidas são sorteadas, os números variam um pouco de uma rodada para outra. 2000 partidas levam uns 8 minutos.</p>
+<p><code>python -m ferramentas.simular_finais 2000</code> (ao acaso)<br><code>python -m ferramentas.simular_finais 300 tapiri</code> (quem tenta O Tapiri; também <code>honra</code>, <code>anhanga</code>, <code>troca</code>…)</p>
 
 <h2>7. Resumo dos povos</h2>
 <table>
@@ -279,7 +280,7 @@ a { color: #8b3a1f; text-decoration: none; }
   <li>☐ Os Caeté são o povo de dois finais (A Água do Batismo e Guerra Justa). Trocar um deles?</li>
   <li>☐ Algum final deve usar as perguntas ao Aleixo sobre quem ele levou (<code>perguntou_levados</code>)?</li>
   <li>☐ Reescrever a cena da Honra (o texto atual é um rascunho).</li>
-  <li>☐ Rodar o simulador de novo: as porcentagens são de antes da Honra pelas conversas, e falta a chance de quem <i>tenta</i> cada final.</li>
+  <li>☐ Mostrar também a chance de quem <i>tenta</i> cada final (o simulador já tem as estratégias).</li>
 </ul>
 
 <h2>9. Fontes</h2>

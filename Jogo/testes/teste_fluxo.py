@@ -527,14 +527,14 @@ def testar_dia1(jogo):
     final.caixa.completar()
     rodar(jogo, 3)
     capturar(jogo, "17-final-loucura-fonte")
-    # Continuar, com a partida acabada, volta à tela do final.
+    # Com a partida acabada, o menu não tem mais "Continuar" (o final fica em "Finais").
     clicar_botao(jogo, final.botao)
     esperar_transicao(jogo)
     assert nome_cena(jogo) == "Menu"
-    clicar_botao(jogo, jogo.cenas.atual.botao_continuar)
-    esperar_transicao(jogo)
-    assert nome_cena(jogo) == "Final" and jogo.cenas.atual.final["id"] == "loucura"
-    print("ok fim antecipado: A Loucura na noite em que a 3ª pessoa morre (e Continuar)")
+    from motor import progresso
+    assert not progresso.existe() and not jogo.cenas.atual.botao_continuar.visivel
+    assert jogo.cenas.atual.botao_finais.visivel
+    print("ok fim antecipado: A Loucura na noite em que a 3ª pessoa morre (e o Continuar some)")
     jogo.ir_para("menu")
     esperar_transicao(jogo)
 

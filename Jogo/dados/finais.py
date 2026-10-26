@@ -31,8 +31,9 @@
 #   "chance_tentando"  em quantas partidas (%) dá certo, para quem tenta esse final
 #                      (None: não se mostra, como em O Vazio, que é o que sobra)
 # Mudou o roteiro ou as condições? Rode o simulador de novo e troque os números.
-# Ao acaso: 400 partidas em 25/10/2026. "Tentando" ainda sem números atuais (a simulação por
-# estratégia não terminou): enquanto for None, a tela mostra só a chance ao acaso.
+# Ao acaso: 2000 partidas em 26/10/2026. "Tentando" ainda sem números: enquanto for None, a tela
+# mostra só a chance ao acaso. 0 aparece como "menos de 0,1%" (cenas/final.py): o Anhangá e O
+# Tapiri não aconteceram em 2000 partidas ao acaso, mas acontecem para quem tenta.
 #
 # "vivos" conta só quem é de fora e está vivo na aldeia: a aldeia é o jogador, o pajé e quem
 # o jogador deixou entrar (no máximo 5 até o dia 10).
@@ -59,7 +60,7 @@ CONDICAO_HONRA_CONVERSAS = {"conhecidos": ">= %d" % CONVERSAS_DA_HONRA, "mortos_
 FINAIS = [
     {
         "id": "guerra_justa",
-        "chance_acaso": 1.8, "chance_tentando": None,
+        "chance_acaso": 2.7, "chance_tentando": None,
         "nome": "Guerra Justa",
         "povo": "Caeté",
         # No dia 9, o jogador atira no Irmão Aleixo com o arco (dados/dias.py, ARCO). É o primeiro
@@ -81,7 +82,7 @@ FINAIS = [
     },
     {
         "id": "troca",
-        "chance_acaso": 13.8, "chance_tentando": None,
+        "chance_acaso": 12.9, "chance_tentando": None,
         "nome": "A Troca",
         "povo": "Tupiniquim",
         "condicao": [{"entregues": ">= 2"}, {"proximidade_vila": ">= 3"}],
@@ -96,7 +97,7 @@ FINAIS = [
     },
     {
         "id": "loucura",
-        "chance_acaso": 2.2, "chance_tentando": None,
+        "chance_acaso": 4, "chance_tentando": None,
         "nome": "A Loucura",
         "povo": "Tupinambá (Santidade de Jaguaripe)",
         "condicao": [{"mortos_por_sua_mao": ">= 3"}],
@@ -111,7 +112,7 @@ FINAIS = [
     },
     {
         "id": "batismo",
-        "chance_acaso": 8.2, "chance_tentando": None,
+        "chance_acaso": 6.4, "chance_tentando": None,
         "nome": "A Água do Batismo",
         "povo": "Caeté",
         # No dia 9, o jogador deixa o padre novo entrar (dados/dias.py); na noite 9, na fogueira,
@@ -130,7 +131,7 @@ FINAIS = [
     },
     {
         "id": "rio_acima",
-        "chance_acaso": 1.0, "chance_tentando": None,
+        "chance_acaso": 0.6, "chance_tentando": None,
         "nome": "Rio Acima",
         "povo": "Aimoré, hoje Krenak",
         # Na noite 10, Krenan (se voltou) faz o mesmo pedido, e o jogador escolhe ir com ele.
@@ -146,7 +147,7 @@ FINAIS = [
     },
     {
         "id": "anhanga",
-        "chance_acaso": 0.5, "chance_tentando": None,
+        "chance_acaso": 0, "chance_tentando": None,
         "nome": "Anhangá",
         "povo": "Tremembé",
         # As três vezes em que o pajé aponta para a mata (noites 2, 5 e 9); no fim da noite 9,
@@ -186,7 +187,7 @@ FINAIS = [
     },
     {
         "id": "honra",
-        "chance_acaso": 1.8, "chance_tentando": None,
+        "chance_acaso": 1.1, "chance_tentando": None,
         "nome": "A Honra",
         "povo": "Tupinambá",
         # Dois jeitos, com pelo menos 1 vivo (sem ninguém além do jogador e do pajé, é O Vazio):
@@ -207,7 +208,7 @@ FINAIS = [
     },
     {
         "id": "ferida",
-        "chance_acaso": 5.8, "chance_tentando": None,
+        "chance_acaso": 4.8, "chance_tentando": None,
         "nome": "Ferida",
         "povo": "Potiguara",
         # A aldeia sobreviveu (pelo menos 1 vivo), mas o jogador matou alguém são ou levou alguém
@@ -240,7 +241,7 @@ FINAIS = [
     },
     {
         "id": "vazio",
-        "chance_acaso": 65.0, "chance_tentando": None,
+        "chance_acaso": 67.6, "chance_tentando": None,
         "nome": "O Vazio",
         "povo": "Goitacá",
         # Sempre bate (é o que sobra). Antes do dia 10, só acaba o jogo se a aldeia esvaziar.

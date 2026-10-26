@@ -32,6 +32,13 @@ os.makedirs(config.PASTA_TEMPORARIOS, exist_ok=True)   # no projeto (Caraiba/.tm
 config.PASTA_SAVES = tempfile.mkdtemp(prefix="caraiba-simulacao-", dir=config.PASTA_TEMPORARIOS)
 atexit.register(shutil.rmtree, config.PASTA_SAVES, True)
 
+# O jogo guarda a partida a cada clique; aqui não precisa. No pendrive, essas gravações deixavam
+# a simulação parada esperando o disco (16 vezes mais lenta).
+from motor import salvamento  # noqa: E402
+salvamento.salvar = lambda nome, dados: True
+salvamento.carregar = lambda nome: None
+salvamento.apagar = lambda nome: None
+
 from cenas.dia import Dia  # noqa: E402
 from dados.aldeia import TAPIRI  # noqa: E402
 from dados.dias import DIAS  # noqa: E402
@@ -86,9 +93,12 @@ ESTRATEGIAS = {
     "batismo": {"perguntar": ["Por que você veio?"],
                 "preferir": lambda dia: ["Deixar entrar", "Negar", "Não deixar", "Aceitar o batismo",
                                          "Deixar na oca"]},
+    # A pergunta do barulho fica no caminho "Perguntar sobre o sonho" do pajé. O padre novo (dia
+    # 9) não entra: com ele, a noite 9 acaba em A Água do Batismo.
     "anhanga": {"perguntar": ["Que barulho é esse na mata?"], "paje_primeiro": True,
-                "preferir": lambda dia: ["Deixar entrar", "Negar", "Não deixar", "Ficar na aldeia",
-                                         "Deixar na oca"]},
+                "preferir": lambda dia: (["Não deixar entrar"] if dia.visitante == "padre" else [])
+                + ["Perguntar sobre o sonho", "Deixar entrar", "Negar", "Não deixar", "Ficar na aldeia",
+                   "Deixar na oca"]},
 }
 
 

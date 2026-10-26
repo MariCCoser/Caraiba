@@ -28,10 +28,10 @@ ESPACO_CHANCE = 70   # da fonte até a linha "Final 5/8" (e, embaixo dela, a cha
 
 
 def porcentagem(valor):
-    """12.7 -> "12,7%"; 100 -> "100%"; 0 -> "menos de 1%" (não aconteceu na simulação, mas
+    """12.7 -> "12,7%"; 100 -> "100%"; 0 -> "menos de 0,1%" (não aconteceu na simulação, mas
     aconteceu com quem está vendo a tela)."""
     if valor == 0:
-        return "menos de 1%"
+        return "menos de 0,1%"
     texto = ("%.1f" % valor).rstrip("0").rstrip(".")
     return texto.replace(".", ",") + "%"
 
@@ -47,8 +47,10 @@ class Final(Cena):
         de_teste = getattr(jogo, "final_de_teste", False)
         jogo.final_de_teste = False
         if not self.revendo:
-            if not de_teste:   # a noite de teste (motor/teste.py) não troca a partida guardada
-                progresso.salvar("final", jogo.estado.para_dicionario())
+            # A partida acabou: não há mais o que continuar, e o "Continuar" some do menu. O final
+            # fica visto e pode ser lido de novo pelo botão "Finais" do menu.
+            if not de_teste:   # a noite de teste (motor/teste.py) não mexe na partida guardada
+                progresso.apagar()
             finais.marcar_visto(self.final["id"])
         # Cada tela: (título, texto).
         self.telas = [
