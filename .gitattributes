@@ -5,3 +5,6 @@
 *.jpg binary
 *.jpeg binary
 *.ttf binary
+*.apk binary
+*.ogg binary
+*.zip binary

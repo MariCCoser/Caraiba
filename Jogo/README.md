@@ -191,3 +191,7 @@ python -m pygbag --build --archive --title "Caraíba" caraiba
 O zip sai em `.tmp/web/caraiba/build/web.zip` (a cópia entregue fica em `Entrega/`, fora do
 git). No itch.io: projeto do tipo HTML, enviar o zip e marcar "This file will be played in the
 browser".
+
+**Para quem joga pelo GitHub.** Copie também `index.html`, `favicon.png` e `caraiba.apk` de
+`.tmp/web/caraiba/build/web/` para `Jogar/navegador/` e mande para o GitHub: o link
+<https://mariccoser.github.io/Caraiba/> se atualiza sozinho (`.github/workflows/jogar.yml`).
