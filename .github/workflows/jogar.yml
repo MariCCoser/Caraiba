@@ -2,7 +2,8 @@
 # para qualquer pessoa jogar no navegador. Roda sozinho quando essa pasta muda no main
 # (e também à mão, na aba Actions, em "Run workflow").
 #
-# Precisa ligar uma vez: Settings > Pages > Build and deployment > Source: "GitHub Actions".
+# Precisa ligar uma vez: Settings > Pages > Build and deployment > Source: "GitHub Actions"
+# (ligado em 26/10/2026).
 
 name: Publicar o jogo
 
