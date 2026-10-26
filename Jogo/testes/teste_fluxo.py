@@ -2131,10 +2131,16 @@ def testar_fluxo():
     capturar(jogo, "03-opcoes-texto-grande")
     clicar_botao(jogo, jogo.cenas.atual.botao_normal)
     assert jogo.preferencias.tamanho_texto == "normal"
+    from motor import sons as motor_sons
     clicar_botao(jogo, jogo.cenas.atual.botao_som_desligado)
     assert not jogo.preferencias.som
+    rodar(jogo, 3)
+    assert not motor_sons._tocando                      # desligar para tudo
     clicar_botao(jogo, jogo.cenas.atual.botao_som_ligado)
     assert jogo.preferencias.som
+    rodar(jogo, 3)
+    if pygame.mixer.get_init():
+        assert motor_sons._tocando, "ligar de novo precisa voltar o ambiente"
     tecla(jogo, pygame.K_ESCAPE)
     esperar_transicao(jogo)
     assert nome_cena(jogo) == "Menu"

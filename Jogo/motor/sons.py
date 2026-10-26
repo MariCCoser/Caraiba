@@ -44,16 +44,15 @@ def _som(nome):
     return _sons[nome]
 
 
-def _volume_geral():
-    return 1.0 if preferencias.atual.som else 0.0
-
-
 def ambiente(nome):
-    """Troca o ambiente (um nome de AMBIENTES, ou None para silêncio)."""
+    """Troca o ambiente (um nome de AMBIENTES, ou None para silêncio). Com o som desligado,
+    só guarda o nome: ele começa a tocar quando o som for ligado (atualizar_volume)."""
     global _ambiente
     if nome == _ambiente or not _audio_ok():
         return
     _ambiente = nome
+    if not preferencias.atual.som:
+        return
     camadas = AMBIENTES.get(nome, {})
     for som, canal in list(_tocando.items()):
         if som not in camadas:
@@ -61,14 +60,14 @@ def ambiente(nome):
             del _tocando[som]
     for som, volume in camadas.items():
         if som in _tocando:
-            _tocando[som].set_volume(volume * _volume_geral())
+            _tocando[som].set_volume(volume)
             continue
         arquivo = _som(som)
         if arquivo is None:
             continue
         canal = arquivo.play(loops=-1, fade_ms=TROCA_MS)
         if canal is not None:
-            canal.set_volume(volume * _volume_geral())
+            canal.set_volume(volume)
             _tocando[som] = canal
 
 
@@ -88,17 +87,15 @@ def efeito(nome):
 
 
 def atualizar_volume():
-    """Depois de ligar ou desligar o som nas Opções."""
+    """Depois de ligar ou desligar o som nas Opções. Desligar para tudo; ligar começa de novo
+    o ambiente do lugar onde o jogador está."""
+    global _ambiente
     if not _audio_ok():
         return
-    camadas = AMBIENTES.get(_ambiente, {})
-    for som, canal in _tocando.items():
-        canal.set_volume(camadas.get(som, 0) * _volume_geral())
-    if not preferencias.atual.som:
-        for canal_numero in range(pygame.mixer.get_num_channels()):
-            canal = pygame.mixer.Channel(canal_numero)
-            if canal not in _tocando.values():
-                canal.stop()   # um efeito que estava tocando
+    pygame.mixer.stop()
+    _tocando.clear()
+    nome, _ambiente = _ambiente, None
+    ambiente(nome)
 
 
 def parar():
