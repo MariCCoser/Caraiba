@@ -57,6 +57,7 @@ FINAIS = [
         # da fila e vence todos os outros: acaba o jogo no fim da noite 9.
         "condicao": [{"aleixo_morto": ">= 1"}],
         "antecipado": True,
+        "fundo": "guerra_justa_final",
         "a_partir_da_noite": 9,
         "cena": "No dia 10, a trilha amanhece cheia de homens do governador. Trazem a flecha. "
                 "Ninguém pergunta quem tem febre. Ninguém pergunta quem atirou. O morador que você "
@@ -207,6 +208,7 @@ FINAIS = [
         "condicao": [{"mortos_saos_por_sua_mao": ">= 1", "vivos": ">= 1"},
                      {"tapiri_saos": ">= 1", "vivos": ">= 1"}],
         "antecipado": False,
+        "fundo": "ferida_final",
         "cena": "Quando o cacique volta da mata, encontra a fogueira acesa e {vivos} em "
                 "volta dela. A aldeia ainda existe. Ninguém fala de {nome}. Mas, à noite, cada um "
                 "dorme virado para a entrada. Na mata, um parente aprende a desconfiar de outro "

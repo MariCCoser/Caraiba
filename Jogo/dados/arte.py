@@ -29,6 +29,8 @@ CENARIOS = {
     "honra_final": "cenarios/final-honra.jpg",
     "vazio_final": "cenarios/final-vazio.jpg",
     "tapiri_final": "cenarios/final-tapiri.jpg",
+    "guerra_justa_final": "cenarios/final-guerra-justa.jpg",
+    "ferida_final": "cenarios/final-ferida.jpg",
 }
 
 # Personagens gerados por ferramentas/converter_arte.py: PNG com fundo transparente,

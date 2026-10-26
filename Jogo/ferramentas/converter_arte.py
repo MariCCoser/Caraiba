@@ -56,6 +56,8 @@ CENARIOS = [
     ("Ar_livre/Finais/aHonra.png", "cenarios/final-honra.jpg"),
     ("Ar_livre/Finais/OVazio.png", "cenarios/final-vazio.jpg"),
     ("Ar_livre/Finais/OTapiri.png", "cenarios/final-tapiri.jpg"),
+    ("Ar_livre/Finais/GuerraJusta.png", "cenarios/final-guerra-justa.jpg"),
+    ("Ar_livre/Finais/Ferida.png", "cenarios/final-ferida.jpg"),
 ]
 
 # Cenários que saem mais claros que o original (1 = igual; 1.3 = 30% mais claro).
