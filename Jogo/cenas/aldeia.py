@@ -78,6 +78,9 @@ class Aldeia(Cena):
         self.jogo.oca_atual = nome
         self.jogo.ir_para("oca")
 
+    def som_ambiente(self):
+        return "dia" if self.de_dia else "noite"
+
     def tratar_evento(self, evento):
         if self.tabua.tratar_evento(evento):
             return

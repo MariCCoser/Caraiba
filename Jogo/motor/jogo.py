@@ -4,7 +4,7 @@ import pygame
 
 import config
 from estado import Estado
-from motor import cursor, efeitos, febre, finais, fontes, imagens, preferencias, progresso, ui
+from motor import cursor, efeitos, febre, finais, fontes, imagens, preferencias, progresso, sons, ui
 from motor.cena import GerenciadorCenas
 
 # Todas as cenas do jogo, pelo nome. Para criar uma cena nova:
@@ -209,6 +209,7 @@ class Jogo:
 
         ui.mouse_sobre_botao = False
         self.cenas.atualizar(dt)
+        sons.ambiente(self.cenas.atual.som_ambiente())
         self._atualizar_cursor()
 
         self.cenas.desenhar(self.tela)
@@ -244,4 +245,5 @@ class Jogo:
         fontes.limpar_cache()
         imagens.limpar_cache()
         efeitos.limpar_cache()
+        sons.parar()
         pygame.quit()

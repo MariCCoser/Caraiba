@@ -18,6 +18,9 @@ class Tutorial(Cena):
                                    tamanho=30, max_linhas=14)
         self.botao_voltar = ui.Botao(TUTORIAL["voltar"], (800, 830), largura_minima=260)
 
+    def som_ambiente(self):
+        return "menu"
+
     def tratar_evento(self, evento):
         if evento.type == pygame.KEYDOWN and evento.key in (pygame.K_ESCAPE, pygame.K_RETURN,
                                                              pygame.K_KP_ENTER):

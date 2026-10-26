@@ -1,5 +1,8 @@
-Coloque aqui os sons do jogo, no formato .ogg (funciona no computador e no navegador).
+Os sons do jogo, em .ogg (funciona no computador e no navegador).
+Onde cada um toca e com que volume: Jogo/dados/sons.py.
+Para converter um mp3/wav (e cortar um som longo): python -m ferramentas.converter_sons
+(veja Jogo/README.md, seção "Sons"). Os originais ficam em Arte/Sons_originais.
 
-Para cada som, anote abaixo de onde ele veio e a licença (para os créditos):
+De onde veio cada som e a licença (para os créditos):
 
 arquivo.ogg - autor - site - licença

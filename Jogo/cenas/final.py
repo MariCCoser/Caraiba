@@ -91,6 +91,9 @@ class Final(Cena):
         else:
             self.jogo.ir_para("finais" if self.revendo else "menu")
 
+    def som_ambiente(self):
+        return "final"
+
     def tratar_evento(self, evento):
         if self.botao.clicado(evento):
             self.avancar()

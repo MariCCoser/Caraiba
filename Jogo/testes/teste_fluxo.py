@@ -2101,6 +2101,24 @@ def testar_fluxo():
     capturar(jogo, "01-menu")
     print("ok menu abriu")
 
+    # Os sons: todo ambiente e efeito usa um som da lista, e todo arquivo existe.
+    from dados import sons as dados_sons
+    for camadas in dados_sons.AMBIENTES.values():
+        assert set(camadas) <= set(dados_sons.SONS), camadas
+    assert set(dados_sons.EFEITOS) <= set(dados_sons.SONS)
+    for arquivo in dados_sons.SONS.values():
+        assert os.path.exists(os.path.join(config.PASTA_ASSETS, arquivo)), arquivo
+    assert jogo.cenas.atual.som_ambiente() in dados_sons.AMBIENTES
+    # Daqui em diante, toda cena que aparecer precisa pedir um ambiente que existe.
+    from motor import sons as motor_sons
+    ambiente_de_verdade = motor_sons.ambiente
+
+    def conferir_ambiente(nome):
+        assert nome is None or nome in dados_sons.AMBIENTES, nome
+        ambiente_de_verdade(nome)
+    motor_sons.ambiente = conferir_ambiente
+    print("ok sons (a lista e os arquivos)")
+
     # 2. Opções: trocar tamanho do texto e voltar com Esc
     clicar_botao(jogo, jogo.cenas.atual.botao_opcoes)
     esperar_transicao(jogo)
@@ -2113,10 +2131,14 @@ def testar_fluxo():
     capturar(jogo, "03-opcoes-texto-grande")
     clicar_botao(jogo, jogo.cenas.atual.botao_normal)
     assert jogo.preferencias.tamanho_texto == "normal"
+    clicar_botao(jogo, jogo.cenas.atual.botao_som_desligado)
+    assert not jogo.preferencias.som
+    clicar_botao(jogo, jogo.cenas.atual.botao_som_ligado)
+    assert jogo.preferencias.som
     tecla(jogo, pygame.K_ESCAPE)
     esperar_transicao(jogo)
     assert nome_cena(jogo) == "Menu"
-    print("ok opções (texto normal/grande, Esc volta)")
+    print("ok opções (texto normal/grande, som, Esc volta)")
 
     # 3. Começar -> introdução, avançando cada cartão
     clicar_botao(jogo, jogo.cenas.atual.botao_comecar)

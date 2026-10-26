@@ -72,6 +72,9 @@ class Introducao(Cena):
     def terminar(self):
         self.jogo.ir_para("dia")
 
+    def som_ambiente(self):
+        return "introducao"
+
     def tratar_evento(self, evento):
         if self.botao_pular.clicado(evento):
             self.terminar()

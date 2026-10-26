@@ -41,6 +41,9 @@ OPCOES = {
     "ligada": "Ligada",
     "desligada": "Desligada",
     "motivo_navegador": "No navegador, use o botão de tela cheia da página",
+    "som": "Som",
+    "som_ligado": "Ligado",
+    "som_desligado": "Desligado",
     "exemplo": "Exemplo de fala: as palavras [marcadas] merecem atenção. "
                "Elas mostram o que a pessoa diz e você não tem como [verificar].",
     "voltar": "Voltar",

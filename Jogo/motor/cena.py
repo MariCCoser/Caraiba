@@ -26,6 +26,10 @@ class Cena:
     def ao_entrar(self):
         """Chamado quando a cena aparece (depois do fade). Bom lugar para começar animações."""
 
+    def som_ambiente(self):
+        """O ambiente que toca nesta cena (um nome de AMBIENTES em dados/sons.py), ou None."""
+        return None
+
     def tratar_evento(self, evento):
         pass
 

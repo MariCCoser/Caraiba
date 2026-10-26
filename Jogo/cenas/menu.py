@@ -46,6 +46,9 @@ class Menu(Cena):
                 b.centro = (X_COLUNA, y)
                 y += ESPACO_ENTRE_BOTOES
 
+    def som_ambiente(self):
+        return "menu"
+
     def tratar_evento(self, evento):
         # Atalho: Enter começa o jogo.
         if evento.type == pygame.KEYDOWN and evento.key in (pygame.K_RETURN, pygame.K_KP_ENTER):

@@ -61,6 +61,7 @@ Todo o texto do jogo fica na pasta **`dados/`**. Abra com qualquer editor de tex
 | A tela "Finais" do menu (ler de novo os finais já vistos) | `dados/finais.py`, parte `LISTA_FINAIS` |
 | Quem está doente de verdade e quantos pegam a febre na oca (sorteio) | `dados/febre.py` |
 | Qual arquivo de imagem é cada cenário | `dados/arte.py` |
+| Os sons: qual toca em cada lugar e o volume | `dados/sons.py` |
 | Cores, tamanhos de letra, velocidade do texto | `config.py` |
 
 Regras para não quebrar nada:
@@ -103,6 +104,22 @@ com o nome e continua.
 
 Tamanhos: cenários 1600 × 900 (JPG), pessoas com 860 de altura (PNG com fundo **transparente**).
 
+### Sons
+
+Os sons ficam em `Jogo/assets/sons`, em **.ogg** (o mp3 pode falhar no navegador). Os
+originais (mp3) ficam guardados em `Caraiba/Arte/Sons_originais`.
+
+1. Coloque o som novo (mp3, wav...) em `Jogo/assets/sons`.
+2. Converta (precisa de `pip install -r requirements-ferramentas.txt`):
+   `python -m ferramentas.converter_sons` converte todos. Para cortar um som longo nos
+   primeiros 40 segundos: `python -m ferramentas.converter_sons assets/sons/Floresta.mp3 40`.
+   Sons de ambiente bastam com 30 a 40 segundos (tocam em loop).
+3. Em `dados/sons.py`, dê um apelido ao arquivo (`SONS`) e diga onde ele toca (`AMBIENTES`,
+   com o volume de 0 a 1) ou se é um efeito curto (`EFEITOS`).
+
+Sem placa de som, ou se faltar um arquivo, o jogo continua em silêncio. O jogador liga e
+desliga o som nas Opções. No navegador, o som só começa depois do primeiro clique.
+
 ## 5. Rodar os testes
 
 Com o ambiente ativado, dentro da pasta `Jogo`:
@@ -140,10 +157,11 @@ Jogo/
 │   ├── efeitos.py       filtro da noite/dia, linhas, grão, vinheta, luz do fogo
 │   ├── imagens.py       carrega cada imagem uma vez só (e faz provisórios)
 │   ├── fontes.py        carrega as fontes
-│   ├── preferencias.py  tamanho do texto e tela cheia
+│   ├── sons.py          o ambiente em loop de cada lugar e os efeitos (dados/sons.py)
+│   ├── preferencias.py  tamanho do texto, tela cheia e som
 │   └── salvamento.py    salva no computador (pasta saves/) ou no navegador
-├── assets/            Imagens convertidas e fontes (DejaVu, licença livre)
-├── ferramentas/       converter_arte.py
+├── assets/            Imagens convertidas, sons (.ogg) e fontes (DejaVu, licença livre)
+├── ferramentas/       converter_arte.py, converter_sons.py, capa_itch.py, simular_finais.py
 └── testes/            teste_fluxo.py
 ```
 

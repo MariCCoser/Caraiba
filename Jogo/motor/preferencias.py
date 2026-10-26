@@ -1,4 +1,5 @@
-# Preferências do jogador que valem para o jogo todo (não só para uma partida): tamanho do texto e tela cheia.
+# Preferências do jogador que valem para o jogo todo (não só para uma partida): tamanho do texto,
+# tela cheia e som.
 
 import config
 from motor import salvamento
@@ -8,6 +9,7 @@ class Preferencias:
     def __init__(self):
         self.tamanho_texto = "normal"   # "normal" ou "grande" (veja config.ESCALAS_DE_TEXTO)
         self.tela_cheia = False
+        self.som = True
 
     def escala_texto(self):
         """Quanto multiplicar o tamanho de todo texto (1.0 no normal, maior no grande)."""
@@ -17,6 +19,7 @@ class Preferencias:
         salvamento.salvar("preferencias", {
             "tamanho_texto": self.tamanho_texto,
             "tela_cheia": self.tela_cheia,
+            "som": self.som,
         })
 
     def carregar(self):
@@ -26,6 +29,7 @@ class Preferencias:
         if dados.get("tamanho_texto") in config.ESCALAS_DE_TEXTO:
             self.tamanho_texto = dados["tamanho_texto"]
         self.tela_cheia = bool(dados.get("tela_cheia", False))
+        self.som = bool(dados.get("som", True))
 
 
 # Uma só cópia das preferências para o jogo todo. Qualquer parte do código

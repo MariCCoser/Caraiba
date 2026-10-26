@@ -29,6 +29,9 @@ class Testar(Cena):
             self.botoes.append((ui.Botao(TESTE["noite"] % noite, (x, y), largura_minima=320), noite))
         self.botao_voltar = ui.Botao(TESTE["voltar"], (800, 830), largura_minima=260)
 
+    def som_ambiente(self):
+        return "menu"
+
     def tratar_evento(self, evento):
         if evento.type == pygame.KEYDOWN and evento.key == pygame.K_ESCAPE:
             self.jogo.ir_para("menu")

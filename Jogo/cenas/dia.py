@@ -22,8 +22,9 @@ from dados.arte import EM_PE
 from dados.dias import DIAS, escolha_do_arco
 from dados.febre import DOENTES
 from dados.noites import NOITES
+from dados.sons import CENARIO_DOS_PASSOS
 from dados.textos import DIA
-from motor import efeitos, febre, finais, fontes, historias, imagens, progresso, ui
+from motor import efeitos, febre, finais, fontes, historias, imagens, progresso, sons, ui
 from motor.pessoas import PessoaNoCenario, corpo_no_cenario
 from motor.cena import Cena, desenhar_cenario
 from motor.tabua import Tabua
@@ -127,6 +128,7 @@ class Dia(Cena):
         self.acoes = []
         self.refazendo = False
         self.construindo = True    # o roteiro começa a tocar antes de a cena aparecer
+        self.tocar_passos = False  # alguém chegou pela trilha: os passos tocam no próximo quadro
         self._proximo()
 
         # "Continuar": refaz as ações guardadas, sem animação, até o ponto em que o jogador parou.
@@ -141,6 +143,7 @@ class Dia(Cena):
                 self.caixa.completar()
             self.tempo_chegada = DURACAO_CHEGADA
             self.tempo_troca = DURACAO_TROCA_DE_FUNDO
+            self.tocar_passos = False   # quem está na entrada já tinha chegado
         self.construindo = False
         self._salvar()
 
@@ -194,6 +197,8 @@ class Dia(Cena):
                 self.manha_na_fogueira = False
                 self._trocar_fundo((passo["fundo"], passo.get("filtro", "noite")))
             elif tipo == "visitante":
+                if passo["visitante"] not in (None, self.visitante) and self.fundo[0] == CENARIO_DOS_PASSOS:
+                    self.tocar_passos = True   # alguém novo sobe a trilha (toca em atualizar)
                 self.visitante = passo["visitante"]
                 if self.visitante is None:
                     self.acompanhante = None   # quem ia com o visitante some com ele
@@ -459,6 +464,14 @@ class Dia(Cena):
         pessoa = next(p for p in self.passo_aldeia["pessoas"] if p["nome"] == nome)
         self.fila[0:0] = pessoa["passos"] + [self.passo_aldeia]
         self._proximo()
+
+    def som_ambiente(self):
+        """De noite (o sinal do pajé e a fogueira), o fogo e o maracá; dentro de uma oca, a mata
+        mais baixa; no resto do dia, a mata."""
+        apelido, filtro = self.fundo
+        if self.modo == "fogueira" or filtro == "noite":
+            return "fogueira"
+        return "dia_na_oca" if apelido.startswith("oca") else "dia"
 
     def ao_entrar(self):
         # "Continuar" parado na aldeia de dia (ou um dia que começa na aldeia): volta direto para ela.
@@ -803,6 +816,9 @@ class Dia(Cena):
 
     def atualizar(self, dt):
         super().atualizar(dt)
+        if self.tocar_passos:
+            self.tocar_passos = False
+            sons.efeito("passos")
         self.tempo += dt
         self.tempo_troca += dt
         self.tempo_chegada += dt

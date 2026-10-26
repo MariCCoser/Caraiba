@@ -124,6 +124,9 @@ class Oca(Cena):
     def sair(self):
         self.jogo.ir_para("aldeia")
 
+    def som_ambiente(self):
+        return "dia_na_oca" if self.de_dia else "noite_na_oca"
+
     def tratar_evento(self, evento):
         if self.tabua.tratar_evento(evento):
             return

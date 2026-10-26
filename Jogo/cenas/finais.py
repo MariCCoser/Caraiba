@@ -37,6 +37,9 @@ class Finais(Cena):
         self.jogo.final_revendo = identificador
         self.jogo.ir_para("final")
 
+    def som_ambiente(self):
+        return "menu"
+
     def tratar_evento(self, evento):
         if evento.type == pygame.KEYDOWN and evento.key == pygame.K_ESCAPE:
             self.jogo.ir_para("menu")
