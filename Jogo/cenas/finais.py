@@ -9,8 +9,9 @@ from dados.finais import FINAIS, LISTA_FINAIS
 from motor import efeitos, finais, ui
 from motor.cena import Cena, desenhar_cenario
 
-Y_PRIMEIRO = 230
-ESPACO = 62
+Y_PRIMEIRO = 205
+ESPACO = 50
+TAMANHO = config.TAMANHO_PEQUENO + 4   # menor que os botões do menu: são dez linhas
 
 
 class Finais(Cena):
@@ -28,10 +29,11 @@ class Finais(Cena):
             numero, y = i + 1, Y_PRIMEIRO + i * ESPACO
             if final["id"] in vistos:
                 texto = "%d/%d · %s" % (numero, self.total, final["nome"])
-                self.linhas.append((ui.Botao(texto, (800, y), largura_minima=520), final["id"]))
+                self.linhas.append((ui.Botao(texto, (800, y), tamanho=TAMANHO, largura_minima=440),
+                                    final["id"]))
             else:
                 self.escondidos.append((LISTA_FINAIS["escondido"] % (numero, self.total), y))
-        self.botao_voltar = ui.Botao(LISTA_FINAIS["voltar"], (800, 830), largura_minima=260)
+        self.botao_voltar = ui.Botao(LISTA_FINAIS["voltar"], (800, 745), tamanho=TAMANHO, largura_minima=220)
 
     def abrir(self, identificador):
         self.jogo.final_revendo = identificador
@@ -63,12 +65,12 @@ class Finais(Cena):
         efeitos.escurecer(tela, 150)
 
     def desenhar_interface(self, tela):
-        ui.texto_simples(tela, LISTA_FINAIS["titulo"], (800, 100),
+        ui.texto_simples(tela, LISTA_FINAIS["titulo"], (800, 95),
                          config.TAMANHO_SUBTITULO + 8, nome_fonte="serif_negrito")
         ui.texto_simples(tela, LISTA_FINAIS["vistos"] % (self.quantos_vistos, self.total),
-                         (800, 155), config.TAMANHO_PEQUENO, cor=config.BARRO)
+                         (800, 145), config.TAMANHO_PEQUENO, cor=config.BARRO)
         for botao, _ in self.linhas:
             botao.desenhar(tela)
         for texto, y in self.escondidos:
-            ui.texto_simples(tela, texto, (800, y), config.TAMANHO_BOTAO, cor=config.BARRO)
+            ui.texto_simples(tela, texto, (800, y), TAMANHO, cor=config.BARRO)
         self.botao_voltar.desenhar(tela)

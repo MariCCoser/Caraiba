@@ -8,8 +8,10 @@ from dados.textos import MENU, OPCOES
 from motor import efeitos, sons, ui
 from motor.cena import Cena, desenhar_cenario
 
-X_ESQUERDA = 640   # centro do botão da esquerda de cada par
-X_DIREITA = 960    # centro do botão da direita
+X_ESQUERDA = 680   # centro do botão da esquerda de cada par
+X_DIREITA = 920    # centro do botão da direita
+TAMANHO = config.TAMANHO_PEQUENO + 4   # letras dos botões e dos nomes de cada opção
+LARGURA = 220      # largura mínima de cada botão do par
 
 
 class Opcoes(Cena):
@@ -18,15 +20,17 @@ class Opcoes(Cena):
         self.tratamento = efeitos.Tratamento()
         self.tempo = 0.0
 
-        self.botao_normal = ui.Botao(OPCOES["normal"], (X_ESQUERDA, 235), largura_minima=260)
-        self.botao_grande = ui.Botao(OPCOES["grande"], (X_DIREITA, 235), largura_minima=260)
-        self.botao_desligada = ui.Botao(OPCOES["desligada"], (X_ESQUERDA, 370), largura_minima=260)
-        self.botao_ligada = ui.Botao(OPCOES["ligada"], (X_DIREITA, 370), largura_minima=260)
-        self.botao_som_desligado = ui.Botao(OPCOES["som_desligado"], (X_ESQUERDA, 505),
-                                            largura_minima=260)
-        self.botao_som_ligado = ui.Botao(OPCOES["som_ligado"], (X_DIREITA, 505), largura_minima=260)
-        self.botao_tutorial = ui.Botao(MENU["tutorial"], (800, 800), largura_minima=360)
-        self.botao_voltar = ui.Botao(OPCOES["voltar"], (800, 865), largura_minima=260)
+        def botao(texto, centro, largura=LARGURA):
+            return ui.Botao(texto, centro, tamanho=TAMANHO, largura_minima=largura)
+
+        self.botao_normal = botao(OPCOES["normal"], (X_ESQUERDA, 205))
+        self.botao_grande = botao(OPCOES["grande"], (X_DIREITA, 205))
+        self.botao_desligada = botao(OPCOES["desligada"], (X_ESQUERDA, 320))
+        self.botao_ligada = botao(OPCOES["ligada"], (X_DIREITA, 320))
+        self.botao_som_desligado = botao(OPCOES["som_desligado"], (X_ESQUERDA, 435))
+        self.botao_som_ligado = botao(OPCOES["som_ligado"], (X_DIREITA, 435))
+        self.botao_tutorial = botao(MENU["tutorial"], (800, 740), largura=300)
+        self.botao_voltar = botao(OPCOES["voltar"], (800, 800))
 
         if config.NO_NAVEGADOR:
             # No navegador quem controla a tela cheia é a página; mostramos o porquê.
@@ -38,7 +42,8 @@ class Opcoes(Cena):
                        self.botao_ligada, self.botao_som_desligado, self.botao_som_ligado,
                        self.botao_tutorial, self.botao_voltar]
 
-        self.exemplo = ui.CaixaTexto(OPCOES["exemplo"], 1100, (800, 652), ancora="centro",
+        # O exemplo fica no tamanho das falas do jogo: mostra o efeito de "Grande".
+        self.exemplo = ui.CaixaTexto(OPCOES["exemplo"], 1100, (800, 600), ancora="centro",
                                      max_linhas=3)
 
     def som_ambiente(self):
@@ -89,11 +94,11 @@ class Opcoes(Cena):
         efeitos.escurecer(tela, 150)
 
     def desenhar_interface(self, tela):
-        ui.texto_simples(tela, OPCOES["titulo"], (800, 85), config.TAMANHO_SUBTITULO + 16,
+        ui.texto_simples(tela, OPCOES["titulo"], (800, 90), config.TAMANHO_SUBTITULO + 8,
                          nome_fonte="serif_negrito")
-        ui.texto_simples(tela, OPCOES["tamanho_texto"], (800, 175), config.TAMANHO_BOTAO)
-        ui.texto_simples(tela, OPCOES["tela_cheia"], (800, 310), config.TAMANHO_BOTAO)
-        ui.texto_simples(tela, OPCOES["som"], (800, 445), config.TAMANHO_BOTAO)
+        ui.texto_simples(tela, OPCOES["tamanho_texto"], (800, 155), TAMANHO, cor=config.BARRO)
+        ui.texto_simples(tela, OPCOES["tela_cheia"], (800, 270), TAMANHO, cor=config.BARRO)
+        ui.texto_simples(tela, OPCOES["som"], (800, 385), TAMANHO, cor=config.BARRO)
         for botao in self.botoes:
             botao.desenhar(tela)
         self.exemplo.desenhar(tela)
