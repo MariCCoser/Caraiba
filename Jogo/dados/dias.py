@@ -35,7 +35,8 @@
 #                (Yara está no tapiri) ou "na_oca": "Mbaé" (Mbaé está na aldeia, fora do tapiri)
 #                "amaldicoados_ao_menos": 2 / "amaldicoados_menos_de": 2 (quantos amaldiçoados há
 #                na aldeia: os doentes de fora e quem pegou deles)
-#                "levou_alguem": True (o Irmão Aleixo já levou alguém, entregue ou sorteado)
+#                "levou_alguem": True (o Irmão Aleixo já levou alguém, entregue ou sorteado;
+#                False: ainda não levou ninguém)
 #                "entregue": "Yara" (o Irmão Aleixo levou Yara, entregue ou sorteada)
 #                "ao_menos" / "no_maximo": {"recusas_aleixo": 1} (variáveis do estado.py com
 #                pelo menos / no máximo esse valor)
@@ -167,7 +168,7 @@ PERGUNTAS_ALEIXO = {
              "resposta": "Homens com ordem do governador. Não dependem de mim."},
         ],
         "levados": [
-            {"pergunta": "Os que você levou voltam?",
+            {"pergunta": "Os que você levou voltam?", "levou_alguem": True,
              "resposta": "[Estão bem na vila]. É longe para voltar."},
             {"pergunta": "Os meus estão curados?", "levou_alguem": True,
              "resposta": "Rezam todos os dias. [Deus vai curá-los]."},
@@ -224,18 +225,24 @@ FALA_ALEIXO_NEGADO_PRIMEIRA = {
 
 
 def perguntas_aleixo(dia):
-    """Os dois caminhos de perguntas de uma visita do Aleixo: o jogador escolhe um. Na 1ª visita
-    (DIAS_SEM_CAMINHOS), ele ainda não levou ninguém daqui: as perguntas vêm todas juntas, sem
-    o caminho "Perguntar sobre quem ele levou"."""
+    """Os dois caminhos de perguntas de uma visita do Aleixo: o jogador escolhe um. Se ele ainda
+    não levou ninguém daqui (sempre na 1ª visita, DIAS_SEM_CAMINHOS; nas outras, se o jogador
+    negou e não havia quem levar), as perguntas vêm todas juntas, sem o caminho "Perguntar
+    sobre quem ele levou" (as que falam dos daqui, com "levou_alguem", não aparecem)."""
     perguntas = PERGUNTAS_ALEIXO[dia]
+    juntas = {"tipo": "perguntas", "botao": "Seguir", "perguntas": perguntas["vila"] + perguntas["levados"]}
     if dia in DIAS_SEM_CAMINHOS:
-        return {"tipo": "perguntas", "botao": "Seguir", "perguntas": perguntas["vila"] + perguntas["levados"]}
+        return juntas
     levados = perguntas["levados"] + (perguntas_sobre_os_levados() if dia == 6 else [])
-    return {"tipo": "escolha", "texto": CAMINHOS_ALEIXO["texto"], "opcoes": [
+    caminhos = {"tipo": "escolha", "texto": CAMINHOS_ALEIXO["texto"], "opcoes": [
         {"texto": CAMINHOS_ALEIXO["vila"], "passos": [
             {"tipo": "perguntas", "botao": "Seguir", "perguntas": perguntas["vila"]}]},
         {"texto": CAMINHOS_ALEIXO["levados"], "efeitos": {"perguntou_levados": 1}, "passos": [
             {"tipo": "perguntas", "botao": "Seguir", "perguntas": levados}]},
+    ]}
+    return {"tipo": "se", "passos": [
+        {"tipo": "se", "levou_alguem": True, "passos": [caminhos]},
+        {"tipo": "se", "levou_alguem": False, "passos": [juntas]},
     ]}
 
 

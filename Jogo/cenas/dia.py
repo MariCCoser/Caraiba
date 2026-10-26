@@ -251,7 +251,7 @@ class Dia(Cena):
         "amaldicoado" e "sao" levam o nome de um doente de fora (motor/febre.py);
         "amaldicoados_ao_menos": 2 e "amaldicoados_menos_de": 2 contam quantos amaldiçoados há
         na aldeia (motor/febre.py, quantos_amaldicoados); "levou_alguem": True (o Irmão Aleixo já
-        levou alguém); "entregue": "Yara" (o Irmão Aleixo levou essa pessoa, entregue ou não);
+        levou alguém; False: ainda não levou ninguém); "entregue": "Yara" (o Irmão Aleixo levou essa pessoa, entregue ou não);
         "ao_menos": {"krenan_volta": 1} (variáveis do estado.py com pelo menos esse valor);
         "no_maximo": {"recusas_aleixo": 1} (variáveis do estado.py com no máximo esse valor);
         "com_febre" e "sem_febre" levam o nome de quem pegou a febre na oca e mostra
@@ -285,7 +285,7 @@ class Dia(Cena):
         for nome, minimo in item.get("noites_na_oca_menos_de", {}).items():
             if estado.noites_na_oca.get(nome, 0) >= minimo:
                 return False
-        if item.get("levou_alguem") and not estado.entregues_nomes:
+        if "levou_alguem" in item and item["levou_alguem"] != bool(estado.entregues_nomes):
             return False
         if "entregue" in item and item["entregue"] not in estado.entregues_nomes:
             return False
