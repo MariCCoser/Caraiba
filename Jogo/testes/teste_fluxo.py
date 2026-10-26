@@ -101,7 +101,7 @@ def testar_estado_inicial():
                 "pistas": 0, "sanidade": 10, "tapiri_usos": 0, "tapiri_saos": 0, "viu_anhanga": 0, "seguiu_paje": 0, "converteu": 0,
                 "padre_entrou": 0, "aleixo_morto": 0,
                 "inocentes": 0, "machado": 0, "pulseira": 0, "mandioca": 0, "energia_hoje": 0, "krenan_volta": 0, "subiu_o_rio": 0, "rio_acima_nomes": [], "convidados": [], "dentro": [], "tapiri": [], "tapiri_desde": {}, "febre": [], "noites_na_oca": {}, "curados": [], "manha": [],
-                "historias": [], "conversas_oca": {}, "conversas_fogueira": {}, "entregues_nomes": [],
+                "historias": [], "conversas_oca": {}, "conversas_fogueira": {}, "conversou": [], "entregues_nomes": [],
                 "mortos_nomes": [], "saos_mortos_nomes": [], "tapiri_saos_nomes": [], "mortos_quando": {}, "corpos": [], "tabua": [], "tabua_noites": [],
                 "final_calculado": None, "final": None}
     dados = estado.para_dicionario()
@@ -573,6 +573,7 @@ def testar_finais():
             setattr(estado, nome, valor)
         return estado
 
+    CINCO = ["Yara", "Mbaé", "Potira", "Tamandaré-mirim", "Iandé"]
     # O dia 10: cada caminho típico cai no seu final.
     casos = [
         ({"entregues": 2, "vivos": 5}, "troca"),
@@ -608,6 +609,16 @@ def testar_finais():
         ({"tapiri_usos": 2, "vivos": 4, "mortos_por_sua_mao": 1}, "tapiri"),  # matou um amaldiçoado
         ({"tapiri_usos": 2, "vivos": 4, "mortos_por_sua_mao": 1, "mortos_saos_por_sua_mao": 1}, "ferida"),
         ({}, "vazio"),
+        # A Honra pelas conversas: conversar com 5 (quem foi levado conta), sem matar ninguém são.
+        ({"conversou": CINCO, "vivos": 1}, "honra"),
+        ({"conversou": CINCO, "vivos": 2, "mortos_por_sua_mao": 1}, "honra"),    # matou um amaldiçoado
+        ({"conversou": CINCO, "vivos": 2, "mortos_por_sua_mao": 1, "mortos_saos_por_sua_mao": 1}, "ferida"),
+        ({"conversou": CINCO[:4], "vivos": 2}, "vazio"),                          # 4 não bastam
+        ({"conversou": CINCO[:3], "entregues_nomes": ["Tamandaré-mirim"],
+          "rio_acima_nomes": ["Iandé"], "vivos": 1}, "honra"),                    # levados contam
+        ({"conversou": CINCO[:4], "entregues_nomes": ["Yara"], "vivos": 2}, "vazio"),  # sem contar 2 vezes
+        ({"conversou": CINCO, "vivos": 0}, "vazio"),
+        ({"conversou": CINCO, "tapiri_usos": 2, "vivos": 2}, "tapiri"),           # O Tapiri vem antes
     ]
     for valores, esperado in casos:
         estado = estado_com(dia=10, **valores)
@@ -703,6 +714,8 @@ def testar_aldeia_com_yara(jogo):
     assert oca.de_dia and [p.nome for p in oca.na_oca] == ["Yara"]
     rodar(jogo, 20)
     capturar(jogo, "10c-dia1-yara-na-oca")
+    # A conversa da entrada não conta para A Honra: Yara ainda tem a brasa acima da cabeça.
+    assert jogo.estado.conversou == [], jogo.estado.conversou
 
     clicar_pessoa(jogo, "Yara")
     dia = jogo.cenas.atual
@@ -718,6 +731,7 @@ def testar_aldeia_com_yara(jogo):
     capturar(jogo, "10d-dia1-aldeia-de-yara")
     passar_falas(jogo)
     assert jogo.estado.memoria == 1
+    assert jogo.estado.conversou == ["Yara"] and jogo.estado.conhecidos == 1
     clicar_opcao(jogo, "Terminar a conversa")
     esperar_transicao(jogo)
     assert nome_cena(jogo) == "Oca" and jogo.cenas.atual.de_dia, "a conversa termina dentro da oca"

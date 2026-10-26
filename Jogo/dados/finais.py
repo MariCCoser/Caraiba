@@ -46,6 +46,13 @@ HONRA_PEDE_HISTORIAS = False
 CONDICAO_HONRA = {"vivos": ">= 1", "mortos_por_sua_mao": "== 0", "tapiri_usos": ">= 1", "tapiri_saos": "== 0"}
 if HONRA_PEDE_HISTORIAS:
     CONDICAO_HONRA["memoria"] = ">= 5"
+# O outro jeito de chegar à Honra: conhecer quem chegou. "conhecidos" (estado.py) conta com
+# quantos o jogador conversou (qualquer pergunta, de dia na oca ou de noite na fogueira; a
+# entrada e o pajé não contam), mais quem foi levado pelo Aleixo ou por Krenan antes disso.
+# Pode matar amaldiçoado; matar alguém são fecha a Honra.
+CONVERSAS_DA_HONRA = 5
+CONDICAO_HONRA_CONVERSAS = {"conhecidos": ">= %d" % CONVERSAS_DA_HONRA, "mortos_saos_por_sua_mao": "== 0",
+                            "vivos": ">= 1"}
 
 FINAIS = [
     {
@@ -180,16 +187,17 @@ FINAIS = [
         "chance_acaso": 1.8, "chance_tentando": None,
         "nome": "A Honra",
         "povo": "Tupinambá",
-        # Pelo menos 1 vivo (sem ninguém além do jogador e do pajé, é O Vazio), nunca matar
-        # ninguém e levar ao tapiri pelo menos 1 amaldiçoado, nunca alguém são. Com 2 amaldiçoados
-        # no tapiri, O Tapiri vem antes. Entregar alguém ao Aleixo não impede (com 2 entregas,
-        # A Troca vem antes). As 5 histórias (memoria >= 5) estão desligadas por enquanto:
-        # HONRA_PEDE_HISTORIAS.
-        "condicao": [CONDICAO_HONRA],
+        # Dois jeitos, com pelo menos 1 vivo (sem ninguém além do jogador e do pajé, é O Vazio):
+        # 1) conversar com 5 pessoas (CONDICAO_HONRA_CONVERSAS), sem matar ninguém são;
+        # 2) nunca matar ninguém e levar ao tapiri pelo menos 1 amaldiçoado, nunca alguém são.
+        # Com 2 amaldiçoados no tapiri, O Tapiri vem antes. Entregar alguém ao Aleixo não impede
+        # (com 2 entregas, A Troca vem antes). As 5 histórias (memoria >= 5) estão desligadas por
+        # enquanto: HONRA_PEDE_HISTORIAS.
+        "condicao": [CONDICAO_HONRA_CONVERSAS, CONDICAO_HONRA],
         "antecipado": False,
         "fundo": "honra_final",
-        "cena": "A febre vai embora devagar. Ninguém morreu por sua mão, e quem "
-                "sobreviveu ainda se senta com você em volta do fogo.",
+        "cena": "A febre vai embora devagar. Os nomes de quem chegou ficam guardados na aldeia, "
+                "e quem sobreviveu ainda se senta com você em volta do fogo.",
         "fato": "Um manto tupinambá de penas vermelhas, levado para a Europa no século XVII, "
                 "voltou ao Museu Nacional, no Rio, em 2024. Os Tupinambá de Olivença (BA) lutam "
                 "hoje pela demarcação da terra.",

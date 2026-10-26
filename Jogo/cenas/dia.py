@@ -25,7 +25,7 @@ from dados.noites import NOITES
 from dados.sons import AMBIENTE_DO_CENARIO, CENARIO_DOS_PASSOS
 from dados.textos import DIA
 from motor import efeitos, febre, finais, fontes, historias, imagens, progresso, sons, ui
-from motor.pessoas import PessoaNoCenario, corpo_no_cenario
+from motor.pessoas import PessoaNoCenario, corpo_no_cenario, falta_conversar
 from motor.cena import Cena, desenhar_cenario
 from motor.tabua import Tabua
 
@@ -116,6 +116,7 @@ class Dia(Cena):
         self.noite = None          # a noite de dados/noites.py, depois do sinal do pajé
         self.na_fogueira = []      # [PessoaNoCenario] sentados em volta do fogo
         self.conversados = set()   # com quem o jogador já conversou na fogueira, nesta noite
+        self.conversando_com = None   # quem o jogador clicou para conversar (oca ou fogueira)
         self.sobre = None          # a pessoa da fogueira embaixo do mouse
         self.botao_dormir = None
         self.painel = pygame.Rect(0, 0, 0, 0)
@@ -228,6 +229,7 @@ class Dia(Cena):
                 self._comecar_noite()
                 return
             elif tipo == "fogueira":
+                self.conversando_com = None
                 self._mostrar_fogueira()
                 return
             elif tipo in ("perguntas", "exame"):
@@ -411,6 +413,7 @@ class Dia(Cena):
     def _conversar_na_fogueira(self, nome):
         self._registrar(["pessoa", nome])
         self.conversados.add(nome)
+        self.conversando_com = nome
         self.sobre = None
         # Depois da conversa, volta para a fogueira.
         self.fila[0:0] = self.noite["pessoas"][nome]["passos"] + [{"tipo": "fogueira"}]
@@ -459,6 +462,7 @@ class Dia(Cena):
         """O jogador anda pela aldeia; esta cena fica guardada e volta pela seta da entrada."""
         passo = self._com_quem_ja_esta(passo)
         self.passo_aldeia = passo
+        self.conversando_com = None
         self.modo = "aldeia"
         self.caixa = None
         self.botoes = []
@@ -477,6 +481,7 @@ class Dia(Cena):
     def conversar_na_aldeia(self, nome):
         """Chamado pela aldeia (clique numa pessoa): a conversa dela e, depois, a aldeia de novo."""
         self._registrar(["conversar", nome])
+        self.conversando_com = nome
         pessoa = next(p for p in self.passo_aldeia["pessoas"] if p["nome"] == nome)
         self.fila[0:0] = pessoa["passos"] + [self.passo_aldeia]
         self._proximo()
@@ -564,6 +569,10 @@ class Dia(Cena):
     def _perguntar(self, passo, indice, item):
         self._registrar(["perguntar", indice])
         self.perguntas_feitas.add((id(passo), indice))
+        # Qualquer pergunta numa conversa que o jogador abriu (não no exame) conta para A Honra.
+        nome = self.conversando_com
+        if nome and passo["tipo"] == "perguntas" and falta_conversar(self.estado, nome):
+            self.estado.conversou.append(nome)
         # Uma "historia" soma os efeitos só na primeira vez (dados/conversas.py).
         historia = item.get("historia")
         if historia not in self.estado.historias:
@@ -980,6 +989,9 @@ class Dia(Cena):
             bloco.desenhar(tela)
 
         if self.modo == "fogueira":
+            for pessoa in self.na_fogueira:
+                if pessoa is not self.sobre and falta_conversar(self.estado, pessoa.nome):
+                    pessoa.desenhar_marca(tela, self.tempo)
             if self.sobre:
                 self.sobre.desenhar_destaque(tela)
             # A dica, sobre um fundo escuro arredondado, e a seta de ir dormir (quando ela aparece).

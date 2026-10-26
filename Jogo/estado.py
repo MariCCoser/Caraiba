@@ -57,6 +57,9 @@ class Estado:
         # Quantas conversas da noite cada um já teve (dados/historias.py): a próxima fala é a seguinte
         self.conversas_oca = {}
         self.conversas_fogueira = {}
+        # Com quem o jogador já conversou (fez uma pergunta), de dia na oca ou de noite na
+        # fogueira; a conversa da entrada não conta (A Honra: conhecidos)
+        self.conversou = []
         # Quem o jogador chamou para a fogueira sem deixar entrar na aldeia (ex.: Krenan)
         self.convidados = []
         # Quem subiu o rio com Krenan (nomes)
@@ -85,6 +88,12 @@ class Estado:
         self.final_calculado = None
         # O final da partida, quando ela acaba (o "id" de dados/finais.py), ou None
         self.final = None
+
+    @property
+    def conhecidos(self):
+        """Quantas pessoas o jogador conheceu (A Honra): com quem conversou, mais quem foi levado
+        (pelo Irmão Aleixo ou por Krenan) antes de dar tempo de conversar."""
+        return len(set(self.conversou) | set(self.entregues_nomes) | set(self.rio_acima_nomes))
 
     def para_dicionario(self):
         """Copia as variáveis num dicionário simples (para salvar a partida)."""

@@ -15,7 +15,8 @@ REGRAS = ("• [De dia], alguém chega à entrada. Converse e decida se a pessoa
           "• Antes da noite, o [pajé] diz o sinal da maldição. Será que ele sempre acerta?\n"
           "• Os sinais ficam riscados na [tábua de barro], no canto de cima da tela.\n"
           "• [À noite], na fogueira, examine quem está dentro. Cada olhar gasta energia.\n"
-          "• Depois: deixar na [oca], levar ao [tapiri] ou [matar].")
+          "• Depois: deixar na [oca], levar ao [tapiri] ou [matar].\n"
+          "• Uma [brasa] acima da cabeça: alguém com quem você ainda não conversou.")
 
 MENU = {
     "titulo": "CARAÍBA",

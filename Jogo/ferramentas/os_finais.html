@@ -1,0 +1,306 @@
+<!doctype html>
+<!--
+  A fonte do PDF "Textos/Caraíba — Os Finais.pdf". Mudou um final? Edite aqui e gere o PDF de novo
+  com o Chrome (de dentro da pasta Jogo):
+    "C:\Program Files\Google\Chrome\Application\chrome.exe" --headless=new --no-pdf-header-footer
+      --allow-file-access-from-files --print-to-pdf="..\Textos\Caraíba — Os Finais.pdf" ferramentas\os_finais.html
+-->
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Caraíba — Os Finais</title>
+<style>
+@font-face { font-family: "Serifa"; src: url("../assets/fontes/dejavu-serif.ttf"); }
+@font-face { font-family: "Serifa"; font-weight: bold; src: url("../assets/fontes/dejavu-serif-negrito.ttf"); }
+@font-face { font-family: "Serifa"; font-style: italic; src: url("../assets/fontes/dejavu-serif-italico.ttf"); }
+@font-face { font-family: "Sem"; src: url("../assets/fontes/dejavu-sans.ttf"); }
+@page { size: A4; margin: 22mm 20mm 22mm 20mm; }
+body { font-family: "Serifa", serif; font-size: 10.5pt; line-height: 1.5; color: #2b211b; }
+h1 { font-size: 26pt; margin: 0 0 4pt; }
+.sub { font-style: italic; color: #6b5a4e; margin: 0 0 18pt; }
+h2 { color: #8b3a1f; font-size: 17pt; margin: 22pt 0 8pt; break-after: avoid; }
+h3 { font-size: 13.5pt; margin: 16pt 0 2pt; break-after: avoid; }
+.povo { font-family: "Sem", sans-serif; font-size: 8pt; font-weight: bold; color: #6b5a4e; text-transform: uppercase; letter-spacing: .03em; margin: 0 0 6pt; break-after: avoid; }
+p { margin: 0 0 7pt; }
+.caixa { background: #f3e9df; padding: 8pt 10pt; margin: 8pt 0 10pt; }
+blockquote { margin: 4pt 0 8pt; padding: 4pt 10pt; border-left: 3pt solid #c9a98c; font-style: italic; color: #4a3b31; }
+table { width: 100%; border-collapse: collapse; font-family: "Sem", sans-serif; font-size: 8.3pt; margin: 6pt 0 10pt; }
+th { background: #8b3a1f; color: #fff; text-align: left; padding: 5pt 6pt; }
+td { padding: 5pt 6pt; border-bottom: 1px solid #e3d3c3; vertical-align: top; }
+tr:nth-child(even) td { background: #f3e9df; }
+tr { break-inside: avoid; }
+code { font-family: "Sem", sans-serif; font-size: 8.8pt; background: #f3e9df; padding: 0 2pt; }
+ul { margin: 0 0 8pt; padding-left: 16pt; }
+li { margin-bottom: 3pt; }
+.final { break-inside: avoid-page; }
+a { color: #8b3a1f; text-decoration: none; }
+.pequeno { font-size: 9pt; color: #6b5a4e; }
+</style>
+</head>
+<body>
+
+<h1>Caraíba — Os Finais</h1>
+<p class="sub">Tudo sobre os dez finais em um documento só: como o jogo escolhe o final, o que o jogador precisa fazer para chegar a cada um, os textos das telas, o povo de cada final, as porcentagens e as fontes. Versão de 26/10/2026, com A Honra pelas conversas.</p>
+
+<h2>1. Como os finais funcionam</h2>
+<p>O jogo dura 10 dias. Cada escolha do jogador (deixar entrar, recusar, conversar, levar ao tapiri, matar, entregar ao Irmão Aleixo, olhar a mata) soma pontos em contadores escondidos, as <b>variáveis</b>. O jogador não vê esse cálculo.</p>
+<p>A escolha segue uma <b>fila</b>: o jogo testa o primeiro final da lista; se a condição não bater, testa o segundo, e assim por diante. O último, O Vazio, é o que sobra quando nenhum outro bate, para que nenhuma partida fique sem desfecho. Por isso a ordem importa.</p>
+<ul>
+  <li><b>No fim de cada noite</b>, o jogo confere os finais que podem acontecer antes da hora, na ordem da fila: Guerra Justa, A Troca, A Loucura, A Água do Batismo e Anhangá. Se um deles já bate, a partida acaba ali. O Vazio também acaba o jogo antes, se a aldeia esvaziar.</li>
+  <li><b>Na manhã do dia 10</b>, antes de Araci chegar, o jogo confere a fila inteira e fica com o primeiro final que bater. O final aparece no fim da noite 10, e nada do que o jogador faz com Araci o muda.</li>
+  <li><b>Rio Acima</b> é a exceção: é a escolha “Ir com ele” na noite 10, quando Krenan volta. Ela vale mais que o final calculado de manhã.</li>
+</ul>
+<p>Todo final tem três telas: <b>a cena</b> (o que aconteceu com a aldeia), <b>o povo e o fato</b> (um povo indígena real que fez um caminho parecido e o que aconteceu com ele) e <b>a fonte</b>, com a posição na fila e a chance de acontecer.</p>
+<div class="caixa"><b>Regra do grupo:</b> cada final aponta para um povo indígena brasileiro real. A aldeia do jogo não tem nome de povo de propósito; o final é que diz: “O que aconteceu com vocês aconteceu de verdade com este povo”.</div>
+<p class="pequeno">No jogo, as condições e os textos ficam em <code>Jogo/dados/finais.py</code> (dá para mudar os números lá), e o cálculo em <code>Jogo/motor/finais.py</code>.</p>
+
+<h2>2. A fila</h2>
+<table>
+<tr><th>Nº</th><th>Final</th><th>Povo</th><th>Condição</th><th>Acaba no mínimo na…</th></tr>
+<tr><td>1</td><td>Guerra Justa</td><td>Caeté</td><td>atirou no Aleixo com o arco (dia 9)</td><td>noite 9</td></tr>
+<tr><td>2</td><td>A Troca</td><td>Tupiniquim</td><td>2 entregas ao Aleixo, <b>ou</b> proximidade da vila ≥ 3</td><td>noite 6</td></tr>
+<tr><td>3</td><td>A Loucura</td><td>Tupinambá (Santidade de Jaguaripe)</td><td>3 mortes pela sua mão</td><td>noite 4</td></tr>
+<tr><td>4</td><td>A Água do Batismo</td><td>Caeté</td><td>aceitou o batismo do padre novo (noite 9)</td><td>noite 9</td></tr>
+<tr><td>5</td><td>Rio Acima</td><td>Aimoré, hoje Krenak</td><td>foi com Krenan na noite 10</td><td>noite 10</td></tr>
+<tr><td>6</td><td>Anhangá</td><td>Tremembé</td><td>viu o veado 3 vezes, nenhuma morte pela sua mão</td><td>noite 9</td></tr>
+<tr><td>7</td><td>O Tapiri</td><td>Korubo</td><td>2 amaldiçoados no tapiri, nenhum são, 2 vivos ou mais, nunca matou alguém são</td><td>dia 10</td></tr>
+<tr><td>8</td><td>A Honra</td><td>Tupinambá</td><td>conversou com 5 pessoas e nunca matou alguém são; <b>ou</b> nunca matou ninguém e levou 1 amaldiçoado ao tapiri (nenhum são). Sempre com 1 vivo ou mais</td><td>dia 10</td></tr>
+<tr><td>9</td><td>Ferida</td><td>Potiguara</td><td>matou alguém são <b>ou</b> levou alguém são ao tapiri, com 1 vivo ou mais</td><td>dia 10</td></tr>
+<tr><td>10</td><td>O Vazio</td><td>Goitacá</td><td>nenhum dos anteriores, ou a aldeia esvaziou</td><td>dia 10 (ou antes, se esvaziar)</td></tr>
+</table>
+
+<h2>3. As regras usadas nas contas</h2>
+<p><code>vivos</code> conta só quem é de fora e está vivo na aldeia (no máximo 5: Yara, Mbaé, Potira, Tamandaré-mirim e Iandé). O jogador e o pajé não contam.</p>
+<table>
+<tr><th>O que acontece</th><th>Efeito nas variáveis</th></tr>
+<tr><td>Deixar alguém entrar</td><td><code>vivos</code> +1</td></tr>
+<tr><td>Conversar com alguém de dia, na oca, ou de noite, na fogueira (qualquer pergunta)</td><td>o nome entra em <code>conversou</code>, uma vez por pessoa. A conversa da entrada e a do pajé não contam</td></tr>
+<tr><td>Aceitar o machado de Yara (dia 1)</td><td><code>proximidade_vila</code> +1; +1 energia em toda noite</td></tr>
+<tr><td>Comer a mandioca de Potira (dia 4)</td><td>+1 energia em toda noite, da 4 à 10</td></tr>
+<tr><td>Aceitar a pulseira de Iandé (dia 7)</td><td>+1 energia em toda noite, da 7 à 10</td></tr>
+<tr><td>Entregar alguém ao Aleixo (dias 3, 6 e 9)</td><td><code>entregues</code> +1, <code>proximidade_vila</code> +1, <code>vivos</code> −1</td></tr>
+<tr><td>Negar o Aleixo</td><td>nos dias 6 e 9: +1 energia só naquela noite, e ele leva alguém sorteado (<code>levados</code> +1). No dia 3, negar não dá energia</td></tr>
+<tr><td>No dia 9, “Deixar ir” quem o Aleixo leva</td><td><code>entregues</code> +1</td></tr>
+<tr><td>No dia 9, “Pegar o arco”</td><td><code>aleixo_morto</code> = 1, <code>mortos_por_sua_mao</code> +1, sanidade −2; a pessoa volta</td></tr>
+<tr><td>Perguntar ao Aleixo sobre quem ele levou (dias 6 e 9, só se ele já levou alguém)</td><td><code>perguntou_levados</code> +1 (nenhum final usa ainda)</td></tr>
+<tr><td>Matar alguém na fogueira</td><td><code>mortos_por_sua_mao</code> +1, <code>mortos</code> +1, <code>vivos</code> −1, sanidade −3. Se a pessoa era sã, <code>mortos_saos_por_sua_mao</code> +1</td></tr>
+<tr><td>Levar ao tapiri um amaldiçoado</td><td><code>tapiri_usos</code> +1</td></tr>
+<tr><td>Levar ao tapiri alguém são</td><td><code>tapiri_saos</code> +1</td></tr>
+<tr><td>Ver o veado na mata (noites 2, 5 e 9)</td><td><code>viu_anhanga</code> +1</td></tr>
+<tr><td>Deixar o padre entrar (dia 9) e aceitar o batismo (noite 9)</td><td><code>converteu</code> = 1</td></tr>
+<tr><td>Ir com Krenan na noite 10</td><td><code>subiu_o_rio</code> = 1</td></tr>
+<tr><td>Ouvir a história de quem entrou</td><td><code>memoria</code> +1 (uma por pessoa; hoje nenhum final pede)</td></tr>
+</table>
+<p><b>Conhecidos.</b> A Honra usa <code>conhecidos</code>: com quantas pessoas o jogador conversou, mais quem foi levado (pelo Aleixo ou por Krenan) antes de dar tempo de conversar. Cada pessoa conta uma vez só. Todo mundo com quem dá para conversar conta: os cinco de fora, e também Krenan e o padre novo na fogueira.</p>
+<p><b>A marca.</b> Na aldeia, na oca e na fogueira, uma brasa pequena acima da cabeça mostra quem o jogador ainda não conversou. Ela some depois da primeira pergunta. O “Como se joga” explica a marca.</p>
+<p><b>A febre.</b> Se um amaldiçoado dorme na oca, a febre passa para alguns de fora que dormem nas ocas. Quantos pegam é sorteado a cada partida (<code>Jogo/dados/febre.py</code>). Quem pega acorda doente no dia seguinte e morre no 2º dia. O “Continuar” repete a mesma sorte.</p>
+<p><b>O tapiri.</b> Tem 1 vaga. Quem entra fica 3 noites, longe de todos, e o mal não passa para ninguém. Quem era amaldiçoado sai curado.</p>
+
+<h2>4. Final por final</h2>
+
+<div class="final">
+<h3>1. Guerra Justa</h3>
+<p class="povo">Povo: Caeté · 1º da fila · acaba na noite 9</p>
+<p><b>Como se chega:</b> no dia 9, o jogador nega o padre novo e depois nega o pedido do Aleixo. O Aleixo leva alguém pela trilha, e aparecem “Pegar o arco” e “Deixar ir”. “Pegar o arco” acaba o jogo no fim da noite 9 e vence todos os outros finais. Com o padre lá dentro, o Aleixo não leva ninguém, e não há arco. O tiro não exige sinais nem pistas: é uma decisão moral, não um diagnóstico.</p>
+<p><b>Cena:</b></p>
+<blockquote>No dia 10, a trilha amanhece cheia de homens do governador. Trazem a flecha. Ninguém pergunta quem tem febre. Ninguém pergunta quem atirou. O morador que você salvou na trilha sai amarrado com os outros. Na vila, um papel já diz que a guerra contra esta aldeia é justa.</blockquote>
+<p><b>Por que os Caeté:</b> em 1556, o navio do bispo Pero Fernandes Sardinha naufragou na costa de Alagoas, e os Caeté foram acusados de matar o bispo e outros sobreviventes. Em 1562, o mesmo ano do jogo, o governador Mem de Sá deu sentença contra eles: segundo Anchieta, deviam ser escravizados onde fossem achados, sem exceção. A “guerra justa” saiu do controle: aldeias próximas e sem defesa foram atacadas em busca de escravos, e logo vieram as epidemias de 1562 e 1563. Aleixo não é bispo, mas a lógica é a mesma: uma morte serve de pretexto para escravizar uma aldeia inteira.</p>
+<p><b>Tela de fato:</b> “Em 1562, o governador Mem de Sá declarou guerra contra os Caeté, como castigo pela morte do bispo Sardinha seis anos antes. Em poucos meses, mais de 50 mil pessoas foram capturadas. Cerca de 10 mil chegaram aos engenhos; o resto morreu de varíola e maus-tratos.”</p>
+<p><b>Fonte na tela:</b> John Monteiro, “O escravo índio, esse desconhecido” (1992); Mecenas Santos, Embates entre a cruz e a espada (ANPUH, 2011).</p>
+<p><b>Cuidado:</b> a cena corta no disparo (a flecha não aparece acertando) e não cita a antropofagia; o assunto é a guerra justa como pretexto colonial. O final não pode soar como vitória: matar o Aleixo não salva ninguém.</p>
+</div>
+
+<div class="final">
+<h3>2. A Troca</h3>
+<p class="povo">Povo: Tupiniquim · 2º da fila · a partir da noite 6</p>
+<p><b>Como se chega:</b> duas entregas ao Aleixo, uma no dia 3 e outra no dia 6: o jogo acaba no fim da noite 6. A proximidade só sobe com o machado e com as entregas, então chegar a 3 também pede 2 entregas. No dia 9, “Deixar ir” conta como entrega: quem entregou uma vez antes chega a 2.</p>
+<p><b>Cena:</b></p>
+<blockquote>A vila manda gente para cuidar da aldeia, do jeito dela. Os nomes que foram com o Irmão Aleixo não voltam.</blockquote>
+<p><b>Quem eram:</b> povo tupi do litoral entre o sul da Bahia e o Espírito Santo; receberam a frota de Cabral em 1500. Escolheram ser aliados dos portugueses e acabaram nos aldeamentos jesuíticos, perdendo língua e território.</p>
+<p><b>Tela de fato:</b> “Os Tupiniquim eram cerca de 90 mil em 1500 e 55 em 1876. Hoje são cerca de 2.500, em Aracruz (ES), numa terra reconhecida em 2007 depois de décadas de disputa com uma empresa de celulose.”</p>
+<p><b>Fonte na tela:</b> Instituto Socioambiental, Povos Indígenas no Brasil: Tupiniquim.</p>
+<p><b>O que ensina:</b> a aliança custou caro, mas o povo não acabou.</p>
+</div>
+
+<div class="final">
+<h3>3. A Loucura</h3>
+<p class="povo">Povo: Tupinambá (Santidade de Jaguaripe) · 3º da fila · a partir da noite 4</p>
+<p><b>Como se chega:</b> matar 3 pessoas. Até a noite 3 entram no máximo 2 (Yara e Mbaé); a 3ª é Potira, na noite 4. O jeito mais rápido: Yara na noite 1, Mbaé na noite 2 e Potira na noite 4. Cuidado: se ninguém de fora sobra vivo e já morreram 2, a aldeia esvaziou, e o jogo acaba em O Vazio antes da 3ª morte.</p>
+<p><b>Cena:</b></p>
+<blockquote>Ninguém mais dorme perto de você. Antes do sol, a aldeia manda você para a mata.</blockquote>
+<p><b>Quem eram:</b> a Santidade de Jaguaripe foi um movimento religioso e de resistência dos anos 1580, no Recôncavo baiano, formado principalmente por tupinambá fugidos dos aldeamentos e da escravidão; acolhia também africanos e mamelucos. Misturava a busca tupi pela Terra sem Mal com símbolos católicos.</p>
+<p><b>Tela de fato:</b> “Vinte anos depois de 1562, tupinambá fugidos dos aldeamentos e da escravidão formaram a Santidade de Jaguaripe (1580-1585), liderada por Antônio e por Maria. Foi destruída por ordem do governador Manuel Teles Barreto. O nome ‘Loucura’ fala de você; a Santidade foi resistência.”</p>
+<p><b>Fonte na tela:</b> Ronaldo Vainfas, A Heresia dos Índios (1995).</p>
+</div>
+
+<div class="final">
+<h3>4. A Água do Batismo</h3>
+<p class="povo">Povo: Caeté · 4º da fila · acaba na noite 9</p>
+<p><b>Como se chega:</b> no dia 9, deixar o padre novo entrar (com ele lá dentro, o Aleixo não pede ninguém). Na noite 9, na fogueira, o padre tenta convencer o jogador; “Aceitar o batismo e batizar os outros” acaba o jogo no fim da noite 9.</p>
+<p><b>Cena:</b></p>
+<blockquote>Antes de a noite acabar, o padre derrama água na sua testa e na de cada um da aldeia. Todos ganham nomes que não são os seus. Na vila, a mesma água cai na testa de um doente, que morre logo depois.</blockquote>
+<p><b>Tela de fato:</b> “Em abril de 1563, na aldeia de Santiago, na Bahia, os jesuítas batizaram 84 indígenas à beira da morte, e todos morreram. No mesmo período, o governador Mem de Sá declarou que os Caeté podiam ser escravizados onde fossem encontrados.” Para quem via de fora, a água chegava junto com a morte.</p>
+<p><b>Fonte na tela:</b> Carta do padre Leonardo do Valle ao padre Gonçalo Vaz, Bahia, 12 de maio de 1563.</p>
+</div>
+
+<div class="final">
+<h3>5. Rio Acima</h3>
+<p class="povo">Povo: Aimoré, hoje Krenak · 5º da fila · acaba na noite 10</p>
+<p><b>Como se chega:</b> na noite 8, deixar Krenan levar alguém rio acima; assim ele volta na noite 10. Na noite 10, ele faz o mesmo pedido, e o jogador escolhe “Ir com ele”. Essa escolha vale mais que o final calculado de manhã.</p>
+<p><b>Cena:</b></p>
+<blockquote>A aldeia sobe o rio atrás de Krenan. As ocas ficam vazias para trás.</blockquote>
+<p><b>Quem eram:</b> povo de tronco macro-jê, não tupi, que resistiu no interior por séculos. Os portugueses os chamavam de “Botocudos” por causa do botoque, o disco no lábio; o Krenan do jogo usa um.</p>
+<p><b>Tela de fato:</b> “A carta régia de 13 de maio de 1808 declarou guerra oficial contra os Aimoré, chamados de Botocudos. Os descendentes incluem os Krenak, que vivem no Vale do Rio Doce (MG), o Watu, atingido pela lama da barragem de Mariana em 2015.”</p>
+<p><b>Fonte na tela:</b> Carta Régia de 13 de maio de 1808; Instituto Socioambiental: Krenak.</p>
+<p><b>O que ensina:</b> fugir também é escolha, e isolamento não é “povo intocado”.</p>
+</div>
+
+<div class="final">
+<h3>6. Anhangá</h3>
+<p class="povo">Povo: Tremembé · 6º da fila · acaba na noite 9</p>
+<p><b>Como se chega:</b> perguntar ao pajé “Que barulho é esse na mata?” nas três noites em que dá (2, 5 e 9) e ver o veado branco, sem nenhuma morte pela sua mão. Entregar alguém ao Aleixo não impede (com 2 entregas, A Troca vem antes). No fim da noite 9, a da 3ª vez, o jogo vai para o final.</p>
+<p><b>A ideia:</b> o “animal mágico” do caderno do grupo. Ele aparece, mas não fala, não cura e não muda nada na história; só observa. O final premia quem parou para olhar. Nenhum final cria remédio nem salvação mágica: no jogo, não existe remédio.</p>
+<p><b>Cena:</b></p>
+<blockquote>Na nona noite, o veado branco sai da mata e para diante do fogo. O pajé abaixa a cabeça. Depois, o veado some entre as árvores.</blockquote>
+<p><b>Tela de fato:</b> “Os missionários chamaram de demônio o Anhangá, protetor dos animais. No aldeamento de Almofala (CE), os Tremembé continuaram dançando o torém, em roda, para os encantados da terra. No século XIX, o governo do Ceará disse que eles não existiam mais. Em 2023, a Terra Indígena Tremembé da Barra do Mundaú foi homologada.”</p>
+<p><b>Fonte na tela:</b> José Vieira Couto de Magalhães, O Selvagem (1876); Encantes da Terra: os Tremembé de Almofala (revista Ilha, UFSC, 2019); Decreto nº 11.506, de 28 de abril de 2023.</p>
+</div>
+
+<div class="final">
+<h3>7. O Tapiri</h3>
+<p class="povo">Povo: Korubo (Vale do Javari, AM) · 7º da fila · dia 10</p>
+<p><b>Como se chega:</b> levar ao tapiri 2 amaldiçoados (quem chegou com a maldição ou pegou a febre na oca) e nunca ninguém são; quem já saiu curado do tapiri conta como são. O jeito mais simples: Mbaé na noite 2 (sai curado na noite 5) e Tamandaré-mirim na noite 5. Pelo menos 2 vivos no dia 10.</p>
+<p>Matar um amaldiçoado ou entregar 1 pessoa não impede; matar alguém são impede. Também não impedem: o Aleixo levar gente sorteada, ver o veado até 2 vezes (na 3ª, é Anhangá) e deixar Krenan levar alguém na noite 8 (só não pode ir com ele na noite 10, que é Rio Acima). O Tapiri vem antes da Honra na fila: quem cumpre os dois cai no Tapiri.</p>
+<p><b>A ideia:</b> premiar quem entendeu a regra principal do jogo: a doença só passa dentro da oca, e o tapiri é o único jeito de separar quem está doente.</p>
+<p><b>Cena:</b></p>
+<blockquote>Poucas redes em volta da fogueira. Ao longe, o tapiri com uma luz acesa: o pajé cuida de quem está lá.</blockquote>
+<p><b>Tela de fato:</b> “Os Korubo vivem no Vale do Javari (AM), a região com mais povos isolados do mundo. Em 2020, na covid-19, o STF mandou erguer barreiras sanitárias nas terras de povos isolados (ADPF 709). O tapiri de 1562 virou decisão da Justiça.”</p>
+<p><b>Fonte na tela:</b> Instituto Socioambiental, agosto de 2020: o referendo da ADPF 709 no STF.</p>
+</div>
+
+<div class="final">
+<h3>8. A Honra</h3>
+<p class="povo">Povo: Tupinambá · 8º da fila · dia 10</p>
+<p><b>Como se chega:</b> há dois jeitos, e os dois pedem pelo menos 1 vivo no dia 10.</p>
+<ul>
+  <li><b>Conhecer quem chegou:</b> conversar com 5 pessoas (qualquer pergunta, de dia na oca ou de noite na fogueira) e nunca matar alguém são. Matar um amaldiçoado não impede. Quem foi levado pelo Aleixo ou por Krenan antes de o jogador conversar com ele conta como conversado, então um levado não estraga a Honra. A brasa acima da cabeça mostra quem falta.</li>
+  <li><b>O tapiri:</b> nunca matar ninguém (nem amaldiçoado) e levar ao tapiri pelo menos 1 amaldiçoado, nunca alguém são. O jeito mais simples: Mbaé na noite 2.</li>
+</ul>
+<p>Entregar 1 pessoa, ver o veado até 2 vezes e deixar Krenan levar alguém não impedem. Com 2 amaldiçoados no tapiri (e 2 vivos ou mais), cai antes em O Tapiri.</p>
+<p><b>As 5 histórias:</b> a Honra já pediu ouvir as 5 histórias (<code>memoria</code> ≥ 5). Isso está desligado (<code>HONRA_PEDE_HISTORIAS</code> em <code>dados/finais.py</code>); a palavra-chave para religar é “voltar a honra”.</p>
+<p><b>Cena</b> (rascunho, o grupo pode reescrever):</p>
+<blockquote>A febre vai embora devagar. Os nomes de quem chegou ficam guardados na aldeia, e quem sobreviveu ainda se senta com você em volta do fogo.</blockquote>
+<p><b>Quem eram:</b> o maior povo do litoral, do Rio de Janeiro ao Maranhão. Memória e honra organizavam a vida; o ritual com o inimigo capturado era honra e vingança, nunca fome nem “selvageria”.</p>
+<p><b>Tela de fato:</b> “Um manto tupinambá de penas vermelhas, levado para a Europa no século XVII, voltou ao Museu Nacional, no Rio, em 2024. Os Tupinambá de Olivença (BA) lutam hoje pela demarcação da terra.”</p>
+<p><b>Fonte na tela:</b> Museu Nacional/UFRJ (2024); Instituto Socioambiental: Tupinambá.</p>
+</div>
+
+<div class="final">
+<h3>9. Ferida</h3>
+<p class="povo">Povo: Potiguara · 9º da fila · dia 10</p>
+<p><b>Como se chega:</b> a aldeia sobreviveu (pelo menos 1 vivo), mas o jogador matou alguém são ou levou alguém são ao tapiri. A cena diz o nome dessa pessoa. Quem matou 3 ou mais cai antes em A Loucura; sem nenhum vivo, é O Vazio. Quem conversou com 5 pessoas e só levou alguém são ao tapiri (sem matar ninguém são) cai antes na Honra.</p>
+<p><b>Cena</b> (quando alguém são morreu):</p>
+<blockquote>Quando o cacique volta da mata, encontra a fogueira acesa e {vivos} em volta dela. A aldeia ainda existe. Ninguém fala de {nome}. Mas, à noite, cada um dorme virado para a entrada. Na mata, um parente aprende a desconfiar de outro parente. A doença foi embora. Isso ficou.</blockquote>
+<p>Se o erro foi o tapiri, a terceira frase vira: <i>“{nome} voltou do tapiri. Não senta mais perto de você.”</i> Assim o final nomeia o erro sem falar em “redes vazias”.</p>
+<p><b>Por que os Potiguara:</b> parentes que a guerra colonial pôs em lados opostos, e que sobreviveram mesmo assim.</p>
+<table>
+<tr><th>Ano</th><th>Fato</th></tr>
+<tr><td>1625</td><td>Os Potiguara da Baía da Traição se aliaram à frota holandesa e foram massacrados pelos portugueses. Os sobreviventes foram escravizados; alguns fugiram para a Ibiapaba e outros foram levados à Holanda, entre eles Pedro Poti.</td></tr>
+<tr><td>1645</td><td>Na Insurreição Pernambucana, Felipe Camarão e Diogo Pinheiro Camarão (lado português) escreveram a Pedro Poti e Antônio Paraupaba (lado holandês). Foi a primeira vez, desde a conquista, que os Potiguara ficaram em campos opostos. Camarão e Poti eram primos.</td></tr>
+<tr><td>1645</td><td>Nas cartas, Camarão argumenta que todos tinham o mesmo sangue e não deviam se matar. Em 31/10/1645, Poti recusa: os portugueses tinham escravizado e maltratado o povo dele.</td></tr>
+<tr><td>Hoje</td><td>As seis cartas estão na Biblioteca Real de Haia. São os únicos textos conhecidos escritos por indígenas em tupi no período colonial (tradução de Eduardo Navarro, USP).</td></tr>
+<tr><td>1648–1649</td><td>Camarão morre depois da primeira batalha dos Guararapes. Poti é capturado na segunda e morre preso (há duas versões de como).</td></tr>
+<tr><td>Hoje</td><td>Três terras indígenas na Paraíba: TI Potiguara (homologada em 1991), Jacaré de São Domingos (1993) e Potiguara de Monte-Mor (4/12/2024). Cerca de 14 mil indígenas (Siasi, 2013).</td></tr>
+</table>
+<p><b>Tela de fato:</b> “Em 1645, os Potiguara lutaram dos dois lados da guerra entre portugueses e holandeses. Os primos Felipe Camarão e Pedro Poti trocaram cartas em tupi: um pedia ao outro que não matasse o próprio sangue. Poti recusou e morreu preso em 1649. Os Potiguara vivem até hoje no litoral norte da Paraíba, em três terras indígenas. A última foi homologada em 2024.”</p>
+<p><b>Fonte na tela:</b> Regina Célia Gonçalves, “Os Potiguara na Guerra dos Brancos” (ANPUH, 2005); Eduardo Navarro, tradução das cartas tupis (USP); Decreto nº 12.288/2024.</p>
+<p><b>Cuidado:</b> o final não pode sugerir que os Potiguara “se traíram”: quem os dividiu foi a guerra entre dois impérios. Não explicar na tela o nome “Baía da Traição” (a origem é discutida e desvia o assunto). Sobre a morte de Poti, a tela diz só “morreu preso em 1649”.</p>
+</div>
+
+<div class="final">
+<h3>10. O Vazio</h3>
+<p class="povo">Povo: Goitacá · último da fila</p>
+<p><b>Como se chega:</b> no dia 10, é o que sobra quando nada mais bate. Antes disso, o jogo acaba no fim de uma noite em que não sobrou ninguém de fora vivo na aldeia e pelo menos 2 já morreram (de febre ou pela sua mão).</p>
+<p><b>Cena:</b></p>
+<blockquote>As redes ficam vazias, uma a uma. Ninguém invadiu: os amaldiçoados dormiram entre os seus, e a febre decidiu por você.</blockquote>
+<p><b>Quem eram:</b> povo não tupi das planícies do norte do Rio de Janeiro, que enfrentou os portugueses com força. O nome sobrevive na cidade de Campos dos Goytacazes.</p>
+<p><b>Tela de fato:</b> “Os Goitacá eram temidos por boato: cronistas os descreveram como ferozes sem nunca ter convivido com eles. Desapareceram no século XVIII, entre guerras e epidemias. É o único final de um povo que não existe mais.”</p>
+<p><b>Fonte na tela:</b> Anthony Knivet (c. 1597); frei Vicente do Salvador, História do Brasil (1627).</p>
+</div>
+
+<h2>5. O jogo pode acabar antes da noite 10?</h2>
+<table>
+<tr><th>Noite</th><th>Final</th><th>Como</th></tr>
+<tr><td>4</td><td>A Loucura</td><td>matar Yara, Mbaé e Potira</td></tr>
+<tr><td>6</td><td>A Troca</td><td>a 2ª entrega, na 2ª visita do Aleixo</td></tr>
+<tr><td>qualquer</td><td>O Vazio</td><td>a aldeia esvaziou</td></tr>
+<tr><td>9</td><td>Guerra Justa, A Água do Batismo ou Anhangá</td><td>o arco, o batismo ou a 3ª vez do veado</td></tr>
+<tr><td>10</td><td>Rio Acima</td><td>ir com Krenan</td></tr>
+<tr><td>10</td><td>os outros</td><td>o cálculo da manhã do dia 10</td></tr>
+</table>
+
+<h2>6. As porcentagens</h2>
+<p>Os números não são contas feitas à mão: um robô jogou 400 partidas inteiras ao acaso no jogo de verdade (<code>Jogo/ferramentas/simular_finais.py</code>), sem janela, com os mesmos roteiros, a mesma febre sorteada e o mesmo cálculo dos finais (25/10/2026). São os números que aparecem na tela da fonte de cada final. Cada botão tem a mesma chance, e o robô faz mais ou menos metade das perguntas.</p>
+<div class="caixa"><b>Atenção:</b> estes números são de antes da Honra pelas conversas (26/10). Agora a Honra deve aparecer mais vezes, e O Vazio e o Ferida, menos. É preciso rodar o simulador de novo.</div>
+<table>
+<tr><th>Nº</th><th>Final</th><th>Ao acaso</th><th>Em que noite acabou</th></tr>
+<tr><td>1</td><td>Guerra Justa</td><td>1,8%</td><td>noite 9</td></tr>
+<tr><td>2</td><td>A Troca</td><td>13,8%</td><td>noite 6 (36 partidas), noite 9 (19)</td></tr>
+<tr><td>3</td><td>A Loucura</td><td>2,2%</td><td>noites 4 a 8</td></tr>
+<tr><td>4</td><td>A Água do Batismo</td><td>8,2%</td><td>noite 9</td></tr>
+<tr><td>5</td><td>Rio Acima</td><td>1,0%</td><td>noite 10</td></tr>
+<tr><td>6</td><td>Anhangá</td><td>0,5%</td><td>noite 9</td></tr>
+<tr><td>7</td><td>O Tapiri</td><td>0%</td><td>— (pede escolhas pensadas até o dia 10)</td></tr>
+<tr><td>8</td><td>A Honra</td><td>1,8%</td><td>noite 10</td></tr>
+<tr><td>9</td><td>Ferida</td><td>5,8%</td><td>noite 10</td></tr>
+<tr><td>10</td><td>O Vazio</td><td>65,0%</td><td>146 no dia 10; o resto antes, quando a aldeia esvaziou</td></tr>
+</table>
+<p>Se o grupo mudar o roteiro ou as condições, é só rodar de novo, de dentro da pasta <code>Jogo</code>, e trocar os números em <code>dados/finais.py</code> (<code>chance_acaso</code>). Como as partidas são sorteadas, os números variam cerca de 1 a 3 pontos de uma rodada para outra. O simulador é lento no pendrive: 400 partidas levam algumas horas.</p>
+<p><code>python -m ferramentas.simular_finais 400</code> (ao acaso)<br><code>python -m ferramentas.simular_finais 300 tapiri</code> (quem tenta O Tapiri)</p>
+
+<h2>7. Resumo dos povos</h2>
+<table>
+<tr><th>Final</th><th>Povo</th><th>Tronco</th><th>Existe hoje?</th></tr>
+<tr><td>Guerra Justa</td><td>Caeté</td><td>Tupi</td><td>Não como povo</td></tr>
+<tr><td>A Troca</td><td>Tupiniquim</td><td>Tupi</td><td>Sim (ES)</td></tr>
+<tr><td>A Loucura</td><td>Tupinambá (Santidade de Jaguaripe)</td><td>Tupi</td><td>Sim</td></tr>
+<tr><td>A Água do Batismo</td><td>Caeté</td><td>Tupi</td><td>Não como povo</td></tr>
+<tr><td>Rio Acima</td><td>Aimoré → Krenak</td><td>Macro-jê</td><td>Sim (MG)</td></tr>
+<tr><td>Anhangá</td><td>Tremembé</td><td>Não tupi</td><td>Sim (CE)</td></tr>
+<tr><td>O Tapiri</td><td>Korubo</td><td>Pano</td><td>Sim (AM)</td></tr>
+<tr><td>A Honra</td><td>Tupinambá</td><td>Tupi</td><td>Sim (BA)</td></tr>
+<tr><td>Ferida</td><td>Potiguara</td><td>Tupi</td><td>Sim (PB)</td></tr>
+<tr><td>O Vazio</td><td>Goitacá</td><td>Não tupi</td><td>Não</td></tr>
+</table>
+<p>Dois povos aparecem em dois finais: os <b>Tupinambá</b> (A Loucura e A Honra, de propósito, porque a Santidade foi um movimento deles) e os <b>Caeté</b> (Guerra Justa e A Água do Batismo, os dois ligados ao ano de 1562).</p>
+
+<h2>8. O que o grupo ainda precisa decidir</h2>
+<ul>
+  <li>☐ Os Caeté são o povo de dois finais (A Água do Batismo e Guerra Justa). Trocar um deles?</li>
+  <li>☐ Algum final deve usar as perguntas ao Aleixo sobre quem ele levou (<code>perguntou_levados</code>)?</li>
+  <li>☐ Reescrever a cena da Honra (o texto atual é um rascunho).</li>
+  <li>☐ Rodar o simulador de novo: as porcentagens são de antes da Honra pelas conversas, e falta a chance de quem <i>tenta</i> cada final.</li>
+</ul>
+
+<h2>9. Fontes</h2>
+<ul class="pequeno">
+  <li>John Monteiro, <i>O escravo índio, esse desconhecido</i> (1992). <a href="https://estagioshistoriamales.unilab.edu.br/wp-content/uploads/2022/05/MONTEIRO-Joh.-O-escravo-indio-esse-desconhecido-Editado.pdf">PDF</a></li>
+  <li>Mecenas Santos, <i>Embates entre a cruz e a espada</i>, ANPUH 2011. <a href="https://anpuh.org.br/uploads/anais-simposios/pdf/2019-01/1548855459_714c973d5606144f085234a236404305.pdf">PDF</a></li>
+  <li>Ronaldo Vainfas, <i>A Heresia dos Índios: catolicismo e rebeldia no Brasil colonial</i> (Companhia das Letras, 1995; nova edição 2022): Santidade de Jaguaripe.</li>
+  <li>João Ricardo dos Santos Campanholo, <i>Fé cristã e resistência indígena no Novo Mundo</i>, dissertação, Unifal-MG, 2021: a Santidade como movimento tupinambá.</li>
+  <li>Carta do padre Leonardo do Valle ao padre Gonçalo Vaz, Bahia, 12 de maio de 1563: os 84 batizados na aldeia de Santiago.</li>
+  <li>Carta Régia de 13 de maio de 1808 (guerra contra os Botocudos).</li>
+  <li>Instituto Socioambiental (ISA), site Povos Indígenas no Brasil: páginas Tupiniquim, Krenak, Tupinambá e Korubo; reportagem de agosto de 2020 sobre o referendo da ADPF 709 no STF.</li>
+  <li>Museu Nacional/UFRJ (2024): a volta do manto tupinambá.</li>
+  <li>José Vieira Couto de Magalhães, <i>O Selvagem</i> (1876): o Anhangá como veado branco de olhos de fogo.</li>
+  <li><i>Encantes da Terra: os Tremembé de Almofala</i>, revista Ilha, UFSC, 2019; Decreto nº 11.506, de 28 de abril de 2023 (TI Tremembé da Barra do Mundaú).</li>
+  <li>Regina Célia Gonçalves, <i>Os Potiguara na Guerra dos Brancos (1630-1654)</i>, ANPUH 2005. <a href="https://anpuh.org.br/uploads/anais-simposios/pdf/2019-01/1548206569_63345cfe2454d29bfe99c1c057fb9f2c.pdf">PDF</a></li>
+  <li><i>Pesquisa revela troca de cartas em tupi entre indígenas do século 17</i>, Jornal da USP. <a href="https://jornal.usp.br/?p=466780">jornal.usp.br/?p=466780</a></li>
+  <li><i>Do tupi antigo para o português</i>, Revista Pesquisa FAPESP (2021). <a href="https://revistapesquisa.fapesp.br/do-tupi-antigo-para-o-portugues/">revistapesquisa.fapesp.br</a></li>
+  <li><i>Portugal, Holanda e os índios: visões do Brasil holandês nas cartas tupi</i>, UECE.</li>
+  <li><i>Terras indígenas Potiguara</i>, Revista REIA (UFPE); Decreto nº 12.288, de 4 de dezembro de 2024 (TI Potiguara de Monte-Mor).</li>
+  <li>Anthony Knivet (c. 1597); frei Vicente do Salvador, <i>História do Brasil</i> (1627): os Goitacá.</li>
+</ul>
+
+</body>
+</html>

@@ -19,7 +19,7 @@ from dados.aldeia import OCA, OCAS, ONDE_DORME, ONDE_DORME_TAPIRI
 from dados.textos import DIA
 from motor import efeitos, ui
 from motor.cena import Cena, desenhar_cenario
-from motor.pessoas import PessoaNoCenario, corpo_no_cenario
+from motor.pessoas import PessoaNoCenario, corpo_no_cenario, falta_conversar
 from motor.tabua import Tabua
 
 CENTRO_PAINEL = (1180, 150)       # meio da borda de cima do painel
@@ -171,6 +171,9 @@ class Oca(Cena):
 
     def desenhar_interface(self, tela):
         self.botao_menu.desenhar(tela)
+        for pessoa in self.na_oca:
+            if pessoa is not self.sobre_pessoa and falta_conversar(self.jogo.estado, pessoa.nome):
+                pessoa.desenhar_marca(tela, self.tempo)
         if self.sobre_pessoa:
             self.sobre_pessoa.desenhar_destaque(tela)
         opacidade = self.opacidade_do_texto()

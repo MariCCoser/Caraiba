@@ -17,7 +17,7 @@ from dados.dias import DIAS
 from dados.textos import DIA
 from motor import efeitos, fontes, progresso, ui
 from motor.cena import Cena, desenhar_cenario
-from motor.pessoas import PessoaNoCenario
+from motor.pessoas import PessoaNoCenario, falta_conversar
 from motor.tabua import Tabua
 
 POSICAO_BOTAO_MENU = (1420, 60)
@@ -176,6 +176,9 @@ class Aldeia(Cena):
             fechada = ALDEIA["fechada_dia"] if self.de_dia else ALDEIA["fechada"]
             self._rotulo(tela, self.sobre, fechada % OCAS[self.sobre]["nome"], config.FUMACA)
 
+        for pessoa in self.pessoas:
+            if pessoa is not self.sobre_pessoa and falta_conversar(self.jogo.estado, pessoa.nome):
+                pessoa.desenhar_marca(tela, self.tempo)
         if self.sobre_pessoa:
             self.sobre_pessoa.desenhar_destaque(tela)
 
