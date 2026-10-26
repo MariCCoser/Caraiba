@@ -1658,3 +1658,54 @@ for _noite in NOITES.values():
                 # Depois da decisão; se a pessoa morreu ou foi levada, não há com quem sentar.
                 _passos.insert(_i + 1, {"tipo": "se", "dentro": _nome, "passos": [sentar_perto(_nome)]})
                 break
+
+
+# --- As perguntas ao pajé, em dois caminhos (como as do Irmão Aleixo, dados/dias.py) ---
+# Primeiro o jogador escolhe o assunto (ou volta para a fogueira); depois aparecem as perguntas
+# daquele assunto. Dá para voltar ao pajé e escolher o outro. As perguntas de cada noite continuam escritas acima, numa
+# lista só: as que estão em PERGUNTAS_DO_SONHO vão para o 1º caminho; as outras, para o 2º.
+# Noite em que um dos caminhos fica vazio mostra as perguntas direto, sem a escolha.
+CAMINHOS_PAJE = {
+    "texto": "O que perguntar ao pajé?",
+    "sonho": "Perguntar sobre o sonho",
+    "pessoas": "Perguntar sobre as pessoas",
+}
+PERGUNTAS_DO_SONHO = {
+    "O que você viu no sono?", "Todo olho vermelho é o mal?", "O mal passa aqui no fogo?",
+    "E se eu tiver certeza de que é o mal?", "Como eu vejo isso?", "O que é o tapiri?",
+    "O tapiri tem lugar?", "E quem sai do tapiri?", "Que barulho é esse na mata?",
+}
+
+
+def _caminho(texto, botao, perguntas):
+    opcao = {"texto": texto, "passos": [{"tipo": "perguntas", "botao": botao, "perguntas": perguntas}]}
+    # Caminho só com perguntas sobre uma pessoa ("se_dentro"): só aparece se ela está na aldeia.
+    quem = {pergunta.get("se_dentro") for pergunta in perguntas}
+    if len(quem) == 1 and None not in quem:
+        opcao["condicao"] = {"dentro": quem.pop()}
+    return opcao
+
+
+def perguntas_paje(passo):
+    """O passo "perguntas" do pajé, dividido nos dois caminhos."""
+    sonho = [pergunta for pergunta in passo["perguntas"] if pergunta["pergunta"] in PERGUNTAS_DO_SONHO]
+    pessoas = [pergunta for pergunta in passo["perguntas"] if pergunta["pergunta"] not in PERGUNTAS_DO_SONHO]
+    if not sonho or not pessoas:
+        return passo
+    return {"tipo": "escolha", "texto": CAMINHOS_PAJE["texto"], "opcoes": [
+        _caminho(CAMINHOS_PAJE["sonho"], passo["botao"], sonho),
+        _caminho(CAMINHOS_PAJE["pessoas"], passo["botao"], pessoas),
+        {"texto": passo["botao"], "passos": []},   # sair sem perguntar nada
+    ]}
+
+
+def _dividir_perguntas_do_paje(passos):
+    for _i, _passo in enumerate(passos):
+        if _passo["tipo"] == "perguntas":
+            passos[_i] = perguntas_paje(_passo)
+        elif _passo["tipo"] == "se":
+            _dividir_perguntas_do_paje(_passo["passos"])
+
+
+for _noite in NOITES.values():
+    _dividir_perguntas_do_paje(_noite["pessoas"]["Pajé"]["passos"])

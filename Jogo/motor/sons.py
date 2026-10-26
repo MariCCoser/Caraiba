@@ -1,7 +1,10 @@
 # Os sons: o ambiente em loop de cada lugar e os efeitos curtos (a lista fica em dados/sons.py).
 #
-# - ambiente(nome): a cada quadro, o Jogo passa o ambiente da cena atual (Cena.som_ambiente).
-#   Só faz algo quando ele muda: o que sai some devagar, o que entra aparece devagar.
+# - ambiente(nome, intensidade): a cada quadro, o Jogo passa o ambiente da cena atual
+#   (Cena.som_ambiente) e o quanto os sons que crescem já cresceram (Cena.som_intensidade, de
+#   0 a 1: a introdução). Cada som tem um volume "alvo"; atualizar(dt) leva o volume até ele aos
+#   poucos. Assim o que sai some devagar, o que entra aparece devagar, e um som que só muda de
+#   volume (ex.: a mata, ao entrar na oca) também muda devagar, sem pulo.
 # - efeito(nome): toca um som curto uma vez (ex.: os passos de quem chega).
 # - atualizar_volume(): liga ou desliga tudo, conforme as Opções (preferencias.som).
 #
@@ -13,12 +16,13 @@ import os
 import pygame
 
 import config
-from dados.sons import AMBIENTES, EFEITOS, SONS, TROCA_MS
+from dados.sons import AMBIENTES, CRESCEM, EFEITOS, SONS, TROCA_MS
 from motor import preferencias
 
 _sons = {}          # nome -> pygame.mixer.Sound, carregado na primeira vez
-_tocando = {}       # nome do som do ambiente -> Channel em que ele está tocando
+_tocando = {}       # nome do som do ambiente -> {"canal", "volume" (o de agora), "alvo"}
 _ambiente = None    # o ambiente que está tocando agora
+_intensidade = 1.0  # o quanto os sons de CRESCEM já cresceram (0 a 1)
 _ligado = None      # None = ainda não tentou abrir o áudio
 
 
@@ -44,31 +48,48 @@ def _som(nome):
     return _sons[nome]
 
 
-def ambiente(nome):
+def _alvos(nome, intensidade):
+    """O volume final de cada som do ambiente (os de CRESCEM, vezes a intensidade)."""
+    crescem = CRESCEM.get(nome, [])
+    return {som: volume * (intensidade if som in crescem else 1.0)
+            for som, volume in AMBIENTES.get(nome, {}).items()}
+
+
+def ambiente(nome, intensidade=1.0):
     """Troca o ambiente (um nome de AMBIENTES, ou None para silêncio). Com o som desligado,
     só guarda o nome: ele começa a tocar quando o som for ligado (atualizar_volume)."""
-    global _ambiente
-    if nome == _ambiente or not _audio_ok():
+    global _ambiente, _intensidade
+    if (nome, intensidade) == (_ambiente, _intensidade) or not _audio_ok():
         return
-    _ambiente = nome
+    _ambiente, _intensidade = nome, intensidade
     if not preferencias.atual.som:
         return
-    camadas = AMBIENTES.get(nome, {})
-    for som, canal in list(_tocando.items()):
-        if som not in camadas:
-            canal.fadeout(TROCA_MS)
-            del _tocando[som]
-    for som, volume in camadas.items():
+    alvos = _alvos(nome, intensidade)
+    for som, tocando in _tocando.items():
+        tocando["alvo"] = alvos.get(som, 0.0)   # o que não está no ambiente novo some devagar
+    for som, alvo in alvos.items():
         if som in _tocando:
-            _tocando[som].set_volume(volume)
             continue
         arquivo = _som(som)
-        if arquivo is None:
-            continue
-        canal = arquivo.play(loops=-1, fade_ms=TROCA_MS)
+        canal = arquivo.play(loops=-1) if arquivo else None
         if canal is not None:
-            canal.set_volume(volume)
-            _tocando[som] = canal
+            canal.set_volume(0.0)
+            _tocando[som] = {"canal": canal, "volume": 0.0, "alvo": alvo}
+
+
+def atualizar(dt):
+    """A cada quadro: cada som anda um pouco até o volume alvo. O que chegou a zero para."""
+    passo = dt * 1000 / TROCA_MS
+    for som, tocando in list(_tocando.items()):
+        volume, alvo = tocando["volume"], tocando["alvo"]
+        if volume == alvo:
+            continue
+        volume = min(alvo, volume + passo) if volume < alvo else max(alvo, volume - passo)
+        tocando["volume"] = volume
+        tocando["canal"].set_volume(volume)
+        if volume == 0.0 and alvo == 0.0:
+            tocando["canal"].stop()
+            del _tocando[som]
 
 
 def efeito(nome):
@@ -95,7 +116,7 @@ def atualizar_volume():
     pygame.mixer.stop()
     _tocando.clear()
     nome, _ambiente = _ambiente, None
-    ambiente(nome)
+    ambiente(nome, _intensidade)
 
 
 def parar():

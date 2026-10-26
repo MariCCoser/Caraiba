@@ -128,6 +128,12 @@ def _textura(nome):
             _texturas[nome] = _gerar_graos(44)
         elif nome == "vinheta":
             _texturas[nome] = _gerar_vinheta()
+        elif nome == "linhas_e_vinheta":
+            # As duas são preto com transparência: juntas numa camada só, a tela recebe uma
+            # passada a menos por quadro (o tratamento é o que mais pesa no desenho).
+            juntas = _textura("linhas").copy()
+            juntas.blit(_textura("vinheta"), (0, 0))
+            _texturas[nome] = juntas
         elif nome == "brilhos":
             _texturas[nome] = _gerar_brilhos()
     return _texturas[nome]
@@ -186,11 +192,13 @@ class Tratamento:
         """Desenha o tratamento por cima do que já está na tela (a cena)."""
         if self.tremor and self._deslocamento_tremor:
             tela.scroll(self._deslocamento_tremor, 0)
-        if self.usar_linhas:
-            tela.blit(_textura("linhas"), (0, 0))
         if self.usar_grao:
             self._aplicar_grao(tela)
-        if self.usar_vinheta:
+        if self.usar_linhas and self.usar_vinheta:
+            tela.blit(_textura("linhas_e_vinheta"), (0, 0))
+        elif self.usar_linhas:
+            tela.blit(_textura("linhas"), (0, 0))
+        elif self.usar_vinheta:
             tela.blit(_textura("vinheta"), (0, 0))
 
     def _aplicar_grao(self, tela):

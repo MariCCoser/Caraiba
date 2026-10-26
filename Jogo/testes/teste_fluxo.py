@@ -386,11 +386,18 @@ def testar_aldeia_de_dia(jogo):
 
 
 def clicar_opcao(jogo, texto):
-    """Clica no botão do Dia que tem esse texto."""
+    """Clica no botão do Dia que tem esse texto. Uma pergunta ao pajé que está dentro de um dos
+    dois caminhos (dados/noites.py, CAMINHOS_PAJE): escolhe o caminho antes."""
+    from dados.noites import CAMINHOS_PAJE, PERGUNTAS_DO_SONHO
     for botao, _ in jogo.cenas.atual.botoes:
         if botao.texto == texto:
             clicar_botao(jogo, botao)
             return
+    textos = [b.texto for b, _ in jogo.cenas.atual.botoes]
+    if CAMINHOS_PAJE["sonho"] in textos and texto not in (CAMINHOS_PAJE["sonho"], CAMINHOS_PAJE["pessoas"]):
+        clicar_opcao(jogo, CAMINHOS_PAJE["sonho" if texto in PERGUNTAS_DO_SONHO else "pessoas"])
+        clicar_opcao(jogo, texto)
+        return
     raise AssertionError("botão não encontrado: %s (há: %s)" % (
         texto, [b.texto for b, _ in jogo.cenas.atual.botoes]))
 
@@ -920,9 +927,21 @@ def testar_dia2_e_noite2(jogo):
     assert estado.dia == 2 and nome_cena(jogo) == "Aldeia" and jogo.cenas.atual.de_dia, nome_cena(jogo)
     assert jogo.dia_pausado.titulo == "Dia 2" and jogo.cenas.atual.texto_seta == "Entrada da aldeia"
 
-    # De dia, Yara dorme na oca Yorixiriamori (parada, sem conversa nova).
+    # De dia, Yara (que entrou ontem) espera na oca Yorixiriamori: dá para conversar com ela.
     oca = entrar_na_oca(jogo, "oca1")
-    assert oca.de_dia and oca.pessoas == [("Yara", "yara_sentada")] and oca.na_oca == []
+    assert oca.de_dia and oca.pessoas == [] and [p.nome for p in oca.na_oca] == ["Yara"]
+    jogo.conversar_no_dia("Yara", voltar_para="oca")
+    esperar_transicao(jogo)
+    dia = jogo.cenas.atual
+    dia.caixa.completar()
+    assert dia.visitante == "yara" and dia.caixa.texto == "Ainda aqui. A chuva não me deixa seguir.", (
+        dia.caixa.texto)
+    passar_falas(jogo)
+    assert textos_dos_botoes(jogo)[-1] == "Terminar a conversa", textos_dos_botoes(jogo)
+    clicar_opcao(jogo, "Terminar a conversa")
+    esperar_transicao(jogo)
+    oca = jogo.cenas.atual
+    assert nome_cena(jogo) == "Oca", nome_cena(jogo)
     clicar_botao(jogo, oca.botao_sair)
     esperar_transicao(jogo)
 
@@ -974,6 +993,9 @@ def testar_dia2_e_noite2(jogo):
     # O pajé fala do que a aldeia diz de Mbaé (só porque ele entrou).
     clicar_pessoa(jogo, "Pajé")
     passar_falas(jogo)
+    assert textos_dos_botoes(jogo) == ["Perguntar sobre o sonho", "Perguntar sobre as pessoas",
+                                       "Voltar para a fogueira"], textos_dos_botoes(jogo)
+    clicar_opcao(jogo, "Perguntar sobre as pessoas")
     assert "Por que olham torto para Mbaé?" in textos_dos_botoes(jogo)
     clicar_opcao(jogo, "Por que olham torto para Mbaé?")
     passar_falas(jogo)
@@ -1101,14 +1123,13 @@ def testar_dia3_e_noite3(jogo):
     # A entrada: ninguém chega; o Irmão Aleixo finca a cruz, responde e pede alguém.
     passar_falas(jogo)
     dia = jogo.cenas.atual
-    assert dia.modo == "escolha" and dia.visitante == "aleixo", (dia.modo, dia.visitante)
-    # Dois caminhos: perguntar sobre a vila ou sobre quem ele levou.
-    assert textos_dos_botoes(jogo) == ["Perguntar sobre a vila", "Perguntar sobre quem ele levou"], (
-        textos_dos_botoes(jogo))
-    clicar_opcao(jogo, "Perguntar sobre a vila")
+    # Na 1ª visita ele ainda não levou ninguém daqui: as perguntas vêm todas juntas, sem os
+    # dois caminhos (não há "Perguntar sobre quem ele levou").
+    assert dia.modo == "perguntas" and dia.visitante == "aleixo", (dia.modo, dia.visitante)
     rodar(jogo, 60)
     capturar(jogo, "26-dia3-aleixo")
-    assert textos_dos_botoes(jogo) == ["O que você quer?", "Por que a cruz?", "Seguir"], textos_dos_botoes(jogo)
+    assert textos_dos_botoes(jogo) == ["O que você quer?", "Por que a cruz?", "Quem você já levou?",
+                                       "Eles voltam para casa?", "Seguir"], textos_dos_botoes(jogo)
     clicar_opcao(jogo, "O que você quer?")
     passar_falas(jogo)
     clicar_opcao(jogo, "Seguir")
@@ -1135,13 +1156,11 @@ def testar_dia3_e_noite3(jogo):
     # O sinal do pajé e a fogueira: sem Mbaé (foi com Aleixo).
     passar_falas(jogo)
     assert len(estado.tabua) == 2, "no Dia 3 o pajé não conta sinal novo"
-    # 1 olhar, e mais 1 por ter negado o Aleixo; quem aceitou o machado de Yara tem mais 1.
-    assert estado.energia_hoje == 1
-    assert dia.titulo == "Noite 3" and dia.modo == "fogueira" and dia.energia == 2, dia.energia
+    # 1 olhar; negar o Aleixo no dia 3 não dá mais (o 3º só vem com a mandioca de Potira, na
+    # noite 4); quem aceitou o machado de Yara tem mais 1.
+    assert estado.energia_hoje == 0
+    assert dia.titulo == "Noite 3" and dia.modo == "fogueira" and dia.energia == 1, dia.energia
     estado.machado = 1
-    dia._comecar_noite()
-    assert dia.energia == dia.energia_max == 3
-    estado.energia_hoje = 0
     dia._comecar_noite()
     assert dia.energia == dia.energia_max == 2
     assert [p.nome for p in dia.na_fogueira] == ["Pajé", "Yara"]
@@ -1265,6 +1284,7 @@ def testar_dia4_e_noite4(jogo):
     capturar(jogo, "33-noite4-fogueira")
     clicar_pessoa(jogo, "Pajé")
     passar_falas(jogo)
+    clicar_opcao(jogo, "Perguntar sobre as pessoas")
     assert "E a Potira?" in textos_dos_botoes(jogo)
     clicar_opcao(jogo, "Voltar para a fogueira")
 
@@ -1357,8 +1377,9 @@ def testar_dia5_e_noite5(jogo):
 
     # Na oca Yebá Bëló, à esquerda da porta: a conversa inteira.
     oca = entrar_na_oca(jogo, "oca2")
-    assert [p.nome for p in oca.na_oca] == ["Tamandaré-mirim"]
-    assert [p.nome for p in oca.paradas] == ["Mbaé"], "Mbaé dorme na mesma oca"
+    # Mbaé dorme na mesma oca e já estava na aldeia: também dá para conversar com ele.
+    assert [p.nome for p in oca.na_oca] == ["Tamandaré-mirim", "Mbaé"], [p.nome for p in oca.na_oca]
+    assert oca.paradas == []
     rodar(jogo, 20)
     capturar(jogo, "36-dia5-tamandare-na-oca")
     clicar_pessoa(jogo, "Tamandaré-mirim")
@@ -1387,9 +1408,13 @@ def testar_dia5_e_noite5(jogo):
     dia.caixa.completar()
     assert "infelizes" in dia.caixa.texto, dia.caixa.texto
     passar_falas(jogo)
-    # A acusação e o barulho na mata (a 2ª vez do Anhangá) são com o pajé, não com Potira.
-    assert textos_dos_botoes(jogo) == ["De quem você desconfia?", "Que barulho é esse na mata?",
+    # A acusação e o barulho na mata (a 2ª vez do Anhangá) são com o pajé, não com Potira:
+    # um em cada caminho.
+    assert textos_dos_botoes(jogo) == ["Perguntar sobre o sonho", "Perguntar sobre as pessoas",
                                        "Voltar para a fogueira"], textos_dos_botoes(jogo)
+    clicar_opcao(jogo, "Perguntar sobre o sonho")
+    assert textos_dos_botoes(jogo) == ["Que barulho é esse na mata?", "Voltar para a fogueira"], (
+        textos_dos_botoes(jogo))
     clicar_opcao(jogo, "Voltar para a fogueira")
     assert dia.modo == "fogueira"
     # Com poucos amaldiçoados, os deuses estão felizes.
@@ -1560,7 +1585,7 @@ def testar_dia7_e_noite7(jogo):
 
     # Na oca Yorixiriamori, com Yara: a conversa inteira.
     oca = entrar_na_oca(jogo, "oca1")
-    assert [p.nome for p in oca.na_oca] == ["Iandé"] and [p.nome for p in oca.paradas] == ["Yara"]
+    assert [p.nome for p in oca.na_oca] == ["Iandé", "Yara"] and oca.paradas == []
     rodar(jogo, 20)
     capturar(jogo, "42-dia7-iande-na-oca")
     clicar_pessoa(jogo, "Iandé")
@@ -1933,8 +1958,8 @@ def testar_dia10_e_noite10(jogo):
 
     # Na oca Wanadi: Araci no meio da cama; Potira desce para a esteira ao lado.
     oca = entrar_na_oca(jogo, "oca3")
-    assert [p.nome for p in oca.na_oca] == ["Araci"] and oca.na_oca[0].rect.centerx == 1240
-    assert oca.pessoas == [("Potira", "potira_sentada")] and oca.paradas[0].rect.centerx == 1075
+    assert [p.nome for p in oca.na_oca] == ["Araci", "Potira"] and oca.na_oca[0].rect.centerx == 1240
+    assert oca.pessoas == [] and oca.na_oca[1].rect.centerx == 1075
     rodar(jogo, 20)
     capturar(jogo, "49-dia10-araci-na-oca")
     clicar_pessoa(jogo, "Araci")
@@ -2115,9 +2140,10 @@ def testar_fluxo():
     from motor import sons as motor_sons
     ambiente_de_verdade = motor_sons.ambiente
 
-    def conferir_ambiente(nome):
+    def conferir_ambiente(nome, intensidade=1.0):
         assert nome is None or nome in dados_sons.AMBIENTES, nome
-        ambiente_de_verdade(nome)
+        assert 0 <= intensidade <= 1, intensidade
+        ambiente_de_verdade(nome, intensidade)
     motor_sons.ambiente = conferir_ambiente
     print("ok sons (a lista e os arquivos)")
 
@@ -2253,7 +2279,7 @@ def testar_modo_teste():
 
 
 def testar_desempenho():
-    """Mede quanto tempo um quadro leva (meta: bem menos que 16 ms para 60 FPS)."""
+    """Mede quanto tempo um quadro leva (meta: bem menos que 33 ms para 30 FPS)."""
     import time
     jogo = Jogo(tamanho_janela=(1280, 720))
     rodar(jogo, 10)

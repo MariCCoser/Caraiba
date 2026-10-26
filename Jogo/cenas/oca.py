@@ -70,7 +70,7 @@ class Oca(Cena):
             self.pessoas = [(quem, imagem) for quem, imagem in self.pessoas
                             if quem not in [pessoa.nome for pessoa in self.na_oca]]
             if nomes:
-                texto = OCA["aqui_dia"] % nomes
+                texto = OCA["aqui_dia_varios" if len(self.na_oca) > 1 else "aqui_dia"] % nomes
             elif self.pessoas:
                 chave = "dormem_dia" if len(self.pessoas) > 1 else "dorme_dia"
                 texto = OCA[chave] % " e ".join(quem for quem, _ in self.pessoas)

@@ -17,7 +17,11 @@ LARGURA = 1600
 ALTURA = 900
 TAMANHO_LOGICO = (LARGURA, ALTURA)
 
-FPS = 60
+# Quadros por segundo. As cenas são quase paradas (texto, luz do fogo, grão): 30 bastam e deixam
+# folga para o computador (com 60, um computador mais lento fica no limite e o jogo engasga).
+FPS = 30
+# O "buffer" do som (amostras): maior evita estalos e engasgos do som num computador lento.
+BUFFER_DO_SOM = 2048
 TITULO_JANELA = "Caraíba — Dez Dias, Dez Fogueiras"
 
 # Duração (em segundos) de cada metade do escurecimento entre cenas.

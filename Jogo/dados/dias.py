@@ -53,6 +53,37 @@
 
 from dados.conversas import (conversa_araci, conversa_iande, conversa_mbae, conversa_potira,
                              conversa_tamandare, conversa_yara)
+from dados.aldeia import ONDE_DORME
+
+
+# De dia, quem já estava na aldeia (entrou num dia anterior) também espera na oca onde dorme, e
+# dá para conversar com ele (a conversa de sempre). Quem chega hoje tem a conversa do próprio
+# dia, no passo "aldeia". O Dia junta os dois (cenas/dia.py, _com_quem_ja_esta).
+# Para cada um: quem aparece na tela, a primeira frase (rascunho: o grupo pode reescrever) e
+# a conversa de sempre (dados/conversas.py).
+SAUDACAO_DE_DIA = {
+    "Yara": ("yara", "Ainda aqui. A chuva não me deixa seguir.", conversa_yara),
+    "Mbaé": ("mbae", "(tosse) Pode entrar. Não durmo mesmo.", conversa_mbae),
+    "Potira": ("potira", "Vim descansar um pouco. A roça cansa.", conversa_potira),
+    "Tamandaré-mirim": ("tamandare", "Entre. A palavra não espera a noite.", conversa_tamandare),
+    "Iandé": ("iande", "Você de novo? Senta, se quiser.", conversa_iande),
+    "Araci": ("araci", "O menino dormiu. Fale baixo.", conversa_araci),
+}
+# O cenário de dentro de cada oca, de dia (dados/arte.py).
+FUNDO_DA_OCA_DE_DIA = {"oca1": "oca1", "oca2": "oca2_dia", "oca3": "oca3_dia"}
+
+
+def conversa_de_dia(nome):
+    """A pessoa que já estava na aldeia, esperando na oca dela: a conversa de sempre."""
+    visitante, saudacao, conversa = SAUDACAO_DE_DIA[nome]
+    oca = ONDE_DORME[nome]["oca"]
+    return {"nome": nome, "oca": oca, "passos": [
+        {"tipo": "fundo", "fundo": FUNDO_DA_OCA_DE_DIA[oca], "filtro": "dia"},
+        {"tipo": "visitante", "visitante": visitante},
+        {"tipo": "fala", "quem": nome, "texto": saudacao},
+        {"tipo": "perguntas", "botao": "Terminar a conversa", "perguntas": conversa()},
+        {"tipo": "visitante", "visitante": None},
+    ]}
 
 
 # A manhã depois de o jogador matar alguém na fogueira, com o nome. Toda manhã depois de uma
@@ -145,6 +176,7 @@ PERGUNTAS_ALEIXO = {
         ],
     },
 }
+DIAS_SEM_CAMINHOS = [3]
 CAMINHOS_ALEIXO = {
     "texto": "O que perguntar ao Irmão Aleixo?",
     "vila": "Perguntar sobre a vila",
@@ -192,8 +224,12 @@ FALA_ALEIXO_NEGADO_PRIMEIRA = {
 
 
 def perguntas_aleixo(dia):
-    """Os dois caminhos de perguntas de uma visita do Aleixo: o jogador escolhe um."""
+    """Os dois caminhos de perguntas de uma visita do Aleixo: o jogador escolhe um. Na 1ª visita
+    (DIAS_SEM_CAMINHOS), ele ainda não levou ninguém daqui: as perguntas vêm todas juntas, sem
+    o caminho "Perguntar sobre quem ele levou"."""
     perguntas = PERGUNTAS_ALEIXO[dia]
+    if dia in DIAS_SEM_CAMINHOS:
+        return {"tipo": "perguntas", "botao": "Seguir", "perguntas": perguntas["vila"] + perguntas["levados"]}
     levados = perguntas["levados"] + (perguntas_sobre_os_levados() if dia == 6 else [])
     return {"tipo": "escolha", "texto": CAMINHOS_ALEIXO["texto"], "opcoes": [
         {"texto": CAMINHOS_ALEIXO["vila"], "passos": [
@@ -215,8 +251,10 @@ def falas_aleixo_negado(dia):
 EFEITOS_ENTREGAR = {"entregues": 1, "proximidade_vila": 1, "vivos": -1}
 # Na 1ª visita, negar não faz ele levar ninguém (A Honra precisa de gente viva no dia 10).
 DIAS_SEM_LEVAR = [3]
-# Negar o pedido do Aleixo dá energia a mais na noite do mesmo dia (olhares na fogueira).
-ENERGIA_POR_NEGAR = 1
+# Negar o pedido do Aleixo dá energia a mais na noite do mesmo dia (olhares na fogueira), em
+# cada visita. Na 1ª (dia 3), não: a noite 3 fica com 2 olhares no máximo (com o machado), e o
+# 3º só vem com a mandioca de Potira, na noite 4.
+ENERGIA_POR_NEGAR = {3: 0, 6: 1, 9: 1}
 FALA_ALEIXO_VOLTA = {"tipo": "fala", "quem": ALEIXO, "texto": "Volto daqui a alguns dias."}
 
 
@@ -301,7 +339,7 @@ def oferta_aleixo(dia):
          "efeitos": EFEITOS_ENTREGAR, "passos": [{"tipo": "fala", "quem": ALEIXO, "texto": fala}]}
         for nome, fala in FALA_ENTREGUE.items()]
     return {"tipo": "escolha", "texto": "Ele quer levar alguém para a vila.", "opcoes": entregar + [
-        {"texto": "Negar", "efeitos": {"recusas_aleixo": 1, "energia_hoje": ENERGIA_POR_NEGAR}, "passos": [
+        {"texto": "Negar", "efeitos": {"recusas_aleixo": 1, "energia_hoje": ENERGIA_POR_NEGAR[dia]}, "passos": [
             *falas_aleixo_negado(dia),
         ] + ([] if dia in DIAS_SEM_LEVAR else [
             {"tipo": "aleixo_leva",

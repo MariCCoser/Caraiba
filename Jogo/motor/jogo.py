@@ -40,6 +40,7 @@ TAMANHOS_DE_JANELA = [(1600, 900), (1280, 720), (1024, 576), (960, 540)]
 
 class Jogo:
     def __init__(self, tamanho_janela=None):
+        pygame.mixer.pre_init(44100, -16, 2, config.BUFFER_DO_SOM)
         pygame.init()
         pygame.display.set_caption(config.TITULO_JANELA)
 
@@ -209,7 +210,8 @@ class Jogo:
 
         ui.mouse_sobre_botao = False
         self.cenas.atualizar(dt)
-        sons.ambiente(self.cenas.atual.som_ambiente())
+        sons.ambiente(self.cenas.atual.som_ambiente(), self.cenas.atual.som_intensidade())
+        sons.atualizar(dt)
         self._atualizar_cursor()
 
         self.cenas.desenhar(self.tela)

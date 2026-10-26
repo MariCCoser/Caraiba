@@ -30,6 +30,10 @@ class Cena:
         """O ambiente que toca nesta cena (um nome de AMBIENTES em dados/sons.py), ou None."""
         return None
 
+    def som_intensidade(self):
+        """O quanto os sons que crescem (dados/sons.py, CRESCEM) já cresceram, de 0 a 1."""
+        return 1.0
+
     def tratar_evento(self, evento):
         pass
 

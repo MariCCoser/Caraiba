@@ -126,6 +126,7 @@ OCA = {
     "dorme_dia": "%s dorme aqui.",
     "dormem_dia": "%s dormem aqui.",
     "aqui_dia": "%s está aqui dentro. Clique para conversar.",
+    "aqui_dia_varios": "%s estão aqui dentro. Clique em quem quer conversar.",
     "vazio_tapiri": "Ninguém está no tapiri.",
     # Quem morreu da febre aqui na noite passada: o corpo, coberto com a esteira, no lugar dele.
     "corpo": "O corpo de %s está coberto com uma esteira.",

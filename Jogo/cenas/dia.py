@@ -19,7 +19,7 @@ import pygame
 import config
 from dados.aldeia import TAPIRI
 from dados.arte import EM_PE
-from dados.dias import DIAS, escolha_do_arco
+from dados.dias import DIAS, SAUDACAO_DE_DIA, conversa_de_dia, escolha_do_arco
 from dados.febre import DOENTES
 from dados.noites import NOITES
 from dados.sons import AMBIENTE_DO_CENARIO, CENARIO_DOS_PASSOS
@@ -129,6 +129,7 @@ class Dia(Cena):
         self.refazendo = False
         self.construindo = True    # o roteiro começa a tocar antes de a cena aparecer
         self.tocar_passos = False  # alguém chegou pela trilha: os passos tocam no próximo quadro
+        self.aldeias_com_todos = {}  # id do passo "aldeia" -> com quem já estava (_com_quem_ja_esta)
         self._proximo()
 
         # "Continuar": refaz as ações guardadas, sem animação, até o ponto em que o jogador parou.
@@ -440,8 +441,23 @@ class Dia(Cena):
 
     # --- a aldeia de dia --------------------------------------------------------
 
+    def _com_quem_ja_esta(self, passo):
+        """O passo "aldeia" com quem já estava na aldeia (entrou num dia anterior), esperando na
+        oca onde dorme para conversar (dados/dias.py, conversa_de_dia). Cada passo vira uma
+        cópia uma vez só: assim a conversa volta sempre para o mesmo passo."""
+        if id(passo) in self.aldeias_com_todos:
+            return self.aldeias_com_todos[id(passo)]
+        listados = {pessoa["nome"] for pessoa in passo.get("pessoas", [])}
+        extras = [conversa_de_dia(nome) for nome in self.estado.dentro
+                  if nome in SAUDACAO_DE_DIA and nome not in listados and nome not in self.estado.tapiri]
+        completo = dict(passo, pessoas=passo.get("pessoas", []) + extras) if extras else passo
+        self.aldeias_com_todos[id(passo)] = completo
+        self.aldeias_com_todos[id(completo)] = completo
+        return completo
+
     def _ir_para_aldeia(self, passo):
         """O jogador anda pela aldeia; esta cena fica guardada e volta pela seta da entrada."""
+        passo = self._com_quem_ja_esta(passo)
         self.passo_aldeia = passo
         self.modo = "aldeia"
         self.caixa = None

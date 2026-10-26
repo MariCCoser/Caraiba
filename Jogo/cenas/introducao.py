@@ -6,6 +6,7 @@
 import pygame
 
 import config
+from dados.sons import INTENSIDADE_INICIAL_INTRODUCAO
 from dados.textos import INTRODUCAO
 from motor import efeitos, imagens, ui
 from motor.cena import Cena, desenhar_cenario
@@ -74,6 +75,13 @@ class Introducao(Cena):
 
     def som_ambiente(self):
         return "introducao"
+
+    def som_intensidade(self):
+        """A mata cresce a cada cartão: baixinha no primeiro, o volume do dia no último."""
+        if len(self.cartoes) < 2:
+            return 1.0
+        avanco = self.indice / (len(self.cartoes) - 1)
+        return INTENSIDADE_INICIAL_INTRODUCAO + (1 - INTENSIDADE_INICIAL_INTRODUCAO) * avanco
 
     def tratar_evento(self, evento):
         if self.botao_pular.clicado(evento):
