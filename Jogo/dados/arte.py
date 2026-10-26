@@ -56,6 +56,7 @@ PERSONAGENS = {
     "iande_sentada": "personagens/sentados/iande.png",
     "araci_sentada": "personagens/sentados/araci.png",
     "potira_sentada": "personagens/sentados/potira.png",
+    "padre_sentado": "personagens/sentados/padre.png",
 
     # O corpo coberto com a esteira, deitado, no lugar de quem morreu (a mesma altura dos sentados).
     "esteira": "personagens/esteira.png",                          # quem era são

@@ -360,7 +360,7 @@ ZONAS_IANDE = [
 # ele volta na noite 10 para levar mais gente (estado.krenan_volta). Se negou, não volta.
 # Ele fala um português antigo, rebuscado e duro. Na fogueira, senta no tronco da esquerda.
 POSICAO_KRENAN, ESCALA_KRENAN = (140, 462), 0.45
-POSICAO_PADRE, ESCALA_PADRE = (170, 560), 0.5   # noite 9: em pé, no lugar do Krenan
+POSICAO_PADRE, ESCALA_PADRE = (165, 575), 0.62  # noite 9: ajoelhado, rezando, na frente do tronco de cima
 QUEM_SOBE = ["Yara", "Mbaé", "Potira", "Tamandaré-mirim", "Iandé"]
 FALA_KRENAN_VAI = {"tipo": "fala", "quem": "Krenan",
                    "texto": "Assim seja. Se a lua mo consentir, tornarei a este fogo."}
@@ -1334,7 +1334,7 @@ NOITES = {
             # tronco da esquerda, onde o Krenan sentou na noite 8. Tenta convencer o jogador a ser
             # batizado e a batizar os outros. Aceitar é A Água do Batismo, no fim desta noite.
             "Padre": {
-                "imagem": "padre", "posicao": POSICAO_PADRE, "escala": ESCALA_PADRE,
+                "imagem": "padre_sentado", "posicao": POSICAO_PADRE, "escala": ESCALA_PADRE,
                 "condicao": {"ao_menos": {"padre_entrou": 1}},
                 "uma_vez": True, "atras": True,
                 "passos": [

@@ -94,7 +94,7 @@ LIMIAR_BRANCO_CERCADO = 240
 AREA_MINIMA_BRANCO_CERCADO = 1500   # pixels da arte original
 # Arte com o fundo xadrez desenhado na imagem (cinza e branco, sem transparência de verdade):
 # o xadrez preso entre o braço e o corpo forma manchas pequenas, que também saem.
-ARTE_XADREZ = ["personagens_png/Potira_png.png", "Personagens_sentados_png/Potira_sentada_png.png",
+ARTE_XADREZ = ["personagens_png/Potira_png.png", "Personagens_sentados_png/Personagens_sentados/Potira_sentada_png.png",
                "personagens_png/esteira_amaldicoado.png", "personagens_png/Padre.png"]
 AREA_MINIMA_BRANCO_CERCADO_XADREZ = 30
 LIMIAR_BRANCO_CERCADO_XADREZ = 232   # o cinza do xadrez (238) também conta
@@ -313,8 +313,10 @@ SENTADOS = [
     # e a moça abraçando os joelhos (Iandé) no arquivo "Araci_sentada".
     (SENTADOS_PNG + "Iandé_sentada.png", "personagens/sentados/araci.png"),
     (SENTADOS_PNG + "Araci_sentada.png", "personagens/sentados/iande.png"),
-    # Potira veio fora da pasta dos sentados, com o fundo xadrez desenhado na imagem.
-    ("Personagens_sentados_png/Potira_sentada_png.png", "personagens/sentados/potira.png"),
+    # Potira veio com o fundo xadrez desenhado na imagem.
+    (SENTADOS_PNG + "Potira_sentada_png.png", "personagens/sentados/potira.png"),
+    # O padre novo (noite 9), ajoelhado, rezando, já com fundo transparente.
+    (SENTADOS_PNG + "PadreSentado.png", "personagens/sentados/padre.png"),
 ]
 
 # O corpo coberto com a esteira, deitado (no lugar de quem morreu: na fogueira, na oca ou no
