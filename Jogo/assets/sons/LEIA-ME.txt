@@ -1,0 +1,5 @@
+Coloque aqui os sons do jogo, no formato .ogg (funciona no computador e no navegador).
+
+Para cada som, anote abaixo de onde ele veio e a licença (para os créditos):
+
+arquivo.ogg - autor - site - licença
