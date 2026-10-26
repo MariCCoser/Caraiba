@@ -23,7 +23,11 @@ def ler_de_antemao():
     no meio da noite. Assim tudo já está na memória quando o jogador chega lá (o menu dá tempo);
     se ainda não estiver, carregar() lê do disco, como antes."""
     if config.NO_NAVEGADOR:
-        return   # no navegador não há threads (e os arquivos já estão na memória)
+        # No navegador não há threads (e os arquivos já estão na memória). Os sons, sim, são
+        # preparados já na abertura: preparar um som na hora em que ele começa a tocar trava o
+        # jogo, e no navegador a travada vira falha no som.
+        sons.carregar_tudo()
+        return
 
     def ler():
         for pasta, _, arquivos in os.walk(config.PASTA_ASSETS):

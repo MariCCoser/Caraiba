@@ -21,7 +21,8 @@ TAMANHO_LOGICO = (LARGURA, ALTURA)
 # folga para o computador (com 60, um computador mais lento fica no limite e o jogo engasga).
 FPS = 30
 # O "buffer" do som (amostras): maior evita estalos e engasgos do som num computador lento.
-BUFFER_DO_SOM = 2048
+# No navegador, maior ainda: lá o som depende do jogo não travar, e qualquer travada estala.
+BUFFER_DO_SOM = 4096 if sys.platform == "emscripten" else 2048
 TITULO_JANELA = "Caraíba — Dez Dias, Dez Fogueiras"
 
 # Duração (em segundos) de cada metade do escurecimento entre cenas.

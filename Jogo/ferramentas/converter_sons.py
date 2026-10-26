@@ -9,7 +9,9 @@
 # O .ogg vai para assets/sons, com o mesmo nome. O original sai de assets/sons (para não ir
 # junto no zip do itch.io) e fica guardado em Arte/Sons_originais.
 # Os sons saem em mono e com qualidade média (QUALIDADE): para efeitos e ambiente, não se nota
-# diferença, e o arquivo fica bem menor. Com um tempo em segundos, o som é cortado e ganha um
+# diferença, e o arquivo fica bem menor. Todos saem em 44100 Hz, o mesmo do jogo (motor/jogo.py):
+# um som em outra frequência precisa ser convertido na hora de carregar, o que no navegador é
+# lento e faz o som falhar. Com um tempo em segundos, o som é cortado e ganha um
 # fade de 1 segundo no fim, para o loop não dar um estalo.
 #
 # Precisa do imageio-ffmpeg (requirements-ferramentas.txt): ele traz o ffmpeg junto.
@@ -27,6 +29,7 @@ PASTA_SONS = os.path.join(config.PASTA_JOGO, "assets", "sons")
 PASTA_ORIGINAIS = os.path.join(os.path.dirname(config.PASTA_JOGO), "Arte", "Sons_originais")
 FORMATOS = (".mp3", ".wav", ".m4a", ".flac", ".aac", ".wma", ".opus")
 QUALIDADE = "3"   # 0 a 10 no ogg vorbis; 3 dá uns 80 kbps em mono
+FREQUENCIA = 44100
 
 
 def converter(origem, segundos=None):
@@ -35,7 +38,7 @@ def converter(origem, segundos=None):
     comando = [imageio_ffmpeg.get_ffmpeg_exe(), "-y", "-loglevel", "error", "-i", origem]
     if segundos:
         comando += ["-t", str(segundos), "-af", "afade=t=out:st=%s:d=1" % (segundos - 1)]
-    comando += ["-vn", "-ac", "1", "-c:a", "libvorbis", "-q:a", QUALIDADE, destino]
+    comando += ["-vn", "-ac", "1", "-ar", str(FREQUENCIA), "-c:a", "libvorbis", "-q:a", QUALIDADE, destino]
     subprocess.run(comando, check=True)
     antes, depois = os.path.getsize(origem), os.path.getsize(destino)
 
