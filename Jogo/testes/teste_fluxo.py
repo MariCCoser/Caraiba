@@ -1746,7 +1746,8 @@ def testar_dia9_e_noite9(jogo):
     # De volta à aldeia; a seta leva de novo à entrada: Aleixo, pela última vez.
     passar_falas(jogo)
     assert dia.visitante == "aleixo" and estado.padre_entrou == 0
-    clicar_opcao(jogo, "Perguntar sobre a vila")
+    # Ele ainda não levou ninguém daqui: as perguntas vêm juntas, sem "Perguntar sobre quem
+    # ele levou" (e sem as que falam dos que ele levou).
     assert textos_dos_botoes(jogo) == ["Isso é ameaça?", "Quem são os outros?", "Seguir"], textos_dos_botoes(jogo)
     clicar_opcao(jogo, "Quem são os outros?")
     passar_falas(jogo)
@@ -1814,7 +1815,6 @@ def testar_arco_e_guerra_justa(jogo):
     passar_falas(jogo)
     clicar_opcao(jogo, "Não deixar entrar")
     passar_falas(jogo)
-    clicar_opcao(jogo, "Perguntar sobre a vila")
     clicar_opcao(jogo, "Seguir")
     estado.semente = next(n for n in range(1000)
                           if random.Random("%s:aleixo:9" % n).choice(estado.dentro) == "Iandé")
@@ -1859,7 +1859,6 @@ def testar_padre_e_batismo(jogo):
     clicar_opcao(jogo, "Deixar entrar")
     passar_falas(jogo)
     assert estado.padre_entrou == 1 and dia.visitante == "aleixo"
-    clicar_opcao(jogo, "Perguntar sobre a vila")
     clicar_opcao(jogo, "Seguir")
     dia.caixa.completar()
     assert "não levo ninguém" in dia.caixa.texto, dia.caixa.texto
