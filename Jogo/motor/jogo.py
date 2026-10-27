@@ -65,8 +65,6 @@ class Jogo:
         self.dia_pausado = None
         # O final que a tela "Finais" do menu pediu para ler de novo (cenas/final.py), ou None.
         self.final_revendo = None
-        # Para onde o "Como se joga" volta: "menu" ou "opcoes" (abre pelos dois).
-        self.volta_do_tutorial = "opcoes"
         # Modo de teste: o próximo Dia começa direto na fogueira (motor/teste.py).
         self.testando_noite = False
         self.relogio = pygame.time.Clock()

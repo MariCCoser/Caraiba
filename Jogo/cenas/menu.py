@@ -1,6 +1,6 @@
 # Menu inicial: a fogueira ao fundo (luz pulsando), o título e os botões Continuar, Começar,
-# Como se joga, Finais, Opções e Sair ("Como se joga" também fica dentro de Opções, e no menu
-# para quem testa o jogo sozinho achar as regras logo de cara). "Continuar" só aparece se houver uma partida guardada;
+# Como se joga, Finais, Opções e Sair ("Como se joga" fica aqui, à vista, para quem testa o jogo
+# sozinho achar as regras logo de cara). "Continuar" só aparece se houver uma partida guardada;
 # "Finais", depois do primeiro final visto (para ler de novo o que estava escrito).
 
 import pygame
@@ -63,7 +63,6 @@ class Menu(Cena):
         elif self.botao_comecar.clicado(evento):
             self.comecar()
         elif self.botao_tutorial.clicado(evento):
-            self.jogo.volta_do_tutorial = "menu"
             self.jogo.ir_para("tutorial")
         elif self.botao_finais.clicado(evento):
             self.jogo.ir_para("finais")

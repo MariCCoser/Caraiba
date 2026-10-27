@@ -1,5 +1,4 @@
-# Tela "Como se joga": as regras do jogo, abertas pelo menu ou pelas Opções. Esc ou "Voltar"
-# volta para onde estava.
+# Tela "Como se joga": as regras do jogo, abertas pelo menu. Esc ou "Voltar" volta ao menu.
 
 import pygame
 
@@ -28,9 +27,9 @@ class Tutorial(Cena):
     def tratar_evento(self, evento):
         if evento.type == pygame.KEYDOWN and evento.key in (pygame.K_ESCAPE, pygame.K_RETURN,
                                                              pygame.K_KP_ENTER):
-            self.jogo.ir_para(self.jogo.volta_do_tutorial)
+            self.jogo.ir_para("menu")
         elif self.botao_voltar.clicado(evento):
-            self.jogo.ir_para(self.jogo.volta_do_tutorial)
+            self.jogo.ir_para("menu")
 
     def atualizar(self, dt):
         super().atualizar(dt)

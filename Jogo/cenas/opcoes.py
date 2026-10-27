@@ -1,5 +1,5 @@
-# Tela de Opções: tamanho do texto (normal / grande), tela cheia, som (ligado / desligado) e
-# "Como se joga" (as regras, que voltam para cá). As escolhas ficam salvas.
+# Tela de Opções: tamanho do texto (normal / grande), tela cheia e som (ligado / desligado).
+# As escolhas ficam salvas. ("Como se joga" fica no menu principal.)
 
 import pygame
 
@@ -29,12 +29,11 @@ class Opcoes(Cena):
         self.botao_ligada = botao(OPCOES["ligada"], (X_DIREITA, 320))
         self.botao_som_desligado = botao(OPCOES["som_desligado"], (X_ESQUERDA, 435))
         self.botao_som_ligado = botao(OPCOES["som_ligado"], (X_DIREITA, 435))
-        self.botao_tutorial = botao(MENU["tutorial"], (800, 740), largura=300)
         self.botao_voltar = botao(OPCOES["voltar"], (800, 800))
 
         self.botoes = [self.botao_normal, self.botao_grande, self.botao_desligada,
                        self.botao_ligada, self.botao_som_desligado, self.botao_som_ligado,
-                       self.botao_tutorial, self.botao_voltar]
+                       self.botao_voltar]
 
         # O exemplo fica no tamanho das falas do jogo: mostra o efeito de "Grande".
         self.exemplo = ui.CaixaTexto(OPCOES["exemplo"], 1100, (800, 600), ancora="centro",
@@ -52,9 +51,6 @@ class Opcoes(Cena):
             self.jogo.ir_para("menu")
         elif self.botao_voltar.clicado(evento):
             self.jogo.ir_para("menu")
-        elif self.botao_tutorial.clicado(evento):
-            self.jogo.volta_do_tutorial = "opcoes"
-            self.jogo.ir_para("tutorial")
         elif self.botao_normal.clicado(evento):
             preferencias.tamanho_texto = "normal"
             preferencias.salvar()
