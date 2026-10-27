@@ -73,6 +73,9 @@ class Introducao(Cena):
     def terminar(self):
         self.jogo.ir_para("dia")
 
+    def alvos(self):
+        return ui.centros(self.botao_pular)
+
     def som_ambiente(self):
         return "introducao"
 

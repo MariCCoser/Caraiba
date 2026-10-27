@@ -15,7 +15,7 @@ import config
 from dados.aldeia import ALDEIA, OCAS, ocas_abertas
 from dados.dias import DIAS
 from dados.textos import DIA
-from motor import efeitos, fontes, progresso, ui
+from motor import efeitos, fontes, progresso, teclado, ui
 from motor.cena import Cena, desenhar_cenario
 from motor.pessoas import PessoaNoCenario, falta_conversar
 from motor.tabua import Tabua
@@ -77,6 +77,25 @@ class Aldeia(Cena):
     def entrar(self, nome):
         self.jogo.oca_atual = nome
         self.jogo.ir_para("oca")
+
+    def alvos(self):
+        """Para o teclado: quem está andando, as ocas abertas, a seta, o Menu e a tábua."""
+        if self.tabua.aberta:
+            return self.tabua.alvos()
+        seta = self.rect_seta if self.tem_seta else pygame.Rect(0, 0, 0, 0)
+        # O clique vê primeiro a seta, depois as pessoas, depois as ocas (tratar_evento).
+        pessoas = [pessoa.ponto_de_foco() for pessoa in self.pessoas]
+        pessoas = [ponto for ponto in pessoas if ponto and not seta.collidepoint(ponto)]
+        if not hasattr(self, "_focos_das_ocas"):   # as ocas não mudam: a conta é feita uma vez
+            def livre(ponto, nome):
+                return (not seta.collidepoint(ponto) and not self._pessoa_no_ponto(ponto)
+                        and self._oca_no_ponto(ponto) == nome)
+            self._focos_das_ocas = [teclado.ponto_dentro(self.mascaras[nome],
+                                                         livre=lambda ponto, nome=nome: livre(ponto, nome))
+                                    for nome in OCAS if nome in self.abertas]
+        ocas = [ponto for ponto in self._focos_das_ocas if ponto]
+        setas = [self.rect_seta.center] if self.tem_seta else []
+        return pessoas + ocas + setas + ui.centros(self.botao_menu) + self.tabua.alvos()
 
     def som_ambiente(self):
         return "dia" if self.de_dia else "noite"

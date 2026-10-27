@@ -48,6 +48,9 @@ class Menu(Cena):
                 b.centro = (X_COLUNA, y)
                 y += ESPACO_ENTRE_BOTOES
 
+    def alvos(self):
+        return ui.centros(*self.botoes)
+
     def som_ambiente(self):
         return "menu"
 

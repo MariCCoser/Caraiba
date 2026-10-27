@@ -2298,6 +2298,112 @@ def testar_modo_teste():
     print("ok testar uma noite: as 10 noites abrem na fogueira, e a partida guardada fica")
 
 
+def testar_teclado():
+    """Jogar sem mouse (motor/teclado.py): setas/Tab escolhem, Enter clica, em todas as telas."""
+    from motor import teste
+    jogo = Jogo(tamanho_janela=(1280, 720))
+    rodar(jogo, 5)
+
+    # Menu: a primeira seta escolhe o primeiro botão; o destaque é o de sempre (mouse em cima).
+    menu = jogo.cenas.atual
+    tecla(jogo, pygame.K_DOWN)
+    rodar(jogo, 2)
+    primeiro = menu.botoes[0] if menu.botao_continuar.visivel else menu.botao_comecar
+    assert jogo.teclado.foco == primeiro.retangulo().center and primeiro.mouse_em_cima
+    for _ in range(len(menu.botoes)):
+        if jogo.teclado.foco == menu.botao_tutorial.retangulo().center:
+            break
+        tecla(jogo, pygame.K_DOWN)
+    rodar(jogo, 2)
+    assert menu.botao_tutorial.mouse_em_cima and not primeiro.mouse_em_cima
+    capturar(jogo, "70-teclado-menu")
+    tecla(jogo, pygame.K_RETURN)
+    esperar_transicao(jogo)
+    assert nome_cena(jogo) == "Tutorial", nome_cena(jogo)
+    rodar(jogo, 3)
+    capturar(jogo, "71-teclado-como-se-joga")
+    tecla(jogo, pygame.K_ESCAPE)
+    esperar_transicao(jogo)
+    assert nome_cena(jogo) == "Menu" and jogo.teclado.foco is None, "cena nova, foco do zero"
+
+    # Opções: Tab até "Grande" e Enter.
+    clicar_botao(jogo, jogo.cenas.atual.botao_opcoes)
+    esperar_transicao(jogo)
+    opcoes = jogo.cenas.atual
+    tecla(jogo, pygame.K_TAB)
+    tecla(jogo, pygame.K_RIGHT)
+    rodar(jogo, 2)
+    assert jogo.teclado.foco == opcoes.botao_grande.retangulo().center
+    tecla(jogo, pygame.K_RETURN)
+    assert jogo.preferencias.tamanho_texto == "grande"
+    tecla(jogo, pygame.K_LEFT)
+    tecla(jogo, pygame.K_RETURN)
+    assert jogo.preferencias.tamanho_texto == "normal"
+    # Mexer o mouse solta o teclado.
+    rodar(jogo, 1, [pygame.event.Event(pygame.MOUSEMOTION, {"pos": (5, 5), "rel": (1, 1), "buttons": (0, 0, 0)})])
+    assert jogo.teclado.foco is None
+    print("ok teclado: menu, Como se joga e Opções")
+
+    # Cada noite: toda pessoa na fogueira tem um ponto, e o clique nele cai nela mesma.
+    for noite in range(1, 11):
+        teste.ir_para_noite(jogo, noite)
+        esperar_transicao(jogo)
+        dia = jogo.cenas.atual
+        alvos = dia.alvos()
+        for pessoa in dia.na_fogueira:
+            ponto = next((p for p in alvos if dia._pessoa_no_ponto(p) is pessoa), None)
+            assert ponto, (noite, pessoa.nome, "sem ponto para o teclado")
+        assert len(set(alvos)) == len(alvos), "dois alvos no mesmo ponto"
+    # Na última noite: Tab até a primeira pessoa e Enter abre a conversa; a resposta se escolhe
+    # com as setas.
+    tecla(jogo, pygame.K_TAB)
+    rodar(jogo, 2)
+    assert dia.sobre is not None
+    capturar(jogo, "72-teclado-fogueira")
+    tecla(jogo, pygame.K_RETURN)
+    rodar(jogo, 2)
+    assert dia.modo != "fogueira"
+    for _ in range(30):
+        if dia.botoes:
+            break
+        tecla(jogo, pygame.K_SPACE)
+        rodar(jogo, 30)
+    assert dia.botoes, "as respostas apareceram"
+    tecla(jogo, pygame.K_DOWN)
+    rodar(jogo, 2)
+    assert dia.botoes[0][0].mouse_em_cima
+    capturar(jogo, "73-teclado-respostas")
+    print("ok teclado: as 10 fogueiras (pessoas e respostas)")
+
+    # A aldeia de noite: cada oca aberta tem um ponto que abre ela mesma; Enter entra.
+    jogo.dia_pausado = None
+    jogo.ir_para("aldeia")
+    esperar_transicao(jogo)
+    aldeia = jogo.cenas.atual
+    alvos = aldeia.alvos()
+    for nome in aldeia.abertas:
+        assert any(aldeia._oca_no_ponto(p) == nome and not aldeia._pessoa_no_ponto(p) for p in alvos), nome
+    tecla(jogo, pygame.K_TAB)
+    rodar(jogo, 2)
+    capturar(jogo, "74-teclado-aldeia")
+    assert aldeia.sobre in aldeia.abertas
+    tecla(jogo, pygame.K_RETURN)
+    esperar_transicao(jogo)
+    assert nome_cena(jogo) == "Oca", nome_cena(jogo)
+    oca = jogo.cenas.atual
+    for pessoa in oca.na_oca:
+        assert any(oca._pessoa_no_ponto(p) is pessoa for p in oca.alvos()), pessoa.nome
+    # A tábua: T abre, o único alvo é o Fechar, Enter fecha.
+    tecla(jogo, pygame.K_t)
+    assert oca.tabua.aberta and oca.alvos() == ui.centros(oca.tabua.botao_fechar)
+    tecla(jogo, pygame.K_TAB)
+    rodar(jogo, 1)
+    tecla(jogo, pygame.K_RETURN)
+    assert not oca.tabua.aberta
+    print("ok teclado: aldeia, oca e tábua")
+    jogo.encerrar()
+
+
 def testar_desempenho():
     """Mede quanto tempo um quadro leva (meta: bem menos que 33 ms para 30 FPS)."""
     import time
@@ -2322,5 +2428,6 @@ if __name__ == "__main__":
     testar_cartoes_introducao()
     testar_fluxo()
     testar_modo_teste()
+    testar_teclado()
     testar_desempenho()
     print("TUDO CERTO")

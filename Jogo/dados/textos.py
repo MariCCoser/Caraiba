@@ -16,7 +16,8 @@ REGRAS = ("• [De dia], alguém chega à entrada. Converse e decida se a pessoa
           "• Os sinais ficam riscados na [tábua de barro], no canto de cima da tela.\n"
           "• [À noite], na fogueira, examine quem está dentro. Cada olhar gasta energia.\n"
           "• Depois: deixar na [oca], levar ao [tapiri] ou [matar].\n"
-          "• Uma [brasa] acima da cabeça: alguém com quem você ainda não conversou.")
+          "• Uma [brasa] acima da cabeça: alguém com quem você ainda não conversou.\n"
+          "• Sem mouse: [setas] ou Tab escolhem, [Enter] confirma, T abre a tábua, Esc volta.")
 
 MENU = {
     "titulo": "CARAÍBA",
@@ -138,7 +139,7 @@ INTRODUCAO = {
             "filtro": "noite",
             "largura": 1300,
             "tamanho": 30,
-            "max_linhas": 12,
+            "max_linhas": 13,   # com o texto grande, as 7 regras ocupam 13 linhas (e cabem)
         },
     ],
 }

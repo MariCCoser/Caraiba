@@ -124,6 +124,15 @@ class Oca(Cena):
     def sair(self):
         self.jogo.ir_para("aldeia")
 
+    def alvos(self):
+        """Para o teclado: quem está na oca, a seta de sair, o Menu e a tábua."""
+        if self.tabua.aberta:
+            return self.tabua.alvos()
+        # A primeira da lista ganha o clique (_pessoa_no_ponto): as de antes ficam "na frente".
+        pessoas = [pessoa.ponto_de_foco(self.na_oca[:i]) for i, pessoa in enumerate(self.na_oca)]
+        return ([ponto for ponto in pessoas if ponto]
+                + ui.centros(self.botao_sair, self.botao_menu) + self.tabua.alvos())
+
     def som_ambiente(self):
         return "dia_na_oca" if self.de_dia else "noite_na_oca"
 

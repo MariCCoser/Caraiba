@@ -19,6 +19,9 @@ class Tutorial(Cena):
                                    tamanho=30, max_linhas=14)
         self.botao_voltar = ui.Botao(TUTORIAL["voltar"], (800, 830), largura_minima=260)
 
+    def alvos(self):
+        return ui.centros(self.botao_voltar)
+
     def som_ambiente(self):
         return "menu"
 

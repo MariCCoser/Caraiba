@@ -112,6 +112,10 @@ class Tabua:
         # O "apertar" do clique no ícone também não deve chegar à cena.
         return evento.type == pygame.MOUSEBUTTONDOWN and self.rect_icone.collidepoint(evento.pos)
 
+    def alvos(self):
+        """Para o teclado (motor/teclado.py): aberta, só o Fechar; fechada, o ícone."""
+        return ui.centros(self.botao_fechar) if self.aberta else [self.rect_icone.center]
+
     def atualizar(self, dt, posicao_mouse):
         self.tempo += dt
         self.mouse_no_icone = self.rect_icone.collidepoint(posicao_mouse)

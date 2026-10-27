@@ -94,6 +94,9 @@ class Final(Cena):
         else:
             self.jogo.ir_para("finais" if self.revendo else "menu")
 
+    def alvos(self):
+        return ui.centros(self.botao)
+
     def som_ambiente(self):
         return AMBIENTE_DO_FINAL.get(self.final["id"], "final")
 

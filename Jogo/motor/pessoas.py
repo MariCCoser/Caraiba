@@ -11,7 +11,7 @@ import pygame
 
 import config
 from dados.finais import QUEM_CONTA_NA_HONRA
-from motor import fontes, imagens, ui
+from motor import fontes, imagens, teclado, ui
 
 # A marca de quem o jogador ainda não conversou (A Honra pede conversar com 5): uma brasa
 # pequena acima da cabeça, que pulsa devagar. Some quando o mouse está em cima (aparece o nome).
@@ -46,6 +46,15 @@ class PessoaNoCenario:
     def contem(self, ponto):
         x, y = ponto[0] - self.rect.x, ponto[1] - self.rect.y
         return 0 <= x < self.rect.width and 0 <= y < self.rect.height and bool(self.mascara.get_at((x, y)))
+
+    def ponto_de_foco(self, na_frente=()):
+        """Onde o teclado "clica" nesta pessoa (motor/teclado.py): dentro dela, perto do meio, e
+        fora de quem está na frente (senão o clique cairia na outra). None se ela está toda coberta."""
+        chave = tuple(id(outra) for outra in na_frente)
+        if getattr(self, "_foco", (None,))[0] != chave:
+            livre = lambda ponto: not any(outra.contem(ponto) for outra in na_frente)
+            self._foco = (chave, teclado.ponto_dentro(self.mascara, self.rect.topleft, livre))
+        return self._foco[1]
 
     def desenhar(self, tela):
         tela.blit(self.imagem, self.rect)

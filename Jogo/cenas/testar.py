@@ -29,6 +29,9 @@ class Testar(Cena):
             self.botoes.append((ui.Botao(TESTE["noite"] % noite, (x, y), largura_minima=320), noite))
         self.botao_voltar = ui.Botao(TESTE["voltar"], (800, 830), largura_minima=260)
 
+    def alvos(self):
+        return ui.centros(*[botao for botao, _ in self.botoes], self.botao_voltar)
+
     def som_ambiente(self):
         return "menu"
 

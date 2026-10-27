@@ -40,6 +40,9 @@ class Opcoes(Cena):
         self.exemplo = ui.CaixaTexto(OPCOES["exemplo"], 1100, (800, 600), ancora="centro",
                                      max_linhas=3)
 
+    def alvos(self):
+        return ui.centros(*self.botoes)
+
     def som_ambiente(self):
         return "menu"
 

@@ -37,6 +37,10 @@ class Cena:
     def tratar_evento(self, evento):
         pass
 
+    def alvos(self):
+        """O que dá para clicar agora, como pontos (x, y), na ordem do Tab (motor/teclado.py)."""
+        return []
+
     def atualizar(self, dt):
         if self.tratamento:
             self.tratamento.atualizar(dt)

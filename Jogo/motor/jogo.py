@@ -4,7 +4,7 @@ import pygame
 
 import config
 from estado import Estado
-from motor import cursor, efeitos, febre, finais, fontes, imagens, preferencias, progresso, sons, ui
+from motor import cursor, efeitos, febre, finais, fontes, imagens, preferencias, progresso, sons, teclado, ui
 from motor.cena import GerenciadorCenas
 
 # Todas as cenas do jogo, pelo nome. Para criar uma cena nova:
@@ -71,6 +71,8 @@ class Jogo:
         self.testando_noite = False
         self.relogio = pygame.time.Clock()
         self.mouse = (0, 0)       # posição do mouse já em coordenadas 1600x900
+        # Jogar sem mouse: setas/Tab escolhem, Enter/Espaço clicam (motor/teclado.py).
+        self.teclado = teclado.Teclado()
         self.rodando = True
         self._cursor_mao = False
         cursor.usar()             # o cursor do mouse é uma tocha (motor/cursor.py)
@@ -219,13 +221,18 @@ class Jogo:
             dados = dict(evento.dict)
             dados["pos"] = self.janela_para_logica(evento.pos)
             evento = pygame.event.Event(evento.type, dados)
+        if self.teclado.tratar_evento(evento, self.cenas):
+            return
         self.cenas.tratar_evento(evento)
 
     def passo(self, eventos, dt):
         """Roda um quadro inteiro: eventos, atualização e desenho."""
         dt = min(dt, 0.1)  # se o computador engasgar, não deixa as animações "pularem"
         self._area = self._calcular_area()
-        self.mouse = self.janela_para_logica(pygame.mouse.get_pos())
+        # Com o foco do teclado, o "mouse" do jogo fica nele: o destaque mostra onde está.
+        if self.cenas.atual:
+            self.teclado.conferir(self.cenas.atual)
+        self.mouse = self.teclado.foco or self.janela_para_logica(pygame.mouse.get_pos())
 
         for evento in eventos:
             self.tratar_evento(evento)

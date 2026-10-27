@@ -487,6 +487,23 @@ class Dia(Cena):
         self.fila[0:0] = pessoa["passos"] + [self.passo_aldeia]
         self._proximo()
 
+    def alvos(self):
+        """Para o teclado: as respostas (ou, na fogueira, as pessoas e a seta), o Menu e a tábua."""
+        if self.tabua.aberta:
+            return self.tabua.alvos()
+        if self.modo == "fogueira":
+            # A da frente ganha o clique (_pessoa_no_ponto): as de depois na lista ficam na frente.
+            pessoas = [pessoa.ponto_de_foco(self.na_fogueira[i + 1:])
+                       for i, pessoa in enumerate(self.na_fogueira)]
+            # A seta de dormir fica por cima de quem estiver atrás dela.
+            if self.botao_dormir and self.botao_dormir.visivel:
+                pessoas = [ponto for ponto in pessoas
+                           if ponto and not self.botao_dormir.rect.collidepoint(ponto)]
+            alvos = [ponto for ponto in pessoas if ponto] + ui.centros(self.botao_dormir)
+        else:
+            alvos = ui.centros(*[bloco for bloco, _ in self.botoes])
+        return alvos + ui.centros(self.botao_menu) + self.tabua.alvos()
+
     def som_ambiente(self):
         """De noite (o sinal do pajé e a fogueira), o fogo e o maracá; dentro de uma oca, a mata
         mais baixa; no resto do dia, a mata. A visão do Anhangá tem o som dela."""

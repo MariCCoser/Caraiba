@@ -39,6 +39,9 @@ class Finais(Cena):
         self.jogo.final_revendo = identificador
         self.jogo.ir_para("final")
 
+    def alvos(self):
+        return ui.centros(*[botao for botao, _ in self.linhas], self.botao_voltar)
+
     def som_ambiente(self):
         return "menu"
 

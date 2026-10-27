@@ -125,6 +125,15 @@ class Botao:
                 tela.blit(motivo, motivo.get_rect(midtop=(rect.centerx, rect.bottom + 6)))
 
 
+def centros(*botoes):
+    """O meio de cada Botao, BlocoOpcao ou Seta visível e habilitado (os alvos do teclado).
+
+    Aceita None (botão que ainda não existe) e pula esses.
+    """
+    return [botao.retangulo().center for botao in botoes
+            if botao is not None and botao.visivel and botao.habilitado]
+
+
 # ---------------------------------------------------------------------------
 # Texto com palavras marcadas
 # ---------------------------------------------------------------------------
