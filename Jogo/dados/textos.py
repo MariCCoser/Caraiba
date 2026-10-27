@@ -50,6 +50,9 @@ OPCOES = {
     "efeitos": "Efeitos visuais (grão, linhas, tremor)",
     "efeitos_ligados": "Ligados",
     "efeitos_desligados": "Desligados",
+    "legendas": "Descrição dos sinais no exame",
+    "legendas_ligadas": "Ligada",
+    "legendas_desligadas": "Desligada",
     "exemplo": "Exemplo de fala: as palavras [marcadas] merecem atenção. "
                "Elas mostram o que a pessoa diz e você não tem como [verificar].",
     "voltar": "Voltar",

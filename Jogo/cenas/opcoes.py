@@ -1,5 +1,6 @@
 # Tela de Opções: tamanho do texto (normal / grande), tela cheia, som (ligado / desligado) e
-# efeitos visuais (ligados / desligados: grão, linhas, tremor e o pulsar da fogueira).
+# efeitos visuais (ligados / desligados: grão, linhas, tremor e o pulsar da fogueira) e a
+# descrição dos sinais (a legenda em palavras embaixo de cada imagem do exame).
 # As escolhas ficam salvas. ("Como se joga" fica no menu principal.)
 
 import pygame
@@ -16,8 +17,8 @@ X_ESQUERDA = 920    # centro do botão da esquerda de cada par
 X_DIREITA = 1230    # centro do botão da direita
 TAMANHO = config.TAMANHO_PEQUENO + 4   # letras dos botões e dos nomes de cada opção
 LARGURA = 260       # largura mínima de cada botão do par
-Y_PRIMEIRA_LINHA = 200   # a linha da primeira opção
-ESPACO_LINHAS = 90       # de uma opção para a seguinte
+Y_PRIMEIRA_LINHA = 180   # a linha da primeira opção
+ESPACO_LINHAS = 80       # de uma opção para a seguinte
 
 
 class Opcoes(Cena):
@@ -40,11 +41,14 @@ class Opcoes(Cena):
         self.botao_som_ligado = botao(OPCOES["som_ligado"], (X_DIREITA, y_botoes(2)))
         self.botao_efeitos_desligados = botao(OPCOES["efeitos_desligados"], (X_ESQUERDA, y_botoes(3)))
         self.botao_efeitos_ligados = botao(OPCOES["efeitos_ligados"], (X_DIREITA, y_botoes(3)))
+        self.botao_legendas_desligadas = botao(OPCOES["legendas_desligadas"], (X_ESQUERDA, y_botoes(4)))
+        self.botao_legendas_ligadas = botao(OPCOES["legendas_ligadas"], (X_DIREITA, y_botoes(4)))
         self.botao_voltar = botao(OPCOES["voltar"], (800, 810))
 
         self.botoes = [self.botao_normal, self.botao_grande, self.botao_desligada,
                        self.botao_ligada, self.botao_som_desligado, self.botao_som_ligado,
                        self.botao_efeitos_desligados, self.botao_efeitos_ligados,
+                       self.botao_legendas_desligadas, self.botao_legendas_ligadas,
                        self.botao_voltar]
 
         # O exemplo fica no tamanho das falas do jogo: mostra o efeito de "Grande".
@@ -82,6 +86,9 @@ class Opcoes(Cena):
         elif self.botao_efeitos_ligados.clicado(evento) or self.botao_efeitos_desligados.clicado(evento):
             preferencias.efeitos = self.botao_efeitos_ligados.clicado(evento)
             preferencias.salvar()
+        elif self.botao_legendas_ligadas.clicado(evento) or self.botao_legendas_desligadas.clicado(evento):
+            preferencias.legendas = self.botao_legendas_ligadas.clicado(evento)
+            preferencias.salvar()
 
     def atualizar(self, dt):
         super().atualizar(dt)
@@ -97,6 +104,8 @@ class Opcoes(Cena):
         self.botao_som_desligado.selecionado = not preferencias.som
         self.botao_efeitos_ligados.selecionado = preferencias.efeitos
         self.botao_efeitos_desligados.selecionado = not preferencias.efeitos
+        self.botao_legendas_ligadas.selecionado = preferencias.legendas
+        self.botao_legendas_desligadas.selecionado = not preferencias.legendas
         for botao in self.botoes:
             botao.atualizar(self.jogo.mouse)
 
@@ -118,6 +127,7 @@ class Opcoes(Cena):
         nome(titulo, 1)
         nome(OPCOES["som"], 2)
         nome(OPCOES["efeitos"], 3)
+        nome(OPCOES["legendas"], 4)
         for botao in self.botoes:
             botao.desenhar(tela)
         self.exemplo.desenhar(tela)

@@ -1,5 +1,5 @@
 # Preferências do jogador que valem para o jogo todo (não só para uma partida): tamanho do texto,
-# tela cheia, som e efeitos visuais.
+# tela cheia, som, efeitos visuais e a descrição dos sinais.
 
 import config
 from motor import salvamento
@@ -13,6 +13,8 @@ class Preferencias:
         # Efeitos visuais (motor/efeitos.py): desligados, somem o grão, as linhas e o tremor,
         # e a luz da fogueira para de pulsar. Para quem se incomoda com imagem que mexe.
         self.efeitos = True
+        # A descrição em palavras embaixo de cada imagem do exame (dados/arte.py, LEGENDAS).
+        self.legendas = True
 
     def escala_texto(self):
         """Quanto multiplicar o tamanho de todo texto (1.0 no normal, maior no grande)."""
@@ -24,6 +26,7 @@ class Preferencias:
             "tela_cheia": self.tela_cheia,
             "som": self.som,
             "efeitos": self.efeitos,
+            "legendas": self.legendas,
         })
 
     def carregar(self):
@@ -35,6 +38,7 @@ class Preferencias:
         self.tela_cheia = bool(dados.get("tela_cheia", False))
         self.som = bool(dados.get("som", True))
         self.efeitos = bool(dados.get("efeitos", True))
+        self.legendas = bool(dados.get("legendas", True))
 
 
 # Uma só cópia das preferências para o jogo todo. Qualquer parte do código

@@ -24,7 +24,7 @@ from dados.febre import DOENTES
 from dados.noites import NOITES
 from dados.sons import AMBIENTE_DO_CENARIO, CENARIO_DOS_PASSOS
 from dados.textos import DIA
-from motor import efeitos, febre, finais, fontes, historias, imagens, progresso, sons, ui
+from motor import efeitos, febre, finais, fontes, historias, imagens, preferencias, progresso, sons, ui
 from motor.pessoas import PessoaNoCenario, corpo_no_cenario, falta_conversar
 from motor.cena import Cena, desenhar_cenario
 from motor.tabua import Tabua
@@ -1008,7 +1008,7 @@ class Dia(Cena):
         if self.caixa and self.imagem_fala:
             # Em cores (a interface não passa pelo filtro da noite): o vermelho do olho aparece.
             tela.blit(imagens.detalhe(self.imagem_fala, LARGURA_DETALHE), self.rect_imagem)
-            if self.legenda:
+            if self.legenda and preferencias.atual.legendas:   # dá para desligar nas Opções
                 self.legenda.numero_de_linhas()   # garante o layout (muda com o texto grande)
                 self.legenda.rect.midbottom = self.rect_imagem.midbottom
                 self.legenda.desenhar(tela)

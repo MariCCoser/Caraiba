@@ -2200,6 +2200,12 @@ def testar_fluxo():
     capturar(jogo, "03b-opcoes-sem-efeitos")
     clicar_botao(jogo, jogo.cenas.atual.botao_efeitos_ligados)
     assert jogo.preferencias.efeitos
+    # Descrição dos sinais (a legenda embaixo das imagens do exame): desliga e liga de novo.
+    assert jogo.preferencias.legendas
+    clicar_botao(jogo, jogo.cenas.atual.botao_legendas_desligadas)
+    assert not jogo.preferencias.legendas
+    clicar_botao(jogo, jogo.cenas.atual.botao_legendas_ligadas)
+    assert jogo.preferencias.legendas
     tecla(jogo, pygame.K_ESCAPE)
     esperar_transicao(jogo)
     assert nome_cena(jogo) == "Menu"
