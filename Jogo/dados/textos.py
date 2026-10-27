@@ -47,6 +47,9 @@ OPCOES = {
     "som": "Som",
     "som_ligado": "Ligado",
     "som_desligado": "Desligado",
+    "efeitos": "Efeitos visuais (grão, linhas, tremor)",
+    "efeitos_ligados": "Ligados",
+    "efeitos_desligados": "Desligados",
     "exemplo": "Exemplo de fala: as palavras [marcadas] merecem atenção. "
                "Elas mostram o que a pessoa diz e você não tem como [verificar].",
     "voltar": "Voltar",

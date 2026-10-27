@@ -2183,10 +2183,27 @@ def testar_fluxo():
     rodar(jogo, 3)
     if pygame.mixer.get_init():
         assert motor_sons._tocando, "ligar de novo precisa voltar o ambiente"
+    # Efeitos visuais: desligados, o tratamento não mexe na tela além da vinheta.
+    from motor import efeitos as motor_efeitos
+    assert jogo.preferencias.efeitos
+    clicar_botao(jogo, jogo.cenas.atual.botao_efeitos_desligados)
+    assert not jogo.preferencias.efeitos
+    tela_teste = pygame.Surface(config.TAMANHO_LOGICO)
+    tela_teste.fill((100, 100, 100))
+    tratamento = motor_efeitos.Tratamento(vinheta=False)
+    tratamento.tremor = 3
+    for _ in range(5):
+        tratamento.atualizar(0.1)
+        tratamento.aplicar(tela_teste)
+    assert tela_teste.get_at((800, 450))[:3] == (100, 100, 100), "sem grão, linhas nem tremor"
+    rodar(jogo, 3)
+    capturar(jogo, "03b-opcoes-sem-efeitos")
+    clicar_botao(jogo, jogo.cenas.atual.botao_efeitos_ligados)
+    assert jogo.preferencias.efeitos
     tecla(jogo, pygame.K_ESCAPE)
     esperar_transicao(jogo)
     assert nome_cena(jogo) == "Menu"
-    print("ok opções (texto normal/grande, som, Esc volta)")
+    print("ok opções (texto normal/grande, som, efeitos visuais, Esc volta)")
 
     # 3. Começar -> introdução, avançando cada cartão
     clicar_botao(jogo, jogo.cenas.atual.botao_comecar)

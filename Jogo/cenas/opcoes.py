@@ -1,4 +1,5 @@
-# Tela de Opções: tamanho do texto (normal / grande), tela cheia e som (ligado / desligado).
+# Tela de Opções: tamanho do texto (normal / grande), tela cheia, som (ligado / desligado) e
+# efeitos visuais (ligados / desligados: grão, linhas, tremor e o pulsar da fogueira).
 # As escolhas ficam salvas. ("Como se joga" fica no menu principal.)
 
 import pygame
@@ -8,10 +9,15 @@ from dados.textos import MENU, OPCOES
 from motor import efeitos, sons, ui
 from motor.cena import Cena, desenhar_cenario
 
-X_ESQUERDA = 680   # centro do botão da esquerda de cada par
-X_DIREITA = 920    # centro do botão da direita
+# Cada opção numa linha: o nome à esquerda (terminando em X_NOMES) e os dois botões à direita.
+# Os espaços cabem também com o texto grande (os botões crescem com ele).
+X_NOMES = 750       # onde termina o nome de cada opção
+X_ESQUERDA = 920    # centro do botão da esquerda de cada par
+X_DIREITA = 1230    # centro do botão da direita
 TAMANHO = config.TAMANHO_PEQUENO + 4   # letras dos botões e dos nomes de cada opção
-LARGURA = 220      # largura mínima de cada botão do par
+LARGURA = 260       # largura mínima de cada botão do par
+Y_PRIMEIRA_LINHA = 200   # a linha da primeira opção
+ESPACO_LINHAS = 90       # de uma opção para a seguinte
 
 
 class Opcoes(Cena):
@@ -23,20 +29,26 @@ class Opcoes(Cena):
         def botao(texto, centro, largura=LARGURA):
             return ui.Botao(texto, centro, tamanho=TAMANHO, largura_minima=largura)
 
-        self.botao_normal = botao(OPCOES["normal"], (X_ESQUERDA, 205))
-        self.botao_grande = botao(OPCOES["grande"], (X_DIREITA, 205))
-        self.botao_desligada = botao(OPCOES["desligada"], (X_ESQUERDA, 320))
-        self.botao_ligada = botao(OPCOES["ligada"], (X_DIREITA, 320))
-        self.botao_som_desligado = botao(OPCOES["som_desligado"], (X_ESQUERDA, 435))
-        self.botao_som_ligado = botao(OPCOES["som_ligado"], (X_DIREITA, 435))
-        self.botao_voltar = botao(OPCOES["voltar"], (800, 800))
+        def y_botoes(linha):
+            return Y_PRIMEIRA_LINHA + linha * ESPACO_LINHAS
+
+        self.botao_normal = botao(OPCOES["normal"], (X_ESQUERDA, y_botoes(0)))
+        self.botao_grande = botao(OPCOES["grande"], (X_DIREITA, y_botoes(0)))
+        self.botao_desligada = botao(OPCOES["desligada"], (X_ESQUERDA, y_botoes(1)))
+        self.botao_ligada = botao(OPCOES["ligada"], (X_DIREITA, y_botoes(1)))
+        self.botao_som_desligado = botao(OPCOES["som_desligado"], (X_ESQUERDA, y_botoes(2)))
+        self.botao_som_ligado = botao(OPCOES["som_ligado"], (X_DIREITA, y_botoes(2)))
+        self.botao_efeitos_desligados = botao(OPCOES["efeitos_desligados"], (X_ESQUERDA, y_botoes(3)))
+        self.botao_efeitos_ligados = botao(OPCOES["efeitos_ligados"], (X_DIREITA, y_botoes(3)))
+        self.botao_voltar = botao(OPCOES["voltar"], (800, 810))
 
         self.botoes = [self.botao_normal, self.botao_grande, self.botao_desligada,
                        self.botao_ligada, self.botao_som_desligado, self.botao_som_ligado,
+                       self.botao_efeitos_desligados, self.botao_efeitos_ligados,
                        self.botao_voltar]
 
         # O exemplo fica no tamanho das falas do jogo: mostra o efeito de "Grande".
-        self.exemplo = ui.CaixaTexto(OPCOES["exemplo"], 1100, (800, 600), ancora="centro",
+        self.exemplo = ui.CaixaTexto(OPCOES["exemplo"], 1100, (800, 650), ancora="centro",
                                      max_linhas=3)
 
     def alvos(self):
@@ -67,6 +79,9 @@ class Opcoes(Cena):
             preferencias.som = self.botao_som_ligado.clicado(evento)
             preferencias.salvar()
             sons.atualizar_volume()
+        elif self.botao_efeitos_ligados.clicado(evento) or self.botao_efeitos_desligados.clicado(evento):
+            preferencias.efeitos = self.botao_efeitos_ligados.clicado(evento)
+            preferencias.salvar()
 
     def atualizar(self, dt):
         super().atualizar(dt)
@@ -80,6 +95,8 @@ class Opcoes(Cena):
         self.botao_desligada.selecionado = not tela_cheia
         self.botao_som_ligado.selecionado = preferencias.som
         self.botao_som_desligado.selecionado = not preferencias.som
+        self.botao_efeitos_ligados.selecionado = preferencias.efeitos
+        self.botao_efeitos_desligados.selecionado = not preferencias.efeitos
         for botao in self.botoes:
             botao.atualizar(self.jogo.mouse)
 
@@ -91,11 +108,16 @@ class Opcoes(Cena):
     def desenhar_interface(self, tela):
         ui.texto_simples(tela, OPCOES["titulo"], (800, 90), config.TAMANHO_SUBTITULO + 8,
                          nome_fonte="serif_negrito")
-        ui.texto_simples(tela, OPCOES["tamanho_texto"], (800, 155), TAMANHO, cor=config.BARRO_TEXTO)
+        def nome(texto, linha):
+            ui.texto_simples(tela, texto, (X_NOMES, Y_PRIMEIRA_LINHA + linha * ESPACO_LINHAS), TAMANHO,
+                             cor=config.BARRO_TEXTO, ancora="direita")
+
+        nome(OPCOES["tamanho_texto"], 0)
         # No navegador, o F11 é do próprio navegador: o atalho não aparece.
         titulo = OPCOES["tela_cheia_navegador"] if config.NO_NAVEGADOR else OPCOES["tela_cheia"]
-        ui.texto_simples(tela, titulo, (800, 270), TAMANHO, cor=config.BARRO_TEXTO)
-        ui.texto_simples(tela, OPCOES["som"], (800, 385), TAMANHO, cor=config.BARRO_TEXTO)
+        nome(titulo, 1)
+        nome(OPCOES["som"], 2)
+        nome(OPCOES["efeitos"], 3)
         for botao in self.botoes:
             botao.desenhar(tela)
         self.exemplo.desenhar(tela)

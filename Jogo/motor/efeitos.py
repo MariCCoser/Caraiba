@@ -14,6 +14,7 @@ import random
 import pygame
 
 import config
+from motor import preferencias
 
 # ---------------------------------------------------------------------------
 # Filtros (aplicados uma vez na imagem, quando ela é carregada)
@@ -154,6 +155,7 @@ class Tratamento:
     """Linhas + grão animado + vinheta (+ tremor quando a sanidade está baixa).
 
     Cada cena tem o seu. Use ajustar_pela_sanidade() quando a sanidade mudar.
+    Com os efeitos visuais desligados nas Opções, fica só a vinheta (que não mexe).
     """
 
     def __init__(self, linhas=True, grao=True, vinheta=True):
@@ -190,13 +192,15 @@ class Tratamento:
 
     def aplicar(self, tela):
         """Desenha o tratamento por cima do que já está na tela (a cena)."""
-        if self.tremor and self._deslocamento_tremor:
+        efeitos = preferencias.atual.efeitos
+        if efeitos and self.tremor and self._deslocamento_tremor:
             tela.scroll(self._deslocamento_tremor, 0)
-        if self.usar_grao:
+        if efeitos and self.usar_grao:
             self._aplicar_grao(tela)
-        if self.usar_linhas and self.usar_vinheta:
+        usar_linhas = efeitos and self.usar_linhas
+        if usar_linhas and self.usar_vinheta:
             tela.blit(_textura("linhas_e_vinheta"), (0, 0))
-        elif self.usar_linhas:
+        elif usar_linhas:
             tela.blit(_textura("linhas"), (0, 0))
         elif self.usar_vinheta:
             tela.blit(_textura("vinheta"), (0, 0))
@@ -216,12 +220,15 @@ class Tratamento:
 def luz_de_fogo(tela, tempo, centro):
     """Faz a luz da cena pulsar devagar, como chama de fogueira, e acende um brilho em volta do fogo.
 
-    Use DEPOIS de desenhar o cenário e ANTES do tratamento.
+    Use DEPOIS de desenhar o cenário e ANTES do tratamento. Com os efeitos visuais desligados
+    (Opções), a luz fica parada no meio do pulso.
     """
     # Soma de ondas lentas com velocidades diferentes: parece irregular, mas é suave.
     oscilacao = (math.sin(tempo * 1.3) * 0.5
                  + math.sin(tempo * 3.1 + 1.0) * 0.3
                  + math.sin(tempo * 7.3 + 2.0) * 0.2)          # entre -1 e 1
+    if not preferencias.atual.efeitos:
+        oscilacao = 0.0
     brilho_geral = int(232 + 20 * oscilacao)                   # 212 a 252 (de 255)
     tela.fill((brilho_geral,) * 3, special_flags=pygame.BLEND_RGB_MULT)
 
