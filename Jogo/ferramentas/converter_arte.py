@@ -94,7 +94,7 @@ LIMIAR_BRANCO_CERCADO = 240
 AREA_MINIMA_BRANCO_CERCADO = 1500   # pixels da arte original
 # Arte com o fundo xadrez desenhado na imagem (cinza e branco, sem transparência de verdade):
 # o xadrez preso entre o braço e o corpo forma manchas pequenas, que também saem.
-ARTE_XADREZ = ["personagens_png/Potira_png.png", "Personagens_sentados_png/Personagens_sentados/Potira_sentada_png.png",
+ARTE_XADREZ = ["personagens_png/Potira_png.png", "Personagens_sentados/Potira_sentada_png.png",
                "personagens_png/esteira_amaldicoado.png", "personagens_png/Padre.png"]
 AREA_MINIMA_BRANCO_CERCADO_XADREZ = 30
 LIMIAR_BRANCO_CERCADO_XADREZ = 232   # o cinza do xadrez (238) também conta
@@ -302,7 +302,7 @@ def converter_personagem(origem, destino, giro, meio_da_coxa, descascar=False):
 # na arte (sem giro) e com fundo transparente. Saem todas com a mesma altura; o tamanho na
 # fogueira se ajusta em dados/noites.py ("escala").
 ALTURA_SENTADO = 560
-SENTADOS_PNG = "Personagens_sentados_png/Personagens_sentados/"
+SENTADOS_PNG = "Personagens_sentados/"
 SENTADOS = [
     (SENTADOS_PNG + "Yara_sentada.png", "personagens/sentados/yara.png"),
     (SENTADOS_PNG + "Mbaé_sentado.png", "personagens/sentados/mbae.png"),

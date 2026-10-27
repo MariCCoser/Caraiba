@@ -61,7 +61,7 @@ Caraiba/
 │   ├── Ocas/              O dentro das ocas e do tapiri
 │   ├── Doenças/           Os detalhes do exame (olhos, boca, orelha, pescoço)
 │   ├── personagens_png/   Personagens em pé
-│   └── Personagens_sentados_png/  Personagens sentados na fogueira
+│   └── Personagens_sentados/  Personagens sentados na fogueira
 ├── Pesquisa/      Pesquisa histórica (doenças, epidemia, povos originários)
 ├── Textos/        Documentos de design: história, noites, finais, sinais e conversas
 ├── Documentos/    Proposta original e requisitos do projeto
