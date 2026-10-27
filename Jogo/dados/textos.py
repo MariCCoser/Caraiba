@@ -17,7 +17,8 @@ REGRAS = ("• [De dia], alguém chega à entrada. Converse e decida se a pessoa
           "• [À noite], na fogueira, examine quem está dentro. Cada olhar gasta energia.\n"
           "• Depois: deixar na [oca], levar ao [tapiri] ou [matar].\n"
           "• Uma [brasa] acima da cabeça: alguém com quem você ainda não conversou.\n"
-          "• Sem mouse: [setas] ou Tab escolhem, [Enter] confirma, T abre a tábua, Esc volta.")
+          "• Pelo teclado: [Espaço] passa a fala; [setas] ou Tab escolhem e [Enter] confirma; "
+          "T abre a tábua; Esc volta.")
 
 MENU = {
     "titulo": "CARAÍBA",
