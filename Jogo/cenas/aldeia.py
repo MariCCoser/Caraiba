@@ -156,7 +156,7 @@ class Aldeia(Cena):
         self._desenhar_setas_das_ocas(tela)
         titulo = ALDEIA["titulo_dia"] if self.de_dia else ALDEIA["titulo"]
         ui.texto_simples(tela, titulo % self.noite, (40, 60), config.TAMANHO_PEQUENO,
-                         nome_fonte="mono", cor=config.BARRO, ancora="esquerda")
+                         nome_fonte="mono", cor=config.BARRO_TEXTO, ancora="esquerda")
         self.botao_menu.desenhar(tela)
 
         # A oca embaixo do mouse acende: aberta em Urucum, fechada em Fumaça.

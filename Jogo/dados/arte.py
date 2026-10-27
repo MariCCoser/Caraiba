@@ -119,6 +119,50 @@ DETALHES = {
     "pescoco_iande_doente": "detalhes/pescoco-iande-doente.jpg",
 }
 
+# O que cada detalhe mostra, em palavras: aparece numa faixa embaixo da imagem, para quem não
+# distingue bem as cores (o vermelho do olho, as manchas) também ver o sinal. Só descreve o que
+# está desenhado: quem decide se é doença continua sendo o jogador.
+LEGENDAS = {
+    "olho_yara": "O branco do olho está limpo.",
+    "olho_yara_vermelho": "O branco do olho está vermelho, cheio de veias.",
+    "boca_yara": "Lábios e língua lisos, sem feridas.",
+    "boca_yara_doente": "Feridas no lábio, na língua e no fundo da boca.",
+    "olho_mbae": "O branco do olho está um pouco avermelhado.",
+    "olho_mbae_doente": "O olho está vermelho e inchado, cheio de veias.",
+    "boca_mbae": "Lábios e língua lisos, sem feridas.",
+    "boca_mbae_doente": "Pontos brancos no fundo da boca e uma ferida no lábio.",
+    "olho_potira": "O branco do olho está limpo.",
+    "olho_potira_doente": "O branco do olho está vermelho, cheio de veias.",
+    "boca_potira": "Lábios secos, sem feridas.",
+    "boca_potira_doente": "Feridas nos lábios.",
+    "olho_tamandare": "O branco do olho está levemente avermelhado.",
+    "olho_tamandare_doente": "O olho está muito vermelho, cheio de veias.",
+    "boca_tamandare": "Lábios e língua lisos, sem feridas.",
+    "boca_tamandare_doente": "Feridas nos lábios e pontos brancos na língua.",
+    "olho_iande": "O branco do olho está limpo.",
+    "olho_iande_doente": "O canto do olho está vermelho, com veias.",
+    "boca_iande": "Lábios e língua lisos, sem feridas.",
+    "boca_iande_doente": "Feridas nos lábios e na língua.",
+    "olho_araci_doente": "O olho está vermelho e cansado, cheio de veias.",
+    "boca_araci_doente": "A língua está coberta de feridas; uma ferida no lábio.",
+    "orelha_pescoco_yara": "A pele atrás da orelha e no pescoço está lisa.",
+    "orelha_yara_doente": "Manchas vermelhas atrás da orelha.",
+    "pescoco_yara_doente": "Manchas vermelhas descendo pelo pescoço.",
+    "orelha_pescoco_mbae": "A pele atrás da orelha e no pescoço está lisa.",
+    "orelha_mbae_doente": "Manchas vermelhas atrás da orelha.",
+    "pescoco_mbae_doente": "Manchas vermelhas descendo pelo pescoço.",
+    "orelha_pescoco_araci_doente": "Manchas atrás da orelha e por todo o pescoço.",
+    "orelha_pescoco_potira": "A pele atrás da orelha e no pescoço está lisa.",
+    "orelha_potira_doente": "Manchas vermelhas atrás da orelha.",
+    "pescoco_potira_doente": "Manchas vermelhas descendo pelo pescoço.",
+    "orelha_pescoco_tamandare": "A pele atrás da orelha e no pescoço está lisa.",
+    "orelha_tamandare_doente": "Manchas vermelhas atrás da orelha.",
+    "pescoco_tamandare_doente": "Manchas vermelhas descendo pelo pescoço.",
+    "orelha_pescoco_iande": "A pele atrás da orelha e no pescoço está lisa.",
+    "orelha_iande_doente": "Manchas vermelhas atrás da orelha.",
+    "pescoco_iande_doente": "Manchas vermelhas descendo pelo pescoço.",
+}
+
 # Onde fica o fogo em cada cenário (x, y na tela 1600x900).
 # Usado para o brilho que pulsa em volta da fogueira. Cenário sem fogo: não coloque aqui.
 CENTRO_DO_FOGO = {

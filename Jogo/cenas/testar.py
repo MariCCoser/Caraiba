@@ -57,7 +57,7 @@ class Testar(Cena):
     def desenhar_interface(self, tela):
         ui.texto_simples(tela, TESTE["titulo"], (800, 120), config.TAMANHO_SUBTITULO + 8,
                          nome_fonte="serif_negrito")
-        ui.texto_simples(tela, TESTE["aviso"], (800, 185), config.TAMANHO_PEQUENO, cor=config.BARRO)
+        ui.texto_simples(tela, TESTE["aviso"], (800, 185), config.TAMANHO_PEQUENO, cor=config.BARRO_TEXTO)
         for botao, _ in self.botoes:
             botao.desenhar(tela)
         self.botao_voltar.desenhar(tela)

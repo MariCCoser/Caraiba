@@ -45,6 +45,10 @@ NOITE = (0x0F, 0x0B, 0x09)       # fundo de tudo, sombra mais profunda
 TERRA = (0x24, 0x1A, 0x14)       # chão, cabelo, sombra na pele
 FUMACA = (0x5A, 0x43, 0x32)      # meio-tom, coisas distantes
 BARRO = (0x9C, 0x6B, 0x45)       # pele iluminada pelo fogo
+# O Barro mais claro, só para TEXTO (nome de quem fala, contador do dia, títulos das Opções):
+# o Barro puro fica em 4,3:1 sobre o preto, abaixo do mínimo de 4,5:1 para letra pequena.
+# Este fica em 7,5:1 e continua com cara de barro.
+BARRO_TEXTO = (0xC8, 0x96, 0x6A)
 TABATINGA = (0xE8, 0xDC, 0xC8)   # pintura branca, brilho, TEXTO
 
 # Os três acentos: cada um significa UMA coisa só no jogo inteiro

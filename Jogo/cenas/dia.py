@@ -18,7 +18,7 @@ import pygame
 
 import config
 from dados.aldeia import TAPIRI
-from dados.arte import EM_PE
+from dados.arte import EM_PE, LEGENDAS
 from dados.dias import DIAS, SAUDACAO_DE_DIA, conversa_de_dia, escolha_do_arco
 from dados.febre import DOENTES
 from dados.noites import NOITES
@@ -104,6 +104,7 @@ class Dia(Cena):
         self.quem = ""            # quem está falando
         self.pergunta = ""        # a pergunta que o jogador fez (aparece em cima da resposta)
         self.imagem_fala = None   # o detalhe que a fala mostra (dados/arte.py, DETALHES), ou None
+        self.legenda = None       # o que esse detalhe mostra, em palavras (dados/arte.py, LEGENDAS)
         self.rect_imagem = pygame.Rect(0, 0, 0, 0)
         self.botoes = []          # [(BlocoOpcao, o que fazer ao clicar)]
         self.perguntas_feitas = set()
@@ -508,6 +509,12 @@ class Dia(Cena):
         self.quem = quem
         self.pergunta = pergunta
         self.imagem_fala = imagem
+        # O que a imagem mostra, em palavras (dados/arte.py, LEGENDAS): numa faixa sobre a imagem.
+        self.legenda = None
+        if imagem in LEGENDAS:
+            self.legenda = ui.CaixaTexto(LEGENDAS[imagem], LARGURA_DETALHE, (0, 0), ancora="baixo",
+                                         tamanho=config.TAMANHO_PEQUENO, nome_fonte="serif_italico",
+                                         alinhamento="centro", margem=12)
         largura = LARGURA_PAINEL_DETALHE if imagem else LARGURA_PAINEL
         tamanho = TAMANHO_FALA_DETALHE if imagem else TAMANHO_FALA_DIA
         self.caixa = ui.CaixaTexto(texto, largura, (0, 0), ancora="topo",
@@ -953,7 +960,7 @@ class Dia(Cena):
             for corpo in self._corpos_na_fogueira():
                 corpo.desenhar_destaque(tela, contorno=False)
         ui.texto_simples(tela, self.titulo, (40, 60), config.TAMANHO_PEQUENO,
-                         nome_fonte="mono", cor=config.BARRO, ancora="esquerda")
+                         nome_fonte="mono", cor=config.BARRO_TEXTO, ancora="esquerda")
         if self.energia is not None:
             # A energia da noite, logo abaixo do título: um ponto por olhar.
             pontos = "●" * self.energia + "○" * (self.energia_max - self.energia)
@@ -966,7 +973,7 @@ class Dia(Cena):
             ui.painel_arredondado(tela, self.painel, config.PRETO + (205,), contorno=config.FUMACA)
             # Quem fala, discreto, no alto do painel.
             fonte_nome = fontes.fonte_escalada("serif_negrito", config.TAMANHO_PEQUENO + 2)
-            nome = fonte_nome.render(self.quem, True, config.BARRO)
+            nome = fonte_nome.render(self.quem, True, config.BARRO_TEXTO)
             tela.blit(nome, nome.get_rect(midtop=(self.painel.centerx, self.painel.top + 14)))
             if self.pergunta:
                 # A pergunta do jogador, logo abaixo do nome de quem responde (no mesmo espaço que
@@ -984,6 +991,10 @@ class Dia(Cena):
         if self.caixa and self.imagem_fala:
             # Em cores (a interface não passa pelo filtro da noite): o vermelho do olho aparece.
             tela.blit(imagens.detalhe(self.imagem_fala, LARGURA_DETALHE), self.rect_imagem)
+            if self.legenda:
+                self.legenda.numero_de_linhas()   # garante o layout (muda com o texto grande)
+                self.legenda.rect.midbottom = self.rect_imagem.midbottom
+                self.legenda.desenhar(tela)
 
         for bloco, _ in self.botoes:
             bloco.desenhar(tela)

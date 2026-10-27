@@ -50,6 +50,7 @@ class Opcoes(Cena):
         elif self.botao_voltar.clicado(evento):
             self.jogo.ir_para("menu")
         elif self.botao_tutorial.clicado(evento):
+            self.jogo.volta_do_tutorial = "opcoes"
             self.jogo.ir_para("tutorial")
         elif self.botao_normal.clicado(evento):
             preferencias.tamanho_texto = "normal"
@@ -91,11 +92,11 @@ class Opcoes(Cena):
     def desenhar_interface(self, tela):
         ui.texto_simples(tela, OPCOES["titulo"], (800, 90), config.TAMANHO_SUBTITULO + 8,
                          nome_fonte="serif_negrito")
-        ui.texto_simples(tela, OPCOES["tamanho_texto"], (800, 155), TAMANHO, cor=config.BARRO)
+        ui.texto_simples(tela, OPCOES["tamanho_texto"], (800, 155), TAMANHO, cor=config.BARRO_TEXTO)
         # No navegador, o F11 é do próprio navegador: o atalho não aparece.
         titulo = OPCOES["tela_cheia_navegador"] if config.NO_NAVEGADOR else OPCOES["tela_cheia"]
-        ui.texto_simples(tela, titulo, (800, 270), TAMANHO, cor=config.BARRO)
-        ui.texto_simples(tela, OPCOES["som"], (800, 385), TAMANHO, cor=config.BARRO)
+        ui.texto_simples(tela, titulo, (800, 270), TAMANHO, cor=config.BARRO_TEXTO)
+        ui.texto_simples(tela, OPCOES["som"], (800, 385), TAMANHO, cor=config.BARRO_TEXTO)
         for botao in self.botoes:
             botao.desenhar(tela)
         self.exemplo.desenhar(tela)

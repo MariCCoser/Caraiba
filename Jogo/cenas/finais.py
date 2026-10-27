@@ -68,9 +68,9 @@ class Finais(Cena):
         ui.texto_simples(tela, LISTA_FINAIS["titulo"], (800, 95),
                          config.TAMANHO_SUBTITULO + 8, nome_fonte="serif_negrito")
         ui.texto_simples(tela, LISTA_FINAIS["vistos"] % (self.quantos_vistos, self.total),
-                         (800, 145), config.TAMANHO_PEQUENO, cor=config.BARRO)
+                         (800, 145), config.TAMANHO_PEQUENO, cor=config.BARRO_TEXTO)
         for botao, _ in self.linhas:
             botao.desenhar(tela)
         for texto, y in self.escondidos:
-            ui.texto_simples(tela, texto, (800, y), TAMANHO, cor=config.BARRO)
+            ui.texto_simples(tela, texto, (800, y), TAMANHO, cor=config.BARRO_TEXTO)
         self.botao_voltar.desenhar(tela)

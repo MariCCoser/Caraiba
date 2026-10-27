@@ -1,5 +1,6 @@
 # Menu inicial: a fogueira ao fundo (luz pulsando), o título e os botões Continuar, Começar,
-# Finais, Opções e Sair ("Como se joga" fica dentro de Opções). "Continuar" só aparece se houver uma partida guardada;
+# Como se joga, Finais, Opções e Sair ("Como se joga" também fica dentro de Opções, e no menu
+# para quem testa o jogo sozinho achar as regras logo de cara). "Continuar" só aparece se houver uma partida guardada;
 # "Finais", depois do primeiro final visto (para ler de novo o que estava escrito).
 
 import pygame
@@ -26,6 +27,7 @@ class Menu(Cena):
 
         self.botao_continuar = botao(MENU["continuar"])
         self.botao_comecar = botao(MENU["comecar"])
+        self.botao_tutorial = botao(MENU["tutorial"])
         self.botao_finais = botao(MENU["finais"])
         self.botao_opcoes = botao(MENU["opcoes"])
         self.botao_testar = botao(TESTE["menu"])
@@ -37,7 +39,7 @@ class Menu(Cena):
         self.botao_finais.visivel = bool(finais.vistos())
         # No navegador não dá para "fechar o jogo": o botão Sair some.
         self.botao_sair.visivel = not config.NO_NAVEGADOR
-        self.botoes = [self.botao_continuar, self.botao_comecar,
+        self.botoes = [self.botao_continuar, self.botao_comecar, self.botao_tutorial,
                        self.botao_finais, self.botao_testar, self.botao_opcoes, self.botao_sair]
         # Empilha só os visíveis, sem deixar buraco.
         y = Y_PRIMEIRO_BOTAO
@@ -57,6 +59,9 @@ class Menu(Cena):
             self.jogo.continuar()
         elif self.botao_comecar.clicado(evento):
             self.comecar()
+        elif self.botao_tutorial.clicado(evento):
+            self.jogo.volta_do_tutorial = "menu"
+            self.jogo.ir_para("tutorial")
         elif self.botao_finais.clicado(evento):
             self.jogo.ir_para("finais")
         elif self.botao_testar.clicado(evento):
@@ -105,4 +110,4 @@ class Menu(Cena):
             botao.desenhar(tela)
 
         ui.texto_simples(tela, MENU["rodape"], (config.LARGURA - 40, config.ALTURA - 36),
-                         config.TAMANHO_PEQUENO, cor=config.BARRO, ancora="direita")
+                         config.TAMANHO_PEQUENO, cor=config.BARRO_TEXTO, ancora="direita")

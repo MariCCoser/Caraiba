@@ -151,7 +151,7 @@ class Introducao(Cena):
         # Em que cartão estamos (ex.: 3 / 10), discreto, em fonte monoespaçada.
         contador = "%d / %d" % (self.indice + 1, len(self.cartoes))
         ui.texto_simples(tela, contador, (40, 60), config.TAMANHO_PEQUENO, nome_fonte="mono",
-                         cor=config.BARRO, ancora="esquerda")
+                         cor=config.BARRO_TEXTO, ancora="esquerda")
 
         if self.caixa.terminou():
             ui.texto_simples(tela, "▸ " + INTRODUCAO["continuar"],
