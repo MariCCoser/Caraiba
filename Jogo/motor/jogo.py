@@ -172,11 +172,22 @@ class Jogo:
         dados = progresso.carregar()
         if not dados:
             return
-        self.estado = Estado()
-        self.estado.carregar_dicionario(dados["estado"])
-        self.acoes_para_refazer = dados["acoes"]
-        self.dia_pausado = None
-        self.ir_para(dados["cena"])
+        # Uma partida guardada por outra versão do jogo (ex.: antes de trocar o zip do itch.io)
+        # pode não caber mais no roteiro de agora. Se refazer as ações der erro, o dia recomeça
+        # do começo; se nem isso der, a partida guardada é esquecida e o menu volta. No navegador
+        # um erro aqui não fecha o jogo: ele simplesmente para, e parece travado.
+        for acoes in (dados["acoes"], []):
+            try:
+                self.estado = Estado()
+                self.estado.carregar_dicionario(dados["estado"])
+                self.acoes_para_refazer = acoes
+                self.dia_pausado = None
+                self.ir_para(dados["cena"])
+                return
+            except Exception as erro:
+                print("Aviso: não consegui continuar a partida guardada -", repr(erro))
+        self.nova_partida()   # apaga a partida guardada
+        self.ir_para("menu")
 
     def voltar_ao_dia(self):
         """Da aldeia de dia para a entrada da aldeia: o Dia guardado continua de onde parou."""
