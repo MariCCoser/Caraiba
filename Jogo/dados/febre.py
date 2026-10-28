@@ -1,6 +1,6 @@
 # A febre: quem está doente de verdade e como ela passa. Edite à vontade: aqui não há lógica.
 #
-# Fonte: Textos/A_Febre_Caraiba.pdf (fases, sinais e o que cada visitante tem) e
+# Fonte: Textos/A_Maldicao_Caraiba.pdf (como passa, os sinais e o que cada visitante tem) e
 # Textos/Amaldiçoados.txt (quem traz a doença dos brancos e leva a morte para a aldeia).
 # O jogador nunca vê esta lista: ela só serve para a febre e para as contas dos finais.
 #   - Levar ao tapiri alguém de DOENTES soma 1 em "tapiri_usos" (final O Tapiri).

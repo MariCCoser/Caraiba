@@ -48,7 +48,7 @@
 #               tiver). Zona que custa mais do que sobrou fica apagada. Diga de quem é o exame
 #               com "quem". "liberadas": a lista das zonas que dá para olhar nessa noite (ex.:
 #               só ["Olhos"] na noite 1). Sem ela, todas as zonas aparecem.
-#               As zonas e os sinais seguem Textos/A_Febre_Caraiba.pdf.
+#               As zonas e os sinais seguem Textos/A_Maldicao_Caraiba.pdf.
 #   "texto"     num "exame" ou numa "escolha": a frase que aparece no painel quando eles
 #               começam (sem nome em cima, como narração).
 #   Uma "fala" com "quem": "" também é narração: aparece sem nome em cima.

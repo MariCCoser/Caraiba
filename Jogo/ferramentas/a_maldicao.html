@@ -1,0 +1,115 @@
+<!doctype html>
+<!--
+  A fonte do PDF "Textos/A_Maldicao_Caraiba.pdf". Mudou um sinal ou um visitante? Edite aqui e gere
+  o PDF de novo com o Chrome (de dentro da pasta Jogo):
+    "C:\Program Files\Google\Chrome\Application\chrome.exe" --headless=new --no-pdf-header-footer
+      --allow-file-access-from-files --print-to-pdf="..\Textos\A_Maldicao_Caraiba.pdf" ferramentas\a_maldicao.html
+  Os números vêm do jogo: dados/febre.py (quem é amaldiçoado e como passa), dados/noites.py (as
+  zonas do exame) e motor/teste.py (os sinais do pajé em cada noite).
+-->
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Caraíba — A Maldição</title>
+<style>
+@font-face { font-family: "Serifa"; src: url("../assets/fontes/dejavu-serif.ttf"); }
+@font-face { font-family: "Serifa"; font-weight: bold; src: url("../assets/fontes/dejavu-serif-negrito.ttf"); }
+@font-face { font-family: "Serifa"; font-style: italic; src: url("../assets/fontes/dejavu-serif-italico.ttf"); }
+@font-face { font-family: "Sem"; src: url("../assets/fontes/dejavu-sans.ttf"); }
+@page { size: A4; margin: 22mm 20mm 22mm 20mm; }
+body { font-family: "Serifa", serif; font-size: 10.5pt; line-height: 1.5; color: #2b211b; }
+h1 { font-size: 26pt; margin: 0 0 4pt; }
+.sub { font-style: italic; color: #6b5a4e; margin: 0 0 18pt; }
+h2 { color: #8b3a1f; font-size: 17pt; margin: 22pt 0 8pt; break-after: avoid; }
+p { margin: 0 0 7pt; }
+.caixa { background: #f3e9df; padding: 8pt 10pt; margin: 8pt 0 10pt; }
+table { width: 100%; border-collapse: collapse; font-family: "Sem", sans-serif; font-size: 8.3pt; margin: 6pt 0 10pt; }
+th { background: #8b3a1f; color: #fff; text-align: left; padding: 5pt 6pt; }
+td { padding: 5pt 6pt; border-bottom: 1px solid #e3d3c3; vertical-align: top; }
+tr:nth-child(even) td { background: #f3e9df; }
+tr { break-inside: avoid; }
+ul { margin: 0 0 8pt; padding-left: 16pt; }
+li { margin-bottom: 3pt; }
+.pequeno { font-size: 9pt; color: #6b5a4e; }
+</style>
+</head>
+<body>
+
+<h1>Caraíba — A Maldição</h1>
+<p class="sub">Ficha de sintomas e visitantes: como a maldição passa, o que o jogador vê no exame e o que cada visitante tem. Versão de 28/10/2026, com o jogo de agora.</p>
+
+<p>No jogo existe uma doença só, que a aldeia chama de <b>maldição</b>; quem a traz é um <b>amaldiçoado</b>. Por trás dela estão os sinais reais da varíola, do sarampo e da gripe, que chegaram juntas em 1562 e que nem os cronistas sabiam separar. A aldeia não tem nome para elas, e o jogo também não dá. No jogo tudo corre em dias; na vida real, a doença levava semanas.</p>
+
+<h2>1. Como a maldição passa</h2>
+<ul>
+  <li><b>Quem chega com ela:</b> Mbaé, Tamandaré-mirim, Iandé e Araci. Yara e Potira chegam sãs.</li>
+  <li><b>Só passa dentro da oca</b>, nas redes. Na fogueira, ao ar livre, ninguém pega nada. Quem está no tapiri não passa nem pega.</li>
+  <li><b>Quantos pegam:</b> se um amaldiçoado dorme na oca, no fim da noite a maldição passa para outros de fora que dormem nas ocas. Mbaé passa para 1 a 3 pessoas, Tamandaré-mirim para 2 a 4, Iandé para 3 a 5. O número e quem pega são sorteados a cada partida; o <b>Continuar</b> repete a mesma sorte.</li>
+  <li><b>Quem pegou também passa</b> para no máximo mais uma pessoa por noite, até morrer.</li>
+  <li><b>Metade de quem pega mostra:</b> acorda doente no dia seguinte e, naquela noite, o exame já mostra o olho e a boca doentes. A outra metade não mostra nada, e o jogador não tem como saber.</li>
+  <li><b>Quem pega morre no segundo dia.</b> Ex.: pegou na noite 2, fica doente no dia 3, morre no dia 4. O amaldiçoado que trouxe a maldição não morre dela no jogo.</li>
+  <li><b>O tapiri</b> tem 1 vaga. Quem entra fica 3 noites longe de todos. Quem era amaldiçoado sai <b>curado</b>: o rosto e a fala mostram isso, e ele não passa mais a maldição.</li>
+  <li>Se a aldeia esvaziar, a partida acaba em <b>O Vazio</b>.</li>
+</ul>
+
+<h2>2. O exame da noite</h2>
+<p>Na fogueira, o jogador examina quem é de fora, uma zona do rosto ou do corpo por vez. <b>Cada olhar gasta 1 de energia.</b> A energia é 1 por noite, mais 1 por presente aceito (o machado de Yara, a mandioca de Potira, a pulseira de Iandé) e mais 1 na noite em que o jogador nega o Irmão Aleixo nos dias 6 e 9. <b>Matar</b> só aparece depois de achar 2 sinais na pessoa.</p>
+<table>
+<tr><th>Zona</th><th>Quando é sinal, mostra</th><th>Como aparece</th></tr>
+<tr><td>Testa</td><td>suor e calor, mesmo longe do fogo</td><td>texto</td></tr>
+<tr><td>Olhos</td><td>o branco do olho vermelho, cheio de veias</td><td>imagem de perto</td></tr>
+<tr><td>Orelhas</td><td>manchas vermelhas atrás da orelha</td><td>imagem de perto</td></tr>
+<tr><td>Boca</td><td>feridas nos lábios e na língua, pontos brancos por dentro</td><td>imagem de perto</td></tr>
+<tr><td>Mãos</td><td>nunca é sinal: só mostra calos, a conta de vidro de Iandé, a marca de corda de Tamandaré-mirim</td><td>texto</td></tr>
+<tr><td>Respiração</td><td>respiração curta, peito chiando</td><td>texto</td></tr>
+<tr><td>Pescoço (a partir da noite 9)</td><td>manchas vermelhas descendo pelo pescoço</td><td>imagem de perto</td></tr>
+</table>
+<p class="pequeno">Cada imagem de perto vem com uma frase que diz o que ela mostra (“O branco do olho está vermelho, cheio de veias”). Essa descrição pode ser desligada nas Opções.</p>
+
+<h2>3. Os sinais do pajé</h2>
+<p>Antes da noite, o pajé conta o sinal que viu no sono, e ele fica riscado na <b>tábua de barro</b>. O sinal é verdadeiro, mas nem sempre basta, e às vezes acusa quem não tem nada.</p>
+<table>
+<tr><th>Noite</th><th>Sinal riscado na tábua</th></tr>
+<tr><td>1</td><td>Olho vermelho, com o branco raiado.</td></tr>
+<tr><td>2</td><td>Boca com feridas.</td></tr>
+<tr><td>4</td><td>Pontos brancos por dentro da bochecha.</td></tr>
+<tr><td>6</td><td>Manchas avermelhadas atrás da orelha.</td></tr>
+<tr><td>9</td><td>Manchas avermelhadas no pescoço.</td></tr>
+</table>
+
+<h2>4. Sinais falsos e desculpas</h2>
+<table>
+<tr><th>Parece sinal</th><th>Mas é</th></tr>
+<tr><td>Olho vermelho de Yara (noites 1 e 2)</td><td>fumaça da fogueira; na noite 3 o olho já está limpo</td></tr>
+<tr><td>Olhos cansados de Potira</td><td>sono: ela andou desde antes do sol</td></tr>
+<tr><td>Lábios secos de Potira</td><td>frio: dormiu no mato, longe do fogo</td></tr>
+<tr><td>Marcas atrás da orelha de Mbaé (até 3 noites na oca)</td><td>pintura de jenipapo</td></tr>
+<tr><td>Testa morna de Tamandaré-mirim</td><td>suor de quem andou muito</td></tr>
+</table>
+<p>O contrário também acontece: <b>os amaldiçoados explicam os sinais de verdade</b> com desculpas, que aparecem em âmbar e sublinhadas (“É o vento do rio”, “É o sol da estrada”, “Comi farinha velha na vila”). É o que a pessoa diz, e o jogador não tem como conferir.</p>
+
+<h2>5. O que cada visitante tem</h2>
+<table>
+<tr><th>Chega</th><th>Visitante</th><th>Maldição</th><th>O que o exame mostra</th><th>Se dormir na oca</th></tr>
+<tr><td>dia 1</td><td>Yara</td><td>sã</td><td>Olho vermelho de fumaça nas noites 1 e 2: o primeiro sinal do pajé acusa uma inocente. Depois, nada.</td><td>Ninguém pega dela. Pode pegar dos outros.</td></tr>
+<tr><td>dia 2</td><td>Mbaé</td><td>amaldiçoado</td><td>Testa suada e quente, respiração curta, feridas na boca, olho já avermelhado. Depois de 3 noites na oca, o olho piora e aparecem manchas atrás da orelha (e no pescoço, da noite 9 em diante).</td><td>Passa para 1 a 3 pessoas.</td></tr>
+<tr><td>dias 3, 6 e 9</td><td>Irmão Aleixo</td><td>—</td><td>Não entra e não é examinado. Pede alguém para levar à vila.</td><td>—</td></tr>
+<tr><td>dia 4</td><td>Potira</td><td>sã</td><td>Olhos de sono e lábios secos; nada disso é sinal.</td><td>Ninguém pega dela. Pode pegar dos outros.</td></tr>
+<tr><td>dia 5</td><td>Tamandaré-mirim</td><td>amaldiçoado</td><td>Olho levemente avermelhado (já é sinal), feridas e pontos brancos na boca, voz rouca. Manchas atrás da orelha na noite 6 e no pescoço na noite 9. Depois de 3 noites na oca, o olho piora.</td><td>Passa para 2 a 4 pessoas.</td></tr>
+<tr><td>dia 7</td><td>Iandé</td><td>amaldiçoada, escondida</td><td>Nas noites 7 e 8, nada: parece perfeita. Nas noites 9 e 10, olho, boca, orelha e pescoço doentes.</td><td>Passa para 3 a 5 pessoas.</td></tr>
+<tr><td>noite 8</td><td>Krenan</td><td>—</td><td>Não é examinado. Pede para levar alguém rio acima; se levar, volta na noite 10.</td><td>—</td></tr>
+<tr><td>dia 10</td><td>Araci</td><td>amaldiçoada</td><td>Tudo à vista: olho, boca, orelha e pescoço. Está grávida.</td><td>O final já foi calculado na manhã do dia 10.</td></tr>
+</table>
+<p>Yara e Potira, se pegarem a maldição e mostrarem, aparecem com o olho, a boca, a orelha e o pescoço doentes, como os outros.</p>
+<div class="caixa"><b>A progressão:</b> Yara ensina que o pajé pode acusar uma inocente; Mbaé ensina a ver; Tamandaré-mirim ensina a abrir a boca; Iandé ensina que o exame não basta.</div>
+
+<h2>6. Fontes</h2>
+<ul>
+  <li>Carta do padre Leonardo do Valle ao padre Gonçalo Vaz, Bahia, 12 de maio de 1563: a epidemia de 1562 na Bahia.</li>
+  <li>John Hemming, <i>Ouro vermelho</i>: a conquista dos índios brasileiros. São Paulo: Edusp, 2007.</li>
+  <li>Revista de Patologia Tropical, História da Medicina. Goiânia: UFG, v. 41, n. 4, p. 387-399, 2012.</li>
+  <li>Manuais MSD, Varíola (edição para profissionais); Fiocruz/Instituto Fernandes Figueira, Principais questões sobre sarampo; Ministério da Saúde, Guia de Vigilância em Saúde: influenza sazonal.</li>
+</ul>
+
+</body>
+</html>
