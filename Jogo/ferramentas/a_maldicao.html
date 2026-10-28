@@ -3,9 +3,11 @@
   A fonte do PDF "Textos/A_Maldicao_Caraiba.pdf". Mudou um sinal ou um visitante? Edite aqui e gere
   o PDF de novo com o Chrome (de dentro da pasta Jogo):
     "C:\Program Files\Google\Chrome\Application\chrome.exe" --headless=new --no-pdf-header-footer
-      --allow-file-access-from-files --print-to-pdf="..\Textos\A_Maldicao_Caraiba.pdf" ferramentas\a_maldicao.html
-  Os números vêm do jogo: dados/febre.py (quem é amaldiçoado e como passa), dados/noites.py (as
-  zonas do exame) e motor/teste.py (os sinais do pajé em cada noite).
+      --allow-file-access-from-files --print-to-pdf="D:\Caraiba\Textos\A_Maldicao_Caraiba.pdf"
+      "file:///D:/Caraiba/Jogo/ferramentas/a_maldicao.html"
+  Tudo aqui vem do jogo: dados/febre.py (quem é amaldiçoado e como passa), dados/noites.py (as
+  zonas liberadas em cada noite e o que cada pessoa responde), dados/arte.py (LEGENDAS: o que cada
+  imagem mostra) e motor/teste.py (os sinais do pajé em cada noite).
 -->
 <html lang="pt-BR">
 <head>
@@ -21,6 +23,8 @@ body { font-family: "Serifa", serif; font-size: 10.5pt; line-height: 1.5; color:
 h1 { font-size: 26pt; margin: 0 0 4pt; }
 .sub { font-style: italic; color: #6b5a4e; margin: 0 0 18pt; }
 h2 { color: #8b3a1f; font-size: 17pt; margin: 22pt 0 8pt; break-after: avoid; }
+h3 { font-size: 13.5pt; margin: 16pt 0 2pt; break-after: avoid; }
+.quem { font-family: "Sem", sans-serif; font-size: 8pt; font-weight: bold; color: #6b5a4e; text-transform: uppercase; letter-spacing: .03em; margin: 0 0 6pt; break-after: avoid; }
 p { margin: 0 0 7pt; }
 .caixa { background: #f3e9df; padding: 8pt 10pt; margin: 8pt 0 10pt; }
 table { width: 100%; border-collapse: collapse; font-family: "Sem", sans-serif; font-size: 8.3pt; margin: 6pt 0 10pt; }
@@ -28,6 +32,8 @@ th { background: #8b3a1f; color: #fff; text-align: left; padding: 5pt 6pt; }
 td { padding: 5pt 6pt; border-bottom: 1px solid #e3d3c3; vertical-align: top; }
 tr:nth-child(even) td { background: #f3e9df; }
 tr { break-inside: avoid; }
+td.fala { font-family: "Serifa", serif; font-style: italic; }
+.pessoa { break-inside: avoid-page; }
 ul { margin: 0 0 8pt; padding-left: 16pt; }
 li { margin-bottom: 3pt; }
 .pequeno { font-size: 9pt; color: #6b5a4e; }
@@ -36,7 +42,7 @@ li { margin-bottom: 3pt; }
 <body>
 
 <h1>Caraíba — A Maldição</h1>
-<p class="sub">Ficha de sintomas e visitantes: como a maldição passa, o que o jogador vê no exame e o que cada visitante tem. Versão de 28/10/2026, com o jogo de agora.</p>
+<p class="sub">Ficha de sinais e visitantes: como a maldição passa, o que o jogador pode examinar e os sinais de cada personagem, como estão no jogo. Versão de 28/10/2026.</p>
 
 <p>No jogo existe uma doença só, que a aldeia chama de <b>maldição</b>; quem a traz é um <b>amaldiçoado</b>. Por trás dela estão os sinais reais da varíola, do sarampo e da gripe, que chegaram juntas em 1562 e que nem os cronistas sabiam separar. A aldeia não tem nome para elas, e o jogo também não dá. No jogo tudo corre em dias; na vida real, a doença levava semanas.</p>
 
@@ -46,25 +52,23 @@ li { margin-bottom: 3pt; }
   <li><b>Só passa dentro da oca</b>, nas redes. Na fogueira, ao ar livre, ninguém pega nada. Quem está no tapiri não passa nem pega.</li>
   <li><b>Quantos pegam:</b> se um amaldiçoado dorme na oca, no fim da noite a maldição passa para outros de fora que dormem nas ocas. Mbaé passa para 1 a 3 pessoas, Tamandaré-mirim para 2 a 4, Iandé para 3 a 5. O número e quem pega são sorteados a cada partida; o <b>Continuar</b> repete a mesma sorte.</li>
   <li><b>Quem pegou também passa</b> para no máximo mais uma pessoa por noite, até morrer.</li>
-  <li><b>Metade de quem pega mostra:</b> acorda doente no dia seguinte e, naquela noite, o exame já mostra o olho e a boca doentes. A outra metade não mostra nada, e o jogador não tem como saber.</li>
+  <li><b>Metade de quem pega mostra:</b> acorda doente no dia seguinte e, naquela noite, o exame já mostra os sinais. A outra metade não mostra nada, e o jogador não tem como saber.</li>
   <li><b>Quem pega morre no segundo dia.</b> Ex.: pegou na noite 2, fica doente no dia 3, morre no dia 4. O amaldiçoado que trouxe a maldição não morre dela no jogo.</li>
   <li><b>O tapiri</b> tem 1 vaga. Quem entra fica 3 noites longe de todos. Quem era amaldiçoado sai <b>curado</b>: o rosto e a fala mostram isso, e ele não passa mais a maldição.</li>
   <li>Se a aldeia esvaziar, a partida acaba em <b>O Vazio</b>.</li>
 </ul>
 
 <h2>2. O exame da noite</h2>
-<p>Na fogueira, o jogador examina quem é de fora, uma zona do rosto ou do corpo por vez. <b>Cada olhar gasta 1 de energia.</b> A energia é 1 por noite, mais 1 por presente aceito (o machado de Yara, a mandioca de Potira, a pulseira de Iandé) e mais 1 na noite em que o jogador nega o Irmão Aleixo nos dias 6 e 9. <b>Matar</b> só aparece depois de achar 2 sinais na pessoa.</p>
+<p>Na fogueira, o jogador examina quem é de fora, uma zona por vez. Cada zona mostra uma <b>imagem de perto</b>, e a pessoa responde alguma coisa. <b>Cada olhar gasta 1 de energia.</b> A energia é 1 por noite, mais 1 por presente aceito (o machado de Yara, a mandioca de Potira, a pulseira de Iandé) e mais 1 na noite em que o jogador nega o Irmão Aleixo nos dias 6 e 9. <b>Matar</b> só aparece depois de achar 2 sinais na pessoa.</p>
+<p>As zonas abrem aos poucos, junto com os sinais que o pajé conta:</p>
 <table>
-<tr><th>Zona</th><th>Quando é sinal, mostra</th><th>Como aparece</th></tr>
-<tr><td>Testa</td><td>suor e calor, mesmo longe do fogo</td><td>texto</td></tr>
-<tr><td>Olhos</td><td>o branco do olho vermelho, cheio de veias</td><td>imagem de perto</td></tr>
-<tr><td>Orelhas</td><td>manchas vermelhas atrás da orelha</td><td>imagem de perto</td></tr>
-<tr><td>Boca</td><td>feridas nos lábios e na língua, pontos brancos por dentro</td><td>imagem de perto</td></tr>
-<tr><td>Mãos</td><td>nunca é sinal: só mostra calos, a conta de vidro de Iandé, a marca de corda de Tamandaré-mirim</td><td>texto</td></tr>
-<tr><td>Respiração</td><td>respiração curta, peito chiando</td><td>texto</td></tr>
-<tr><td>Pescoço (a partir da noite 9)</td><td>manchas vermelhas descendo pelo pescoço</td><td>imagem de perto</td></tr>
+<tr><th>Zona</th><th>Pode examinar a partir da</th><th>Quando é sinal, a imagem mostra</th></tr>
+<tr><td>Olhos</td><td>noite 1</td><td>o branco do olho vermelho, cheio de veias</td></tr>
+<tr><td>Boca</td><td>noite 2</td><td>feridas nos lábios e na língua, pontos brancos por dentro</td></tr>
+<tr><td>Orelhas (atrás da orelha)</td><td>noite 6</td><td>manchas vermelhas atrás da orelha</td></tr>
+<tr><td>Pescoço</td><td>noite 9</td><td>manchas vermelhas descendo pelo pescoço</td></tr>
 </table>
-<p class="pequeno">Cada imagem de perto vem com uma frase que diz o que ela mostra (“O branco do olho está vermelho, cheio de veias”). Essa descrição pode ser desligada nas Opções.</p>
+<p class="pequeno">Cada imagem vem com uma frase que diz o que ela mostra (“O branco do olho está vermelho, cheio de veias”). Essa descrição pode ser desligada nas Opções.</p>
 
 <h2>3. Os sinais do pajé</h2>
 <p>Antes da noite, o pajé conta o sinal que viu no sono, e ele fica riscado na <b>tábua de barro</b>. O sinal é verdadeiro, mas nem sempre basta, e às vezes acusa quem não tem nada.</p>
@@ -77,33 +81,102 @@ li { margin-bottom: 3pt; }
 <tr><td>9</td><td>Manchas avermelhadas no pescoço.</td></tr>
 </table>
 
-<h2>4. Sinais falsos e desculpas</h2>
-<table>
-<tr><th>Parece sinal</th><th>Mas é</th></tr>
-<tr><td>Olho vermelho de Yara (noites 1 e 2)</td><td>fumaça da fogueira; na noite 3 o olho já está limpo</td></tr>
-<tr><td>Olhos cansados de Potira</td><td>sono: ela andou desde antes do sol</td></tr>
-<tr><td>Lábios secos de Potira</td><td>frio: dormiu no mato, longe do fogo</td></tr>
-<tr><td>Marcas atrás da orelha de Mbaé (até 3 noites na oca)</td><td>pintura de jenipapo</td></tr>
-<tr><td>Testa morna de Tamandaré-mirim</td><td>suor de quem andou muito</td></tr>
-</table>
-<p>O contrário também acontece: <b>os amaldiçoados explicam os sinais de verdade</b> com desculpas, que aparecem em âmbar e sublinhadas (“É o vento do rio”, “É o sol da estrada”, “Comi farinha velha na vila”). É o que a pessoa diz, e o jogador não tem como conferir.</p>
+<h2>4. Os sinais de cada personagem</h2>
+<p>Para cada pessoa: o que a imagem de perto mostra e o que ela responde. As respostas entre colchetes no jogo aparecem em <b>âmbar e sublinhadas</b>: é o que a pessoa afirma, e o jogador não tem como conferir. Quando um amaldiçoado sai curado do tapiri, o rosto volta a ficar limpo e a fala muda.</p>
 
-<h2>5. O que cada visitante tem</h2>
+<div class="pessoa">
+<h3>Yara</h3>
+<p class="quem">Chega no dia 1 · sã</p>
 <table>
-<tr><th>Chega</th><th>Visitante</th><th>Maldição</th><th>O que o exame mostra</th><th>Se dormir na oca</th></tr>
-<tr><td>dia 1</td><td>Yara</td><td>sã</td><td>Olho vermelho de fumaça nas noites 1 e 2: o primeiro sinal do pajé acusa uma inocente. Depois, nada.</td><td>Ninguém pega dela. Pode pegar dos outros.</td></tr>
-<tr><td>dia 2</td><td>Mbaé</td><td>amaldiçoado</td><td>Testa suada e quente, respiração curta, feridas na boca, olho já avermelhado. Depois de 3 noites na oca, o olho piora e aparecem manchas atrás da orelha (e no pescoço, da noite 9 em diante).</td><td>Passa para 1 a 3 pessoas.</td></tr>
-<tr><td>dias 3, 6 e 9</td><td>Irmão Aleixo</td><td>—</td><td>Não entra e não é examinado. Pede alguém para levar à vila.</td><td>—</td></tr>
-<tr><td>dia 4</td><td>Potira</td><td>sã</td><td>Olhos de sono e lábios secos; nada disso é sinal.</td><td>Ninguém pega dela. Pode pegar dos outros.</td></tr>
-<tr><td>dia 5</td><td>Tamandaré-mirim</td><td>amaldiçoado</td><td>Olho levemente avermelhado (já é sinal), feridas e pontos brancos na boca, voz rouca. Manchas atrás da orelha na noite 6 e no pescoço na noite 9. Depois de 3 noites na oca, o olho piora.</td><td>Passa para 2 a 4 pessoas.</td></tr>
-<tr><td>dia 7</td><td>Iandé</td><td>amaldiçoada, escondida</td><td>Nas noites 7 e 8, nada: parece perfeita. Nas noites 9 e 10, olho, boca, orelha e pescoço doentes.</td><td>Passa para 3 a 5 pessoas.</td></tr>
-<tr><td>noite 8</td><td>Krenan</td><td>—</td><td>Não é examinado. Pede para levar alguém rio acima; se levar, volta na noite 10.</td><td>—</td></tr>
-<tr><td>dia 10</td><td>Araci</td><td>amaldiçoada</td><td>Tudo à vista: olho, boca, orelha e pescoço. Está grávida.</td><td>O final já foi calculado na manhã do dia 10.</td></tr>
+<tr><th>Zona</th><th>O que se vê</th><th>O que ela diz</th></tr>
+<tr><td>Olhos, noites 1 e 2</td><td>O branco do olho está vermelho, cheio de veias. Na noite 1 conta como sinal: é o sinal do pajé, e acusa uma inocente.</td><td class="fala">“Dormi perto do fogo.” (noite 1) · “Dormi perto do fogo. Já está passando.” (noite 2)</td></tr>
+<tr><td>Olhos, da noite 3 em diante</td><td>O branco do olho está limpo.</td><td class="fala">“Viu? Era a fumaça.”</td></tr>
+<tr><td>Boca</td><td>Lábios e língua lisos, sem feridas.</td><td class="fala">“Respiro fundo, viu? Nem uma tosse.”</td></tr>
+<tr><td>Orelhas</td><td>A pele atrás da orelha está lisa.</td><td class="fala">“Só poeira do caminho.”</td></tr>
+<tr><td>Pescoço</td><td>A pele do pescoço está lisa.</td><td class="fala">“Pode olhar. Não tem nada.”</td></tr>
 </table>
-<p>Yara e Potira, se pegarem a maldição e mostrarem, aparecem com o olho, a boca, a orelha e o pescoço doentes, como os outros.</p>
+<p class="pequeno">Se pegar a maldição na oca e mostrar: olho vermelho (“(treme) É frio, só isso.”), feridas na boca (“(tosse) Dói para engolir.”), manchas atrás da orelha (“(treme) Coça. É mordida de mosquito.”) e no pescoço (“(tosse) É do sol, só isso.”).</p>
+</div>
+
+<div class="pessoa">
+<h3>Mbaé</h3>
+<p class="quem">Chega no dia 2 · amaldiçoado · passa para 1 a 3 pessoas</p>
+<table>
+<tr><th>Zona</th><th>O que se vê</th><th>O que ele diz</th></tr>
+<tr><td>Olhos, até 3 noites na oca</td><td>O branco do olho está um pouco avermelhado. Já é sinal.</td><td class="fala">“(tosse) É o vento do rio.”</td></tr>
+<tr><td>Olhos, depois de 3 noites na oca</td><td>O olho está vermelho e inchado, cheio de veias.</td><td class="fala">“(tosse) É o vento do rio. De noite arde mais.”</td></tr>
+<tr><td>Boca</td><td>Pontos brancos no fundo da boca e uma ferida no lábio. É o sinal da noite 2.</td><td class="fala">“(tosse) Mordi a língua comendo peixe.”</td></tr>
+<tr><td>Orelhas, até 3 noites na oca</td><td>A pele atrás da orelha está lisa.</td><td class="fala">“Só a pintura de jenipapo.”</td></tr>
+<tr><td>Orelhas, depois de 3 noites na oca</td><td>Manchas vermelhas atrás da orelha.</td><td class="fala">“(tosse) É a pintura de jenipapo descascando.”</td></tr>
+<tr><td>Pescoço, até 3 noites na oca</td><td>A pele do pescoço está lisa.</td><td class="fala">“(tosse) Pode olhar.”</td></tr>
+<tr><td>Pescoço, depois de 3 noites na oca</td><td>Manchas vermelhas descendo pelo pescoço.</td><td class="fala">“(tosse) Picada de formiga, na caça.”</td></tr>
+</table>
+<p class="pequeno">Curado no tapiri: “O tapiri me fez bem.” · “Pode olhar. As feridas fecharam.” · “Pode olhar. Não tem nada.”</p>
+</div>
+
+<div class="pessoa">
+<h3>Potira</h3>
+<p class="quem">Chega no dia 4 · sã</p>
+<table>
+<tr><th>Zona</th><th>O que se vê</th><th>O que ela diz</th></tr>
+<tr><td>Olhos</td><td>O branco do olho está limpo; o olhar é de cansaço.</td><td class="fala">“É sono. Andei desde antes do sol.”</td></tr>
+<tr><td>Boca</td><td>Lábios secos, sem feridas.</td><td class="fala">“Os lábios? Estão secos.” · “É do frio. Dormi no mato, longe de qualquer fogueira.”</td></tr>
+<tr><td>Orelhas</td><td>A pele atrás da orelha está lisa.</td><td class="fala">“Pode olhar. A pele está boa.”</td></tr>
+<tr><td>Pescoço</td><td>A pele do pescoço está lisa.</td><td class="fala">“Nada aí. Pode olhar.”</td></tr>
+</table>
+<p class="pequeno">Se pegar a maldição na oca e mostrar: olho vermelho (“(treme) Dormi mal, só isso.”), feridas nos lábios (“(tosse) Arde por dentro.”), manchas atrás da orelha (“(treme) Coça. É do mato.”) e no pescoço (“(tosse) É do sol da roça.”).</p>
+</div>
+
+<div class="pessoa">
+<h3>Tamandaré-mirim</h3>
+<p class="quem">Chega no dia 5 · amaldiçoado · passa para 2 a 4 pessoas</p>
+<table>
+<tr><th>Zona</th><th>O que se vê</th><th>O que ele diz</th></tr>
+<tr><td>Olhos, até 3 noites na oca</td><td>O branco do olho está levemente avermelhado. Já é sinal.</td><td class="fala">“É o sol da estrada.”</td></tr>
+<tr><td>Olhos, depois de 3 noites na oca</td><td>O olho está muito vermelho, cheio de veias.</td><td class="fala">“É o sol da estrada. Agora arde.”</td></tr>
+<tr><td>Boca</td><td>Feridas nos lábios e pontos brancos na língua.</td><td class="fala">“Rouco de pregar. Só isso.”</td></tr>
+<tr><td>Orelhas, noites 6 a 8</td><td>Manchas vermelhas atrás da orelha.</td><td class="fala">“O sol da estrada queimou a pele.”</td></tr>
+<tr><td>Orelhas, noites 9 e 10</td><td>Manchas vermelhas atrás da orelha.</td><td class="fala">“Agora desce pelo pescoço. Não dói.”</td></tr>
+<tr><td>Pescoço</td><td>Manchas vermelhas descendo pelo pescoço.</td><td class="fala">“A terra sem mal marca quem anda até ela.”</td></tr>
+</table>
+<p class="pequeno">Curado no tapiri: “O sol da estrada já não arde.” · “A rouquidão foi embora.” · “As manchas secaram. A terra sem mal me poupou.” · “Pode olhar. Secou tudo.”</p>
+</div>
+
+<div class="pessoa">
+<h3>Iandé</h3>
+<p class="quem">Chega no dia 7 · amaldiçoada, escondida · passa para 3 a 5 pessoas</p>
+<table>
+<tr><th>Zona</th><th>O que se vê</th><th>O que ela diz</th></tr>
+<tr><td>Olhos, noites 7 e 8</td><td>O branco do olho está limpo.</td><td class="fala">“Dormi bem na vila.” · “Dormi bem. A rede daqui é macia.”</td></tr>
+<tr><td>Boca, noites 7 e 8</td><td>Lábios e língua lisos, sem feridas.</td><td class="fala">“Pode olhar. Está tudo bem.”</td></tr>
+<tr><td>Orelhas, noites 7 e 8</td><td>A pele atrás da orelha está lisa.</td><td class="fala">“Pode olhar. Está tudo bem.”</td></tr>
+<tr><td>Olhos, noites 9 e 10</td><td>O canto do olho está vermelho, com veias.</td><td class="fala">“Não dormi. É a dor nas costas.”</td></tr>
+<tr><td>Boca, noites 9 e 10</td><td>Feridas nos lábios e na língua.</td><td class="fala">“(tosse) Comi farinha velha na vila.”</td></tr>
+<tr><td>Orelhas, noites 9 e 10</td><td>Manchas vermelhas atrás da orelha.</td><td class="fala">“Coça um pouco. É do cabelo sujo da viagem.”</td></tr>
+<tr><td>Pescoço, noites 9 e 10</td><td>Manchas vermelhas descendo pelo pescoço.</td><td class="fala">“É da alça do cesto.”</td></tr>
+</table>
+<p class="pequeno">Nas noites 7 e 8 ela não mostra nada: é a pessoa que ensina que o exame não basta. Curada no tapiri: “Dormi bem, enfim.” · “Não coça mais.” · “As manchas sumiram. Foi o tapiri.”</p>
+</div>
+
+<div class="pessoa">
+<h3>Araci</h3>
+<p class="quem">Chega no dia 10 · amaldiçoada, tudo à vista · grávida</p>
+<table>
+<tr><th>Zona</th><th>O que se vê</th><th>O que ela diz</th></tr>
+<tr><td>Olhos</td><td>O olho está vermelho e cansado, cheio de veias.</td><td class="fala">“Não durmo. A criança não deixa.”</td></tr>
+<tr><td>Boca</td><td>A língua está coberta de feridas; uma ferida no lábio.</td><td class="fala">“É sede. Andei o dia inteiro.”</td></tr>
+<tr><td>Orelhas</td><td>Manchas atrás da orelha e por todo o pescoço.</td><td class="fala">“Começou aqui, atrás da orelha.”</td></tr>
+<tr><td>Pescoço</td><td>Manchas atrás da orelha e por todo o pescoço.</td><td class="fala">“Agora desce pelo pescoço. Não dói.”</td></tr>
+</table>
+<p class="pequeno">O final já foi calculado na manhã do dia 10: nada do que o jogador faz com Araci o muda.</p>
+</div>
+
+<h3>Quem não é examinado</h3>
+<p>O <b>Irmão Aleixo</b> (dias 3, 6 e 9) não entra na aldeia e pede alguém para levar à vila. <b>Krenan</b> (noite 8) pede para levar alguém rio acima; se levar, volta na noite 10.</p>
+
 <div class="caixa"><b>A progressão:</b> Yara ensina que o pajé pode acusar uma inocente; Mbaé ensina a ver; Tamandaré-mirim ensina a abrir a boca; Iandé ensina que o exame não basta.</div>
 
-<h2>6. Fontes</h2>
+<h2>5. Fontes</h2>
 <ul>
   <li>Carta do padre Leonardo do Valle ao padre Gonçalo Vaz, Bahia, 12 de maio de 1563: a epidemia de 1562 na Bahia.</li>
   <li>John Hemming, <i>Ouro vermelho</i>: a conquista dos índios brasileiros. São Paulo: Edusp, 2007.</li>
