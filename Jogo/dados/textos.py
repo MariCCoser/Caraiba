@@ -185,7 +185,27 @@ TESTE = {
 
 TUTORIAL = {
     "titulo": "Como se joga",
-    "texto": REGRAS,
+    # As abas do "Como se joga" (cenas/tutorial.py), na ordem em que aparecem. "icone" diz qual
+    # desenho vai no quadrinho da aba: "regras", "mouse" ou "teclado".
+    "abas": [
+        {"nome": "Regras", "icone": "regras", "texto": REGRAS},
+        {"nome": "Mouse", "icone": "mouse",
+         "texto": "• [Clique] na tela para passar a fala.\n"
+                  "• Passe o mouse sobre uma pessoa, uma oca ou um botão: ele [acende] e mostra o nome.\n"
+                  "• De dia, clique numa [resposta] para escolher o que dizer ou decidir.\n"
+                  "• À noite, clique em quem está [perto do fogo] para conversar e examinar o rosto.\n"
+                  "• Na aldeia, clique numa [oca] para entrar. A seta embaixo leva para fora ou para dormir.\n"
+                  "• Clique na [tábua de barro], no canto de cima, para ver os sinais do pajé.\n"
+                  "• [Menu], no canto de cima, volta ao menu. A partida fica guardada."},
+        {"nome": "Teclado", "icone": "teclado",
+         "texto": "• [Espaço] ou [Enter]: passa a fala.\n"
+                  "• [Setas]: escolhem o botão, a resposta, a pessoa ou a oca mais perto daquele lado.\n"
+                  "• [Tab]: passa de um em um. Shift+Tab volta.\n"
+                  "• [Enter] ou [Espaço]: confirma o que está aceso.\n"
+                  "• [T]: abre e fecha a tábua de barro.\n"
+                  "• [Esc]: volta ou fecha.\n"
+                  "• Mexeu o mouse? O teclado solta e o mouse volta a mandar."},
+    ],
     "fundo": "fogueira_longe",
     "voltar": "Voltar",
 }

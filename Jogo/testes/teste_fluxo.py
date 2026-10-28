@@ -2108,8 +2108,22 @@ def testar_continuar_tabua_tutorial(jogo):
     clicar_botao(jogo, jogo.cenas.atual.botao_tutorial)
     esperar_transicao(jogo)
     assert nome_cena(jogo) == "Tutorial"
+    tutorial = jogo.cenas.atual
     rodar(jogo, 5)
     capturar(jogo, "15-como-se-joga")
+    # As abas: abre em Regras; o mouse abre Teclado; o teclado (seta + Enter) abre Mouse.
+    assert tutorial.aberta == 0 and tutorial.abas[0].selecionado
+    clicar_botao(jogo, tutorial.abas[2])
+    assert tutorial.aberta == 2 and "Esc" in tutorial.caixa.texto
+    rodar(jogo, 3)
+    capturar(jogo, "15b-como-se-joga-teclado")
+    tecla(jogo, pygame.K_TAB)
+    tecla(jogo, pygame.K_RIGHT)
+    rodar(jogo, 2)
+    assert jogo.teclado.foco == tutorial.abas[1].retangulo().center
+    tecla(jogo, pygame.K_RETURN)
+    assert tutorial.aberta == 1 and "Clique" in tutorial.caixa.texto
+    assert nome_cena(jogo) == "Tutorial", "Enter com uma aba escolhida abre a aba, não sai"
     tecla(jogo, pygame.K_ESCAPE)
     esperar_transicao(jogo)
     assert nome_cena(jogo) == "Menu", nome_cena(jogo)
