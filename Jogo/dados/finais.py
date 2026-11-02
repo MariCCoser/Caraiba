@@ -114,9 +114,11 @@ FINAIS = [
         "id": "batismo",
         "chance_acaso": 6.4, "chance_tentando": None,
         "nome": "A Água do Batismo",
-        "povo": "Caeté",
+        "povo": "Kiriri",
         # No dia 9, o jogador deixa o padre novo entrar (dados/dias.py); na noite 9, na fogueira,
         # aceita ser batizado e batizar os outros. Acaba o jogo no fim da noite 9.
+        # Até 31/10 o povo era Caeté, que ficou só com a Guerra Justa. Cuidado: os 84 batizados de
+        # 1563 não eram Kiriri (eram do litoral); o fato liga os dois com "a mesma água".
         "condicao": [{"converteu": ">= 1"}],
         "antecipado": True,
         "a_partir_da_noite": 9,
@@ -125,9 +127,12 @@ FINAIS = [
                 "ganham nomes que não são os seus. Na vila, a mesma água cai na testa de um doente, "
                 "que morre logo depois.",
         "fato": "Em abril de 1563, na aldeia de Santiago, na Bahia, os jesuítas batizaram 84 "
-                "indígenas à beira da morte, e todos morreram. No mesmo período, o governador "
-                "Mem de Sá declarou que os Caeté podiam ser escravizados onde fossem encontrados.",
-        "fonte": "Carta do padre Leonardo do Valle ao padre Gonçalo Vaz, Bahia, 12 de maio de 1563.",
+                "indígenas à beira da morte, e todos morreram. Um século depois, a mesma água chegou "
+                "ao sertão, num catecismo na língua dos Kiriri (1698). A missão virou vila de brancos. "
+                "Em 1998, os Kiriri retomaram sua terra, em Banzaê (BA).",
+        "fonte": "Carta do padre Leonardo do Valle ao padre Gonçalo Vaz, Bahia, 12 de maio de 1563; "
+                 "Luís Vincêncio Mamiani, Catecismo da doutrina christãa na língua brasílica da nação "
+                 "Kiriri (Lisboa, 1698); Instituto Socioambiental, Povos Indígenas no Brasil: Kiriri.",
     },
     {
         "id": "rio_acima",
